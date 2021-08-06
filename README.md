@@ -1,2 +1,2 @@
-# dart_test_tools
-Additional tools and helpers for writing dart unit tests
+A sample command-line application with an entrypoint in `bin/`, library code
+in `lib/`, and example unit test in `test/`.
