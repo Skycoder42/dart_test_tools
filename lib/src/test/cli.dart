@@ -22,10 +22,18 @@ class Cli {
     ..addFlag('coverage', abbr: 'c')
     ..addFlag('html-coverage', abbr: 'h')
     ..addFlag('open-coverage', abbr: 'o')
-    ..addMultiOption(
-      'coverage-exclude',
-      abbr: 'x',
+    ..addSeparator('Configuration')
+    ..addOption(
+      'config-path',
+      aliases: const ['config'],
+      defaultsTo: 'pubspec.yaml',
     )
+    ..addOption(
+      'analysis-options-path',
+      aliases: const ['analysis-options', 'analysis'],
+      defaultsTo: 'analysis_options.yaml',
+    )
+    ..addSeparator('')
     ..addFlag(
       'help',
       abbr: '?',
@@ -40,7 +48,8 @@ class Cli {
   late final bool htmlCoverage = coverage && (_args['html-coverage'] as bool);
   late final bool openCoverage =
       htmlCoverage && (_args['open-coverage'] as bool);
-  late final coverageExclude = _args['coverage-exclude'] as List<String>;
+  late final configPath = _args['config-path'] as String;
+  late final analysisOptionsPath = _args['analysis-options-path'] as String;
 
   Cli._(this._args);
 

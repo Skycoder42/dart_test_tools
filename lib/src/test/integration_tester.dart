@@ -2,17 +2,18 @@ import 'dart:io';
 
 import '../common/runner.dart';
 import 'cli.dart';
+import 'config.dart';
 import 'mode.dart';
 import 'target.dart';
 
 class IntegrationTester {
-  static const integrationTestDir = 'test/integration';
-
   final Cli cli;
+  final TestConfig config;
   final Runner runner;
 
   IntegrationTester({
     required this.cli,
+    required this.config,
     required this.runner,
   });
 
@@ -21,7 +22,9 @@ class IntegrationTester {
       return false;
     }
 
-    return Directory(integrationTestDir).exists();
+    return Stream.fromIterable(config.integration.paths)
+        .asyncMap((path) => Directory(path).exists())
+        .every((exists) => exists);
   }
 
   Future<void> run() async {
@@ -35,18 +38,18 @@ class IntegrationTester {
   }
 
   Future<void> _runVm() async {
-    await runner.dart(const [
+    await runner.dart([
       'test',
-      integrationTestDir,
+      ...config.integration.paths,
     ]);
   }
 
   Future<void> _runJs() async {
-    await runner.dart(const [
+    await runner.dart([
       'test',
       '-p',
       'chrome',
-      integrationTestDir,
+      ...config.integration.paths,
     ]);
   }
 }

@@ -2,17 +2,21 @@ import 'dart:io';
 
 import '../common/runner.dart';
 import 'cli.dart';
+import 'config.dart';
+import 'excludes.dart';
 import 'mode.dart';
 import 'target.dart';
 
 class UnitTester {
-  static const unitTestDir = 'test/unit';
-
   final Cli cli;
+  final TestConfig config;
+  final ExcludeConfig excludes;
   final Runner runner;
 
   UnitTester({
     required this.cli,
+    required this.config,
+    required this.excludes,
     required this.runner,
   });
 
@@ -21,7 +25,9 @@ class UnitTester {
       return false;
     }
 
-    return Directory(unitTestDir).exists();
+    return Stream.fromIterable(config.unit.paths)
+        .asyncMap((path) => Directory(path).exists())
+        .every((exists) => exists);
   }
 
   Future<void> run() async {
@@ -61,7 +67,7 @@ class UnitTester {
     await runner.dart([
       'test',
       if (cli.coverage) '--coverage=coverage',
-      unitTestDir,
+      ...config.unit.paths,
     ]);
   }
 
@@ -71,7 +77,7 @@ class UnitTester {
       '-p',
       'chrome',
       if (cli.coverage) '--coverage=coverage',
-      unitTestDir,
+      ...config.unit.paths,
     ]);
   }
 
@@ -89,7 +95,7 @@ class UnitTester {
   }
 
   Future<void> _generateHtmlCoverage() async {
-    if (cli.coverageExclude.isNotEmpty) {
+    if (excludes.patterns.isNotEmpty) {
       await runner(
         'lcov',
         [
@@ -97,7 +103,7 @@ class UnitTester {
           'coverage/lcov.info',
           '--output-file',
           'coverage/lcov_cleaned.info',
-          ...cli.coverageExclude,
+          ...excludes.patterns,
         ],
       );
     }
@@ -108,7 +114,7 @@ class UnitTester {
         '--no-function-coverage',
         '-o',
         'coverage/html',
-        if (cli.coverageExclude.isEmpty)
+        if (excludes.patterns.isEmpty)
           'coverage/lcov.info'
         else
           'coverage/lcov_cleaned.info',
