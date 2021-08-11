@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:pubspec_parse/pubspec_parse.dart';
+
 class ChildErrorException implements Exception {
   final int exitCode;
 
@@ -26,4 +28,23 @@ class Runner {
   }
 
   Future<void> dart(List<String> arguments) => call('dart', arguments);
+
+  Future<void> flutter(List<String> arguments) => call(
+        'flutter',
+        arguments,
+        runInShell: Platform.isWindows,
+      );
+
+  Future<void> pub(List<String> arguments) async {
+    final pubspecFile = File('pubspec.yaml');
+    final pubspec = Pubspec.parse(
+      await pubspecFile.readAsString(),
+      sourceUrl: pubspecFile.uri,
+    );
+
+    final isFlutter = pubspec.dependencies.containsKey('flutter');
+    return isFlutter
+        ? flutter(['pub', ...arguments])
+        : dart(['pub', ...arguments]);
+  }
 }

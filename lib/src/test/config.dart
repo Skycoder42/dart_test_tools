@@ -1,22 +1,9 @@
-class PathConfig {
-  static const unit = PathConfig(['test/unit']);
-  static const integration = PathConfig(['test/integration']);
-
-  final List<String> paths;
-
-  const PathConfig(this.paths);
-
-  factory PathConfig.fromYaml(dynamic yaml) {
-    if (yaml is Iterable<dynamic>) {
-      return PathConfig(yaml.cast<String>().toList());
-    } else {
-      return PathConfig([yaml as String]);
-    }
-  }
-}
+import '../common/config.dart';
 
 class TestConfig {
   static const key = 'test';
+  static const defaultUnitPathConfig = PathConfig(['test/unit']);
+  static const defaultIntegrationPathConfig = PathConfig(['test/integration']);
 
   static const _unitKey = 'unit';
   static const _integrationKey = 'integration';
@@ -25,16 +12,16 @@ class TestConfig {
   final PathConfig integration;
 
   const TestConfig({
-    this.unit = PathConfig.unit,
-    this.integration = PathConfig.integration,
+    this.unit = defaultUnitPathConfig,
+    this.integration = defaultIntegrationPathConfig,
   });
 
   factory TestConfig.fromYaml(Map<dynamic, dynamic> yaml) => TestConfig(
         unit: yaml.containsKey(_unitKey)
             ? PathConfig.fromYaml(yaml[_unitKey])
-            : PathConfig.unit,
+            : defaultUnitPathConfig,
         integration: yaml.containsKey(_integrationKey)
             ? PathConfig.fromYaml(yaml[_integrationKey])
-            : PathConfig.integration,
+            : defaultIntegrationPathConfig,
       );
 }

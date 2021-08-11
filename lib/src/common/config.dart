@@ -2,6 +2,20 @@ import 'dart:io';
 
 import 'package:yaml/yaml.dart';
 
+class PathConfig {
+  final List<String> paths;
+
+  const PathConfig([this.paths = const []]);
+
+  factory PathConfig.fromYaml(dynamic yaml) {
+    if (yaml is Iterable<dynamic>) {
+      return PathConfig(yaml.cast<String>().toList());
+    } else {
+      return PathConfig([yaml as String]);
+    }
+  }
+}
+
 class DartTestToolsConfig {
   static Future<Map<dynamic, dynamic>> readYaml(String path) async {
     final configFile = File(path);
