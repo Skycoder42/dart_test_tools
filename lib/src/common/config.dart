@@ -17,13 +17,15 @@ class PathConfig {
 }
 
 class DartTestToolsConfig {
+  static const _configRootKey = 'dart_test_tools';
+
   static Future<Map<dynamic, dynamic>> readYaml(String path) async {
     final configFile = File(path);
     final yaml = loadYaml(
       await configFile.readAsString(),
       sourceUrl: configFile.uri,
-    );
-    return yaml as Map<dynamic, dynamic>;
+    ) as Map<dynamic, dynamic>;
+    return (yaml[_configRootKey] as Map<dynamic, dynamic>?) ?? const {};
   }
 
   static Future<Map<dynamic, dynamic>> readYamlFor(

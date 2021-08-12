@@ -17,12 +17,14 @@ class PublishConfig {
     this.rootIgnore = defaultRootIgnore,
   });
 
-  factory PublishConfig.fromYaml(Map<dynamic, dynamic> yaml) => PublishConfig(
-        exclude: yaml.containsKey(_exlcudeKey)
-            ? PathConfig.fromYaml(yaml[_exlcudeKey])
-            : defaultExcludePathConfig,
-        rootIgnore: yaml.containsKey(_rootIgnoreKey)
-            ? yaml[_rootIgnoreKey] as String
-            : defaultRootIgnore,
-      );
+  factory PublishConfig.fromYaml(Map<dynamic, dynamic> yaml) {
+    return PublishConfig(
+      exclude: yaml.containsKey(_exlcudeKey)
+          ? PathConfig.fromYaml(yaml[_exlcudeKey])
+          : defaultExcludePathConfig,
+      rootIgnore: yaml.containsKey(_rootIgnoreKey)
+          ? yaml[_rootIgnoreKey] as String
+          : defaultRootIgnore,
+    );
+  }
 }
