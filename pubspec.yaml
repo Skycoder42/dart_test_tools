@@ -13,7 +13,7 @@ dependencies:
 
 dev_dependencies:
   dart_pre_commit: ^2.3.2
-  lint: ^1.5.3
+  lint: ^1.6.0
 
 executables:
   test: test

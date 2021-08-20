@@ -25,7 +25,7 @@ class DartTestToolsConfig {
       await configFile.readAsString(),
       sourceUrl: configFile.uri,
     ) as Map<dynamic, dynamic>;
-    return (yaml[_configRootKey] as Map<dynamic, dynamic>?) ?? const {};
+    return yaml;
   }
 
   static Future<Map<dynamic, dynamic>> readYamlFor(
@@ -33,6 +33,8 @@ class DartTestToolsConfig {
     String key,
   ) async {
     final yaml = await readYaml(path);
-    return (yaml[key] as Map<dynamic, dynamic>?) ?? const {};
+    final configRoot =
+        (yaml[_configRootKey] as Map<dynamic, dynamic>?) ?? const {};
+    return (configRoot[key] as Map<dynamic, dynamic>?) ?? const {};
   }
 }
