@@ -16,7 +16,9 @@ class PathConfig {
   }
 }
 
-class DartTestToolsConfig {
+abstract class DartTestToolsConfig {
+  const DartTestToolsConfig._();
+
   static const _configRootKey = 'dart_test_tools';
 
   static Future<Map<dynamic, dynamic>> readYaml(String path) async {
