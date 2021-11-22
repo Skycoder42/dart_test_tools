@@ -57,6 +57,6 @@ jobs:
         name: Remove files not to be published
         if: inputs.publishExclude.length > 0
         working-directory: ${{ inputs.workingDirectory }}
-      - run: dart pub publish publish --dry-run
+      - run: dart pub publish --dry-run
         name: Test publishing configuration
         working-directory: ${{ inputs.workingDirectory }}
