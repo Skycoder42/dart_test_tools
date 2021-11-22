@@ -7,7 +7,7 @@ on:
         description: The repository to check out. Passed as "repository" to "actions/checkout"
       workingDirectory:
         type: string
-        required: true
+        required: false
         description: The root directory of the dart package to build and test
       buildRunner:
         type: boolean
@@ -23,10 +23,6 @@ on:
         required: false
         description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart"
 
-defaults:
-  run:
-    working-directory: ${{ inputs.workingDirectory }}
-
 jobs:
   analyze:
     name: "Analyze"
@@ -40,20 +36,26 @@ jobs:
           repository: ${{ inputs.repository }}
       - run: dart pub get
         name: Restore dart packages
+        working-directory: ${{ inputs.workingDirectory }}
       - run: dart run build_runner build
-        if: inputs.buildRunner
         name: Create build files
+        if: inputs.buildRunner
+        working-directory: ${{ inputs.workingDirectory }}
       - run: dart analyze --fatal-infos
         name: Static analysis
+        working-directory: ${{ inputs.workingDirectory }}
       - run: dart format -onone --set-exit-if-changed .
         name: Validate correct formatting
+        working-directory: ${{ inputs.workingDirectory }}
       - run: |
           set -e
           IFS=':'
           for path in "${{ inputs.publishExclude }}"; do
             git rm "$path"
           done
-        if: inputs.publishExclude.length > 0
         name: Remove files not to be published
+        if: inputs.publishExclude.length > 0
+        working-directory: ${{ inputs.workingDirectory }}
       - run: dart pub publish publish --dry-run
         name: Test publishing configuration
+        working-directory: ${{ inputs.workingDirectory }}
