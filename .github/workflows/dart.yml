@@ -21,6 +21,7 @@ on:
       dartSdkVersion:
         type: string
         required: false
+        default: stable
         description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart"
 
 jobs:
