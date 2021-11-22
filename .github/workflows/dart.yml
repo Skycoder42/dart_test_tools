@@ -49,14 +49,12 @@ jobs:
         name: Validate correct formatting
         working-directory: ${{ inputs.workingDirectory }}
       - run: |
-          set -e
-          IFS=':'
-          for path in "${{ inputs.publishExclude }}"; do
-            git rm "$path"
-          done
-        name: Remove files not to be published
-        if: inputs.publishExclude.length > 0
-        working-directory: ${{ inputs.workingDirectory }}
-      - run: dart pub publish --dry-run
+          set -ex
+          if [[ ! -z "${{ inputs.publishExclude }}" ]]; then
+            IFS=':' for path in "${{ inputs.publishExclude }}"; do
+              git rm "$path"
+            done
+          fi
+          dart pub publish --dry-run
         name: Test publishing configuration
         working-directory: ${{ inputs.workingDirectory }}
