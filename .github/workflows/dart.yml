@@ -1,6 +1,7 @@
 on:
   workflow_call:
     inputs:
+      # checkout and build paths
       repository:
         type: string
         required: false
@@ -8,16 +9,39 @@ on:
       workingDirectory:
         type: string
         required: false
+        default: "."
         description: The root directory of the dart package to build and test
       buildRunner:
         type: boolean
         required: false
         default: false
         description: Specify whether build_runner is used in the project (defaults to false)
+      # unit tests & coverage
+      unitTestPaths:
+        type: string
+        required: false
+        description: >-
+          Specifiy directories or paths of unit tests to run.
+          By default, all test discoverable by dart test are run
+      minCoverage:
+        type: number
+        required: false
+        default: 95
+        description: >-
+          Minimal coverage (in percent) required for the CI to succeed.
+          Passed as "min_coverage" to "VeryGoodOpenSource/very_good_coverage"
+      coverageExclude:
+        type: string
+        required: false
+        description: >-
+          Files to exclude from test coverage.
+          Passed as "exclude" to "VeryGoodOpenSource/very_good_coverage"
+      # publishing
       publishExclude:
         type: string
         required: false
         description: Specify a list of colon separated paths to be excluded from publishing
+      # general config
       dartSdkVersion:
         type: string
         required: false
@@ -49,13 +73,73 @@ jobs:
         name: Validate correct formatting
         working-directory: ${{ inputs.workingDirectory }}
       - run: |
-          set -ex
+          set -e
           if [[ ! -z "${{ inputs.publishExclude }}" ]]; then
             IFS=':'
             for path in "${{ inputs.publishExclude }}"; do
               git rm "$path"
             done
           fi
-          dart pub publish --dry-run
+          exec dart pub publish --dry-run
         name: Test publishing configuration
         working-directory: ${{ inputs.workingDirectory }}
+
+  test:
+    needs:
+      - analyze
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux
+          - windows
+          - macos
+          - web
+
+        include:
+          - platform: linux
+            os: ubuntu-latest
+          - platform: windows
+            os: windows-latest
+          - platform: macos
+            os: macos-latest
+          - platform: web
+            os: ubuntu-latest
+            unitTestArgs: -p chrome
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: dart-lang/setup-dart@v1.3
+        with:
+          sdk: ${{ inputs.dartSdkVersion }}
+      - uses: actions/checkout@v2
+        with:
+          repository: ${{ inputs.repository }}
+      - run: dart pub get
+        name: Restore dart packages
+        working-directory: ${{ inputs.workingDirectory }}
+      - run: dart run build_runner build
+        name: Create build files
+        if: inputs.buildRunner
+        working-directory: ${{ inputs.workingDirectory }}
+
+      - run: dart test ${{ matrix.unitTestArgs }} --coverage=coverage ${{ inputs.unitTestPaths }}
+        name: Run unit tests
+        working-directory: ${{ inputs.workingDirectory }}
+
+      - run: >-
+          dart run coverage:format_coverage
+          --lcov
+          --check-ignore
+          --in=coverage
+          --out=coverage/lcov.info
+          --packages=.packages
+          --report-on=lib
+        name: Transform coverage files
+        working-directory: ${{ inputs.workingDirectory }}
+      - uses: VeryGoodOpenSource/very_good_coverage@v1.1.1
+        name: Validate coverage is at least ${{ inputs.minCoverage }}%
+        with:
+          path: ${{ inputs.workingDirectory }}/coverage/lcov.info
+          min_coverage: ${{ inputs.minCoverage }}
+          exclude: ${{ inputs.coverageExclude }}
