@@ -16,6 +16,11 @@ on:
         required: false
         default: false
         description: Specify whether build_runner is used in the project (defaults to false)
+      # static analysis
+      publishExclude:
+        type: string
+        required: false
+        description: Specify a list of colon separated paths to be excluded from publishing
       # unit tests & coverage
       unitTestPaths:
         type: string
@@ -36,11 +41,25 @@ on:
         description: >-
           Files to exclude from test coverage.
           Passed as "exclude" to "VeryGoodOpenSource/very_good_coverage"
-      # publishing
-      publishExclude:
+      # integration tests
+      integrationTestPaths:
         type: string
         required: false
-        description: Specify a list of colon separated paths to be excluded from publishing
+        description: >-
+          Specifiy directories or paths of integration tests to run.
+          By default, no integration test are run
+      integrationTestSetup:
+        type: string
+        required: false
+        description: |
+          A JSON-Matrix with extra setup steps for each platform.
+          contains key-value pairs for each platform with a command to be invoked.
+
+          Example:
+          {
+            "linux": "dart run tools/install-deps.dart",
+            "web": "./setup-web.sh"
+          }
       # general config
       dartSdkVersion:
         type: string
@@ -50,13 +69,15 @@ on:
 
 jobs:
   analyze:
-    name: "Analyze"
+    name: Analyze
     runs-on: ubuntu-latest
     steps:
       - uses: dart-lang/setup-dart@v1.3
+        name: Install dart SDK (${{ inputs.dartSdkVersion }})
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - uses: actions/checkout@v2
+        name: Checkout repository ${{ inputs.repository }}
         with:
           repository: ${{ inputs.repository }}
       - run: dart pub get
@@ -84,7 +105,8 @@ jobs:
         name: Test publishing configuration
         working-directory: ${{ inputs.workingDirectory }}
 
-  test:
+  unit_tests:
+    name: Unit tests
     needs:
       - analyze
     strategy:
@@ -105,14 +127,16 @@ jobs:
             os: macos-latest
           - platform: web
             os: ubuntu-latest
-            unitTestArgs: -p chrome
+            dartTestArgs: -p chrome
 
     runs-on: ${{ matrix.os }}
     steps:
       - uses: dart-lang/setup-dart@v1.3
+        name: Install dart SDK (${{ inputs.dartSdkVersion }})
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - uses: actions/checkout@v2
+        name: Checkout repository ${{ inputs.repository }}
         with:
           repository: ${{ inputs.repository }}
       - run: dart pub get
@@ -123,7 +147,7 @@ jobs:
         if: inputs.buildRunner
         working-directory: ${{ inputs.workingDirectory }}
 
-      - run: dart test ${{ matrix.unitTestArgs }} --coverage=coverage ${{ inputs.unitTestPaths }}
+      - run: dart test ${{ matrix.dartTestArgs }} --coverage=coverage ${{ inputs.unitTestPaths }}
         name: Run unit tests
         working-directory: ${{ inputs.workingDirectory }}
 
@@ -143,3 +167,61 @@ jobs:
           path: ${{ inputs.workingDirectory }}/coverage/lcov.info
           min_coverage: ${{ inputs.minCoverage }}
           exclude: ${{ inputs.coverageExclude }}
+
+  integration_tests:
+    name: Integration tests
+    if: "'${{ inputs.integrationTestPaths }}' != ''"
+    needs:
+      - analyze
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux
+          - windows
+          - macos
+          - web
+
+        include:
+          - platform: linux
+            os: ubuntu-latest
+          - platform: windows
+            os: windows-latest
+          - platform: macos
+            os: macos-latest
+          - platform: web
+            os: ubuntu-latest
+            dartTestArgs: -p chrome
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: dart-lang/setup-dart@v1.3
+        name: Install dart SDK (${{ inputs.dartSdkVersion }})
+        with:
+          sdk: ${{ inputs.dartSdkVersion }}
+      - uses: actions/checkout@v2
+        name: Checkout repository ${{ inputs.repository }}
+        with:
+          repository: ${{ inputs.repository }}
+      - run: dart pub get
+        name: Restore dart packages
+        working-directory: ${{ inputs.workingDirectory }}
+      - run: dart run build_runner build
+        name: Create build files
+        if: inputs.buildRunner
+        working-directory: ${{ inputs.workingDirectory }}
+
+      - run: |
+          set -e
+          testSetupCommand="${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}"
+          echo "::set-output name=testSetupCommand::$testSetupCommand"
+        id: extract_platform_test_setup
+        name: Extract platform test setup
+        shell: bash
+      - run: ${{ steps.extract_platform_test_setup.outputs.testSetupCommand }}
+        name: Run platform test setup
+        if: "'${{ steps.extract_platform_test_setup.outputs.testSetupCommand }}' != ''"
+
+      - run: dart test ${{ matrix.dartTestArgs }} ${{ inputs.integrationTestPaths }}
+        name: Run integration tests
+        working-directory: ${{ inputs.workingDirectory }}
