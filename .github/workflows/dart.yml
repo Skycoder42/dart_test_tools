@@ -211,16 +211,9 @@ jobs:
         if: inputs.buildRunner
         working-directory: ${{ inputs.workingDirectory }}
 
-      - run: |
-          set -e
-          testSetupCommand="${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}"
-          echo "::set-output name=testSetupCommand::$testSetupCommand"
-        id: extract_platform_test_setup
-        name: Extract platform test setup
-        shell: bash
-      - run: ${{ steps.extract_platform_test_setup.outputs.testSetupCommand }}
+      - run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
         name: Run platform test setup
-        if: "'${{ steps.extract_platform_test_setup.outputs.testSetupCommand }}' != ''"
+        if: contains(fromJSON(inputs.integrationTestSetup), matrix.platform)
 
       - run: dart test ${{ matrix.dartTestArgs }} ${{ inputs.integrationTestPaths }}
         name: Run integration tests
