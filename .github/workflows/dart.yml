@@ -170,7 +170,7 @@ jobs:
 
   integration_tests:
     name: Integration tests
-    if: "'${{ inputs.integrationTestPaths }}' != ''"
+    if: "inputs.integrationTestPaths != ''"
     needs:
       - analyze
     strategy:
@@ -213,7 +213,7 @@ jobs:
 
       - run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
         name: Run platform test setup
-        if: contains(fromJSON(inputs.integrationTestSetup), matrix.platform)
+        if: "fromJSON(inputs.integrationTestSetup)[matrix.platform] != ''"
 
       - run: dart test ${{ matrix.dartTestArgs }} ${{ inputs.integrationTestPaths }}
         name: Run integration tests
