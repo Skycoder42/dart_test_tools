@@ -214,6 +214,7 @@ jobs:
       - run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
         name: Run platform test setup
         if: "fromJSON(inputs.integrationTestSetup)[matrix.platform] != ''"
+        working-directory: ${{ inputs.workingDirectory }}
 
       - run: dart test ${{ matrix.dartTestArgs }} ${{ inputs.integrationTestPaths }}
         name: Run integration tests
