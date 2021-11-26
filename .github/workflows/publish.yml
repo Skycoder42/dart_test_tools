@@ -141,16 +141,26 @@ jobs:
         uses: subosito/flutter-action@v1
         with:
           channel: ${{ inputs.flutterSdkChannel }}
+      - name: Prepare build tools
+        id: tools
+        run: |
+          if ${{ inputs.flutter }}; then
+            echo "::set-output name=pub::flutter pub"
+            echo "::set-output name=pubRun::flutter pub run"
+          else
+            echo "::set-output name=pub::dart pub"
+            echo "::set-output name=pubRun::dart run"
+          fi
       - name: Checkout repository ${{ inputs.repository }}
         uses: actions/checkout@v2
         with:
           repository: ${{ inputs.repository }}
       - name: Restore dart packages
-        run: ${{ env.PUB_TOOL }} get
+        run: ${{ steps.tools.outputs.pub }} get
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
         if: inputs.buildRunner
-        run: ${{ env.BUILD_TOOL }} build_runner build
+        run: ${{ steps.tools.outputs.pubRun }} build_runner build
         working-directory: ${{ inputs.workingDirectory }}
       - name: Prepare pub.dev credentials
         run: |
@@ -167,7 +177,7 @@ jobs:
               git rm "$path"
             done
           fi
-          exec ${{ env.PUB_TOOL }} publish --force
+          exec ${{ steps.tools.outputs.pub }} publish --force
         working-directory: ${{ inputs.workingDirectory }}
       - name: Clean up credentials
         if: always()
