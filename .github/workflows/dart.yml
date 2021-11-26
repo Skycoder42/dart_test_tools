@@ -72,28 +72,29 @@ jobs:
     name: Analyze
     runs-on: ubuntu-latest
     steps:
-      - uses: dart-lang/setup-dart@v1.3
-        name: Install dart SDK (${{ inputs.dartSdkVersion }})
+      - name: Install dart SDK (${{ inputs.dartSdkVersion }})
+        uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
-      - uses: actions/checkout@v2
-        name: Checkout repository ${{ inputs.repository }}
+      - name: Checkout repository ${{ inputs.repository }}
+        uses: actions/checkout@v2
         with:
           repository: ${{ inputs.repository }}
-      - run: dart pub get
-        name: Restore dart packages
+      - name: Restore dart packages
+        run: dart pub get
         working-directory: ${{ inputs.workingDirectory }}
-      - run: dart run build_runner build
-        name: Create build files
+      - name: Create build files
         if: inputs.buildRunner
+        run: dart run build_runner build
         working-directory: ${{ inputs.workingDirectory }}
-      - run: dart analyze --fatal-infos
-        name: Static analysis
+      - name: Static analysis
+        run: dart analyze --fatal-infos
         working-directory: ${{ inputs.workingDirectory }}
-      - run: dart format -onone --set-exit-if-changed .
-        name: Validate correct formatting
+      - name: Validate correct formatting
+        run: dart format -onone --set-exit-if-changed .
         working-directory: ${{ inputs.workingDirectory }}
-      - run: |
+      - name: Test publishing configuration
+        run: |
           set -e
           if [[ ! -z "${{ inputs.publishExclude }}" ]]; then
             IFS=':'
@@ -102,7 +103,6 @@ jobs:
             done
           fi
           exec dart pub publish --dry-run
-        name: Test publishing configuration
         working-directory: ${{ inputs.workingDirectory }}
 
   unit_tests:
@@ -131,27 +131,28 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: dart-lang/setup-dart@v1.3
-        name: Install dart SDK (${{ inputs.dartSdkVersion }})
+      - name: Install dart SDK (${{ inputs.dartSdkVersion }})
+        uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
-      - uses: actions/checkout@v2
-        name: Checkout repository ${{ inputs.repository }}
+      - name: Checkout repository ${{ inputs.repository }}
+        uses: actions/checkout@v2
         with:
           repository: ${{ inputs.repository }}
-      - run: dart pub get
-        name: Restore dart packages
+      - name: Restore dart packages
+        run: dart pub get
         working-directory: ${{ inputs.workingDirectory }}
-      - run: dart run build_runner build
-        name: Create build files
+      - name: Create build files
         if: inputs.buildRunner
+        run: dart run build_runner build
         working-directory: ${{ inputs.workingDirectory }}
 
-      - run: dart test ${{ matrix.dartTestArgs }} --coverage=coverage ${{ inputs.unitTestPaths }}
-        name: Run unit tests
+      - name: Run unit tests
+        run: dart test ${{ matrix.dartTestArgs }} --coverage=coverage ${{ inputs.unitTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}
 
-      - run: >-
+      - name: Transform coverage files
+        run: >-
           dart run coverage:format_coverage
           --lcov
           --check-ignore
@@ -159,10 +160,9 @@ jobs:
           --out=coverage/lcov.info
           --packages=.packages
           --report-on=lib
-        name: Transform coverage files
         working-directory: ${{ inputs.workingDirectory }}
-      - uses: VeryGoodOpenSource/very_good_coverage@v1.1.1
-        name: Validate coverage is at least ${{ inputs.minCoverage }}%
+      - name: Validate coverage is at least ${{ inputs.minCoverage }}%
+        uses: VeryGoodOpenSource/very_good_coverage@v1.1.1
         with:
           path: ${{ inputs.workingDirectory }}/coverage/lcov.info
           min_coverage: ${{ inputs.minCoverage }}
@@ -195,27 +195,27 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: dart-lang/setup-dart@v1.3
-        name: Install dart SDK (${{ inputs.dartSdkVersion }})
+      - name: Install dart SDK (${{ inputs.dartSdkVersion }})
+        uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
-      - uses: actions/checkout@v2
-        name: Checkout repository ${{ inputs.repository }}
+      - name: Checkout repository ${{ inputs.repository }}
+        uses: actions/checkout@v2
         with:
           repository: ${{ inputs.repository }}
-      - run: dart pub get
-        name: Restore dart packages
+      - name: Restore dart packages
+        run: dart pub get
         working-directory: ${{ inputs.workingDirectory }}
-      - run: dart run build_runner build
-        name: Create build files
+      - name: Create build files
         if: inputs.buildRunner
+        run: dart run build_runner build
         working-directory: ${{ inputs.workingDirectory }}
 
-      - run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
-        name: Run platform test setup
+      - name: Run platform test setup
         if: "fromJSON(inputs.integrationTestSetup)[matrix.platform] != ''"
+        run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
         working-directory: ${{ inputs.workingDirectory }}
 
-      - run: dart test ${{ matrix.dartTestArgs }} ${{ inputs.integrationTestPaths }}
-        name: Run integration tests
+      - name: Run integration tests
+        run: dart test ${{ matrix.dartTestArgs }} ${{ inputs.integrationTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}
