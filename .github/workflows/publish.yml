@@ -127,9 +127,6 @@ jobs:
     needs:
       - release
     if: inputs.publish && needs.release.outputs.update == 'true'
-    env:
-      PUB_TOOL: "${{ inputs.flutter ? 'flutter pub' : 'dart pub' }}"
-      BUILD_TOOL: "${{ inputs.flutter ? 'flutter pub run' : 'dart run' }}"
     steps:
       - name: Install dart SDK (${{ inputs.dartSdkVersion }})
         if: "!inputs.flutter"
