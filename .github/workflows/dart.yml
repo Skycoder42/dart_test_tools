@@ -143,7 +143,7 @@ jobs:
             os: ubuntu-latest
             dartTestArgs: -p chrome
 
-    if: "inputs.unitTestPaths != '' && contains(fromJSON(inputs.platforms), matrix.platform)"
+    if: inputs.unitTestPaths != ''
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
@@ -193,7 +193,7 @@ jobs:
     needs:
       - unit_tests
     runs-on: ubuntu-latest
-    if: "inputs.unitTestPaths != ''"
+    if: inputs.unitTestPaths != ''
     steps:
       - name: Download linux coverage data
         if: contains(fromJSON(inputs.platforms), 'linux')
@@ -265,7 +265,7 @@ jobs:
             os: ubuntu-latest
             dartTestArgs: -p chrome
 
-    if: "inputs.integrationTestPaths != '' && contains(fromJSON(inputs.platforms), matrix.platform)"
+    if: inputs.integrationTestPaths != ''
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
