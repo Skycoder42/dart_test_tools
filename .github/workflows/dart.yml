@@ -25,9 +25,10 @@ on:
       unitTestPaths:
         type: string
         required: false
+        default: test
         description: >-
           Specifiy directories or paths of unit tests to run.
-          By default, all test discoverable by dart test are run
+          By default, all test in the test directory are run.
       minCoverage:
         type: number
         required: false
@@ -72,7 +73,7 @@ jobs:
     name: Analyze
     runs-on: ubuntu-latest
     steps:
-      - name: Install dart SDK (${{ inputs.dartSdkVersion }})
+      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
@@ -108,6 +109,7 @@ jobs:
 
   unit_tests:
     name: Unit tests
+    if: "inputs.unitTestPaths != ''"
     needs:
       - analyze
     strategy:
@@ -132,7 +134,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Install dart SDK (${{ inputs.dartSdkVersion }})
+      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
@@ -196,7 +198,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Install dart SDK (${{ inputs.dartSdkVersion }})
+      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}

@@ -132,12 +132,12 @@ jobs:
       - release
     if: inputs.publish && needs.release.outputs.update == 'true'
     steps:
-      - name: Install dart SDK (${{ inputs.dartSdkVersion }})
+      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         if: "!inputs.flutter"
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
-      - name: Install flutter SDK (${{ inputs.flutterSdkChannel }})
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
         if: inputs.flutter
         uses: subosito/flutter-action@v1
         with:
