@@ -87,6 +87,7 @@ jobs:
         if: inputs.buildRunner
         run: dart run build_runner build
         working-directory: ${{ inputs.workingDirectory }}
+
       - name: Static analysis
         run: dart analyze --fatal-infos
         working-directory: ${{ inputs.workingDirectory }}
