@@ -120,6 +120,7 @@ jobs:
 
   unit_tests:
     name: Unit tests
+    if: inputs.unitTestPaths != ''
     needs:
       - analyze
 
@@ -143,30 +144,34 @@ jobs:
             os: ubuntu-latest
             dartTestArgs: -p chrome
 
-    if: inputs.unitTestPaths != ''
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Checkout repository ${{ inputs.repository }}
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/checkout@v2
         with:
           repository: ${{ inputs.repository }}
       - name: Restore dart packages
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: dart pub get
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
-        if: inputs.buildRunner
+        if: inputs.buildRunner && contains(fromJSON(inputs.platforms), matrix.platform)
         run: dart run build_runner build
         working-directory: ${{ inputs.workingDirectory }}
 
       - name: Run unit tests
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: dart test ${{ matrix.dartTestArgs }} --coverage=coverage ${{ inputs.unitTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}
 
       - name: Convert coverage data to lcov format
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: >-
           dart run coverage:format_coverage
           --lcov
@@ -177,17 +182,18 @@ jobs:
           --report-on=lib
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload coverage data
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/upload-artifact@v2
         with:
-          name: coverage-${{ matrix.platform }}.lcov
+          name: coverage-${{ matrix.platform }}
           path: ${{ inputs.workingDirectory }}/coverage/lcov.info
 
-  coverage_html:
-    name: Generate coverage HTML
+  coverage:
+    name: Validate coverage
+    if: inputs.unitTestPaths != ''
     needs:
       - unit_tests
     runs-on: ubuntu-latest
-    if: inputs.unitTestPaths != ''
     steps:
       - name: Install lcov
         run: sudo apt-get -qq install lcov
@@ -196,32 +202,32 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: coverage-linux.lcov
-          path: coverage/linux.lcov
+          path: coverage/linux
       - name: Download windows coverage data
         if: contains(fromJSON(inputs.platforms), 'windows')
         uses: actions/download-artifact@v2
         with:
           name: coverage-windows.lcov
-          path: coverage/windows.lcov
+          path: coverage/windows
       - name: Download macos coverage data
         if: contains(fromJSON(inputs.platforms), 'macos')
         uses: actions/download-artifact@v2
         with:
           name: coverage-macos.lcov
-          path: coverage/macos.lcov
+          path: coverage/macos
       - name: Download web coverage data
         if: contains(fromJSON(inputs.platforms), 'web')
         uses: actions/download-artifact@v2
         with:
           name: coverage-web.lcov
-          path: coverage/web.lcov
+          path: coverage/web
       - name: Merge coverage data
         run: |
           set -e
           find coverage
           LCOV_ARGS=""
-          for file in $(ls coverage); do
-            LCOV_ARGS="$LCOV_ARGS --add-tracefile coverage/$file"
+          for dir in $(ls coverage); do
+            LCOV_ARGS="$LCOV_ARGS --add-tracefile coverage/$dir/lcov.info"
           done
           lcov $LCOV_ARGS --output-file coverage/combined.info
       - name: Remove excluded files from coverage data
@@ -244,6 +250,7 @@ jobs:
 
   integration_tests:
     name: Integration tests
+    if: inputs.integrationTestPaths != ''
     needs:
       - analyze
 
@@ -267,30 +274,33 @@ jobs:
             os: ubuntu-latest
             dartTestArgs: -p chrome
 
-    if: inputs.integrationTestPaths != ''
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Checkout repository ${{ inputs.repository }}
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/checkout@v2
         with:
           repository: ${{ inputs.repository }}
       - name: Restore dart packages
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: dart pub get
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
-        if: inputs.buildRunner
+        if: inputs.buildRunner && contains(fromJSON(inputs.platforms), matrix.platform)
         run: dart run build_runner build
         working-directory: ${{ inputs.workingDirectory }}
 
       - name: Run platform test setup
-        if: "fromJSON(inputs.integrationTestSetup)[matrix.platform] != ''"
+        if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && contains(fromJSON(inputs.platforms), matrix.platform)
         run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
         working-directory: ${{ inputs.workingDirectory }}
 
       - name: Run integration tests
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: dart test ${{ matrix.dartTestArgs }} ${{ inputs.integrationTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}
