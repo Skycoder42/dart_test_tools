@@ -21,7 +21,7 @@ on:
         type: string
         required: false
         description: Specify a list of colon separated paths to be excluded from publishing
-      # unit tests & coverage
+      # unit tests
       unitTestPaths:
         type: string
         required: false
@@ -29,19 +29,6 @@ on:
         description: >-
           Specifiy directories or paths of unit tests to run.
           By default, all test in the test directory are run.
-      minCoverage:
-        type: number
-        required: false
-        default: 95
-        description: >-
-          Minimal coverage (in percent) required for the CI to succeed.
-          Passed as "min_coverage" to "VeryGoodOpenSource/very_good_coverage"
-      coverageExclude:
-        type: string
-        required: false
-        description: >-
-          Files to exclude from test coverage.
-          Passed as "exclude" to "VeryGoodOpenSource/very_good_coverage"
       # integration tests
       integrationTestPaths:
         type: string
@@ -61,6 +48,20 @@ on:
             "linux": "dart run tools/install-deps.dart",
             "web": "./setup-web.sh"
           }
+      # coverage
+      minCoverage:
+        type: number
+        required: false
+        default: 95
+        description: >-
+          Minimal coverage (in percent) required for the CI to succeed.
+          Passed as "min_coverage" to "VeryGoodOpenSource/very_good_coverage"
+      coverageExclude:
+        type: string
+        required: false
+        description: >-
+          Files to exclude from test coverage.
+          Passed as "exclude" to "VeryGoodOpenSource/very_good_coverage"
       # general config
       dartSdkVersion:
         type: string
@@ -185,7 +186,7 @@ jobs:
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/upload-artifact@v2
         with:
-          name: coverage-${{ matrix.platform }}
+          name: coverage-info-${{ matrix.platform }}
           path: ${{ inputs.workingDirectory }}/coverage/lcov.info
 
   coverage:
@@ -201,25 +202,25 @@ jobs:
         if: contains(fromJSON(inputs.platforms), 'linux')
         uses: actions/download-artifact@v2
         with:
-          name: coverage-linux.lcov
+          name: coverage-info-linux
           path: coverage/linux
       - name: Download windows coverage data
         if: contains(fromJSON(inputs.platforms), 'windows')
         uses: actions/download-artifact@v2
         with:
-          name: coverage-windows.lcov
+          name: coverage-info-windows
           path: coverage/windows
       - name: Download macos coverage data
         if: contains(fromJSON(inputs.platforms), 'macos')
         uses: actions/download-artifact@v2
         with:
-          name: coverage-macos.lcov
+          name: coverage-info-macos
           path: coverage/macos
       - name: Download web coverage data
         if: contains(fromJSON(inputs.platforms), 'web')
         uses: actions/download-artifact@v2
         with:
-          name: coverage-web.lcov
+          name: coverage-info-web
           path: coverage/web
       - name: Merge coverage data
         run: |
