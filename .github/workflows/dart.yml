@@ -166,7 +166,7 @@ jobs:
         run: dart test ${{ matrix.dartTestArgs }} --coverage=coverage ${{ inputs.unitTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}
 
-      - name: Transform coverage files
+      - name: Convert coverage data to lcov format
         run: >-
           dart run coverage:format_coverage
           --lcov
@@ -181,12 +181,6 @@ jobs:
         with:
           name: coverage-${{ matrix.platform }}.lcov
           path: ${{ inputs.workingDirectory }}/coverage/lcov.info
-      - name: Validate coverage is at least ${{ inputs.minCoverage }}%
-        uses: VeryGoodOpenSource/very_good_coverage@v1.1.1
-        with:
-          path: ${{ inputs.workingDirectory }}/coverage/lcov.info
-          min_coverage: ${{ inputs.minCoverage }}
-          exclude: ${{ inputs.coverageExclude }}
 
   coverage_html:
     name: Generate coverage HTML
@@ -195,6 +189,8 @@ jobs:
     runs-on: ubuntu-latest
     if: inputs.unitTestPaths != ''
     steps:
+      - name: Install lcov
+        run: sudo apt-get -qq install lcov
       - name: Download linux coverage data
         if: contains(fromJSON(inputs.platforms), 'linux')
         uses: actions/download-artifact@v2
@@ -226,7 +222,7 @@ jobs:
           for file in $(ls coverage); do
             LCOV_ARGS="$LCOV_ARGS --add-tracefile coverage/$file"
           done
-          exec lcov $LCOV_ARGS --output-file coverage/combined.info
+          lcov $LCOV_ARGS --output-file coverage/combined.info
       - name: Remove excluded files from coverage data
         run: >-
           lcov --remove coverage/combined.info
@@ -239,6 +235,11 @@ jobs:
         with:
           name: coverage-html
           path: coverage/html
+      - name: Validate coverage is at least ${{ inputs.minCoverage }}%
+        uses: VeryGoodOpenSource/very_good_coverage@v1.1.1
+        with:
+          path: coverage/cleaned.info
+          min_coverage: ${{ inputs.minCoverage }}
 
   integration_tests:
     name: Integration tests
