@@ -218,6 +218,7 @@ jobs:
       - name: Merge coverage data
         run: |
           set -e
+          find coverage
           LCOV_ARGS=""
           for file in $(ls coverage); do
             LCOV_ARGS="$LCOV_ARGS --add-tracefile coverage/$file"
