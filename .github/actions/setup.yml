@@ -1,0 +1,45 @@
+name: "Checkout and prepare project"
+inputs:
+  repository:
+    type: string
+    required: true
+  workingDirectory:
+    type: string
+    required: true
+  buildRunner:
+    type: boolean
+    required: true
+  flutter:
+    type: boolean
+    required: true
+
+outputs:
+  pubTool:
+    value: ${{ steps.tools.outputs.pub }}
+  pubRunTool:
+    value: ${{ steps.tools.outputs.pubRun }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Prepare build tools
+      id: tools
+      run: |
+        if ${{ inputs.flutter }}; then
+          echo "::set-output name=pub::flutter pub"
+          echo "::set-output name=pubRun::flutter pub run"
+        else
+          echo "::set-output name=pub::dart pub"
+          echo "::set-output name=pubRun::dart run"
+        fi
+    - name: Checkout repository ${{ inputs.repository }}
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ inputs.repository }}
+    - name: Restore dart packages
+      run: ${{ steps.tools.outputs.pub }} get
+      working-directory: ${{ inputs.workingDirectory }}
+    - name: Create build files
+      if: inputs.buildRunner
+      run: ${{ steps.tools.outputs.pubRun }} build_runner build
+      working-directory: ${{ inputs.workingDirectory }}

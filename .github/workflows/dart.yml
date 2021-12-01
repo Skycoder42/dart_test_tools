@@ -89,17 +89,13 @@ jobs:
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
-      - name: Checkout repository ${{ inputs.repository }}
-        uses: actions/checkout@v2
+      - name: Checkout and prepare project
+        uses: ./.github/actions/setup.yml
         with:
           repository: ${{ inputs.repository }}
-      - name: Restore dart packages
-        run: dart pub get
-        working-directory: ${{ inputs.workingDirectory }}
-      - name: Create build files
-        if: inputs.buildRunner
-        run: dart run build_runner build
-        working-directory: ${{ inputs.workingDirectory }}
+          workingDirectory: ${{ inputs.workingDirectory }}
+          buildRunner: ${{ inputs.buildRunner }}
+          flutter: false
 
       - name: Static analysis
         run: dart analyze --fatal-infos
@@ -152,19 +148,13 @@ jobs:
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
-      - name: Checkout repository ${{ inputs.repository }}
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
-        uses: actions/checkout@v2
+      - name: Checkout and prepare project
+        uses: ./.github/actions/setup.yml
         with:
           repository: ${{ inputs.repository }}
-      - name: Restore dart packages
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
-        run: dart pub get
-        working-directory: ${{ inputs.workingDirectory }}
-      - name: Create build files
-        if: inputs.buildRunner && contains(fromJSON(inputs.platforms), matrix.platform)
-        run: dart run build_runner build
-        working-directory: ${{ inputs.workingDirectory }}
+          workingDirectory: ${{ inputs.workingDirectory }}
+          buildRunner: ${{ inputs.buildRunner }}
+          flutter: false
 
       - name: Run unit tests
         if: contains(fromJSON(inputs.platforms), matrix.platform)
@@ -196,8 +186,21 @@ jobs:
       - unit_tests
     runs-on: ubuntu-latest
     steps:
+      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        uses: dart-lang/setup-dart@v1.3
+        with:
+          sdk: ${{ inputs.dartSdkVersion }}
       - name: Install lcov
         run: sudo apt-get -qq install lcov
+      - name: Checkout and prepare project
+        uses: ./.github/actions/setup.yml
+        with:
+          repository: ${{ inputs.repository }}
+          workingDirectory: ${{ inputs.workingDirectory }}
+          buildRunner: ${{ inputs.buildRunner }}
+          flutter: false
+
       - name: Download linux coverage data
         if: contains(fromJSON(inputs.platforms), 'linux')
         uses: actions/download-artifact@v2
@@ -222,6 +225,7 @@ jobs:
         with:
           name: coverage-info-web
           path: coverage/web
+
       - name: Merge coverage data
         run: |
           set -e
@@ -248,6 +252,7 @@ jobs:
         with:
           path: coverage/cleaned.info
           min_coverage: ${{ inputs.minCoverage }}
+          exclude: ${{ inputs.coverageExclude }}
 
   integration_tests:
     name: Integration tests
@@ -282,19 +287,13 @@ jobs:
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
-      - name: Checkout repository ${{ inputs.repository }}
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
-        uses: actions/checkout@v2
+      - name: Checkout and prepare project
+        uses: ./.github/actions/setup.yml
         with:
           repository: ${{ inputs.repository }}
-      - name: Restore dart packages
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
-        run: dart pub get
-        working-directory: ${{ inputs.workingDirectory }}
-      - name: Create build files
-        if: inputs.buildRunner && contains(fromJSON(inputs.platforms), matrix.platform)
-        run: dart run build_runner build
-        working-directory: ${{ inputs.workingDirectory }}
+          workingDirectory: ${{ inputs.workingDirectory }}
+          buildRunner: ${{ inputs.buildRunner }}
+          flutter: false
 
       - name: Run platform test setup
         if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && contains(fromJSON(inputs.platforms), matrix.platform)
