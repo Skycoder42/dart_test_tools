@@ -153,14 +153,16 @@ jobs:
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Checkout repository ${{ inputs.repository }}
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/checkout@v2
         with:
           repository: ${{ inputs.repository }}
       - name: Restore dart packages
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: dart pub get
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
-        if: inputs.buildRunner
+        if: inputs.buildRunner && contains(fromJSON(inputs.platforms), matrix.platform)
         run: dart run build_runner build
         working-directory: ${{ inputs.workingDirectory }}
 
@@ -195,7 +197,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
@@ -300,14 +301,16 @@ jobs:
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Checkout repository ${{ inputs.repository }}
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/checkout@v2
         with:
           repository: ${{ inputs.repository }}
       - name: Restore dart packages
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: dart pub get
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
-        if: inputs.buildRunner
+        if: inputs.buildRunner && contains(fromJSON(inputs.platforms), matrix.platform)
         run: dart run build_runner build
         working-directory: ${{ inputs.workingDirectory }}
 
