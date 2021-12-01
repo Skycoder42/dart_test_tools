@@ -89,13 +89,17 @@ jobs:
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
-      - name: Checkout and prepare project
-        uses: ./.github/actions/setup.yml
+      - name: Checkout repository ${{ inputs.repository }}
+        uses: actions/checkout@v2
         with:
           repository: ${{ inputs.repository }}
-          workingDirectory: ${{ inputs.workingDirectory }}
-          buildRunner: ${{ inputs.buildRunner }}
-          flutter: false
+      - name: Restore dart packages
+        run: dart pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Create build files
+        if: inputs.buildRunner
+        run: dart run build_runner build
+        working-directory: ${{ inputs.workingDirectory }}
 
       - name: Static analysis
         run: dart analyze --fatal-infos
@@ -148,13 +152,17 @@ jobs:
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
-      - name: Checkout and prepare project
-        uses: ./.github/actions/setup.yml
+      - name: Checkout repository ${{ inputs.repository }}
+        uses: actions/checkout@v2
         with:
           repository: ${{ inputs.repository }}
-          workingDirectory: ${{ inputs.workingDirectory }}
-          buildRunner: ${{ inputs.buildRunner }}
-          flutter: false
+      - name: Restore dart packages
+        run: dart pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Create build files
+        if: inputs.buildRunner
+        run: dart run build_runner build
+        working-directory: ${{ inputs.workingDirectory }}
 
       - name: Run unit tests
         if: contains(fromJSON(inputs.platforms), matrix.platform)
@@ -193,13 +201,17 @@ jobs:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install lcov
         run: sudo apt-get -qq install lcov
-      - name: Checkout and prepare project
-        uses: ./.github/actions/setup.yml
+      - name: Checkout repository ${{ inputs.repository }}
+        uses: actions/checkout@v2
         with:
           repository: ${{ inputs.repository }}
-          workingDirectory: ${{ inputs.workingDirectory }}
-          buildRunner: ${{ inputs.buildRunner }}
-          flutter: false
+      - name: Restore dart packages
+        run: dart pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Create build files
+        if: inputs.buildRunner
+        run: dart run build_runner build
+        working-directory: ${{ inputs.workingDirectory }}
 
       - name: Download linux coverage data
         if: contains(fromJSON(inputs.platforms), 'linux')
@@ -287,13 +299,17 @@ jobs:
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
-      - name: Checkout and prepare project
-        uses: ./.github/actions/setup.yml
+      - name: Checkout repository ${{ inputs.repository }}
+        uses: actions/checkout@v2
         with:
           repository: ${{ inputs.repository }}
-          workingDirectory: ${{ inputs.workingDirectory }}
-          buildRunner: ${{ inputs.buildRunner }}
-          flutter: false
+      - name: Restore dart packages
+        run: dart pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Create build files
+        if: inputs.buildRunner
+        run: dart run build_runner build
+        working-directory: ${{ inputs.workingDirectory }}
 
       - name: Run platform test setup
         if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && contains(fromJSON(inputs.platforms), matrix.platform)
