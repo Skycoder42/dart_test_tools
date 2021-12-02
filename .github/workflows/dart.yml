@@ -185,7 +185,6 @@ jobs:
           --out=coverage/lcov.info
           --packages=.packages
           --report-on=lib
-          ${{ matrix.lcovCleanCommand }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Normalize coverage paths
         if: contains(fromJSON(inputs.platforms), matrix.platform)
