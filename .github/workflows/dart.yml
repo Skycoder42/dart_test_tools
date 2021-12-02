@@ -140,7 +140,7 @@ jobs:
             lcovCleanCommand: 'sed -i "s#SF:$PWD#SF:BASE#g" coverage/lcov.info'
           - platform: windows
             os: windows-latest
-            lcovCleanCommand: '(Get-Content coverage\lcov.info).replace("SF:$PWD", "SF:BASE") | Set-Content coverage\lcov.info'
+            lcovCleanCommand: '(Get-Content coverage\lcov.info).replace("SF:$PWD", "SF:BASE").replace("\", "/") | Set-Content coverage\lcov.info'
           - platform: macos
             os: macos-latest
             lcovCleanCommand: 'sed -i "" "s#SF:$PWD#SF:BASE#g" coverage/lcov.info'
