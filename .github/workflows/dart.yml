@@ -178,7 +178,7 @@ jobs:
       - name: Convert coverage data to lcov format
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: |
-          set -e
+          set -ex
           dart run coverage:format_coverage \
             --lcov \
             --check-ignore \
