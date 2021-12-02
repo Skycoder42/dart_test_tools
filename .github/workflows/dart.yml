@@ -137,17 +137,17 @@ jobs:
         include:
           - platform: linux
             os: ubuntu-latest
-            sedTarget: '"s#SF:$PWD#SF:BASE#g"'
+            lcovCleanCommand: 'sed -i "s#SF:$PWD#SF:BASE#g" coverage/lcov.info'
           - platform: windows
             os: windows-latest
-            sedTarget: '"s#SF:$(cygpath -w $PWD)#SF:BASE#g"'
+            lcovCleanCommand: '(Get-Content coverage\lcov.info).replace("SF:$PWD", "SF:BASE") | Set-Content coverage\lcov.info'
           - platform: macos
             os: macos-latest
-            sedTarget: '"" "s#SF:$PWD#SF:BASE#g"'
+            lcovCleanCommand: 'sed -i "" "s#SF:$PWD#SF:BASE#g" coverage/lcov.info'
           - platform: web
             os: ubuntu-latest
             dartTestArgs: -p chrome
-            sedTarget: '"s#SF:$PWD#SF:BASE#g"'
+            lcovCleanCommand: 'sed -i "s#SF:$PWD#SF:BASE#g" coverage/lcov.info'
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -177,19 +177,19 @@ jobs:
 
       - name: Convert coverage data to lcov format
         if: contains(fromJSON(inputs.platforms), matrix.platform)
-        env:
-          MSYS_NO_PATHCONV: 1
-        run: |
-          set -ex
-          dart run coverage:format_coverage \
-            --lcov \
-            --check-ignore \
-            --in=coverage \
-            --out=coverage/lcov.info \
-            --packages=.packages \
-            --report-on=lib
-          sed -i ${{ matrix.sedTarget }} coverage/lcov.info
-        shell: bash
+        run: >-
+          dart run coverage:format_coverage
+          --lcov
+          --check-ignore
+          --in=coverage
+          --out=coverage/lcov.info
+          --packages=.packages
+          --report-on=lib
+          ${{ matrix.lcovCleanCommand }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Normalize coverage paths
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        run: ${{ matrix.lcovCleanCommand }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload coverage data
         if: contains(fromJSON(inputs.platforms), matrix.platform)
