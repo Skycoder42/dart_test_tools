@@ -137,13 +137,17 @@ jobs:
         include:
           - platform: linux
             os: ubuntu-latest
+            sedTarget: '"s#SF:$PWD#SF:BASE#g"'
           - platform: windows
             os: windows-latest
+            sedTarget: '"s#SF:$(cygpath -w $PWD)#SF:BASE#g"'
           - platform: macos
             os: macos-latest
+            sedTarget: '"" "s#SF:$PWD#SF:BASE#g"'
           - platform: web
             os: ubuntu-latest
             dartTestArgs: -p chrome
+            sedTarget: '"s#SF:$PWD#SF:BASE#g"'
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -182,8 +186,7 @@ jobs:
             --out=coverage/lcov.info \
             --packages=.packages \
             --report-on=lib
-          which sed
-          sed -i "s#SF:$PWD#SF:BASE#g" coverage/lcov.info
+          sed -i ${{ matrix.sedTarget }} coverage/lcov.info
         shell: bash
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload coverage data
