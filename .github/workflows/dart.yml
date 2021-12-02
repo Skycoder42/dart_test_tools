@@ -173,14 +173,18 @@ jobs:
 
       - name: Convert coverage data to lcov format
         if: contains(fromJSON(inputs.platforms), matrix.platform)
-        run: >-
-          dart run coverage:format_coverage
-          --lcov
-          --check-ignore
-          --in=coverage
-          --out=coverage/lcov.info
-          --packages=.packages
-          --report-on=lib
+        run: |
+          set -e
+          dart run coverage:format_coverage \
+            --lcov \
+            --check-ignore \
+            --in=coverage \
+            --out=coverage/lcov.info \
+            --packages=.packages \
+            --report-on=lib
+          which sed
+          sed -i "s#SF:$PWD#SF:BASE#g" coverage/lcov.info
+        shell: bash
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload coverage data
         if: contains(fromJSON(inputs.platforms), matrix.platform)
@@ -248,6 +252,7 @@ jobs:
             LCOV_ARGS="$LCOV_ARGS --add-tracefile coverage/$dir/lcov.info"
           done
           lcov $LCOV_ARGS --output-file coverage/combined.info
+          sed -i "s#SF:BASE#SF:$PWD#g" coverage/combined.info
         working-directory: ${{ inputs.workingDirectory }}
       - name: Remove excluded files from coverage data
         run: >-
