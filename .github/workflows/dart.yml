@@ -204,23 +204,12 @@ jobs:
       - unit_tests
     runs-on: ubuntu-latest
     steps:
-      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        uses: dart-lang/setup-dart@v1.3
-        with:
-          sdk: ${{ inputs.dartSdkVersion }}
-      - name: Install lcov
-        run: sudo apt-get -qq install lcov
+      - name: Install coverage tools
+        run: sudo apt-get -qq install lcov dos2unix
       - name: Checkout repository ${{ inputs.repository }}
         uses: actions/checkout@v2
         with:
           repository: ${{ inputs.repository }}
-      - name: Restore dart packages
-        run: dart pub get
-        working-directory: ${{ inputs.workingDirectory }}
-      - name: Create build files
-        if: inputs.buildRunner
-        run: dart run build_runner build
-        working-directory: ${{ inputs.workingDirectory }}
 
       - name: Download linux coverage data
         if: contains(fromJSON(inputs.platforms), 'linux')
@@ -252,6 +241,7 @@ jobs:
           set -e
           LCOV_ARGS=""
           for dir in $(ls coverage); do
+            dos2unix coverage/$dir/lcov.info
             LCOV_ARGS="$LCOV_ARGS --add-tracefile coverage/$dir/lcov.info"
           done
           lcov $LCOV_ARGS --output-file coverage/combined.info
@@ -276,7 +266,6 @@ jobs:
         with:
           path: ${{ inputs.workingDirectory }}/coverage/combined.info
           min_coverage: ${{ inputs.minCoverage }}
-          exclude: ${{ inputs.coverageExclude }}
 
   integration_tests:
     name: Integration tests
