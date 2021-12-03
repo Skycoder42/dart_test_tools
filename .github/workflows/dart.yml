@@ -264,7 +264,7 @@ jobs:
       - name: Validate coverage is at least ${{ inputs.minCoverage }}%
         uses: VeryGoodOpenSource/very_good_coverage@v1.1.1
         with:
-          path: ${{ inputs.workingDirectory }}/coverage/combined.info
+          path: ${{ inputs.workingDirectory }}/coverage/cleaned.info
           min_coverage: ${{ inputs.minCoverage }}
 
   integration_tests:
