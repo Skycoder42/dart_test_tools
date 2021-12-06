@@ -83,7 +83,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.platforms[0] }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         uses: dart-lang/setup-dart@v1.3
@@ -118,6 +118,7 @@ jobs:
           fi
           exec dart pub publish --dry-run
         working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
 
   unit_tests:
     name: Unit tests
@@ -176,7 +177,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
 
       - name: Convert coverage data to lcov format
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        if: inputs.minCoverage > 0 && contains(fromJSON(inputs.platforms), matrix.platform)
         run: >-
           dart run coverage:format_coverage
           --lcov
@@ -187,11 +188,11 @@ jobs:
           --report-on=lib
         working-directory: ${{ inputs.workingDirectory }}
       - name: Normalize coverage paths
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        if: inputs.minCoverage > 0 && contains(fromJSON(inputs.platforms), matrix.platform)
         run: ${{ matrix.lcovCleanCommand }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload coverage data
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        if: inputs.minCoverage > 0 && contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/upload-artifact@v2
         with:
           name: coverage-info-${{ matrix.platform }}
@@ -199,7 +200,7 @@ jobs:
 
   coverage:
     name: Validate coverage
-    if: inputs.unitTestPaths != ''
+    if: inputs.minCoverage > 0 && inputs.unitTestPaths != ''
     needs:
       - unit_tests
     runs-on: ubuntu-latest

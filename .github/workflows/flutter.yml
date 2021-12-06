@@ -1,0 +1,249 @@
+on:
+  workflow_call:
+    inputs:
+      # checkout and build paths
+      repository:
+        type: string
+        required: false
+        description: The repository to check out. Passed as "repository" to "actions/checkout"
+      workingDirectory:
+        type: string
+        required: false
+        default: "."
+        description: The root directory of the dart package to build and test
+      buildRunner:
+        type: boolean
+        required: false
+        default: false
+        description: Specify whether build_runner is used in the project (defaults to false)
+      # static analysis
+      publishExclude:
+        type: string
+        required: false
+        description: Specify a list of colon separated paths to be excluded from publishing
+      # unit tests
+      unitTestPaths:
+        type: string
+        required: false
+        default: test
+        description: >-
+          Specifiy directories or paths of unit tests to run.
+          By default, all test in the test directory are run.
+      # integration tests
+      integrationTestPaths:
+        type: string
+        required: false
+        description: >-
+          Specifiy directories or paths of integration tests to run.
+          By default, no integration test are run
+      integrationTestSetup:
+        type: string
+        required: false
+        description: |
+          A JSON-Matrix with extra setup steps for each platform.
+          contains key-value pairs for each platform with a command to be invoked.
+
+          Example:
+          {
+            "linux": "dart run tools/install-deps.dart",
+            "web": "./setup-web.sh"
+          }
+      # coverage
+      minCoverage:
+        type: number
+        required: false
+        default: 95
+        description: >-
+          Minimal coverage (in percent) required for the CI to succeed.
+          Passed as "min_coverage" to "VeryGoodOpenSource/very_good_coverage"
+      coverageExclude:
+        type: string
+        required: false
+        description: >-
+          Files to exclude from test coverage.
+          Passed as "exclude" to "VeryGoodOpenSource/very_good_coverage"
+      # general config
+      flutterSdkChannel:
+        type: string
+        required: false
+        default: stable
+        description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action"
+      platforms:
+        type: string
+        required: false
+        default: '["linux", "windows", "macos", "web"]'
+        description: >-
+          A JSON-Formatted list of platforms that unit and integration tests should be run on.
+          By default, all platforms are active. The available platforms are:
+          - linux
+          - windows
+          - macos
+          - web
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ${{ inputs.platforms[0] }}
+    steps:
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        uses: subosito/flutter-action@v1
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+      - name: Checkout repository ${{ inputs.repository }}
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ inputs.repository }}
+      - name: Restore dart packages
+        run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Create build files
+        if: inputs.buildRunner
+        run: flutter pub run build_runner build
+        working-directory: ${{ inputs.workingDirectory }}
+
+      - name: Static analysis
+        run: flutter analyze
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Validate correct formatting
+        run: flutter format -onone --set-exit-if-changed .
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Test publishing configuration
+        run: |
+          set -e
+          if [[ ! -z "${{ inputs.publishExclude }}" ]]; then
+            IFS=':'
+            for path in "${{ inputs.publishExclude }}"; do
+              git rm "$path"
+            done
+          fi
+          exec flutter pub publish --dry-run
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+
+  # unit_tests:
+  #   name: Unit tests
+  #   needs:
+  #     - analyze
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - linux
+  #         - windows
+  #         - macos
+  #         - web
+
+  #       include:
+  #         - platform: linux
+  #           os: ubuntu-latest
+  #         - platform: windows
+  #           os: windows-latest
+  #         - platform: macos
+  #           os: macos-latest
+  #         - platform: web
+  #           os: ubuntu-latest
+  #           dartTestArgs: -p chrome
+
+  #   runs-on: ${{ matrix.os }}
+  #   steps:
+  #     - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+  #       uses: subosito/flutter-action@v1
+  #       with:
+  #         channel: ${{ inputs.flutterSdkChannel }}
+  #     - name: Checkout repository ${{ inputs.repository }}
+  #       uses: actions/checkout@v2
+  #       with:
+  #         repository: ${{ inputs.repository }}
+  #     - name: Restore dart packages
+  #       run: flutter pub get
+  #       working-directory: ${{ inputs.workingDirectory }}
+  #     - name: Create build files
+  #       if: inputs.buildRunner
+  #       run: flutter pub run build_runner build
+  #       working-directory: ${{ inputs.workingDirectory }}
+
+  #     - name: Run unit tests
+  #       run: flutter test ${{ matrix.dartTestArgs }} --coverage ${{ inputs.unitTestPaths }}
+  #       working-directory: ${{ inputs.workingDirectory }}
+
+  #     - name: Validate coverage is at least ${{ inputs.minCoverage }}%
+  #       uses: VeryGoodOpenSource/very_good_coverage@v1.1.1
+  #       with:
+  #         path: ${{ inputs.workingDirectory }}/coverage/lcov.info
+  #         min_coverage: ${{ inputs.minCoverage }}
+  #         exclude: ${{ inputs.coverageExclude }}
+
+  # integration_tests:
+  #   name: Integration tests
+  #   if: "inputs.integrationTestPaths != ''"
+  #   needs:
+  #     - analyze
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - android
+  #         - ios
+  #         - linux
+  #         - windows
+  #         - macos
+  #         - web
+
+  #       include:
+  #         - platform: android
+  #           os: ubuntu-latest
+  #           device: android-emulator
+  #         - platform: ios
+  #           os: macos-latest
+  #           device: ios-simulator
+  #         - platform: linux
+  #           os: ubuntu-latest
+  #           device: linux
+  #           drive-prelude: xvfb-run --auto-servernum
+  #         - platform: windows
+  #           os: windows-latest
+  #           device: windows
+  #         - platform: macos
+  #           os: macos-latest
+  #           device: macos
+  #         - platform: web
+  #           os: ubuntu-latest
+  #           device: chrome
+
+  #   runs-on: ${{ matrix.os }}
+  #   steps:
+  #     - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+  #       uses: subosito/flutter-action@v1
+  #       with:
+  #         channel: ${{ inputs.flutterSdkChannel }}
+  #     - name: Install native dependencies (linux only)
+  #       if: matrix.platform == 'linux'
+  #       run: sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
+  #     - name: Install ChromeDriver (web only)
+  #       if: matrix.platform == 'web'
+  #       uses: nanasess/setup-chromedriver@master
+  #     - name: Validate flutter setup
+  #       run: flutter doctor -v
+
+  #     - name: Checkout repository ${{ inputs.repository }}
+  #       uses: actions/checkout@v2
+  #       with:
+  #         repository: ${{ inputs.repository }}
+  #     - name: Restore dart packages
+  #       run: flutter pub get
+  #       working-directory: ${{ inputs.workingDirectory }}
+  #     - name: Create build files
+  #       if: inputs.buildRunner
+  #       run: flutter pub run build_runner build
+  #       working-directory: ${{ inputs.workingDirectory }}
+
+  #     - name: Run platform test setup
+  #       if: "fromJSON(inputs.integrationTestSetup)[matrix.platform] != ''"
+  #       run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
+  #       working-directory: ${{ inputs.workingDirectory }}
+
+  #     - name: Run integration tests
+  #       run: >-
+  #         ${{ matrix.drive-prelude }}
+  #         flutter test -d ${{ matrix.device }} ${{ inputs.integrationTestPaths }}
+  #       working-directory: ${{ inputs.workingDirectory }}
