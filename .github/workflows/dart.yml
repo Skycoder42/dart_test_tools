@@ -83,7 +83,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ${{ inputs.platforms[0] }}
+    runs-on: ${{ fromJSON(inputs.platforms)[0] }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         uses: dart-lang/setup-dart@v1.3
