@@ -118,7 +118,9 @@ jobs:
           if [[ ! -z "${{ inputs.publishExclude }}" ]]; then
             IFS=':'
             for path in "${{ inputs.publishExclude }}"; do
-              git rm "$path"
+              if [ -e "$path" ]; then
+                git rm "$path"
+              fi
             done
           fi
           exec flutter pub publish --dry-run
