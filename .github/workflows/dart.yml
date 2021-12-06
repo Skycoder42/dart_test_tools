@@ -79,11 +79,16 @@ on:
           - windows
           - macos
           - web
+      analyzeImage:
+        type: string
+        required: false
+        default: ubuntu-latest
+        description: The Runner-Image to use for the analyze step. Uses ubuntu-latest by default
 
 jobs:
   analyze:
     name: Analyze
-    runs-on: ${{ fromJSON(inputs.platforms)[0] }}
+    runs-on: ${{ inputs.analyzeImage }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         uses: dart-lang/setup-dart@v1.3

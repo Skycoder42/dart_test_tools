@@ -79,11 +79,16 @@ on:
           - windows
           - macos
           - web
+      analyzeImage:
+        type: string
+        required: false
+        default: ubuntu-latest
+        description: The Runner-Image to use for the analyze step. Uses ubuntu-latest by default
 
 jobs:
   analyze:
     name: Analyze
-    runs-on: ${{ inputs.platforms[0] }}
+    runs-on: ${{ inputs.analyzeImage }}
     steps:
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
         uses: subosito/flutter-action@v1
