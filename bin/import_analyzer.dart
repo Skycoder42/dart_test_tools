@@ -5,6 +5,7 @@ import 'package:args/args.dart';
 import 'package:dart_test_tools/src/import_analyzers/relative_import_analyzer.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
+import 'package:pubspec_parse/pubspec_parse.dart';
 
 Future<void> main(List<String> rawArgs) async {
   Logger.root.level = Level.ALL;
@@ -14,14 +15,14 @@ Future<void> main(List<String> rawArgs) async {
     ..addOption(
       'path',
       abbr: 'p',
-      mandatory: true,
+      defaultsTo: Directory.current.path,
       help: 'The path of the package to scan.',
     )
     ..addOption(
       'name',
       abbr: 'n',
-      mandatory: true,
-      help: 'The name of the package to be scanned.',
+      help: 'The name of the package to be scanned. By default, '
+          'the pubspec.yaml in the "path" directory is queried for the name',
     )
     ..addMultiOption(
       'include-paths',
@@ -65,9 +66,17 @@ Future<void> main(List<String> rawArgs) async {
     );
 
     final path = canonicalize(args['path'] as String);
-    final name = args['name'] as String;
+    var name = args['name'] as String?;
     final includePaths = args['include-paths'] as List<String>;
     final excludePaths = args['exclude-paths'] as List<String>;
+
+    if (name == null) {
+      final pubspecFile = File(join(path, 'pubspec.yaml'));
+      final pubspecData = await pubspecFile.readAsString();
+      final pubspec = Pubspec.parse(pubspecData);
+      name = pubspec.name;
+    }
+    Logger.root.config('Using library name: $name');
 
     final analyzer = RelativeImportAnalyzer(
       packageRoot: path,
