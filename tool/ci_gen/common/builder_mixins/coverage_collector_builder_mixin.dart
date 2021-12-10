@@ -1,33 +1,24 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../types/expression.dart';
-import '../../types/input.dart';
 import '../../types/step.dart';
 import '../api/workflow_input.dart';
+import 'coverage_base_builder_mixin.dart';
 import 'platforms_builder_mixin.dart';
 import 'project_setup_builder_mixin.dart';
 
 mixin CoverageCollectorBuilderMixin
-    on ProjectSetupBuilderMixin, PlatformsBuilderMixin {
-  @protected
-  final minCoverageInput = const WorkflowInput(
-    name: 'minCoverage',
-    input: Input(
-      type: Type.number,
-      required: false,
-      defaultValue: 95,
-      description:
-          'Minimal coverage (in percent) required for the CI to succeed. '
-          'Passed as "min_coverage" to '
-          '"VeryGoodOpenSource/very_good_coverage"',
-    ),
-  );
-
+    on
+        CoverageBaseBuilderMixin,
+        ProjectSetupBuilderMixin,
+        PlatformsBuilderMixin {
   @protected
   bool get needsFormatting;
 
   @protected
-  Iterable<WorkflowInput> get coverageCollectorInputs => [minCoverageInput];
+  Iterable<WorkflowInput> get coverageCollectorInputs => [
+        ...coverageBaseInputs,
+      ];
 
   @protected
   Iterable<Step> createCoverageCollectorSteps({
@@ -63,7 +54,7 @@ mixin CoverageCollectorBuilderMixin
       ];
 
   String _coverageExpression(String platformExpression) => Expression.and(
-        '${minCoverageInput.expression} > 0',
+        runCoverageExpression,
         shouldRunExpression(platformExpression),
       );
 }

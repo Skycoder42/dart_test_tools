@@ -8,6 +8,8 @@ import '../../types/step.dart';
 import '../../types/strategy.dart';
 import '../api/job_builder.dart';
 import '../api/workflow_input.dart';
+import '../builder_mixins/checkout_builder_mixin.dart';
+import '../builder_mixins/coverage_base_builder_mixin.dart';
 import '../builder_mixins/coverage_collector_builder_mixin.dart';
 import '../builder_mixins/platforms_builder_mixin.dart';
 import '../builder_mixins/project_setup_builder_mixin.dart';
@@ -31,8 +33,10 @@ class PlatformInclude with _$PlatformInclude {
 
 abstract class UnitTestJobBuilder
     with
+        CheckoutBuilderMixin,
         ProjectSetupBuilderMixin,
         PlatformsBuilderMixin,
+        CoverageBaseBuilderMixin,
         CoverageCollectorBuilderMixin
     implements JobBuilder {
   @protected
