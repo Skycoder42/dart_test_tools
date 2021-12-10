@@ -19,9 +19,10 @@ abstract class AnalyzeJobBuilder
       ];
 
   @override
-  Job build() => Job(
+  Job build([Iterable<JobBuilder>? needs]) => Job(
         name: 'Analyze',
         runsOn: Expression.input(analyzeImageInput),
+        needs: needs?.map((jobBuilder) => jobBuilder.name).toList(),
         steps: [
           ...createSetupSteps(),
           ...createAnalyzeSteps(),

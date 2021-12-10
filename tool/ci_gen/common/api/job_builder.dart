@@ -8,5 +8,5 @@ abstract class JobBuilder {
 
   Iterable<WorkflowInput> get inputs;
 
-  Job build();
+  Job build([Iterable<JobBuilder>? needs]);
 }

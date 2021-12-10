@@ -3,6 +3,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'step.dart';
+import 'strategy.dart';
 
 part 'job.freezed.dart';
 part 'job.g.dart';
@@ -13,6 +14,7 @@ class Job with _$Job {
     required String name,
     @JsonKey(name: 'if', includeIfNull: false) String? ifExpression,
     @JsonKey(includeIfNull: false) List<String>? needs,
+    @JsonKey(includeIfNull: false) Strategy? strategy,
     @JsonKey(name: 'runs-on') required String runsOn,
     required Steps steps,
   }) = _Job;
