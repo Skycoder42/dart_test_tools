@@ -8,7 +8,7 @@ abstract class WorkflowInputs {
         for (final input in inputs) input.name: input.input,
       };
 
-  static const repositoryInput = WorkflowInput(
+  static const repository = WorkflowInput(
     name: 'repository',
     input: Input(
       type: Type.string,
@@ -18,7 +18,7 @@ abstract class WorkflowInputs {
     ),
   );
 
-  static const workingDirectoryInput = WorkflowInput(
+  static const workingDirectory = WorkflowInput(
     name: 'workingDirectory',
     input: Input(
       type: Type.string,
@@ -28,7 +28,7 @@ abstract class WorkflowInputs {
     ),
   );
 
-  static const buildRunnerInput = WorkflowInput(
+  static const buildRunner = WorkflowInput(
     name: 'buildRunner',
     input: Input(
       type: Type.boolean,
@@ -63,7 +63,7 @@ ${defaultPlatforms.map((p) => '- $p').join('\n')}
     ),
   );
 
-  static const analyzeImageInput = WorkflowInput(
+  static const analyzeImage = WorkflowInput(
     name: 'analyzeImage',
     input: Input(
       type: Type.string,
@@ -74,7 +74,7 @@ ${defaultPlatforms.map((p) => '- $p').join('\n')}
     ),
   );
 
-  static const publishExcludeInput = WorkflowInput(
+  static const publishExclude = WorkflowInput(
     name: 'publishExclude',
     input: Input(
       type: Type.string,

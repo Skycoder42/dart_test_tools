@@ -1,11 +1,17 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../api/workflow_input.dart';
+import '../../types/expression.dart';
 
 mixin PlatformsBuilderMixin {
-  WorkflowInput get platforms;
+  Expression get platforms;
 
   @protected
-  String shouldRunExpression(String platform) =>
-      'contains(fromJSON(${platforms.expression}), $platform)';
+  Expression shouldRunExpression(Expression platform) =>
+      createShouldRunExpression(platforms, platform);
+
+  static Expression createShouldRunExpression(
+    Expression platforms,
+    Expression platform,
+  ) =>
+      Expression('contains(fromJSON(${platforms.value}), ${platform.value})');
 }

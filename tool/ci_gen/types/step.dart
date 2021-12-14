@@ -2,6 +2,8 @@
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'expression.dart';
+
 part 'step.freezed.dart';
 part 'step.g.dart';
 
@@ -11,15 +13,20 @@ class Step with _$Step {
 
   const factory Step.run({
     required String name,
-    @JsonKey(name: 'if', includeIfNull: false) String? ifExpression,
+    @JsonKey(name: 'if', includeIfNull: false)
+    @ExpressionConverter()
+        Expression? ifExpression,
     required String run,
     @JsonKey(name: 'working-directory', includeIfNull: false)
         String? workingDirectory,
     @JsonKey(includeIfNull: false) String? shell,
   }) = _RunStep;
+
   const factory Step.uses({
     required String name,
-    @JsonKey(name: 'if', includeIfNull: false) String? ifExpression,
+    @JsonKey(name: 'if', includeIfNull: false)
+    @ExpressionConverter()
+        Expression? ifExpression,
     required String uses,
     @JsonKey(name: 'with', includeIfNull: false) Map<String, dynamic>? withArgs,
   }) = _UsesStep;

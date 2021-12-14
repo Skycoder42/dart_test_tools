@@ -17,13 +17,14 @@ mixin DartSdkJobBuilderMixin on SdkJobBuilder {
       ];
 
   @override
-  Iterable<Step> buildSetupSdkSteps() => [
+  Iterable<Step> buildSetupSdkSteps([Expression? ifExpression]) => [
         Step.uses(
           name: 'Install Dart-SDK '
-              '(${Expression.input(WorkflowInputs.dartSdkVersion)})',
+              '(${WorkflowInputs.dartSdkVersion.expression})',
+          ifExpression: ifExpression,
           uses: 'dart-lang/setup-dart@v1.3',
           withArgs: {
-            'sdk': Expression.input(WorkflowInputs.dartSdkVersion),
+            'sdk': WorkflowInputs.dartSdkVersion.expression.toString(),
           },
         )
       ];

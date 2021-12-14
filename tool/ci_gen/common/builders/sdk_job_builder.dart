@@ -1,10 +1,13 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../api/job_builder.dart';
 import '../api/workflow_input.dart';
 
 abstract class SdkJobBuilder implements JobBuilder {
+  const SdkJobBuilder();
+
   @protected
   String get baseTool;
 
@@ -18,5 +21,5 @@ abstract class SdkJobBuilder implements JobBuilder {
   Iterable<WorkflowInput> get setupSdkInputs;
 
   @protected
-  Iterable<Step> buildSetupSdkSteps();
+  Iterable<Step> buildSetupSdkSteps([Expression? ifExpression]);
 }

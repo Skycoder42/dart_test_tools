@@ -1,14 +1,38 @@
-import '../common/api/workflow_input.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-abstract class Expression {
+part 'expression.freezed.dart';
+
+@freezed
+class Expression with _$Expression {
   const Expression._();
 
-  static String literal(String value) => "'$value'";
+  // ignore: sort_unnamed_constructors_first
+  const factory Expression(String value) = _Expression;
+  @Assert(
+    'rawValue is String || rawValue is num || rawValue is bool',
+    'Only YAML primitives (string, number, bool) are allowed',
+  )
+  const factory Expression.literal(dynamic rawValue) = _LiteralExpression;
 
-  static String create(String expression) => '\${{ $expression }}';
+  String get value => when(
+        (value) => value,
+        literal: (rawValue) =>
+            rawValue is String ? "'$rawValue'" : rawValue.toString(),
+      );
 
-  static String input(WorkflowInput input) => '\${{ ${input.expression} }}';
+  Expression operator &(Expression? other) =>
+      other != null ? Expression('$value && ${other.value}') : this;
 
-  static String and(String expr1, String expr2, [Iterable<String>? exprs]) =>
-      [expr1, expr2, ...?exprs].join(' && ');
+  @override
+  String toString() => '\${{ $value }}';
+}
+
+class ExpressionConverter implements JsonConverter<Expression?, String?> {
+  const ExpressionConverter();
+
+  @override
+  Expression? fromJson(String? json) => json != null ? Expression(json) : null;
+
+  @override
+  String? toJson(Expression? expression) => expression?.value;
 }

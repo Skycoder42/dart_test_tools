@@ -1,22 +1,20 @@
 import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
-import '../api/workflow_input.dart';
-import '../builder_mixins/platforms_builder_mixin.dart';
 import 'project_setup_builder.dart';
 
-class AnalyzeBuilder with PlatformsBuilderMixin implements StepBuilder {
-  final WorkflowInput repository;
-  final WorkflowInput workingDirectory;
-  final WorkflowInput buildRunner;
-  final WorkflowInput analyzeImage;
-  final WorkflowInput publishExclude;
+class AnalyzeBuilder implements StepBuilder {
+  final Expression repository;
+  final Expression workingDirectory;
+  final Expression buildRunner;
+  final Expression analyzeImage;
+  final Expression publishExclude;
   final String baseTool;
   final String pubTool;
   final String runTool;
   final StepBuilderFn buildAnalyzeStep;
 
-  AnalyzeBuilder({
+  const AnalyzeBuilder({
     required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
@@ -27,10 +25,6 @@ class AnalyzeBuilder with PlatformsBuilderMixin implements StepBuilder {
     required this.runTool,
     required this.buildAnalyzeStep,
   });
-
-  @override
-  // TODO: implement supportedPlatforms
-  List<String> get supportedPlatforms => throw UnimplementedError();
 
   @override
   Iterable<Step> build() => [
@@ -54,15 +48,15 @@ class AnalyzeBuilder with PlatformsBuilderMixin implements StepBuilder {
         Step.run(
           name: 'Validate correct formatting',
           run: '$baseTool format -onone --set-exit-if-changed .',
-          workingDirectory: Expression.input(workingDirectory),
+          workingDirectory: workingDirectory.toString(),
         ),
         Step.run(
           name: 'Test publishing configuration',
           run: '''
 set -e
-if [[ ! -z "${Expression.input(publishExclude)}" ]]; then
+if [[ ! -z "$publishExclude" ]]; then
   IFS=':'
-  for path in "${Expression.input(publishExclude)}"; do
+  for path in "$publishExclude"; do
     if [ -e "\$path" ]; then
       git rm "\$path"
     fi
@@ -70,7 +64,7 @@ if [[ ! -z "${Expression.input(publishExclude)}" ]]; then
 fi
 exec $pubTool publish --dry-run
 ''',
-          workingDirectory: Expression.input(workingDirectory),
+          workingDirectory: workingDirectory.toString(),
           shell: 'bash',
         ),
       ];

@@ -2,6 +2,7 @@
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'expression.dart';
 import 'step.dart';
 import 'strategy.dart';
 
@@ -12,7 +13,9 @@ part 'job.g.dart';
 class Job with _$Job {
   const factory Job({
     required String name,
-    @JsonKey(name: 'if', includeIfNull: false) String? ifExpression,
+    @JsonKey(name: 'if', includeIfNull: false)
+    @ExpressionConverter()
+        Expression? ifExpression,
     @JsonKey(includeIfNull: false) List<String>? needs,
     @JsonKey(includeIfNull: false) Strategy? strategy,
     @JsonKey(name: 'runs-on') required String runsOn,

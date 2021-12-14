@@ -7,6 +7,7 @@ import 'ci_gen/dart/dart_workflow.dart';
 Future<void> main() async {
   final writer = YAMLWriter()
     ..toEncodable = (dynamic data) {
+      // ignore: avoid_dynamic_calls
       final jsonData = data.toJson != null ? data.toJson() : data;
       if (jsonData is Map) {
         jsonData.remove('runtimeType');

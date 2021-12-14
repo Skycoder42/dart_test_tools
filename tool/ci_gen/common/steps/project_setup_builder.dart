@@ -1,15 +1,15 @@
 import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
-import '../api/workflow_input.dart';
 import 'checkout_builder.dart';
 
 class ProjectSetupBuilder implements StepBuilder {
-  final WorkflowInput repository;
-  final WorkflowInput workingDirectory;
-  final WorkflowInput buildRunner;
+  final Expression repository;
+  final Expression workingDirectory;
+  final Expression buildRunner;
   final String pubTool;
   final String runTool;
+  final Expression? ifExpression;
 
   const ProjectSetupBuilder({
     required this.repository,
@@ -17,36 +17,43 @@ class ProjectSetupBuilder implements StepBuilder {
     required this.buildRunner,
     required this.pubTool,
     required this.runTool,
+    this.ifExpression,
   });
 
   @override
   Iterable<Step> build() => [
-        const Step.run(
+        Step.run(
           name: 'Install yq (Windows)',
-          ifExpression: "runner.os == 'Windows'",
+          ifExpression:
+              const Expression("runner.os == 'Windows'") & ifExpression,
           run: 'choco install yq',
         ),
-        const Step.run(
+        Step.run(
           name: 'Install yq (macOS)',
-          ifExpression: "runner.os == 'macOS'",
+          ifExpression: const Expression("runner.os == 'macOS'") & ifExpression,
           run: 'brew install yq',
         ),
-        ...CheckoutBuilder(repository: repository).build(),
+        ...CheckoutBuilder(
+          repository: repository,
+          ifExpression: ifExpression,
+        ).build(),
         Step.run(
           name: 'Remove dependency overrides',
+          ifExpression: ifExpression,
           run: 'yq e -i "del(.dependency_overrides)" pubspec.yaml',
-          workingDirectory: Expression.input(workingDirectory),
+          workingDirectory: workingDirectory.toString(),
         ),
         Step.run(
           name: 'Restore dart packages',
+          ifExpression: ifExpression,
           run: '$pubTool get',
-          workingDirectory: Expression.input(workingDirectory),
+          workingDirectory: workingDirectory.toString(),
         ),
         Step.run(
           name: 'Create build files',
-          ifExpression: buildRunner.expression,
+          ifExpression: buildRunner & ifExpression,
           run: '$runTool build_runner build',
-          workingDirectory: Expression.input(workingDirectory),
+          workingDirectory: workingDirectory.toString(),
         ),
       ];
 }

@@ -1,137 +1,147 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../types/expression.dart';
-import '../../types/input.dart';
 import '../../types/job.dart';
 import '../../types/matrix.dart';
-import '../../types/step.dart';
 import '../../types/strategy.dart';
 import '../api/job_builder.dart';
 import '../api/workflow_input.dart';
-import '../builder_mixins/checkout_builder_mixin.dart';
-import '../builder_mixins/coverage_base_builder_mixin.dart';
-import '../builder_mixins/coverage_collector_builder_mixin.dart';
-import '../builder_mixins/platforms_builder_mixin.dart';
-import '../builder_mixins/project_setup_builder_mixin.dart';
+import '../inputs.dart';
+import '../steps/platforms_builder_mixin.dart';
+import '../steps/unit_test_builder.dart';
+import 'sdk_job_builder.dart';
 
 part 'unit_test_job_builder.freezed.dart';
 part 'unit_test_job_builder.g.dart';
 
+class _UnitTextJobMatrix implements IUnitTextMatrix {
+  @override
+  final Expression platform;
+  final Expression os;
+  @override
+  final Expression lcovCleanCommand;
+  @override
+  final Expression dartTestArgs;
+
+  const _UnitTextJobMatrix({
+    required this.platform,
+    required this.os,
+    required this.lcovCleanCommand,
+    required this.dartTestArgs,
+  });
+}
+
 @freezed
-class PlatformInclude with _$PlatformInclude {
-  const factory PlatformInclude({
+class _PlatformInclude with _$_PlatformInclude {
+  const factory _PlatformInclude({
     required String platform,
     required String os,
     required String lcovCleanCommand,
     // ignore: invalid_annotation_target
     @JsonKey(includeIfNull: false) String? dartTestArgs,
-  }) = _PlatformInclude;
+  }) = __PlatformInclude;
 
-  factory PlatformInclude.fromJson(Map<String, dynamic> json) =>
-      _$PlatformIncludeFromJson(json);
+  factory _PlatformInclude.fromJson(Map<String, dynamic> json) =>
+      _$_PlatformIncludeFromJson(json);
 }
 
-abstract class UnitTestJobBuilder
-    with
-        CheckoutBuilderMixin,
-        ProjectSetupBuilderMixin,
-        PlatformsBuilderMixin,
-        CoverageBaseBuilderMixin,
-        CoverageCollectorBuilderMixin
-    implements JobBuilder {
-  @protected
-  final unitTestPathsInput = const WorkflowInput(
-    name: 'unitTestPaths',
-    input: Input(
-      type: Type.string,
-      required: false,
-      defaultValue: 'test',
-      description: 'Specifiy directories or paths of unit tests to run. '
-          'By default, all test in the test directory are run.',
-    ),
+abstract class UnitTestJobBuilder extends SdkJobBuilder {
+  static const _matrix = _UnitTextJobMatrix(
+    platform: Expression('matrix.platform'),
+    os: Expression('matrix.os'),
+    lcovCleanCommand: Expression('matrix.lcovCleanCommand'),
+    dartTestArgs: Expression('matrix.dartTestArgs'),
   );
 
-  static const _matrixExpressions = PlatformInclude(
-    platform: 'matrix.platform',
-    os: 'matrix.os',
-    lcovCleanCommand: 'matrix.lcovCleanCommand',
-    dartTestArgs: 'matrix.dartTestArgs',
-  );
+  const UnitTestJobBuilder();
 
   @override
   String get name => 'unit_tests';
 
   @protected
-  String get runCoverageArgs;
+  String get coverageArgs;
 
-  @override
-  List<String> get supportedPlatforms =>
-      platformIncludes.map((include) => include.platform).toList();
+  @protected
+  bool get needsFormatting;
 
   @override
   Iterable<WorkflowInput> get inputs => [
-        ...setupInputs,
-        ...platformsInputs,
-        unitTestPathsInput,
-        ...coverageCollectorInputs,
+        WorkflowInputs.repository,
+        WorkflowInputs.workingDirectory,
+        WorkflowInputs.buildRunner,
+        WorkflowInputs.unitTestPaths,
+        WorkflowInputs.minCoverage,
+        _platforms,
       ];
 
   @override
   Job build([Iterable<JobBuilder>? needs]) {
     return Job(
       name: 'Unit tests',
-      ifExpression: "${unitTestPathsInput.expression} != ''",
+      ifExpression:
+          Expression("${WorkflowInputs.unitTestPaths.expression.value} != ''"),
       needs: needs?.map((jobBuilder) => jobBuilder.name).toList(),
       strategy: Strategy(
         failFast: false,
         matrix: Matrix(
           {
-            'platform': platformIncludes.map((i) => i.platform).toList(),
+            'platform': _platformIncludes.map((i) => i.platform).toList(),
           },
-          include: platformIncludes.map((i) => i.toJson()).toList(),
+          include: _platformIncludes.map((i) => i.toJson()).toList(),
         ),
       ),
-      runsOn: Expression.create(_matrixExpressions.os),
+      runsOn: _matrix.os.toString(),
       steps: [
-        ...createSetupSteps(),
-        Step.run(
-          name: 'Run unit tests',
-          ifExpression: shouldRunExpression(_matrixExpressions.platform),
-          run:
-              '$baseTool test ${Expression.create(_matrixExpressions.dartTestArgs!)} '
-              '$runCoverageArgs ${Expression.input(unitTestPathsInput)}',
-          workingDirectory: Expression.input(workingDirectoryInput),
+        ...buildSetupSdkSteps(
+          PlatformsBuilderMixin.createShouldRunExpression(
+            WorkflowInputs.platforms.expression,
+            _matrix.platform,
+          ),
         ),
-        ...createCoverageCollectorSteps(
-          platformExpression: _matrixExpressions.platform,
-          lcovCleanCommandExpression: _matrixExpressions.lcovCleanCommand,
-        ),
+        ...UnitTestBuilder(
+          repository: WorkflowInputs.repository.expression,
+          workingDirectory: WorkflowInputs.workingDirectory.expression,
+          buildRunner: WorkflowInputs.buildRunner.expression,
+          unitTestPaths: WorkflowInputs.unitTestPaths.expression,
+          minCoverage: WorkflowInputs.minCoverage.expression,
+          platforms: _platforms.expression,
+          baseTool: baseTool,
+          pubTool: pubTool,
+          runTool: runTool,
+          matrix: _matrix,
+          coverageArgs: coverageArgs,
+          needsFormatting: needsFormatting,
+        ).build(),
       ],
     );
   }
 
-  List<PlatformInclude> get platformIncludes => const [
-        PlatformInclude(
+  List<_PlatformInclude> get _platformIncludes => const [
+        _PlatformInclude(
           platform: 'linux',
           os: 'ubuntu-latest',
           lcovCleanCommand: r'sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info',
         ),
-        PlatformInclude(
+        _PlatformInclude(
           platform: 'windows',
           os: 'windows-latest',
           lcovCleanCommand:
               r'(Get-Content coverage\lcov.info).replace("SF:$PWD\", "SF:").replace("\", "/") | Set-Content coverage\lcov.info',
         ),
-        PlatformInclude(
+        _PlatformInclude(
           platform: 'macos',
           os: 'macos-latest',
           lcovCleanCommand: r'sed -i "" "s#SF:$PWD/#SF:#g" coverage/lcov.info',
         ),
-        PlatformInclude(
+        _PlatformInclude(
           platform: 'web',
           os: 'ubuntu-latest',
           lcovCleanCommand: r'sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info',
           dartTestArgs: '-p chrome',
         ),
       ];
+
+  WorkflowInput get _platforms => WorkflowInputs.platforms(
+        _platformIncludes.map((p) => p.platform).toList(),
+      );
 }

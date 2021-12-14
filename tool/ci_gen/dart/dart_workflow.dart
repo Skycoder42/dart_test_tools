@@ -9,8 +9,8 @@ abstract class DartWorkflow {
   static const defaultPlatforms = ['linux', 'windows', 'macos', 'web'];
 
   static Workflow buildWorkflow() {
-    final analyzeJobBuilder = DartAnalyzeJobBuilder();
-    final unitTestBulder = DartUnitTestJobBuilder();
+    const analyzeJobBuilder = DartAnalyzeJobBuilder();
+    const unitTestBulder = DartUnitTestJobBuilder();
 
     // combine all inputs of all builders
     final inputs = <WorkflowInput>{
