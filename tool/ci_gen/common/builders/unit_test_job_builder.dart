@@ -78,8 +78,8 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
   Job build([Iterable<JobBuilder>? needs]) {
     return Job(
       name: 'Unit tests',
-      ifExpression:
-          Expression("${WorkflowInputs.unitTestPaths.expression.value} != ''"),
+      ifExpression: WorkflowInputs.unitTestPaths.expression
+          .ne(const Expression.literal('')),
       needs: needs?.map((jobBuilder) => jobBuilder.name).toList(),
       strategy: Strategy(
         failFast: false,
@@ -94,7 +94,7 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
       steps: [
         ...buildSetupSdkSteps(
           PlatformsBuilderMixin.createShouldRunExpression(
-            WorkflowInputs.platforms.expression,
+            _platforms.expression,
             _matrix.platform,
           ),
         ),

@@ -20,8 +20,27 @@ class Expression with _$Expression {
             rawValue is String ? "'$rawValue'" : rawValue.toString(),
       );
 
+  Expression operator <(Expression other) =>
+      Expression('$value < ${other.value}');
+
+  Expression operator <=(Expression other) =>
+      Expression('$value <= ${other.value}');
+
+  Expression operator >(Expression other) =>
+      Expression('$value > ${other.value}');
+
+  Expression operator >=(Expression other) =>
+      Expression('$value >= ${other.value}');
+
+  Expression eq(Expression other) => Expression('$value == ${other.value}');
+
+  Expression ne(Expression other) => Expression('$value != ${other.value}');
+
   Expression operator &(Expression? other) =>
       other != null ? Expression('$value && ${other.value}') : this;
+
+  Expression operator |(Expression? other) =>
+      other != null ? Expression('$value || ${other.value}') : this;
 
   @override
   String toString() => '\${{ $value }}';

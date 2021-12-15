@@ -7,5 +7,8 @@ mixin CoverageBuilderMixin {
 
   @protected
   Expression get runCoverageExpression =>
-      Expression('${minCoverage.value} > 0');
+      createRunCoverageExpression(minCoverage);
+
+  static Expression createRunCoverageExpression(Expression minCoverage) =>
+      minCoverage > const Expression.literal(0);
 }

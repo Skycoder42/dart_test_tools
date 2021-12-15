@@ -30,8 +30,6 @@ class WorkflowInputBuilder<TParam> with _$WorkflowInputBuilder<TParam> {
     required WorkflowInputBuilderFn<TParam> builder,
   }) = _WorkflowInputBuilder<TParam>;
 
-  Expression get expression => Expression('inputs.$name');
-
   WorkflowInput call(TParam param) => WorkflowInput(
         name: name,
         input: builder(param),
