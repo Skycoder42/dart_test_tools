@@ -4,6 +4,7 @@ import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'builders/dart_analyze_job_builder.dart';
+import 'builders/dart_integration_test_job_builder.dart';
 import 'builders/dart_unit_test_job_builder.dart';
 
 abstract class DartWorkflow {
@@ -13,12 +14,14 @@ abstract class DartWorkflow {
     const analyzeJobBuilder = DartAnalyzeJobBuilder();
     const unitTestBulder = DartUnitTestJobBuilder();
     const validateCoverageBuilder = ValidateCoverageJobBuilder();
+    const integrationTestBuilder = DartIntegrationTestJobBuilder();
 
     // combine all inputs of all builders
     final inputs = <WorkflowInput>{
       ...analyzeJobBuilder.inputs,
       ...unitTestBulder.inputs,
       ...validateCoverageBuilder.inputs,
+      ...integrationTestBuilder.inputs,
     };
 
     return Workflow(
@@ -34,6 +37,8 @@ abstract class DartWorkflow {
         unitTestBulder.name: unitTestBulder.build([analyzeJobBuilder]),
         validateCoverageBuilder.name:
             validateCoverageBuilder.build([unitTestBulder]),
+        integrationTestBuilder.name:
+            integrationTestBuilder.build([analyzeJobBuilder]),
       },
     );
   }

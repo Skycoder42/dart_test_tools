@@ -1,90 +1,76 @@
 on:
   workflow_call:
     inputs:
-      # checkout and build paths
-      repository:
-        type: string
-        required: false
-        description: The repository to check out. Passed as "repository" to "actions/checkout"
-      workingDirectory:
-        type: string
-        required: false
-        default: "."
-        description: The root directory of the dart package to build and test
-      buildRunner:
-        type: boolean
-        required: false
-        default: false
-        description: Specify whether build_runner is used in the project (defaults to false)
-      # static analysis
-      publishExclude:
-        type: string
-        required: false
-        description: Specify a list of colon separated paths to be excluded from publishing
-      # unit tests
-      unitTestPaths:
-        type: string
-        required: false
-        default: test
-        description: >-
-          Specifiy directories or paths of unit tests to run.
-          By default, all test in the test directory are run.
-      # integration tests
-      integrationTestPaths:
-        type: string
-        required: false
-        description: >-
-          Specifiy directories or paths of integration tests to run.
-          By default, no integration test are run
-      integrationTestSetup:
-        type: string
-        required: false
-        description: |
-          A JSON-Matrix with extra setup steps for each platform.
-          contains key-value pairs for each platform with a command to be invoked.
-
-          Example:
-          {
-            "linux": "dart run tools/install-deps.dart",
-            "web": "./setup-web.sh"
-          }
-      # coverage
-      minCoverage:
-        type: number
-        required: false
-        default: 95
-        description: >-
-          Minimal coverage (in percent) required for the CI to succeed.
-          Passed as "min_coverage" to "VeryGoodOpenSource/very_good_coverage"
-      coverageExclude:
-        type: string
-        required: false
-        description: >-
-          Files to exclude from test coverage.
-          Passed as "exclude" to "VeryGoodOpenSource/very_good_coverage"
-      # general config
       dartSdkVersion:
         type: string
         required: false
         default: stable
-        description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart"
+        description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
+      repository:
+        type: string
+        required: false
+        description: The repository to check out. Passed as "repository" to "actions/checkout".
+      workingDirectory:
+        type: string
+        required: false
+        default: .
+        description: The root directory of the dart package to build and test.
+      buildRunner:
+        type: boolean
+        required: false
+        default: false
+        description: Specify whether build_runner is used in the project (defaults to false).
+      analyzeImage:
+        type: string
+        required: false
+        default: ubuntu-latest
+        description: The Runner-Image to use for the analyze step. Uses ubuntu-latest by default.
+      publishExclude:
+        type: string
+        required: false
+        description: Specify a list of colon separated paths to be excluded from publishing.
+      unitTestPaths:
+        type: string
+        required: false
+        default: test
+        description: Specifiy directories or paths of unit tests to run. By default, all test in the test directory are run.
+      minCoverage:
+        type: number
+        required: false
+        default: 95
+        description: Minimal coverage (in percent) required for the CI to succeed. Passed as "min_coverage" to "VeryGoodOpenSource/very_good_coverage".
       platforms:
         type: string
         required: false
-        default: '["linux", "windows", "macos", "web"]'
-        description: >-
+        default: '["linux","windows","macos","web"]'
+        description: |
           A JSON-Formatted list of platforms that unit and integration tests should be run on.
           By default, all platforms are active. The available platforms are:
           - linux
           - windows
           - macos
           - web
-      analyzeImage:
+      coverageExclude:
         type: string
         required: false
-        default: ubuntu-latest
-        description: The Runner-Image to use for the analyze step. Uses ubuntu-latest by default
+        description: Files to exclude from test coverage. Passed as command line arguments to a bash script. Excludes should be properly escaped, e.g. 'config.dart "**/*.g.dart"'.
+      integrationTestSetup:
+        type: string
+        required: false
+        description: |
+          A JSON-Matrix with extra setup steps for each platform.
+          contains key-value pairs for each platform with a command to be invoked.
+          The possible keys are the same as the platforms defined in 'platforms'.
 
+          Example:
+          {
+            "linux": "dart run tools/install-deps.dart",
+            "web": "./setup-web.sh"
+          }
+      integrationTestPaths:
+        type: string
+        required: false
+        description: Specifiy directories or paths of integration tests to run. By default, no integration test are run.
 jobs:
   analyze:
     name: Analyze
@@ -94,6 +80,12 @@ jobs:
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
+      - name: Install yq (Windows)
+        if: runner.os == 'Windows'
+        run: choco install yq
+      - name: Install yq (macOS)
+        if: runner.os == 'macOS'
+        run: brew install yq
       - name: Checkout repository ${{ inputs.repository }}
         uses: actions/checkout@v2
         with:
@@ -108,7 +100,6 @@ jobs:
         if: inputs.buildRunner
         run: dart run build_runner build
         working-directory: ${{ inputs.workingDirectory }}
-
       - name: Static analysis
         run: dart analyze --fatal-infos
         working-directory: ${{ inputs.workingDirectory }}
@@ -129,13 +120,11 @@ jobs:
           exec dart pub publish --dry-run
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
-
   unit_tests:
     name: Unit tests
     if: inputs.unitTestPaths != ''
     needs:
       - analyze
-
     strategy:
       fail-fast: false
       matrix:
@@ -144,22 +133,20 @@ jobs:
           - windows
           - macos
           - web
-
         include:
           - platform: linux
             os: ubuntu-latest
-            lcovCleanCommand: 'sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info'
+            lcovCleanCommand: sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info
           - platform: windows
             os: windows-latest
-            lcovCleanCommand: '(Get-Content coverage\lcov.info).replace("SF:$PWD\", "SF:").replace("\", "/") | Set-Content coverage\lcov.info'
+            lcovCleanCommand: (Get-Content coverage\lcov.info).replace("SF:$PWD\", "SF:").replace("\", "/") | Set-Content coverage\lcov.info
           - platform: macos
             os: macos-latest
-            lcovCleanCommand: 'sed -i "" "s#SF:$PWD/#SF:#g" coverage/lcov.info'
+            lcovCleanCommand: sed -i "" "s#SF:$PWD/#SF:#g" coverage/lcov.info
           - platform: web
             os: ubuntu-latest
+            lcovCleanCommand: sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info
             dartTestArgs: -p chrome
-            lcovCleanCommand: 'sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info'
-
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
@@ -167,12 +154,19 @@ jobs:
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
+      - name: Install yq (Windows)
+        if: runner.os == 'Windows' && contains(fromJSON(inputs.platforms), matrix.platform)
+        run: choco install yq
+      - name: Install yq (macOS)
+        if: runner.os == 'macOS' && contains(fromJSON(inputs.platforms), matrix.platform)
+        run: brew install yq
       - name: Checkout repository ${{ inputs.repository }}
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/checkout@v2
         with:
           repository: ${{ inputs.repository }}
       - name: Remove dependency overrides
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: yq e -i "del(.dependency_overrides)" pubspec.yaml
         working-directory: ${{ inputs.workingDirectory }}
       - name: Restore dart packages
@@ -183,22 +177,13 @@ jobs:
         if: inputs.buildRunner && contains(fromJSON(inputs.platforms), matrix.platform)
         run: dart run build_runner build
         working-directory: ${{ inputs.workingDirectory }}
-
       - name: Run unit tests
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: dart test ${{ matrix.dartTestArgs }} --coverage=coverage ${{ inputs.unitTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}
-
       - name: Convert coverage data to lcov format
         if: inputs.minCoverage > 0 && contains(fromJSON(inputs.platforms), matrix.platform)
-        run: >-
-          dart run coverage:format_coverage
-          --lcov
-          --check-ignore
-          --in=coverage
-          --out=coverage/lcov.info
-          --packages=.packages
-          --report-on=lib
+        run: dart run coverage:format_coverage --lcov --check-ignore --in=coverage --out=coverage/lcov.info --packages=.packages --report-on=lib
         working-directory: ${{ inputs.workingDirectory }}
       - name: Normalize coverage paths
         if: inputs.minCoverage > 0 && contains(fromJSON(inputs.platforms), matrix.platform)
@@ -210,7 +195,6 @@ jobs:
         with:
           name: coverage-info-${{ matrix.platform }}
           path: ${{ inputs.workingDirectory }}/coverage/lcov.info
-
   coverage:
     name: Validate coverage
     if: inputs.minCoverage > 0 && inputs.unitTestPaths != ''
@@ -224,7 +208,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: ${{ inputs.repository }}
-
       - name: Download linux coverage data
         if: contains(fromJSON(inputs.platforms), 'linux')
         uses: actions/download-artifact@v2
@@ -249,7 +232,6 @@ jobs:
         with:
           name: coverage-info-web
           path: ${{ inputs.workingDirectory }}/coverage/web
-
       - name: Merge coverage data
         run: |
           set -e
@@ -259,13 +241,9 @@ jobs:
             LCOV_ARGS="$LCOV_ARGS --add-tracefile coverage/$dir/lcov.info"
           done
           lcov $LCOV_ARGS --output-file coverage/combined.info
-          cat coverage/combined.info
         working-directory: ${{ inputs.workingDirectory }}
       - name: Remove excluded files from coverage data
-        run: >-
-          lcov --remove coverage/combined.info
-          --output-file coverage/cleaned.info
-          ${{ inputs.coverageExclude }}
+        run: lcov --remove coverage/combined.info --output-file coverage/cleaned.info ${{ inputs.coverageExclude }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Generate coverage report
         run: genhtml --no-function-coverage -o coverage/html coverage/cleaned.info
@@ -280,13 +258,11 @@ jobs:
         with:
           path: ${{ inputs.workingDirectory }}/coverage/cleaned.info
           min_coverage: ${{ inputs.minCoverage }}
-
   integration_tests:
     name: Integration tests
     if: inputs.integrationTestPaths != ''
     needs:
       - analyze
-
     strategy:
       fail-fast: false
       matrix:
@@ -295,7 +271,6 @@ jobs:
           - windows
           - macos
           - web
-
         include:
           - platform: linux
             os: ubuntu-latest
@@ -306,7 +281,6 @@ jobs:
           - platform: web
             os: ubuntu-latest
             dartTestArgs: -p chrome
-
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
@@ -314,12 +288,19 @@ jobs:
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
+      - name: Install yq (Windows)
+        if: runner.os == 'Windows' && contains(fromJSON(inputs.platforms), matrix.platform)
+        run: choco install yq
+      - name: Install yq (macOS)
+        if: runner.os == 'macOS' && contains(fromJSON(inputs.platforms), matrix.platform)
+        run: brew install yq
       - name: Checkout repository ${{ inputs.repository }}
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/checkout@v2
         with:
           repository: ${{ inputs.repository }}
       - name: Remove dependency overrides
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: yq e -i "del(.dependency_overrides)" pubspec.yaml
         working-directory: ${{ inputs.workingDirectory }}
       - name: Restore dart packages
@@ -330,12 +311,10 @@ jobs:
         if: inputs.buildRunner && contains(fromJSON(inputs.platforms), matrix.platform)
         run: dart run build_runner build
         working-directory: ${{ inputs.workingDirectory }}
-
       - name: Run platform test setup
         if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && contains(fromJSON(inputs.platforms), matrix.platform)
         run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
         working-directory: ${{ inputs.workingDirectory }}
-
       - name: Run integration tests
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: dart test ${{ matrix.dartTestArgs }} ${{ inputs.integrationTestPaths }}

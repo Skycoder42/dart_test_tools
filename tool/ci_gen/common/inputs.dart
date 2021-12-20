@@ -46,7 +46,7 @@ abstract class WorkflowInputs {
       required: false,
       defaultValue: 'stable',
       description: 'The Dart-SDK version. '
-          'Passed as "sdk" to "dart-lang/setup-dart"',
+          'Passed as "sdk" to "dart-lang/setup-dart".',
     ),
   );
 
@@ -70,7 +70,7 @@ ${defaultPlatforms.map((p) => '- $p').join('\n')}
       required: false,
       defaultValue: 'ubuntu-latest',
       description: 'The Runner-Image to use for the analyze step. '
-          'Uses ubuntu-latest by default',
+          'Uses ubuntu-latest by default.',
     ),
   );
 
@@ -133,7 +133,7 @@ Example:
       description:
           'Minimal coverage (in percent) required for the CI to succeed. '
           'Passed as "min_coverage" to '
-          '"VeryGoodOpenSource/very_good_coverage"',
+          '"VeryGoodOpenSource/very_good_coverage".',
     ),
   );
 
@@ -144,7 +144,7 @@ Example:
       required: false,
       description: 'Files to exclude from test coverage. Passed as '
           'command line arguments to a bash script. Excludes should be '
-          'properly escaped, e.g. \'config.dart "**/*.g.dart"\'',
+          'properly escaped, e.g. \'config.dart "**/*.g.dart"\'.',
     ),
   );
 }

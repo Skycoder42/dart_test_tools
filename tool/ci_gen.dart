@@ -15,7 +15,7 @@ Future<void> main() async {
       return jsonData;
     };
 
-  final outFile = File('.github/workflows/test.yml').openWrite();
+  final outFile = File('.github/workflows/dart.yml').openWrite();
   final yqProc = await Process.start('yq', const ['e', '-P']);
   final errFuture = stderr.addStream(yqProc.stderr);
   final outFuture = yqProc.stdout.pipe(outFile);
