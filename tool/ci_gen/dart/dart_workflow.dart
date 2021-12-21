@@ -1,5 +1,6 @@
 import '../common/api/workflow_input.dart';
 import '../common/builders/validate_coverage_job_builder.dart';
+import '../common/inputs.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
@@ -11,25 +12,47 @@ abstract class DartWorkflow {
   static const defaultPlatforms = ['linux', 'windows', 'macos', 'web'];
 
   static Workflow buildWorkflow() {
-    const analyzeJobBuilder = DartAnalyzeJobBuilder();
-    const unitTestBulder = DartUnitTestJobBuilder();
-    const validateCoverageBuilder = ValidateCoverageJobBuilder();
-    const integrationTestBuilder = DartIntegrationTestJobBuilder();
+    final inputContext = WorkflowInputContext();
 
-    // combine all inputs of all builders
-    final inputs = <WorkflowInput>{
-      ...analyzeJobBuilder.inputs,
-      ...unitTestBulder.inputs,
-      ...validateCoverageBuilder.inputs,
-      ...integrationTestBuilder.inputs,
-    };
+    final analyzeJobBuilder = DartAnalyzeJobBuilder(
+      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+      repository: inputContext(WorkflowInputs.repository),
+      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      buildRunner: inputContext(WorkflowInputs.buildRunner),
+      analyzeImage: inputContext(WorkflowInputs.analyzeImage),
+      publishExclude: inputContext(WorkflowInputs.publishExclude),
+    );
+    final unitTestBulder = DartUnitTestJobBuilder(
+      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+      repository: inputContext(WorkflowInputs.repository),
+      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      buildRunner: inputContext(WorkflowInputs.buildRunner),
+      unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
+      minCoverage: inputContext(WorkflowInputs.minCoverage),
+      platforms: inputContext.builder(WorkflowInputs.platforms),
+    );
+    final validateCoverageBuilder = ValidateCoverageJobBuilder(
+      repository: inputContext(WorkflowInputs.repository),
+      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
+      minCoverage: inputContext(WorkflowInputs.minCoverage),
+      coverageExclude: inputContext(WorkflowInputs.coverageExclude),
+      platforms: inputContext.builder(WorkflowInputs.platforms),
+    );
+    final integrationTestBuilder = DartIntegrationTestJobBuilder(
+      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+      repository: inputContext(WorkflowInputs.repository),
+      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      buildRunner: inputContext(WorkflowInputs.buildRunner),
+      integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
+      integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
+      platforms: inputContext.builder(WorkflowInputs.platforms),
+    );
 
     return Workflow(
       on: On(
         workflowCall: WorkflowCall(
-          inputs: {
-            for (final input in inputs) input.name: input.input,
-          },
+          inputs: inputContext.createInputs(),
         ),
       ),
       jobs: {

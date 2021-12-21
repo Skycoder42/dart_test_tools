@@ -1,9 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../common/api/expression_builder.dart';
 import '../../common/api/job_builder.dart';
-import '../../common/api/workflow_input.dart';
 import '../../common/builders/sdk_job_builder.dart';
-import '../../common/inputs.dart';
 import '../../common/steps/platforms_builder_mixin.dart';
 import '../../types/expression.dart';
 import '../../types/job.dart';
@@ -50,26 +49,52 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
     os: Expression('matrix.os'),
   );
 
-  const DartIntegrationTestJobBuilder();
+  static const _platformIncludes = [
+    _PlatformInclude(
+      platform: 'linux',
+      os: 'ubuntu-latest',
+    ),
+    _PlatformInclude(
+      platform: 'windows',
+      os: 'windows-latest',
+    ),
+    _PlatformInclude(
+      platform: 'macos',
+      os: 'macos-latest',
+    ),
+    _PlatformInclude(
+      platform: 'web',
+      os: 'ubuntu-latest',
+      dartTestArgs: '-p chrome',
+    ),
+  ];
+
+  @override
+  final Expression dartSdkVersion;
+  final Expression repository;
+  final Expression workingDirectory;
+  final Expression buildRunner;
+  final Expression integrationTestSetup;
+  final Expression integrationTestPaths;
+  final Expression platforms;
+
+  DartIntegrationTestJobBuilder({
+    required this.dartSdkVersion,
+    required this.repository,
+    required this.workingDirectory,
+    required this.buildRunner,
+    required this.integrationTestSetup,
+    required this.integrationTestPaths,
+    required ExpressionBuilderFn<List<String>> platforms,
+  }) : platforms = platforms(_platformIncludes.map((i) => i.platform).toList());
 
   @override
   String get name => 'integration_tests';
 
   @override
-  Iterable<WorkflowInput> get inputs => [
-        WorkflowInputs.repository,
-        WorkflowInputs.workingDirectory,
-        WorkflowInputs.buildRunner,
-        WorkflowInputs.integrationTestSetup,
-        WorkflowInputs.integrationTestPaths,
-        _platforms,
-      ];
-
-  @override
   Job build([Iterable<JobBuilder>? needs]) => Job(
         name: 'Integration tests',
-        ifExpression: WorkflowInputs.integrationTestPaths.expression
-            .ne(const Expression.literal('')),
+        ifExpression: integrationTestPaths.ne(const Expression.literal('')),
         needs: needs?.map((jobBuilder) => jobBuilder.name).toList(),
         strategy: Strategy(
           failFast: false,
@@ -84,48 +109,22 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
         steps: [
           ...buildSetupSdkSteps(
             PlatformsBuilderMixin.createShouldRunExpression(
-              _platforms.expression,
+              platforms,
               _matrix.platform,
             ),
           ),
           ...DartIntegrationTestBuilder(
-            repository: WorkflowInputs.repository.expression,
-            workingDirectory: WorkflowInputs.workingDirectory.expression,
-            buildRunner: WorkflowInputs.buildRunner.expression,
-            integrationTestSetup:
-                WorkflowInputs.integrationTestSetup.expression,
-            integrationTestPaths:
-                WorkflowInputs.integrationTestPaths.expression,
-            platforms: _platforms.expression,
+            repository: repository,
+            workingDirectory: workingDirectory,
+            buildRunner: buildRunner,
+            integrationTestSetup: integrationTestSetup,
+            integrationTestPaths: integrationTestPaths,
+            platforms: platforms,
             baseTool: baseTool,
             pubTool: pubTool,
             runTool: runTool,
             matrix: _matrix,
           ).build(),
         ],
-      );
-
-  List<_PlatformInclude> get _platformIncludes => const [
-        _PlatformInclude(
-          platform: 'linux',
-          os: 'ubuntu-latest',
-        ),
-        _PlatformInclude(
-          platform: 'windows',
-          os: 'windows-latest',
-        ),
-        _PlatformInclude(
-          platform: 'macos',
-          os: 'macos-latest',
-        ),
-        _PlatformInclude(
-          platform: 'web',
-          os: 'ubuntu-latest',
-          dartTestArgs: '-p chrome',
-        ),
-      ];
-
-  WorkflowInput get _platforms => WorkflowInputs.platforms(
-        _platformIncludes.map((p) => p.platform).toList(),
       );
 }

@@ -54,6 +54,10 @@ on:
         type: string
         required: false
         description: Files to exclude from test coverage. Passed as command line arguments to a bash script. Excludes should be properly escaped, e.g. 'config.dart "**/*.g.dart"'.
+      integrationTestPaths:
+        type: string
+        required: false
+        description: Specifiy directories or paths of integration tests to run. By default, no integration test are run.
       integrationTestSetup:
         type: string
         required: false
@@ -67,10 +71,6 @@ on:
             "linux": "dart run tools/install-deps.dart",
             "web": "./setup-web.sh"
           }
-      integrationTestPaths:
-        type: string
-        required: false
-        description: Specifiy directories or paths of integration tests to run. By default, no integration test are run.
 jobs:
   analyze:
     name: Analyze

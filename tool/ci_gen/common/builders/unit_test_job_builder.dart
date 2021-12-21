@@ -4,9 +4,8 @@ import '../../types/expression.dart';
 import '../../types/job.dart';
 import '../../types/matrix.dart';
 import '../../types/strategy.dart';
+import '../api/expression_builder.dart';
 import '../api/job_builder.dart';
-import '../api/workflow_input.dart';
-import '../inputs.dart';
 import '../steps/platforms_builder_mixin.dart';
 import '../steps/unit_test_builder.dart';
 import 'sdk_job_builder.dart';
@@ -53,7 +52,46 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
     dartTestArgs: Expression('matrix.dartTestArgs'),
   );
 
-  const UnitTestJobBuilder();
+  static const _platformIncludes = [
+    _PlatformInclude(
+      platform: 'linux',
+      os: 'ubuntu-latest',
+      lcovCleanCommand: r'sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info',
+    ),
+    _PlatformInclude(
+      platform: 'windows',
+      os: 'windows-latest',
+      lcovCleanCommand:
+          r'(Get-Content coverage\lcov.info).replace("SF:$PWD\", "SF:").replace("\", "/") | Set-Content coverage\lcov.info',
+    ),
+    _PlatformInclude(
+      platform: 'macos',
+      os: 'macos-latest',
+      lcovCleanCommand: r'sed -i "" "s#SF:$PWD/#SF:#g" coverage/lcov.info',
+    ),
+    _PlatformInclude(
+      platform: 'web',
+      os: 'ubuntu-latest',
+      lcovCleanCommand: r'sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info',
+      dartTestArgs: '-p chrome',
+    ),
+  ];
+
+  final Expression repository;
+  final Expression workingDirectory;
+  final Expression buildRunner;
+  final Expression unitTestPaths;
+  final Expression minCoverage;
+  final Expression platforms;
+
+  UnitTestJobBuilder({
+    required this.repository,
+    required this.workingDirectory,
+    required this.buildRunner,
+    required this.unitTestPaths,
+    required this.minCoverage,
+    required ExpressionBuilderFn<List<String>> platforms,
+  }) : platforms = platforms(_platformIncludes.map((i) => i.platform).toList());
 
   @override
   String get name => 'unit_tests';
@@ -65,21 +103,10 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
   bool get needsFormatting;
 
   @override
-  Iterable<WorkflowInput> get inputs => [
-        WorkflowInputs.repository,
-        WorkflowInputs.workingDirectory,
-        WorkflowInputs.buildRunner,
-        WorkflowInputs.unitTestPaths,
-        WorkflowInputs.minCoverage,
-        _platforms,
-      ];
-
-  @override
   Job build([Iterable<JobBuilder>? needs]) {
     return Job(
       name: 'Unit tests',
-      ifExpression: WorkflowInputs.unitTestPaths.expression
-          .ne(const Expression.literal('')),
+      ifExpression: unitTestPaths.ne(const Expression.literal('')),
       needs: needs?.map((jobBuilder) => jobBuilder.name).toList(),
       strategy: Strategy(
         failFast: false,
@@ -94,17 +121,17 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
       steps: [
         ...buildSetupSdkSteps(
           PlatformsBuilderMixin.createShouldRunExpression(
-            _platforms.expression,
+            platforms,
             _matrix.platform,
           ),
         ),
         ...UnitTestBuilder(
-          repository: WorkflowInputs.repository.expression,
-          workingDirectory: WorkflowInputs.workingDirectory.expression,
-          buildRunner: WorkflowInputs.buildRunner.expression,
-          unitTestPaths: WorkflowInputs.unitTestPaths.expression,
-          minCoverage: WorkflowInputs.minCoverage.expression,
-          platforms: _platforms.expression,
+          repository: repository,
+          workingDirectory: workingDirectory,
+          buildRunner: buildRunner,
+          unitTestPaths: unitTestPaths,
+          minCoverage: minCoverage,
+          platforms: platforms,
           baseTool: baseTool,
           pubTool: pubTool,
           runTool: runTool,
@@ -115,33 +142,4 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
       ],
     );
   }
-
-  List<_PlatformInclude> get _platformIncludes => const [
-        _PlatformInclude(
-          platform: 'linux',
-          os: 'ubuntu-latest',
-          lcovCleanCommand: r'sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info',
-        ),
-        _PlatformInclude(
-          platform: 'windows',
-          os: 'windows-latest',
-          lcovCleanCommand:
-              r'(Get-Content coverage\lcov.info).replace("SF:$PWD\", "SF:").replace("\", "/") | Set-Content coverage\lcov.info',
-        ),
-        _PlatformInclude(
-          platform: 'macos',
-          os: 'macos-latest',
-          lcovCleanCommand: r'sed -i "" "s#SF:$PWD/#SF:#g" coverage/lcov.info',
-        ),
-        _PlatformInclude(
-          platform: 'web',
-          os: 'ubuntu-latest',
-          lcovCleanCommand: r'sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info',
-          dartTestArgs: '-p chrome',
-        ),
-      ];
-
-  WorkflowInput get _platforms => WorkflowInputs.platforms(
-        _platformIncludes.map((p) => p.platform).toList(),
-      );
 }
