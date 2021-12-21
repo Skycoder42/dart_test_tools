@@ -15,7 +15,7 @@ on:
         type: string
         required: false
         default: "refs/heads/main"
-        description: The gif ref that is allowed to publish releases
+        description: The git ref that is allowed to publish releases
       buildRunner:
         type: boolean
         required: false
@@ -62,11 +62,11 @@ on:
 
 jobs:
   release:
-    name: "Create release if needed"
-    runs-on: ubuntu-latest
+    name: Create release if needed
     if: github.ref == inputs.releaseRef
     outputs:
       update: ${{ steps.version.outputs.update }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository ${{ inputs.repository }}
         uses: actions/checkout@v2

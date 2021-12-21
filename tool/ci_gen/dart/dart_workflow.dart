@@ -9,7 +9,7 @@ import 'builders/dart_integration_test_job_builder.dart';
 import 'builders/dart_unit_test_job_builder.dart';
 
 abstract class DartWorkflow {
-  static const defaultPlatforms = ['linux', 'windows', 'macos', 'web'];
+  DartWorkflow._();
 
   static Workflow buildWorkflow() {
     final inputContext = WorkflowInputContext();

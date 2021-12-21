@@ -147,4 +147,25 @@ Example:
           'properly escaped, e.g. \'config.dart "**/*.g.dart"\'.',
     ),
   );
+
+  static const releaseRef = WorkflowInput(
+    name: 'releaseRef',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: 'refs/heads/main',
+      description: 'The git ref that is allowed to publish releases.',
+    ),
+  );
+
+  static const tagPrefix = WorkflowInput(
+    name: 'tagPrefix',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: 'v',
+      description: 'The prefix of git tags. The tag is the prefix, '
+          'followed by the package version.',
+    ),
+  );
 }
