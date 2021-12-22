@@ -50,6 +50,17 @@ abstract class WorkflowInputs {
     ),
   );
 
+  static const flutterSdkChannel = WorkflowInput(
+    name: 'flutterSdkChannel',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: 'stable',
+      description: 'The Flutter-SDK channel. '
+          'Passed as "channel" to "subosito/flutter-action".',
+    ),
+  );
+
   static final platforms = WorkflowInputBuilder(
     name: 'platforms',
     builder: (List<String> defaultPlatforms) => Input.json(

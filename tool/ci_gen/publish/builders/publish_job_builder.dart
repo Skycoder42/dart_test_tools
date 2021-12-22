@@ -1,5 +1,6 @@
 import '../../common/api/job_builder.dart';
 import '../../dart/steps/dart_sdk_builder.dart';
+import '../../flutter/steps/flutter_sdk_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
@@ -10,6 +11,7 @@ class PublishJobBuilder implements JobBuilder {
   final JobIdOutput releaseUpdate;
   final Expression flutter;
   final Expression dartSdkVersion;
+  final Expression flutterSdkChannel;
   final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
@@ -21,6 +23,7 @@ class PublishJobBuilder implements JobBuilder {
     required this.releaseUpdate,
     required this.flutter,
     required this.dartSdkVersion,
+    required this.flutterSdkChannel,
     required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
@@ -43,7 +46,10 @@ class PublishJobBuilder implements JobBuilder {
             dartSdkVersion: dartSdkVersion,
             ifExpression: flutter.not,
           ).build(),
-          // TODO add flutter SDK
+          ...FlutterSdkBuilder(
+            flutterSdkChannel: flutterSdkChannel,
+            ifExpression: flutter,
+          ).build(),
           ...PublishBuilder(
             flutter: flutter,
             repository: repository,

@@ -1,45 +1,25 @@
 on:
   workflow_call:
     inputs:
-      # checkout and build paths
       repository:
         type: string
         required: false
-        description: The repository to check out. Passed as "repository" to "actions/checkout"
+        description: The repository to check out. Passed as "repository" to "actions/checkout".
       workingDirectory:
         type: string
         required: false
-        default: "."
-        description: The root directory of the dart package to build and test
+        default: .
+        description: The root directory of the dart package to build and test.
       releaseRef:
         type: string
         required: false
-        default: "refs/heads/main"
-        description: The git ref that is allowed to publish releases
-      buildRunner:
-        type: boolean
-        required: false
-        default: false
-        description: Specify whether build_runner is used in the project (defaults to false)
-      # release config
+        default: refs/heads/main
+        description: The git ref that is allowed to publish releases.
       tagPrefix:
         type: string
         required: false
         default: v
-        description: The prefix of git tags. The tag is the prefix, followed by the package version
-      # publishing config
-      publish:
-        type: boolean
-        required: false
-        default: true
-        description: >-
-          Publish to pub.dev, if a new release was created. Enabled by default.
-          Requires the PUB_DEV_CREDENTIALS secret to be set
-      publishExclude:
-        type: string
-        required: false
-        description: Specify a list of colon separated paths to be excluded from publishing
-      # general config
+        description: The prefix of git tags. The tag is the prefix, followed by the package version.
       flutter:
         type: boolean
         required: false
@@ -49,17 +29,30 @@ on:
         type: string
         required: false
         default: stable
-        description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart"
+        description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
       flutterSdkChannel:
         type: string
         required: false
         default: stable
-        description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action"
+        description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action".
+      buildRunner:
+        type: boolean
+        required: false
+        default: false
+        description: Specify whether build_runner is used in the project (defaults to false).
+      publish:
+        type: boolean
+        required: false
+        default: true
+        description: Publish to pub.dev, if a new release was created. Enabled by default. Requires the PUB_DEV_CREDENTIALS secret to be set.
+      publishExclude:
+        type: string
+        required: false
+        description: Specify a list of colon separated paths to be excluded from publishing.
     secrets:
       PUB_DEV_CREDENTIALS:
         required: false
-        description: The JSON-encoded credentials to log into pub.dev
-
+        description: The JSON-encoded credentials to log into pub.dev.
 jobs:
   release:
     name: Create release if needed
@@ -124,16 +117,15 @@ jobs:
           tag_name: ${{ steps.release_content.outputs.tag_name }}
           release_name: ${{ steps.release_content.outputs.release_name }}
           body_path: ${{ steps.release_content.outputs.body_path }}
-
   publish:
     name: Publish to pub.dev
-    runs-on: ubuntu-latest
     needs:
       - release
     if: inputs.publish && needs.release.outputs.update == 'true'
+    runs-on: ubuntu-latest
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        if: "!inputs.flutter"
+        if: '!inputs.flutter'
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
@@ -142,8 +134,8 @@ jobs:
         uses: subosito/flutter-action@v1
         with:
           channel: ${{ inputs.flutterSdkChannel }}
-      - name: Prepare build tools
-        id: tools
+      - id: tools
+        name: Prepare build tools
         run: |
           if ${{ inputs.flutter }}; then
             echo "::set-output name=pub::flutter pub"
@@ -172,18 +164,19 @@ jobs:
           cache_dir="${PUB_CACHE:-~/.pub-cache}"
           mkdir -p "$cache_dir"
           echo '${{ secrets.PUB_DEV_CREDENTIALS }}' > "$cache_dir/credentials.json"
-      - name: Publish package
+      - name: Remove ignored files
+        if: inputs.publishExclude != ''
         run: |
           set -e
-          if [[ ! -z "${{ inputs.publishExclude }}" ]]; then
-            IFS=':'
-            for path in "${{ inputs.publishExclude }}"; do
-              if [ -e "$path" ]; then
-                git rm "$path"
-              fi
-            done
-          fi
-          exec ${{ steps.tools.outputs.pub }} publish --force
+          IFS=':'
+          for path in "${{ inputs.publishExclude }}"; do
+            if [ -e "$path" ]; then
+              git rm "$path"
+            fi
+          done
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Publish package
+        run: ${{ steps.tools.outputs.pub }} publish --force
         working-directory: ${{ inputs.workingDirectory }}
       - name: Clean up credentials
         if: always()

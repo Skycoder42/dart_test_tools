@@ -9,7 +9,7 @@ import 'ci_gen/types/workflow.dart';
 Future<void> main() async {
   exitCode = await Stream.fromFutures([
     _writeWorkflowToFile('dart', DartWorkflow.buildWorkflow()),
-    _writeWorkflowToFile('publish2', PublishWorkflow.buildWorkflow()),
+    _writeWorkflowToFile('publish', PublishWorkflow.buildWorkflow()),
   ]).reduce(
     (previous, element) => previous + element,
   );

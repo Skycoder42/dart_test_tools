@@ -24,11 +24,12 @@ abstract class PublishWorkflow {
     final publishJobBuilder = PublishJobBuilder(
       flutter: inputContext(WorkflowInputs.flutter),
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
-      publishExclude: inputContext(WorkflowInputs.publishExclude),
       publish: inputContext(WorkflowInputs.publish),
+      publishExclude: inputContext(WorkflowInputs.publishExclude),
       pubDevCredentials: secretContext(WorkflowSecrets.pubDevCredentials),
       releaseUpdate: ReleaseJobBuilder.updateOutput,
     );
