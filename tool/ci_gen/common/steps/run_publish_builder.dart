@@ -24,12 +24,13 @@ class RunPublishBuilder implements StepBuilder {
           ifExpression: publishExclude.ne(const Expression.literal('')),
           run: '''
 set -e
-echo '$publishExclude' | jq -c '.[]' | while read exclude; do
+echo '$publishExclude' | jq -cr '.[]' | while read exclude; do
   if [ -e "\$exclude" ]; then
     git rm "\$exclude"
   fi
 done
 ''',
+          shell: 'bash',
           workingDirectory: workingDirectory.toString(),
         ),
         Step.run(

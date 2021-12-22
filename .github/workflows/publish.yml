@@ -171,12 +171,13 @@ jobs:
         if: inputs.publishExclude != ''
         run: |
           set -e
-          echo '${{ inputs.publishExclude }}' | jq -c '.[]' | while read exclude; do
+          echo '${{ inputs.publishExclude }}' | jq -cr '.[]' | while read exclude; do
             if [ -e "$exclude" ]; then
               git rm "$exclude"
             fi
           done
         working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Publish package
         run: ${{ steps.tools.outputs.pub }} publish --force
         working-directory: ${{ inputs.workingDirectory }}

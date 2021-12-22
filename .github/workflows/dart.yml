@@ -28,7 +28,7 @@ on:
       publishExclude:
         type: string
         required: false
-        default: "[]"
+        default: '[]'
         description: |
           Specify a JSON array of paths to be excluded from publishing.
           Example: '["secrets.txt","debug.log"]'
@@ -64,7 +64,7 @@ on:
       integrationTestSetup:
         type: string
         required: false
-        default: "{}"
+        default: '{}'
         description: |
           A JSON-Matrix with extra setup steps for each platform.
           contains key-value pairs for each platform with a command to be invoked.
@@ -114,12 +114,13 @@ jobs:
         if: inputs.publishExclude != ''
         run: |
           set -ex
-          echo '${{ inputs.publishExclude }}' | jq -c '.[]' | while read exclude; do
+          echo '${{ inputs.publishExclude }}' | jq -cr '.[]' | while read exclude; do
             if [ -e "$exclude" ]; then
               git rm "$exclude"
             fi
           done
         working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Test publishing configuration
         run: dart pub publish --dry-run
         working-directory: ${{ inputs.workingDirectory }}
