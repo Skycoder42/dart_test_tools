@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../types/expression.dart';
+import '../../types/id.dart';
 import '../../types/job.dart';
 import '../../types/step.dart';
 import '../api/job_builder.dart';
@@ -23,13 +24,13 @@ abstract class AnalyzeJobBuilder extends SdkJobBuilder {
   });
 
   @override
-  String get name => 'analyze';
+  JobId get id => const JobId('analyze');
 
   @override
   Job build([Iterable<JobBuilder>? needs]) => Job(
         name: 'Analyze',
         runsOn: analyzeImage.toString(),
-        needs: needs?.map((jobBuilder) => jobBuilder.name).toList(),
+        needs: needs?.ids,
         steps: [
           ...buildSetupSdkSteps(),
           ...AnalyzeBuilder(

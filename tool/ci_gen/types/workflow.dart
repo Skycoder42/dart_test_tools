@@ -10,7 +10,7 @@ part 'workflow.g.dart';
 class Workflow with _$Workflow {
   const factory Workflow({
     required On on,
-    required Jobs jobs,
+    @JobsConverter() required Jobs jobs,
   }) = _Workflow;
 
   factory Workflow.fromJson(Map<String, dynamic> json) =>

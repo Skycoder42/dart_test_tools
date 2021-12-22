@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../types/expression.dart';
+import '../../types/id.dart';
 import '../../types/job.dart';
 import '../../types/matrix.dart';
 import '../../types/strategy.dart';
@@ -94,7 +95,7 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
   }) : platforms = platforms(_platformIncludes.map((i) => i.platform).toList());
 
   @override
-  String get name => 'unit_tests';
+  JobId get id => const JobId('unit_tests');
 
   @protected
   String get coverageArgs;
@@ -107,7 +108,7 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
     return Job(
       name: 'Unit tests',
       ifExpression: unitTestPaths.ne(const Expression.literal('')),
-      needs: needs?.map((jobBuilder) => jobBuilder.name).toList(),
+      needs: needs?.ids,
       strategy: Strategy(
         failFast: false,
         matrix: Matrix(

@@ -25,7 +25,7 @@ abstract class PublishWorkflow {
         ),
       ),
       jobs: {
-        releaseJobBuilder.name: releaseJobBuilder.build(),
+        releaseJobBuilder.id: releaseJobBuilder.build(),
       },
     );
   }

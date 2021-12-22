@@ -3,57 +3,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'expression.dart';
+import 'id.dart';
 
 part 'step.freezed.dart';
 part 'step.g.dart';
-
-@freezed
-class StepId with _$StepId {
-  const StepId._();
-
-  // ignore: sort_unnamed_constructors_first
-  const factory StepId(String id) = _StepId;
-
-  @override
-  String toString() => id;
-
-  StepOutput output(String name) => StepOutput._fromStepId(this, name);
-}
-
-class StepIdConverter implements JsonConverter<StepId?, String?> {
-  const StepIdConverter();
-
-  @override
-  StepId? fromJson(String? json) => json != null ? StepId(json) : null;
-
-  @override
-  String? toJson(StepId? stepId) => stepId?.id;
-}
-
-@freezed
-class StepOutput with _$StepOutput {
-  const StepOutput._();
-
-  // ignore: unused_element
-  const factory StepOutput._fromStepId(StepId stepId, String name) =
-      _StepOutput;
-
-  Expression get expression => Expression('steps.${stepId.id}.outputs.$name');
-
-  String bashSetter(String value) => 'echo "::set-output name=$name::$value"';
-}
-
-class StepOutputConverter implements JsonConverter<StepOutput, String> {
-  const StepOutputConverter();
-
-  @override
-  StepOutput fromJson(String json) {
-    throw UnsupportedError('Cannot create a StepOutput from json!');
-  }
-
-  @override
-  String toJson(StepOutput stepOutput) => stepOutput.expression.toString();
-}
 
 @freezed
 class Step with _$Step {

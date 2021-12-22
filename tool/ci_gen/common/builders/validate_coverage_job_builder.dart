@@ -1,4 +1,5 @@
 import '../../types/expression.dart';
+import '../../types/id.dart';
 import '../../types/job.dart';
 import '../api/expression_builder.dart';
 import '../api/job_builder.dart';
@@ -25,7 +26,7 @@ class ValidateCoverageJobBuilder implements JobBuilder {
   }) : platforms = platforms(_supportedPlatforms);
 
   @override
-  String get name => 'coverage';
+  JobId get id => const JobId('coverage');
 
   @override
   Job build([Iterable<JobBuilder>? needs]) => Job(
@@ -34,7 +35,7 @@ class ValidateCoverageJobBuilder implements JobBuilder {
               minCoverage,
             ) &
             (unitTestPaths.ne(const Expression.literal(''))),
-        needs: needs?.map((jobBuilder) => jobBuilder.name).toList(),
+        needs: needs?.ids,
         runsOn: 'ubuntu-latest',
         steps: [
           ...ValidateCoverageBuilder(

@@ -5,6 +5,7 @@ import '../../common/api/job_builder.dart';
 import '../../common/builders/sdk_job_builder.dart';
 import '../../common/steps/platforms_builder_mixin.dart';
 import '../../types/expression.dart';
+import '../../types/id.dart';
 import '../../types/job.dart';
 import '../../types/matrix.dart';
 import '../../types/strategy.dart';
@@ -89,13 +90,13 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
   }) : platforms = platforms(_platformIncludes.map((i) => i.platform).toList());
 
   @override
-  String get name => 'integration_tests';
+  JobId get id => const JobId('integration_tests');
 
   @override
   Job build([Iterable<JobBuilder>? needs]) => Job(
         name: 'Integration tests',
         ifExpression: integrationTestPaths.ne(const Expression.literal('')),
-        needs: needs?.map((jobBuilder) => jobBuilder.name).toList(),
+        needs: needs?.ids,
         strategy: Strategy(
           failFast: false,
           matrix: Matrix(

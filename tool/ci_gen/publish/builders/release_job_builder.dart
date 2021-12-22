@@ -1,9 +1,13 @@
 import '../../common/api/job_builder.dart';
 import '../../types/expression.dart';
+import '../../types/id.dart';
 import '../../types/job.dart';
 import '../steps/release_builder.dart';
 
 class ReleaseJobBuilder implements JobBuilder {
+  static const jobId = JobId('release');
+  static late final updateOutput = jobId.output('update');
+
   final Expression releaseRef;
   final Expression repository;
   final Expression workingDirectory;
@@ -17,16 +21,16 @@ class ReleaseJobBuilder implements JobBuilder {
   });
 
   @override
-  String get name => 'release';
+  JobId get id => jobId;
 
   @override
   Job build([Iterable<JobBuilder>? needs]) => Job(
         name: 'Create release if needed',
         runsOn: 'ubuntu-latest',
         ifExpression: const Expression('github.ref').eq(releaseRef),
-        needs: needs?.map((j) => j.name).toList(),
+        needs: needs?.ids,
         outputs: {
-          ReleaseBuilder.versionUpdate.name: ReleaseBuilder.versionUpdate,
+          updateOutput: ReleaseBuilder.versionUpdate,
         },
         steps: [
           ...ReleaseBuilder(

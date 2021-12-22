@@ -1,6 +1,7 @@
 import '../../common/api/step_builder.dart';
 import '../../common/steps/checkout_builder.dart';
 import '../../types/expression.dart';
+import '../../types/id.dart';
 import '../../types/step.dart';
 
 class ReleaseBuilder implements StepBuilder {

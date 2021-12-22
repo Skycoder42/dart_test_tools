@@ -56,11 +56,11 @@ abstract class DartWorkflow {
         ),
       ),
       jobs: {
-        analyzeJobBuilder.name: analyzeJobBuilder.build(),
-        unitTestBulder.name: unitTestBulder.build([analyzeJobBuilder]),
-        validateCoverageBuilder.name:
+        analyzeJobBuilder.id: analyzeJobBuilder.build(),
+        unitTestBulder.id: unitTestBulder.build([analyzeJobBuilder]),
+        validateCoverageBuilder.id:
             validateCoverageBuilder.build([unitTestBulder]),
-        integrationTestBuilder.name:
+        integrationTestBuilder.id:
             integrationTestBuilder.build([analyzeJobBuilder]),
       },
     );
