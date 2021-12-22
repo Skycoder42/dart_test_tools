@@ -113,7 +113,7 @@ jobs:
       - name: Remove files to not be published
         if: inputs.publishExclude != ''
         run: |
-          set -ex
+          set -e
           echo '${{ inputs.publishExclude }}' | jq -cr '.[]' | while read exclude; do
             if [ -e "$exclude" ]; then
               git rm "$exclude"
