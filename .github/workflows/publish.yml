@@ -164,7 +164,7 @@ jobs:
           cache_dir="${PUB_CACHE:-~/.pub-cache}"
           mkdir -p "$cache_dir"
           echo '${{ secrets.PUB_DEV_CREDENTIALS }}' > "$cache_dir/credentials.json"
-      - name: Remove ignored files
+      - name: Remove files to not be published
         if: inputs.publishExclude != ''
         run: |
           set -e

@@ -106,20 +106,20 @@ jobs:
       - name: Validate correct formatting
         run: dart format -onone --set-exit-if-changed .
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Test publishing configuration
+      - name: Remove files to not be published
+        if: inputs.publishExclude != ''
         run: |
           set -e
-          if [[ ! -z "${{ inputs.publishExclude }}" ]]; then
-            IFS=':'
-            for path in "${{ inputs.publishExclude }}"; do
-              if [ -e "$path" ]; then
-                git rm "$path"
-              fi
-            done
-          fi
-          exec dart pub publish --dry-run
+          IFS=':'
+          for path in "${{ inputs.publishExclude }}"; do
+            if [ -e "$path" ]; then
+              git rm "$path"
+            fi
+          done
         working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
+      - name: Test publishing configuration
+        run: dart pub publish --dry-run
+        working-directory: ${{ inputs.workingDirectory }}
   unit_tests:
     name: Unit tests
     needs:

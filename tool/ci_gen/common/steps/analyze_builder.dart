@@ -2,6 +2,7 @@ import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
 import 'project_setup_builder.dart';
+import 'run_publish_builder.dart';
 
 class AnalyzeBuilder implements StepBuilder {
   final Expression repository;
@@ -50,22 +51,12 @@ class AnalyzeBuilder implements StepBuilder {
           run: '$baseTool format -onone --set-exit-if-changed .',
           workingDirectory: workingDirectory.toString(),
         ),
-        Step.run(
-          name: 'Test publishing configuration',
-          run: '''
-set -e
-if [[ ! -z "$publishExclude" ]]; then
-  IFS=':'
-  for path in "$publishExclude"; do
-    if [ -e "\$path" ]; then
-      git rm "\$path"
-    fi
-  done
-fi
-exec $pubTool publish --dry-run
-''',
-          workingDirectory: workingDirectory.toString(),
-          shell: 'bash',
-        ),
+        ...RunPublishBuilder(
+          workingDirectory: workingDirectory,
+          publishExclude: publishExclude,
+          pubTool: pubTool,
+          publishStepName: 'Test publishing configuration',
+          publishArgs: '--dry-run',
+        ).build(),
       ];
 }

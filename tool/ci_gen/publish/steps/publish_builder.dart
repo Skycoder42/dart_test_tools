@@ -1,5 +1,6 @@
 import '../../common/api/step_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
+import '../../common/steps/run_publish_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
@@ -57,25 +58,13 @@ mkdir -p "\$cache_dir"
 echo '$pubDevCredentials' > "\$cache_dir/credentials.json"
 ''',
         ),
-        Step.run(
-          name: 'Remove ignored files',
-          ifExpression: publishExclude.ne(const Expression.literal('')),
-          run: '''
-set -e
-IFS=':'
-for path in "$publishExclude"; do
-  if [ -e "\$path" ]; then
-    git rm "\$path"
-  fi
-done
-''',
-          workingDirectory: workingDirectory.toString(),
-        ),
-        Step.run(
-          name: 'Publish package',
-          run: '${toolsPub.expression} publish --force',
-          workingDirectory: workingDirectory.toString(),
-        ),
+        ...RunPublishBuilder(
+          workingDirectory: workingDirectory,
+          publishExclude: publishExclude,
+          pubTool: toolsPub.expression.toString(),
+          publishStepName: 'Publish package',
+          publishArgs: '--force',
+        ).build(),
         const Step.run(
           name: 'Clean up credentials',
           ifExpression: Expression('always()'),
