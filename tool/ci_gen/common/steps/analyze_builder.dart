@@ -29,6 +29,10 @@ class AnalyzeBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
+        Step.run(
+          name: 'Install dart_test_tools',
+          run: '$pubTool global activate dart_test_tools ^2.0.0-test.1',
+        ),
         ...ProjectSetupBuilder(
           repository: repository,
           workingDirectory: workingDirectory,
@@ -36,16 +40,12 @@ class AnalyzeBuilder implements StepBuilder {
           pubTool: pubTool,
           runTool: runTool,
         ).build(),
-        // Step.run(
-        //   name: 'Install dart_test_tools',
-        //   run: '$pubTool global activate dart_test_tools',
-        // ),
         ...buildAnalyzeStep(),
-        // Step.run(
-        //   name: 'Validate library imports',
-        //   run: '$pubTool global run dart_test_tools:import_analyzer -lALL',
-        //   workingDirectory: Expression.input(workingDirectoryInput),
-        // ),
+        Step.run(
+          name: 'Validate library imports',
+          run: '$pubTool global run dart_test_tools:import_analyzer -lALL',
+          workingDirectory: workingDirectory.toString(),
+        ),
         Step.run(
           name: 'Validate correct formatting',
           run: '$baseTool format -onone --set-exit-if-changed .',
