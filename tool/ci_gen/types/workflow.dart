@@ -1,6 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'id.dart';
 import 'job.dart';
 import 'on.dart';
 
