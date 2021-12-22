@@ -11,10 +11,20 @@ on:
 
 jobs:
   ci:
-    name: Contintues Integration
+    name: Continous Integration
     uses: Skycoder42/dart_test_tools/.github/workflows/dart.yml@main
     with:
       buildRunner: true
       publishExclude: '["lib/src/.gitignore", "tool/.gitignore"]'
       unitTestPaths: ""
       platforms: '["linux","windows","macos"]'
+  cd:
+    name: Continous Deployment
+    needs:
+      - ci
+    uses: Skycoder42/dart_test_tools/.github/workflows/publish.yml@main
+    with:
+      buildRunner: true
+      publishExclude: '["lib/src/.gitignore", "tool/.gitignore"]'
+    secrets:
+      PUB_DEV_CREDENTIALS: ${{ secrets.PUB_DEV_CREDENTIALS }}
