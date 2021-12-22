@@ -122,9 +122,9 @@ jobs:
         shell: bash
   unit_tests:
     name: Unit tests
-    if: inputs.unitTestPaths != ''
     needs:
       - analyze
+    if: inputs.unitTestPaths != ''
     strategy:
       fail-fast: false
       matrix:
@@ -197,9 +197,9 @@ jobs:
           path: ${{ inputs.workingDirectory }}/coverage/lcov.info
   coverage:
     name: Validate coverage
-    if: inputs.minCoverage > 0 && inputs.unitTestPaths != ''
     needs:
       - unit_tests
+    if: inputs.minCoverage > 0 && inputs.unitTestPaths != ''
     runs-on: ubuntu-latest
     steps:
       - name: Install coverage tools
@@ -260,9 +260,9 @@ jobs:
           min_coverage: ${{ inputs.minCoverage }}
   integration_tests:
     name: Integration tests
-    if: inputs.integrationTestPaths != ''
     needs:
       - analyze
+    if: inputs.integrationTestPaths != ''
     strategy:
       fail-fast: false
       matrix:

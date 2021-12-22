@@ -30,8 +30,7 @@ abstract class PublishWorkflow {
       publishExclude: inputContext(WorkflowInputs.publishExclude),
       publish: inputContext(WorkflowInputs.publish),
       pubDevCredentials: secretContext(WorkflowSecrets.pubDevCredentials),
-      releaseUpdate:
-          ReleaseJobBuilder.updateOutput.expression, // TODO via needs
+      releaseUpdate: ReleaseJobBuilder.updateOutput,
     );
 
     return Workflow(

@@ -10,5 +10,5 @@ abstract class JobBuilder {
 }
 
 extension JobIdListX on Iterable<JobBuilder> {
-  List<JobId> get ids => map((j) => j.id).toList();
+  Set<JobId> get ids => {...map((j) => j.id)};
 }

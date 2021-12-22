@@ -11,11 +11,12 @@ part 'job.freezed.dart';
 part 'job.g.dart';
 
 class _StepOutputMapConverter
-    implements JsonConverter<Map<IdOutput, IdOutput>?, Map<String, String>?> {
+    implements
+        JsonConverter<Map<JobIdOutput, StepIdOutput>?, Map<String, String>?> {
   const _StepOutputMapConverter();
 
   @override
-  Map<IdOutput, IdOutput>? fromJson(Map<String, String>? json) {
+  Map<JobIdOutput, StepIdOutput>? fromJson(Map<String, String>? json) {
     if (json == null) {
       return null;
     }
@@ -24,7 +25,7 @@ class _StepOutputMapConverter
   }
 
   @override
-  Map<String, String>? toJson(Map<IdOutput, IdOutput>? outputs) {
+  Map<String, String>? toJson(Map<JobIdOutput, StepIdOutput>? outputs) {
     if (outputs == null) {
       return null;
     }
@@ -36,15 +37,16 @@ class _StepOutputMapConverter
   }
 }
 
-class _NeedsConverter implements JsonConverter<List<JobId>?, List<String>?> {
+class _NeedsConverter implements JsonConverter<Set<JobId>?, List<String>?> {
   const _NeedsConverter();
 
   @override
-  List<JobId>? fromJson(List<String>? json) =>
-      json?.map((j) => const JobIdConverter().fromJson(j)!).toList();
+  Set<JobId>? fromJson(List<String>? json) => json != null
+      ? {...json.map((j) => const JobIdConverter().fromJson(j)!)}
+      : null;
 
   @override
-  List<String>? toJson(List<JobId>? needs) =>
+  List<String>? toJson(Set<JobId>? needs) =>
       needs?.map((id) => const JobIdConverter().toJson(id)!).toList();
 }
 
@@ -52,14 +54,14 @@ class _NeedsConverter implements JsonConverter<List<JobId>?, List<String>?> {
 class Job with _$Job {
   const factory Job({
     required String name,
-    @JsonKey(includeIfNull: false) @_NeedsConverter() List<JobId>? needs,
+    @JsonKey(includeIfNull: false) @_NeedsConverter() Set<JobId>? needs,
     @JsonKey(name: 'if', includeIfNull: false)
     @ExpressionConverter()
         Expression? ifExpression,
     @JsonKey(includeIfNull: false) Strategy? strategy,
     @JsonKey(includeIfNull: false)
     @_StepOutputMapConverter()
-        Map<IdOutput, IdOutput>? outputs,
+        Map<JobIdOutput, StepIdOutput>? outputs,
     @JsonKey(name: 'runs-on') required String runsOn,
     required Steps steps,
   }) = _Job;

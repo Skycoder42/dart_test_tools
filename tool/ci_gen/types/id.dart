@@ -14,7 +14,22 @@ class Id with _$Id {
   @override
   String toString() => id;
 
-  IdOutput output(String name) => IdOutput._fromStepId(this, name);
+  IdOutput _createOutput(String name) => map(
+        step: (stepId) => IdOutput.step(stepId, name),
+        job: (jobId) => IdOutput.job(jobId, name),
+      );
+}
+
+extension IdX on Id {
+  IdOutput output(String name) => _createOutput(name);
+}
+
+extension StepIdX on StepId {
+  StepIdOutput output(String name) => _createOutput(name) as StepIdOutput;
+}
+
+extension JobIdX on JobId {
+  JobIdOutput output(String name) => _createOutput(name) as JobIdOutput;
 }
 
 @freezed
@@ -22,17 +37,20 @@ class IdOutput with _$IdOutput {
   const IdOutput._();
 
   // ignore: unused_element
-  const factory IdOutput._fromStepId(Id id, String name) = _IdOutput;
+  const factory IdOutput.step(StepId id, String name) = StepIdOutput;
+  const factory IdOutput.job(JobId id, String name) = JobIdOutput;
 
-  Expression get expression => id.when(
-        step: (id) => Expression('steps.$id.outputs.$name'),
-        job: (id) => Expression('needs.$id.outputs.$name'),
+  Id get id => throw StateError("Unreachable code was reached");
+
+  Expression get expression => when(
+        step: (id, name) => Expression('steps.$id.outputs.$name'),
+        job: (id, name) => Expression('needs.$id.outputs.$name'),
       );
 
-  String bashSetter(String value) => id.maybeMap(
-        step: (_) => 'echo "::set-output name=$name::$value"',
+  String bashSetter(String value) => maybeWhen(
+        step: (id, name) => 'echo "::set-output name=$name::$value"',
         orElse: () =>
-            throw UnsupportedError('Cannot create a bash setter for $id'),
+            throw UnsupportedError('Cannot create a bash setter for $this'),
       );
 }
 

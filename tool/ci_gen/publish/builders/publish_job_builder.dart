@@ -7,7 +7,7 @@ import '../steps/publish_builder.dart';
 
 class PublishJobBuilder implements JobBuilder {
   final Expression publish;
-  final Expression releaseUpdate;
+  final JobIdOutput releaseUpdate;
   final Expression flutter;
   final Expression dartSdkVersion;
   final Expression repository;
@@ -34,9 +34,12 @@ class PublishJobBuilder implements JobBuilder {
   @override
   Job build([Iterable<JobBuilder>? needs]) => Job(
         name: 'Publish to pub.dev',
-        needs: needs?.ids,
-        ifExpression:
-            publish & releaseUpdate.eq(const Expression.literal('true')),
+        needs: {
+          releaseUpdate.id,
+          ...?needs?.ids,
+        },
+        ifExpression: publish &
+            releaseUpdate.expression.eq(const Expression.literal('true')),
         runsOn: 'ubuntu-latest',
         steps: [
           ...DartSdkBuilder(
