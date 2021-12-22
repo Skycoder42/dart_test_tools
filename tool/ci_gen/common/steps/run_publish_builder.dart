@@ -24,10 +24,9 @@ class RunPublishBuilder implements StepBuilder {
           ifExpression: publishExclude.ne(const Expression.literal('')),
           run: '''
 set -e
-IFS=':'
-for path in "$publishExclude"; do
-  if [ -e "\$path" ]; then
-    git rm "\$path"
+echo '$publishExclude' | jq -c '.[]' | while read exclude; do
+  if [ -e "\$exclude" ]; then
+    git rm "\$exclude"
   fi
 done
 ''',

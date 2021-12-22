@@ -15,7 +15,6 @@ jobs:
     uses: Skycoder42/dart_test_tools/.github/workflows/dart.yml@main
     with:
       buildRunner: true
-      publishExclude: lib/src/.gitignore:tool/.gitignore
+      publishExclude: '["lib/src/.gitignore", "tool/.gitignore"]'
       unitTestPaths: ""
-      minCoverage: 0
       platforms: '["linux","windows","macos"]'

@@ -48,7 +48,10 @@ on:
       publishExclude:
         type: string
         required: false
-        description: Specify a list of colon separated paths to be excluded from publishing.
+        default: '[]'
+        description: |
+          Specify a JSON array of paths to be excluded from publishing.
+          Example: '["secrets.txt","debug.log"]'
     secrets:
       PUB_DEV_CREDENTIALS:
         required: false
@@ -168,10 +171,9 @@ jobs:
         if: inputs.publishExclude != ''
         run: |
           set -e
-          IFS=':'
-          for path in "${{ inputs.publishExclude }}"; do
-            if [ -e "$path" ]; then
-              git rm "$path"
+          echo '${{ inputs.publishExclude }}' | jq -c '.[]' | while read exclude; do
+            if [ -e "$exclude" ]; then
+              git rm "$exclude"
             fi
           done
         working-directory: ${{ inputs.workingDirectory }}

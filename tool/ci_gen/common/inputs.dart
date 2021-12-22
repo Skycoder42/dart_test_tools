@@ -85,13 +85,15 @@ ${defaultPlatforms.map((p) => '- $p').join('\n')}
     ),
   );
 
-  static const publishExclude = WorkflowInput(
+  static final publishExclude = WorkflowInput(
     name: 'publishExclude',
-    input: Input(
-      type: Type.string,
+    input: Input.json(
       required: false,
-      description: 'Specify a list of colon separated paths to be excluded '
-          'from publishing.',
+      defaultValue: const [],
+      description: '''
+Specify a JSON array of paths to be excluded from publishing.
+Example: '["secrets.txt","debug.log"]'
+''',
     ),
   );
 
@@ -116,11 +118,11 @@ ${defaultPlatforms.map((p) => '- $p').join('\n')}
     ),
   );
 
-  static const integrationTestSetup = WorkflowInput(
+  static final integrationTestSetup = WorkflowInput(
     name: 'integrationTestSetup',
-    input: Input(
-      type: Type.string,
+    input: Input.json(
       required: false,
+      defaultValue: const {},
       description: '''
 A JSON-Matrix with extra setup steps for each platform.
 contains key-value pairs for each platform with a command to be invoked.

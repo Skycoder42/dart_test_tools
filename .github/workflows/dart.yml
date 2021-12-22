@@ -28,7 +28,10 @@ on:
       publishExclude:
         type: string
         required: false
-        description: Specify a list of colon separated paths to be excluded from publishing.
+        default: "[]"
+        description: |
+          Specify a JSON array of paths to be excluded from publishing.
+          Example: '["secrets.txt","debug.log"]'
       unitTestPaths:
         type: string
         required: false
@@ -61,6 +64,7 @@ on:
       integrationTestSetup:
         type: string
         required: false
+        default: "{}"
         description: |
           A JSON-Matrix with extra setup steps for each platform.
           contains key-value pairs for each platform with a command to be invoked.
@@ -110,10 +114,9 @@ jobs:
         if: inputs.publishExclude != ''
         run: |
           set -ex
-          IFS=':'
-          for path in "${{ inputs.publishExclude }}"; do
-            if [ -e "$path" ]; then
-              git rm "$path"
+          echo '${{ inputs.publishExclude }}' | jq -c '.[]' | while read exclude; do
+            if [ -e "$exclude" ]; then
+              git rm "$exclude"
             fi
           done
         working-directory: ${{ inputs.workingDirectory }}
