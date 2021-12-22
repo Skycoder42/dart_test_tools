@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../common/api/expression_builder.dart';
-import '../../common/api/job_builder.dart';
 import '../../common/builders/sdk_job_builder.dart';
 import '../../common/steps/platforms_builder_mixin.dart';
 import '../../types/expression.dart';
@@ -70,6 +69,7 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
     ),
   ];
 
+  final JobId analyzeJobId;
   @override
   final Expression dartSdkVersion;
   final Expression repository;
@@ -80,6 +80,7 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression platforms;
 
   DartIntegrationTestJobBuilder({
+    required this.analyzeJobId,
     required this.dartSdkVersion,
     required this.repository,
     required this.workingDirectory,
@@ -93,10 +94,10 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
   JobId get id => const JobId('integration_tests');
 
   @override
-  Job build([Iterable<JobBuilder>? needs]) => Job(
+  Job build() => Job(
         name: 'Integration tests',
         ifExpression: integrationTestPaths.ne(const Expression.literal('')),
-        needs: needs?.ids,
+        needs: {analyzeJobId},
         strategy: Strategy(
           failFast: false,
           matrix: Matrix(

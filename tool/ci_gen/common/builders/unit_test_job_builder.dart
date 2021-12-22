@@ -6,7 +6,6 @@ import '../../types/job.dart';
 import '../../types/matrix.dart';
 import '../../types/strategy.dart';
 import '../api/expression_builder.dart';
-import '../api/job_builder.dart';
 import '../steps/platforms_builder_mixin.dart';
 import '../steps/unit_test_builder.dart';
 import 'sdk_job_builder.dart';
@@ -78,6 +77,7 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
     ),
   ];
 
+  final JobId analyzeJobId;
   final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
@@ -86,6 +86,7 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
   final Expression platforms;
 
   UnitTestJobBuilder({
+    required this.analyzeJobId,
     required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
@@ -104,11 +105,11 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
   bool get needsFormatting;
 
   @override
-  Job build([Iterable<JobBuilder>? needs]) {
+  Job build() {
     return Job(
       name: 'Unit tests',
       ifExpression: unitTestPaths.ne(const Expression.literal('')),
-      needs: needs?.ids,
+      needs: {analyzeJobId},
       strategy: Strategy(
         failFast: false,
         matrix: Matrix(

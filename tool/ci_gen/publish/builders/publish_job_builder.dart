@@ -32,12 +32,9 @@ class PublishJobBuilder implements JobBuilder {
   JobId get id => const JobId('publish');
 
   @override
-  Job build([Iterable<JobBuilder>? needs]) => Job(
+  Job build() => Job(
         name: 'Publish to pub.dev',
-        needs: {
-          releaseUpdate.id,
-          ...?needs?.ids,
-        },
+        needs: {releaseUpdate.id},
         ifExpression: publish &
             releaseUpdate.expression.eq(const Expression.literal('true')),
         runsOn: 'ubuntu-latest',

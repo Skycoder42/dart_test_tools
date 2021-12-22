@@ -9,6 +9,7 @@ import '../steps/validate_coverage_builder.dart';
 class ValidateCoverageJobBuilder implements JobBuilder {
   static const _supportedPlatforms = ['linux', 'windows', 'macos', 'web'];
 
+  final JobId unitTestJobId;
   final Expression repository;
   final Expression workingDirectory;
   final Expression unitTestPaths;
@@ -17,6 +18,7 @@ class ValidateCoverageJobBuilder implements JobBuilder {
   final Expression platforms;
 
   ValidateCoverageJobBuilder({
+    required this.unitTestJobId,
     required this.repository,
     required this.workingDirectory,
     required this.unitTestPaths,
@@ -29,13 +31,13 @@ class ValidateCoverageJobBuilder implements JobBuilder {
   JobId get id => const JobId('coverage');
 
   @override
-  Job build([Iterable<JobBuilder>? needs]) => Job(
+  Job build() => Job(
         name: 'Validate coverage',
         ifExpression: CoverageBuilderMixin.createRunCoverageExpression(
               minCoverage,
             ) &
             (unitTestPaths.ne(const Expression.literal(''))),
-        needs: needs?.ids,
+        needs: {unitTestJobId},
         runsOn: 'ubuntu-latest',
         steps: [
           ...ValidateCoverageBuilder(

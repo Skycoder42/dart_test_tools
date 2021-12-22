@@ -6,9 +6,5 @@ abstract class JobBuilder {
 
   JobId get id;
 
-  Job build([Iterable<JobBuilder>? needs]);
-}
-
-extension JobIdListX on Iterable<JobBuilder> {
-  Set<JobId> get ids => {...map((j) => j.id)};
+  Job build();
 }

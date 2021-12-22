@@ -23,6 +23,7 @@ abstract class DartWorkflow {
       publishExclude: inputContext(WorkflowInputs.publishExclude),
     );
     final unitTestBulder = DartUnitTestJobBuilder(
+      analyzeJobId: analyzeJobBuilder.id,
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
@@ -32,6 +33,7 @@ abstract class DartWorkflow {
       platforms: inputContext.builder(WorkflowInputs.platforms),
     );
     final validateCoverageBuilder = ValidateCoverageJobBuilder(
+      unitTestJobId: unitTestBulder.id,
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
@@ -40,6 +42,7 @@ abstract class DartWorkflow {
       platforms: inputContext.builder(WorkflowInputs.platforms),
     );
     final integrationTestBuilder = DartIntegrationTestJobBuilder(
+      analyzeJobId: analyzeJobBuilder.id,
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
@@ -57,11 +60,9 @@ abstract class DartWorkflow {
       ),
       jobs: {
         analyzeJobBuilder.id: analyzeJobBuilder.build(),
-        unitTestBulder.id: unitTestBulder.build([analyzeJobBuilder]),
-        validateCoverageBuilder.id:
-            validateCoverageBuilder.build([unitTestBulder]),
-        integrationTestBuilder.id:
-            integrationTestBuilder.build([analyzeJobBuilder]),
+        unitTestBulder.id: unitTestBulder.build(),
+        validateCoverageBuilder.id: validateCoverageBuilder.build(),
+        integrationTestBuilder.id: integrationTestBuilder.build(),
       },
     );
   }

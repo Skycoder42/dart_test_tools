@@ -42,7 +42,7 @@ abstract class PublishWorkflow {
       ),
       jobs: {
         releaseJobBuilder.id: releaseJobBuilder.build(),
-        publishJobBuilder.id: publishJobBuilder.build([releaseJobBuilder]),
+        publishJobBuilder.id: publishJobBuilder.build(),
       },
     );
   }

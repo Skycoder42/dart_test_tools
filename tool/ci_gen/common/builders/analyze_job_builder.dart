@@ -4,7 +4,6 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
 import '../../types/step.dart';
-import '../api/job_builder.dart';
 import '../steps/analyze_builder.dart';
 import 'sdk_job_builder.dart';
 
@@ -27,10 +26,9 @@ abstract class AnalyzeJobBuilder extends SdkJobBuilder {
   JobId get id => const JobId('analyze');
 
   @override
-  Job build([Iterable<JobBuilder>? needs]) => Job(
+  Job build() => Job(
         name: 'Analyze',
         runsOn: analyzeImage.toString(),
-        needs: needs?.ids,
         steps: [
           ...buildSetupSdkSteps(),
           ...AnalyzeBuilder(

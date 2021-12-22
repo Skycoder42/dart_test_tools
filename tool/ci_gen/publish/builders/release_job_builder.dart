@@ -24,11 +24,10 @@ class ReleaseJobBuilder implements JobBuilder {
   JobId get id => jobId;
 
   @override
-  Job build([Iterable<JobBuilder>? needs]) => Job(
+  Job build() => Job(
         name: 'Create release if needed',
         runsOn: 'ubuntu-latest',
         ifExpression: const Expression('github.ref').eq(releaseRef),
-        needs: needs?.ids,
         outputs: {
           updateOutput: ReleaseBuilder.versionUpdate,
         },
