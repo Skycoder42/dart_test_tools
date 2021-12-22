@@ -168,4 +168,26 @@ Example:
           'followed by the package version.',
     ),
   );
+
+  static const flutter = WorkflowInput(
+    name: 'flutter',
+    input: Input(
+      type: Type.boolean,
+      required: false,
+      defaultValue: false,
+      description:
+          'Specifies, whether the package is a dart or a flutter package.',
+    ),
+  );
+
+  static const publish = WorkflowInput(
+    name: 'publish',
+    input: Input(
+      type: Type.boolean,
+      required: false,
+      defaultValue: true,
+      description: 'Publish to pub.dev, if a new release was created. Enabled '
+          'by default. Requires the PUB_DEV_CREDENTIALS secret to be set.',
+    ),
+  );
 }

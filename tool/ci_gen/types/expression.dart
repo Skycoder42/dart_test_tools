@@ -20,6 +20,8 @@ class Expression with _$Expression {
             rawValue is String ? "'$rawValue'" : rawValue.toString(),
       );
 
+  Expression get not => Expression('!$value');
+
   Expression operator <(Expression other) =>
       Expression('$value < ${other.value}');
 

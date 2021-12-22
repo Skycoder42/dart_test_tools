@@ -1,6 +1,7 @@
 import '../../common/builders/sdk_job_builder.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
+import '../steps/dart_sdk_builder.dart';
 
 mixin DartSdkJobBuilderMixin on SdkJobBuilder {
   Expression get dartSdkVersion;
@@ -13,14 +14,9 @@ mixin DartSdkJobBuilderMixin on SdkJobBuilder {
 
   @override
   Iterable<Step> buildSetupSdkSteps([Expression? ifExpression]) => [
-        Step.uses(
-          name: 'Install Dart-SDK '
-              '($dartSdkVersion)',
+        ...DartSdkBuilder(
+          dartSdkVersion: dartSdkVersion,
           ifExpression: ifExpression,
-          uses: 'dart-lang/setup-dart@v1.3',
-          withArgs: {
-            'sdk': dartSdkVersion.toString(),
-          },
-        )
+        ).build(),
       ];
 }

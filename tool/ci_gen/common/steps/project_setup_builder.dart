@@ -10,6 +10,7 @@ class ProjectSetupBuilder implements StepBuilder {
   final String pubTool;
   final String runTool;
   final Expression? ifExpression;
+  final bool skipYqInstall;
 
   const ProjectSetupBuilder({
     required this.repository,
@@ -18,21 +19,25 @@ class ProjectSetupBuilder implements StepBuilder {
     required this.pubTool,
     required this.runTool,
     this.ifExpression,
+    this.skipYqInstall = false,
   });
 
   @override
   Iterable<Step> build() => [
-        Step.run(
-          name: 'Install yq (Windows)',
-          ifExpression:
-              const Expression("runner.os == 'Windows'") & ifExpression,
-          run: 'choco install yq',
-        ),
-        Step.run(
-          name: 'Install yq (macOS)',
-          ifExpression: const Expression("runner.os == 'macOS'") & ifExpression,
-          run: 'brew install yq',
-        ),
+        if (!skipYqInstall) ...[
+          Step.run(
+            name: 'Install yq (Windows)',
+            ifExpression:
+                const Expression("runner.os == 'Windows'") & ifExpression,
+            run: 'choco install yq',
+          ),
+          Step.run(
+            name: 'Install yq (macOS)',
+            ifExpression:
+                const Expression("runner.os == 'macOS'") & ifExpression,
+            run: 'brew install yq',
+          ),
+        ],
         ...CheckoutBuilder(
           repository: repository,
           ifExpression: ifExpression,
