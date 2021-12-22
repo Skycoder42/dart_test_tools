@@ -1,0 +1,21 @@
+name: Continous Integration and Deployment
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  ci:
+    name: Contintues Integration
+    uses: Skycoder42/dart_test_tools/.github/workflows/dart.yml@main
+    with:
+      buildRunner: true
+      publishExclude: lib/src/.gitignore:tool/.gitignore
+      unitTestPaths: ""
+      minCoverage: 0
+      platforms: '["linux","windows","macos"]'
