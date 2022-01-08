@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:yaml_writer/yaml_writer.dart';
 
+import 'ci_gen/compile/compile_workflow.dart';
 import 'ci_gen/dart/dart_workflow.dart';
 import 'ci_gen/publish/publish_workflow.dart';
 import 'ci_gen/types/workflow.dart';
@@ -10,6 +11,7 @@ Future<void> main() async {
   exitCode = await Stream.fromFutures([
     _writeWorkflowToFile('dart', DartWorkflow.buildWorkflow()),
     _writeWorkflowToFile('publish', PublishWorkflow.buildWorkflow()),
+    _writeWorkflowToFile('compile2', CompileWorkflow.buildWorkflow()),
   ]).reduce(
     (previous, element) => previous + element,
   );
