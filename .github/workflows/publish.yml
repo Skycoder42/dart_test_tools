@@ -113,12 +113,10 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create Release
         if: steps.version.outputs.update == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.release_content.outputs.tag_name }}
-          release_name: ${{ steps.release_content.outputs.release_name }}
+          name: ${{ steps.release_content.outputs.release_name }}
           body_path: ${{ steps.release_content.outputs.body_path }}
   publish:
     name: Publish to pub.dev

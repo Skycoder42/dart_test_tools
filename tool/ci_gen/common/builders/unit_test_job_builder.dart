@@ -13,7 +13,7 @@ import 'sdk_job_builder.dart';
 part 'unit_test_job_builder.freezed.dart';
 part 'unit_test_job_builder.g.dart';
 
-class _UnitTextJobMatrix implements IUnitTextMatrix {
+class _UnitTestJobMatrix implements IUnitTextMatrix {
   @override
   final Expression platform;
   final Expression os;
@@ -22,7 +22,7 @@ class _UnitTextJobMatrix implements IUnitTextMatrix {
   @override
   final Expression dartTestArgs;
 
-  const _UnitTextJobMatrix({
+  const _UnitTestJobMatrix({
     required this.platform,
     required this.os,
     required this.lcovCleanCommand,
@@ -45,7 +45,7 @@ class _PlatformInclude with _$_PlatformInclude {
 }
 
 abstract class UnitTestJobBuilder extends SdkJobBuilder {
-  static const _matrix = _UnitTextJobMatrix(
+  static const _matrix = _UnitTestJobMatrix(
     platform: Expression('matrix.platform'),
     os: Expression('matrix.os'),
     lcovCleanCommand: Expression('matrix.lcovCleanCommand'),

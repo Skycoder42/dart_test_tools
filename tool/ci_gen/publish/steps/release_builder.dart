@@ -85,13 +85,10 @@ ${releaseContentBodyPath.bashSetter('\$version_changelog_file')}
           name: 'Create Release',
           ifExpression:
               versionUpdate.expression.eq(const Expression.literal('true')),
-          env: {
-            'GITHUB_TOKEN': const Expression('secrets.GITHUB_TOKEN').toString(),
-          },
-          uses: 'actions/create-release@v1',
+          uses: 'softprops/action-gh-release@v1',
           withArgs: {
             'tag_name': releaseContentTagName.expression.toString(),
-            'release_name': releaseContentReleaseName.expression.toString(),
+            'name': releaseContentReleaseName.expression.toString(),
             'body_path': releaseContentBodyPath.expression.toString(),
           },
         ),
