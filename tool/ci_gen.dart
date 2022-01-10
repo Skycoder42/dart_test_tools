@@ -11,7 +11,7 @@ Future<void> main() async {
   exitCode = await Stream.fromFutures([
     _writeWorkflowToFile('dart', DartWorkflow.buildWorkflow()),
     _writeWorkflowToFile('publish', PublishWorkflow.buildWorkflow()),
-    _writeWorkflowToFile('compile2', CompileWorkflow.buildWorkflow()),
+    _writeWorkflowToFile('compile', CompileWorkflow.buildWorkflow()),
   ]).reduce(
     (previous, element) => previous + element,
   );

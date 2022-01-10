@@ -4,6 +4,7 @@ import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'builders/compile_job_builder.dart';
+import 'builders/release_job_builder.dart';
 
 abstract class CompileWorkflow {
   CompileWorkflow._();
@@ -20,6 +21,14 @@ abstract class CompileWorkflow {
       targets: inputContext(WorkflowInputs.targets),
     );
 
+    final releaseJobBuilder = ReleaseJobBuilder(
+      compileJobId: compileJobBuilder.id,
+      releaseRef: inputContext(WorkflowInputs.releaseRef),
+      repository: inputContext(WorkflowInputs.repository),
+      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      tagPrefix: inputContext(WorkflowInputs.tagPrefix),
+    );
+
     return Workflow(
       on: On(
         workflowCall: WorkflowCall(
@@ -28,6 +37,7 @@ abstract class CompileWorkflow {
       ),
       jobs: {
         compileJobBuilder.id: compileJobBuilder.build(),
+        releaseJobBuilder.id: releaseJobBuilder.build(),
       },
     );
   }
