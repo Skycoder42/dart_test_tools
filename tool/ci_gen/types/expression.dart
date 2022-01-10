@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'expression.freezed.dart';
@@ -13,11 +15,13 @@ class Expression with _$Expression {
     'Only YAML primitives (string, number, bool) are allowed',
   )
   const factory Expression.literal(dynamic rawValue) = _LiteralExpression;
+  const factory Expression.json(Object? jsonValue) = _JsonExpression;
 
   String get value => when(
         (value) => value,
         literal: (rawValue) =>
             rawValue is String ? "'$rawValue'" : rawValue.toString(),
+        json: (jsonValue) => json.encode(jsonValue),
       );
 
   Expression get not => Expression('!$value');

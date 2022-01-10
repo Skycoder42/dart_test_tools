@@ -203,4 +203,35 @@ Example:
           'by default. Requires the PUB_DEV_CREDENTIALS secret to be set.',
     ),
   );
+
+  static final hosts = WorkflowInput(
+    name: 'hosts',
+    input: Input.json(
+      required: false,
+      defaultValue: ['ubuntu-latest', 'windows-latest', 'macos-latest'],
+      description: '''
+The host operating systems to create binaries for.
+By default the latest versions of linux, windows and macos are used.
+Expects a JSON array of GitHub Action host OS specifies.
+
+Example:
+["ubuntu-latest", "windows-latest", "macos-latest"]
+''',
+    ),
+  );
+
+  static const targets = WorkflowInput(
+    name: 'targets',
+    input: Input(
+      type: Type.string,
+      required: true,
+      description: '''
+The names of the targets to be compiled. Must be JSON array of strings, each
+string beeing the name of a file in the bin/ folder, without the dart extension.
+
+Example:
+["my-app"]
+''',
+    ),
+  );
 }
