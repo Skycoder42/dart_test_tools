@@ -70,7 +70,7 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
       );
 
   Expression get _matrixJsonExpression =>
-      const Expression.literal('{"host":{0},"target":{1}}');
+      const Expression.literal('{{"host":{0},"target":{1}}}');
 
   Expression get _matrixFormatExpression => Expression(
         "format(${_matrixJsonExpression.value}, ${hosts.value}, ${targets.value})",

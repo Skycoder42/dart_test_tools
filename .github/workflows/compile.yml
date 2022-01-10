@@ -55,7 +55,7 @@ jobs:
     name: Create compiled artifacts
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(format('{"host":{0},"target":{1}}', inputs.hosts, inputs.targets)) }}
+      matrix: ${{ fromJson(format('{{"host":{0},"target":{1}}}', inputs.hosts, inputs.targets)) }}
     runs-on: ${{ matrix.host }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
