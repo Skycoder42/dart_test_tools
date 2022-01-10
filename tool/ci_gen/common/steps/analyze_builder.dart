@@ -1,10 +1,14 @@
 import '../../types/expression.dart';
+import '../../types/id.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
 import 'project_setup_builder.dart';
 import 'run_publish_builder.dart';
 
 class AnalyzeBuilder implements StepBuilder {
+  static const checkPublishStepId = StepId('checkPublish');
+  static late final checkPublish = checkPublishStepId.output('publish');
+
   final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
@@ -51,12 +55,29 @@ class AnalyzeBuilder implements StepBuilder {
           run: '$baseTool format -onone --set-exit-if-changed .',
           workingDirectory: workingDirectory.toString(),
         ),
+        Step.run(
+          id: checkPublishStepId,
+          name: 'Check if package is publishable',
+          run: '''
+set -e
+publish_to=\$(cat pubspec.yaml | yq e ".publish_to" -)
+if [[ "\$publish_to" == "none" ]]; then
+  ${checkPublish.bashSetter('false')}
+else
+  ${checkPublish.bashSetter('true')}
+fi
+''',
+          workingDirectory: workingDirectory.toString(),
+          shell: 'bash',
+        ),
         ...RunPublishBuilder(
           workingDirectory: workingDirectory,
           publishExclude: publishExclude,
           pubTool: pubTool,
           publishStepName: 'Test publishing configuration',
           publishArgs: '--dry-run',
+          ifExpression:
+              checkPublish.expression.eq(const Expression.literal('true')),
         ).build(),
       ];
 }

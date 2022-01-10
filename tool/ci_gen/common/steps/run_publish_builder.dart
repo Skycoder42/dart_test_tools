@@ -8,6 +8,7 @@ class RunPublishBuilder implements StepBuilder {
   final String pubTool;
   final String publishStepName;
   final String publishArgs;
+  final Expression? ifExpression;
 
   RunPublishBuilder({
     required this.workingDirectory,
@@ -15,13 +16,15 @@ class RunPublishBuilder implements StepBuilder {
     required this.pubTool,
     required this.publishStepName,
     required this.publishArgs,
+    this.ifExpression,
   });
 
   @override
   Iterable<Step> build() => [
         Step.run(
           name: 'Remove files to not be published',
-          ifExpression: publishExclude.ne(const Expression.literal('')),
+          ifExpression:
+              publishExclude.ne(const Expression.literal('')) & ifExpression,
           run: '''
 set -e
 echo '$publishExclude' | jq -cr '.[]' | while read exclude; do
@@ -35,6 +38,7 @@ done
         ),
         Step.run(
           name: publishStepName,
+          ifExpression: ifExpression,
           run: '$pubTool publish $publishArgs',
           workingDirectory: workingDirectory.toString(),
         ),

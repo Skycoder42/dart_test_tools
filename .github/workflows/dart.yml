@@ -115,8 +115,20 @@ jobs:
       - name: Validate correct formatting
         run: dart format -onone --set-exit-if-changed .
         working-directory: ${{ inputs.workingDirectory }}
+      - id: checkPublish
+        name: Check if package is publishable
+        run: |
+          set -e
+          publish_to=$(cat pubspec.yaml | yq e ".publish_to" -)
+          if [[ "$publish_to" == "none" ]]; then
+            echo "::set-output name=publish::false"
+          else
+            echo "::set-output name=publish::true"
+          fi
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Remove files to not be published
-        if: inputs.publishExclude != ''
+        if: inputs.publishExclude != '' && steps.checkPublish.outputs.publish == 'true'
         run: |
           set -e
           echo '${{ inputs.publishExclude }}' | jq -cr '.[]' | while read exclude; do
@@ -127,6 +139,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Test publishing configuration
+        if: steps.checkPublish.outputs.publish == 'true'
         run: dart pub publish --dry-run
         working-directory: ${{ inputs.workingDirectory }}
   unit_tests:
