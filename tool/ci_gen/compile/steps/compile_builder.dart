@@ -41,10 +41,11 @@ class CompileBuilder implements StepBuilder {
           run: '''
 set -e
 echo '$targets' | jq -cr '.[]' | while read target; do
-  dart compile ${matrix.binaryType} 'bin/\$target.dart'
+  dart compile ${matrix.binaryType} "bin/\$target.dart"
 done
 ''',
           workingDirectory: workingDirectory.toString(),
+          shell: 'bash',
         ),
         Step.uses(
           name: 'Upload compiled binaries artifact',
