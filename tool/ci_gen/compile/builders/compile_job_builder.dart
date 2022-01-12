@@ -1,3 +1,6 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+import '../../common/api/expression_builder.dart';
 import '../../common/builders/sdk_job_builder.dart';
 import '../../dart/builders/dart_sdk_job_builder_mixin.dart';
 import '../../types/expression.dart';
@@ -7,31 +10,74 @@ import '../../types/matrix.dart';
 import '../../types/strategy.dart';
 import '../steps/compile_builder.dart';
 
+part 'compile_job_builder.freezed.dart';
+part 'compile_job_builder.g.dart';
+
 class _CompileJobMatrix implements ICompileMatrix {
   @override
-  final Expression host;
+  final Expression platform;
   @override
-  final Expression target;
-
-  String get hostName => host.value.split('.').last;
-  String get targetName => target.value.split('.').last;
+  final Expression binaryType;
+  final Expression os;
 
   const _CompileJobMatrix({
-    required this.host,
-    required this.target,
+    required this.platform,
+    required this.binaryType,
+    required this.os,
   });
+}
+
+enum _BinaryType {
+  exe,
+  js,
+}
+
+@freezed
+class _PlatformInclude with _$_PlatformInclude {
+  const factory _PlatformInclude({
+    required String platform,
+    required _BinaryType binaryType,
+    required String os,
+  }) = __PlatformInclude;
+
+  factory _PlatformInclude.fromJson(Map<String, dynamic> json) =>
+      _$_PlatformIncludeFromJson(json);
 }
 
 class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
   static const _matrix = _CompileJobMatrix(
-    host: Expression('matrix.host'),
-    target: Expression('matrix.target'),
+    platform: Expression('matrix.platform'),
+    binaryType: Expression('matrix.binaryType'),
+    os: Expression('matrix.os'),
   );
+
+  static const _platformIncludes = [
+    _PlatformInclude(
+      platform: 'linux',
+      binaryType: _BinaryType.exe,
+      os: 'ubuntu-latest',
+    ),
+    _PlatformInclude(
+      platform: 'windows',
+      binaryType: _BinaryType.exe,
+      os: 'windows-latest',
+    ),
+    _PlatformInclude(
+      platform: 'macos',
+      binaryType: _BinaryType.exe,
+      os: 'macos-latest',
+    ),
+    _PlatformInclude(
+      platform: 'web',
+      binaryType: _BinaryType.js,
+      os: 'ubuntu-latest',
+    ),
+  ];
 
   @override
   JobId get id => const JobId('compile');
 
-  final Expression hosts;
+  final Expression platforms;
   final Expression targets;
   @override
   final Expression dartSdkVersion;
@@ -39,43 +85,39 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
   final Expression workingDirectory;
   final Expression buildRunner;
 
-  const CompileJobBuilder({
-    required this.hosts,
+  CompileJobBuilder({
     required this.targets,
     required this.dartSdkVersion,
     required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
-  });
+    required ExpressionBuilderFn<List<String>> platforms,
+  }) : platforms = platforms(_platformIncludes.map((i) => i.platform).toList());
 
   @override
   Job build() => Job(
         name: 'Create compiled artifacts',
         strategy: Strategy(
           failFast: false,
-          matrix: Matrix.expression(_matixExpression),
+          matrix: Matrix(
+            {
+              'platform': _platformIncludes.map((i) => i.platform).toList(),
+            },
+            include: _platformIncludes.map((i) => i.toJson()).toList(),
+          ),
         ),
-        runsOn: _matrix.host.toString(),
+        runsOn: _matrix.os.toString(),
         steps: [
           ...buildSetupSdkSteps(),
           ...CompileBuilder(
             repository: repository,
             workingDirectory: workingDirectory,
             buildRunner: buildRunner,
+            targets: targets,
             matrix: _matrix,
             pubTool: pubTool,
             runTool: runTool,
           ).build()
         ],
       );
-
-  Expression get _matrixJsonExpression =>
-      const Expression.literal('{{"host":{0},"target":{1}}}');
-
-  Expression get _matrixFormatExpression => Expression(
-        "format(${_matrixJsonExpression.value}, ${hosts.value}, ${targets.value})",
-      );
-
-  Expression get _matixExpression =>
-      Expression('fromJson(${_matrixFormatExpression.value})');
 }

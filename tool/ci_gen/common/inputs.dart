@@ -204,22 +204,6 @@ Example:
     ),
   );
 
-  static final hosts = WorkflowInput(
-    name: 'hosts',
-    input: Input.json(
-      required: false,
-      defaultValue: ['ubuntu-latest', 'windows-latest', 'macos-latest'],
-      description: '''
-The host operating systems to create binaries for.
-By default the latest versions of linux, windows and macos are used.
-Expects a JSON array of GitHub Action host OS specifies.
-
-Example:
-["ubuntu-latest", "windows-latest", "macos-latest"]
-''',
-    ),
-  );
-
   static const targets = WorkflowInput(
     name: 'targets',
     input: Input(

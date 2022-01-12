@@ -1,7 +1,7 @@
-import '../api/step_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
+import '../api/step_builder.dart';
 
 class ReleaseEntryBuilder implements StepBuilder {
   static const releaseContentStepId = StepId('release_content');

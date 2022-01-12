@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:yaml_writer/yaml_writer.dart';
@@ -8,13 +9,11 @@ import 'ci_gen/publish/publish_workflow.dart';
 import 'ci_gen/types/workflow.dart';
 
 Future<void> main() async {
-  exitCode = await Stream.fromFutures([
-    _writeWorkflowToFile('dart', DartWorkflow.buildWorkflow()),
-    _writeWorkflowToFile('publish', PublishWorkflow.buildWorkflow()),
-    _writeWorkflowToFile('compile', CompileWorkflow.buildWorkflow()),
-  ]).reduce(
-    (previous, element) => previous + element,
-  );
+  exitCode += await _writeWorkflowToFile('dart', DartWorkflow.buildWorkflow());
+  exitCode +=
+      await _writeWorkflowToFile('publish', PublishWorkflow.buildWorkflow());
+  exitCode +=
+      await _writeWorkflowToFile('compile', CompileWorkflow.buildWorkflow());
 }
 
 Future<int> _writeWorkflowToFile(String name, Workflow workflow) async {
@@ -25,9 +24,9 @@ Future<int> _writeWorkflowToFile(String name, Workflow workflow) async {
   final errFuture = yqProc.stderr.listen(stdout.write).asFuture();
   final outFuture = yqProc.stdout.pipe(outFile);
 
-  yqProc.stdin.write(writer.write(workflow));
-  await yqProc.stdin.flush();
-  await yqProc.stdin.close();
+  await Stream.value(writer.write(workflow))
+      .transform(utf8.encoder)
+      .pipe(yqProc.stdin);
 
   await Future.wait([outFuture, errFuture]);
 

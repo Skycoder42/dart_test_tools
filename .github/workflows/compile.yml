@@ -20,17 +20,6 @@ on:
         required: false
         default: false
         description: Specify whether build_runner is used in the project (defaults to false).
-      hosts:
-        type: string
-        required: false
-        default: '["ubuntu-latest","windows-latest","macos-latest"]'
-        description: |
-          The host operating systems to create binaries for.
-          By default the latest versions of linux, windows and macos are used.
-          Expects a JSON array of GitHub Action host OS specifies.
-
-          Example:
-          ["ubuntu-latest", "windows-latest", "macos-latest"]
       targets:
         type: string
         required: true
@@ -40,6 +29,17 @@ on:
 
           Example:
           ["my-app"]
+      platforms:
+        type: string
+        required: false
+        default: '["linux","windows","macos","web"]'
+        description: |
+          A JSON-Formatted list of platforms that unit and integration tests should be run on.
+          By default, all platforms are active. The available platforms are:
+          - linux
+          - windows
+          - macos
+          - web
       releaseRef:
         type: string
         required: false
@@ -55,8 +55,26 @@ jobs:
     name: Create compiled artifacts
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(format('{{"host":{0},"target":{1}}}', inputs.hosts, inputs.targets)) }}
-    runs-on: ${{ matrix.host }}
+      matrix:
+        platform:
+          - linux
+          - windows
+          - macos
+          - web
+        include:
+          - platform: linux
+            binaryType: exe
+            os: ubuntu-latest
+          - platform: windows
+            binaryType: exe
+            os: windows-latest
+          - platform: macos
+            binaryType: exe
+            os: macos-latest
+          - platform: web
+            binaryType: js
+            os: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         uses: dart-lang/setup-dart@v1.3
@@ -82,14 +100,18 @@ jobs:
         if: inputs.buildRunner
         run: dart run build_runner build
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Compile ${{ matrix.target }}
-        run: dart compile exe 'bin/${{ matrix.target }}.dart'
+      - name: Compile executables
+        run: |
+          set -e
+          echo '${{ inputs.targets }}' | jq -cr '.[]' | while read target; do
+            dart compile ${{ matrix.binaryType }} 'bin/$target.dart'
+          done
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Upload compiled ${{ matrix.target }}.exe
+      - name: Upload compiled binaries artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ matrix.target }}-${{ matrix.host }}.exe
-          path: ${{ inputs.workingDirectory }}/bin/${{ matrix.target }}.exe
+          name: binaries-${{ matrix.platform }}
+          path: ${{ inputs.workingDirectory }}/bin/*.${{ matrix.binaryType }}
   release:
     name: Create release if needed
     needs:

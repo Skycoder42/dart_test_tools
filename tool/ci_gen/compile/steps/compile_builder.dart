@@ -4,14 +4,15 @@ import '../../types/expression.dart';
 import '../../types/step.dart';
 
 abstract class ICompileMatrix {
-  Expression get target;
-  Expression get host;
+  Expression get platform;
+  Expression get binaryType;
 }
 
 class CompileBuilder implements StepBuilder {
   final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
+  final Expression targets;
   final ICompileMatrix matrix;
   final String pubTool;
   final String runTool;
@@ -20,6 +21,7 @@ class CompileBuilder implements StepBuilder {
     required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
+    required this.targets,
     required this.matrix,
     required this.pubTool,
     required this.runTool,
@@ -35,16 +37,21 @@ class CompileBuilder implements StepBuilder {
           runTool: runTool,
         ).build(),
         Step.run(
-          name: 'Compile ${matrix.target}',
-          run: "dart compile exe 'bin/${matrix.target}.dart'",
+          name: 'Compile executables',
+          run: '''
+set -e
+echo '$targets' | jq -cr '.[]' | while read target; do
+  dart compile ${matrix.binaryType} 'bin/\$target.dart'
+done
+''',
           workingDirectory: workingDirectory.toString(),
         ),
         Step.uses(
-          name: 'Upload compiled ${matrix.target}.exe',
+          name: 'Upload compiled binaries artifact',
           uses: 'actions/upload-artifact@v2',
           withArgs: {
-            'name': '${matrix.target}-${matrix.host}.exe',
-            'path': '$workingDirectory/bin/${matrix.target}.exe',
+            'name': 'binaries-${matrix.platform}',
+            'path': '$workingDirectory/bin/*.${matrix.binaryType}',
           },
         ),
       ];
