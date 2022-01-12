@@ -6,6 +6,7 @@ import '../../types/step.dart';
 abstract class ICompileMatrix {
   Expression get platform;
   Expression get binaryType;
+  Expression get compileArgs;
 }
 
 class CompileBuilder implements StepBuilder {
@@ -41,7 +42,7 @@ class CompileBuilder implements StepBuilder {
           run: '''
 set -e
 echo '$targets' | jq -cr '.[]' | sed 's/\\r\$//' | while read target; do
-  dart compile ${matrix.binaryType} "bin/\$target.dart"
+  dart compile ${matrix.binaryType} ${matrix.compileArgs} "bin/\$target.dart"
 done
 ''',
           workingDirectory: workingDirectory.toString(),
@@ -52,7 +53,7 @@ done
           uses: 'actions/upload-artifact@v2',
           withArgs: {
             'name': 'binaries-${matrix.platform}',
-            'path': '$workingDirectory/bin/*.${matrix.binaryType}',
+            'path': '$workingDirectory/bin/*.${matrix.binaryType}*',
           },
         ),
       ];

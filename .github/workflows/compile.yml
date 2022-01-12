@@ -64,15 +64,19 @@ jobs:
         include:
           - platform: linux
             binaryType: exe
+            compileArgs: -S "bin/$target.exe.sym"
             os: ubuntu-latest
           - platform: windows
             binaryType: exe
+            compileArgs: -S "bin/$target.exe.sym"
             os: windows-latest
           - platform: macos
             binaryType: exe
+            compileArgs: -S "bin/$target.exe.sym"
             os: macos-latest
           - platform: web
             binaryType: js
+            compileArgs: -m -o "bin/$target.js"
             os: ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
@@ -104,7 +108,7 @@ jobs:
         run: |
           set -e
           echo '${{ inputs.targets }}' | jq -cr '.[]' | sed 's/\r$//' | while read target; do
-            dart compile ${{ matrix.binaryType }} "bin/$target.dart"
+            dart compile ${{ matrix.binaryType }} ${{ matrix.compileArgs }} "bin/$target.dart"
           done
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
@@ -112,7 +116,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: binaries-${{ matrix.platform }}
-          path: ${{ inputs.workingDirectory }}/bin/*.${{ matrix.binaryType }}
+          path: ${{ inputs.workingDirectory }}/bin/*.${{ matrix.binaryType }}*
   release:
     name: Create release if needed
     needs:
@@ -148,10 +152,9 @@ jobs:
         run: |
           set -e
           for artifact in $(ls); do
-            zip -r -9 "$artifact.zip" "$artifact"
+            zip -9 "$artifact.zip" "$artifact"/*.exe "$artifact"/*.js
           done
         working-directory: artifacts
-        shell: bash
       - id: release_content
         name: Generate release content
         if: steps.version.outputs.update == 'true'

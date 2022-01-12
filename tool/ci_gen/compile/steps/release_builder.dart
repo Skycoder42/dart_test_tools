@@ -57,11 +57,10 @@ fi
           run: r'''
 set -e
 for artifact in $(ls); do
-  zip -r -9 "$artifact.zip" "$artifact"
+  zip -9 "$artifact.zip" "$artifact"/*.exe "$artifact"/*.js
 done
 ''',
           workingDirectory: 'artifacts',
-          shell: 'bash',
         ),
         ...ReleaseEntryBuilder(
           repository: repository,

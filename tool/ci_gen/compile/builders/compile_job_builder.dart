@@ -18,11 +18,14 @@ class _CompileJobMatrix implements ICompileMatrix {
   final Expression platform;
   @override
   final Expression binaryType;
+  @override
+  final Expression compileArgs;
   final Expression os;
 
   const _CompileJobMatrix({
     required this.platform,
     required this.binaryType,
+    required this.compileArgs,
     required this.os,
   });
 }
@@ -37,6 +40,8 @@ class _PlatformInclude with _$_PlatformInclude {
   const factory _PlatformInclude({
     required String platform,
     required _BinaryType binaryType,
+    // ignore: invalid_annotation_target
+    @JsonKey(includeIfNull: false) String? compileArgs,
     required String os,
   }) = __PlatformInclude;
 
@@ -48,6 +53,7 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
   static const _matrix = _CompileJobMatrix(
     platform: Expression('matrix.platform'),
     binaryType: Expression('matrix.binaryType'),
+    compileArgs: Expression('matrix.compileArgs'),
     os: Expression('matrix.os'),
   );
 
@@ -55,21 +61,25 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
     _PlatformInclude(
       platform: 'linux',
       binaryType: _BinaryType.exe,
+      compileArgs: r'-S "bin/$target.exe.sym"',
       os: 'ubuntu-latest',
     ),
     _PlatformInclude(
       platform: 'windows',
       binaryType: _BinaryType.exe,
+      compileArgs: r'-S "bin/$target.exe.sym"',
       os: 'windows-latest',
     ),
     _PlatformInclude(
       platform: 'macos',
       binaryType: _BinaryType.exe,
+      compileArgs: r'-S "bin/$target.exe.sym"',
       os: 'macos-latest',
     ),
     _PlatformInclude(
       platform: 'web',
       binaryType: _BinaryType.js,
+      compileArgs: r'-m -o "bin/$target.js"',
       os: 'ubuntu-latest',
     ),
   ];
