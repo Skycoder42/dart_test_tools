@@ -40,7 +40,7 @@ class CompileBuilder implements StepBuilder {
           name: 'Compile executables',
           run: '''
 set -e
-echo '$targets' | jq -cr '.[]' | while read target; do
+echo '$targets' | jq -cr '.[]' | sed 's/\\r\$//' | while read target; do
   dart compile ${matrix.binaryType} "bin/\$target.dart"
 done
 ''',
