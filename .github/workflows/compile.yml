@@ -143,6 +143,15 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           path: artifacts
+      - name: Create asset archives
+        if: steps.version.outputs.update == 'true'
+        run: |
+          set -e
+          for artifact in $(ls); do
+            zip -r -9 "$artifact.zip" "$artifact"
+          done
+        working-directory: artifacts
+        shell: bash
       - id: release_content
         name: Generate release content
         if: steps.version.outputs.update == 'true'
@@ -170,4 +179,4 @@ jobs:
           tag_name: ${{ steps.release_content.outputs.tag_name }}
           name: ${{ steps.release_content.outputs.release_name }}
           body_path: ${{ steps.release_content.outputs.body_path }}
-          files: artifacts/**/*.exe
+          files: artifacts/*.zip

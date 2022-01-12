@@ -50,12 +50,25 @@ fi
             'path': 'artifacts',
           },
         ),
+        Step.run(
+          name: 'Create asset archives',
+          ifExpression:
+              versionUpdate.expression.eq(const Expression.literal('true')),
+          run: r'''
+set -e
+for artifact in $(ls); do
+  zip -r -9 "$artifact.zip" "$artifact"
+done
+''',
+          workingDirectory: 'artifacts',
+          shell: 'bash',
+        ),
         ...ReleaseEntryBuilder(
           repository: repository,
           workingDirectory: workingDirectory,
           tagPrefix: tagPrefix,
           versionUpdate: versionUpdate.expression,
-          files: 'artifacts/**/*.exe',
+          files: 'artifacts/*.zip',
         ).build(),
       ];
 }
