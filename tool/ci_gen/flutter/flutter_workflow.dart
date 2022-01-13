@@ -4,27 +4,26 @@ import '../common/inputs.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
-import 'builders/dart_analyze_job_builder.dart';
-import 'builders/dart_integration_test_job_builder.dart';
-import 'builders/dart_unit_test_job_builder.dart';
+import 'builders/flutter_analyze_job_builder.dart';
+import 'builders/flutter_unit_test_job_builder.dart';
 
-abstract class DartWorkflow {
-  DartWorkflow._();
+abstract class FlutterWorkflow {
+  FlutterWorkflow._();
 
   static Workflow buildWorkflow() {
     final inputContext = WorkflowInputContext();
 
-    final analyzeJobBuilder = DartAnalyzeJobBuilder(
-      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+    final analyzeJobBuilder = FlutterAnalyzeJobBuilder(
+      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       analyzeImage: inputContext(WorkflowInputs.analyzeImage),
       publishExclude: inputContext(WorkflowInputs.publishExclude),
     );
-    final unitTestBuilder = DartUnitTestJobBuilder(
+    final unitTestBuilder = FlutterUnitTestJobBuilder(
       analyzeJobId: analyzeJobBuilder.id,
-      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
@@ -41,17 +40,6 @@ abstract class DartWorkflow {
       coverageExclude: inputContext(WorkflowInputs.coverageExclude),
       platforms: inputContext.builder(WorkflowInputs.platforms),
     );
-    final integrationTestBuilder = DartIntegrationTestJobBuilder(
-      analyzeJobId: analyzeJobBuilder.id,
-      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-      repository: inputContext(WorkflowInputs.repository),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      buildRunner: inputContext(WorkflowInputs.buildRunner),
-      integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
-      integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
-      platforms: inputContext.builder(WorkflowInputs.platforms),
-    );
-
     return Workflow(
       on: On(
         workflowCall: WorkflowCall(
@@ -62,7 +50,6 @@ abstract class DartWorkflow {
         analyzeJobBuilder.id: analyzeJobBuilder.build(),
         unitTestBuilder.id: unitTestBuilder.build(),
         validateCoverageBuilder.id: validateCoverageBuilder.build(),
-        integrationTestBuilder.id: integrationTestBuilder.build(),
       },
     );
   }

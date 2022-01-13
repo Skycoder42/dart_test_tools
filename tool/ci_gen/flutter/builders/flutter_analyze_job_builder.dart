@@ -1,20 +1,20 @@
 import '../../common/builders/analyze_job_builder.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
-import 'dart_sdk_job_builder_mixin.dart';
+import 'flutter_sdk_job_builder_mixin.dart';
 
-class DartAnalyzeJobBuilder extends AnalyzeJobBuilder
-    with DartSdkJobBuilderMixin {
+class FlutterAnalyzeJobBuilder extends AnalyzeJobBuilder
+    with FlutterSdkJobBuilderMixin {
   @override
-  final Expression dartSdkVersion;
+  final Expression flutterSdkChannel;
 
-  const DartAnalyzeJobBuilder({
+  const FlutterAnalyzeJobBuilder({
+    required this.flutterSdkChannel,
     required Expression repository,
     required Expression workingDirectory,
     required Expression buildRunner,
     required Expression analyzeImage,
     required Expression publishExclude,
-    required this.dartSdkVersion,
   }) : super(
           repository: repository,
           workingDirectory: workingDirectory,
@@ -27,7 +27,7 @@ class DartAnalyzeJobBuilder extends AnalyzeJobBuilder
   Iterable<Step> buildAnalyzeSteps() => [
         Step.run(
           name: 'Static analysis',
-          run: 'dart analyze --fatal-infos',
+          run: 'flutter analyze',
           workingDirectory: workingDirectory.toString(),
         )
       ];
