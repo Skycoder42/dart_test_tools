@@ -5,6 +5,7 @@ import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'builders/flutter_analyze_job_builder.dart';
+import 'builders/flutter_integration_test_job_builder.dart';
 import 'builders/flutter_unit_test_job_builder.dart';
 
 abstract class FlutterWorkflow {
@@ -40,6 +41,17 @@ abstract class FlutterWorkflow {
       coverageExclude: inputContext(WorkflowInputs.coverageExclude),
       platforms: inputContext.builder(WorkflowInputs.platforms),
     );
+    final integrationTestBuilder = FlutterIntegrationTestJobBuilder(
+      analyzeJobId: analyzeJobBuilder.id,
+      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
+      repository: inputContext(WorkflowInputs.repository),
+      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      buildRunner: inputContext(WorkflowInputs.buildRunner),
+      integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
+      integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
+      platforms: inputContext.builder(WorkflowInputs.platforms),
+    );
+
     return Workflow(
       on: On(
         workflowCall: WorkflowCall(
@@ -50,6 +62,7 @@ abstract class FlutterWorkflow {
         analyzeJobBuilder.id: analyzeJobBuilder.build(),
         unitTestBuilder.id: unitTestBuilder.build(),
         validateCoverageBuilder.id: validateCoverageBuilder.build(),
+        integrationTestBuilder.id: integrationTestBuilder.build(),
       },
     );
   }

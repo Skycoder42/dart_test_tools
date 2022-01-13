@@ -12,7 +12,7 @@ import 'ci_gen/types/workflow.dart';
 Future<void> main() async {
   exitCode += await _writeWorkflowToFile('dart', DartWorkflow.buildWorkflow());
   exitCode +=
-      await _writeWorkflowToFile('flutter2', FlutterWorkflow.buildWorkflow());
+      await _writeWorkflowToFile('flutter', FlutterWorkflow.buildWorkflow());
   exitCode +=
       await _writeWorkflowToFile('publish', PublishWorkflow.buildWorkflow());
   exitCode +=
