@@ -309,8 +309,6 @@ jobs:
             testDevice: -d macos
           - platform: web
             os: ubuntu-latest
-            testDevice: -d chrome
-            runPrefix: chromedriver --port=4444 & ;
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
@@ -365,7 +363,11 @@ jobs:
         if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && contains(fromJSON(inputs.platforms), matrix.platform)
         run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Run integration tests
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
+      - name: Run integration tests (dart-vm)
+        if: matrix.platform != 'web' && contains(fromJSON(inputs.platforms), matrix.platform)
         run: ${{ matrix.runPrefix }} flutter test ${{ matrix.testDevice }} ${{ inputs.integrationTestPaths }}
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+      - name: Run integration tests (web)
+        if: matrix.platform == 'web' && contains(fromJSON(inputs.platforms), matrix.platform)
+        run: chromedriver --port=4444 & flutter drive --driver=test_driver/integration_test.dart --target=${{ inputs.integrationTestPaths }} -d chrome --browser-name=chrome
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}

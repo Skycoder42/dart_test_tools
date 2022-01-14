@@ -93,8 +93,6 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     _PlatformInclude(
       platform: 'web',
       os: 'ubuntu-latest',
-      testDevice: '-d chrome',
-      runPrefix: 'chromedriver --port=4444 & ;',
     ),
   ];
 

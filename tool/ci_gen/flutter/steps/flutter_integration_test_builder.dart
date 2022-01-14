@@ -91,10 +91,21 @@ class FlutterIntegrationTestBuilder
           workingDirectory: workingDirectory.toString(),
         ),
         Step.run(
-          name: 'Run integration tests',
-          ifExpression: _shouldRun,
+          name: 'Run integration tests (dart-vm)',
+          ifExpression:
+              matrix.platform.ne(const Expression.literal('web')) & _shouldRun,
           run: '${matrix.runPrefix} '
               '$baseTool test ${matrix.testDevice} $integrationTestPaths',
+          workingDirectory: '$workingDirectory/$integrationTestProject',
+        ),
+        Step.run(
+          name: 'Run integration tests (web)',
+          ifExpression:
+              matrix.platform.eq(const Expression.literal('web')) & _shouldRun,
+          run: 'chromedriver --port=4444 & $baseTool drive '
+              '--driver=test_driver/integration_test.dart '
+              '--target=$integrationTestPaths '
+              '-d chrome --browser-name=chrome',
           workingDirectory: '$workingDirectory/$integrationTestProject',
         ),
       ];
