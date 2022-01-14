@@ -96,7 +96,7 @@ class FlutterIntegrationTestBuilder
           name: 'Run integration tests (web)',
           ifExpression:
               matrix.platform.eq(const Expression.literal('web')) & _shouldRun,
-          run: '\$CHROMEWEBDRIVER\\chromedriver --port=4444 & ; '
+          run: '\$Env:CHROMEWEBDRIVER\\chromedriver --port=4444 & ; '
               '$baseTool drive '
               '--driver=test_driver/integration_test.dart '
               '--target=$integrationTestPaths '
