@@ -96,6 +96,7 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression buildRunner;
   final Expression integrationTestSetup;
   final Expression integrationTestPaths;
+  final Expression integrationTestProject;
   final Expression platforms;
 
   FlutterIntegrationTestJobBuilder({
@@ -106,6 +107,7 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     required this.buildRunner,
     required this.integrationTestSetup,
     required this.integrationTestPaths,
+    required this.integrationTestProject,
     required ExpressionBuilderFn<List<String>> platforms,
   }) : platforms = platforms(_platformIncludes.map((i) => i.platform).toList());
 
@@ -141,6 +143,7 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
             platforms: platforms,
             integrationTestSetup: integrationTestSetup,
             integrationTestPaths: integrationTestPaths,
+            integrationTestProject: integrationTestProject,
             baseTool: baseTool,
             pubTool: pubTool,
             runTool: runTool,

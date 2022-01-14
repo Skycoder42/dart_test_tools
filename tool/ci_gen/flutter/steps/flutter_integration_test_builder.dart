@@ -18,6 +18,7 @@ class FlutterIntegrationTestBuilder
   final Expression buildRunner;
   final Expression integrationTestSetup;
   final Expression integrationTestPaths;
+  final Expression integrationTestProject;
   @override
   final Expression platforms;
   final String baseTool;
@@ -31,6 +32,7 @@ class FlutterIntegrationTestBuilder
     required this.buildRunner,
     required this.integrationTestSetup,
     required this.integrationTestPaths,
+    required this.integrationTestProject,
     required this.platforms,
     required this.baseTool,
     required this.pubTool,
@@ -77,7 +79,7 @@ class FlutterIntegrationTestBuilder
           ifExpression: _shouldRun,
           run: '${matrix.runPrefix} '
               '$baseTool test ${matrix.testDevice} $integrationTestPaths',
-          workingDirectory: workingDirectory.toString(),
+          workingDirectory: '$workingDirectory/$integrationTestProject',
         ),
       ];
 

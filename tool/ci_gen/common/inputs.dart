@@ -218,4 +218,16 @@ Example:
 ''',
     ),
   );
+
+  static const integrationTestProject = WorkflowInput(
+    name: 'integrationTestProject',
+    input: Input(
+      type: Type.string,
+      required: false,
+      description:
+          'Specifies the project in which integration tests are placed. '
+          'Useful in case of flutter libraries, where integration tests are '
+          'typically inside the example instead of the package itself',
+    ),
+  );
 }

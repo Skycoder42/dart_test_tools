@@ -49,6 +49,8 @@ abstract class FlutterWorkflow {
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
       integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
+      integrationTestProject:
+          inputContext(WorkflowInputs.integrationTestProject),
       platforms: inputContext.builder(WorkflowInputs.platforms),
     );
 

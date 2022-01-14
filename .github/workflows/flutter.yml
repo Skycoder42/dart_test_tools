@@ -75,6 +75,10 @@ on:
         type: string
         required: false
         description: Specifiy directories or paths of integration tests to run. By default, no integration test are run.
+      integrationTestProject:
+        type: string
+        required: false
+        description: Specifies the project in which integration tests are placed. Useful in case of flutter libraries, where integration tests are typically inside the example instead of the package itself
 jobs:
   analyze:
     name: Analyze
@@ -349,4 +353,4 @@ jobs:
       - name: Run integration tests
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: ${{ matrix.runPrefix }} flutter test ${{ matrix.testDevice }} ${{ inputs.integrationTestPaths }}
-        working-directory: ${{ inputs.workingDirectory }}
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
