@@ -5,6 +5,9 @@ part 'import_result.freezed.dart';
 
 @freezed
 class DirectiveError with _$DirectiveError {
+  const DirectiveError._();
+
+  // ignore: sort_unnamed_constructors_first
   const factory DirectiveError({
     required String directive,
     required int line,

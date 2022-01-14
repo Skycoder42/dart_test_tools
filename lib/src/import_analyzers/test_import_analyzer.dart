@@ -5,36 +5,29 @@ import 'package:path/path.dart';
 
 import 'import_analyzer_base.dart';
 
-/// Scans for absolute library imports
-///
-/// Scans all files within the src directory for package imports of that very
-/// same package that are not relative.
-class RelativeImportAnalyzer extends ImportAnalyzerBase {
+class TestImportAnalyzer extends ImportAnalyzerBase {
   final String packageRoot;
   final String packageName;
 
-  RelativeImportAnalyzer({
+  TestImportAnalyzer({
     required this.packageRoot,
     required this.packageName,
     required AnalysisContextCollection contextCollection,
-    Logger? parentLogger,
   }) : super(
           contextCollection: contextCollection,
-          logger: Logger(
-            // ignore: lines_longer_than_80_chars
-            '${parentLogger != null ? '${parentLogger.fullName}.' : ''}RelativeImportAnalyzer',
-          ),
+          logger: Logger('test-import-analyzer'),
         );
 
   @override
+  // TODO: implement scannerDescription
   String get scannerDescription =>
-      'Checking for non relative self imports in lib...';
+      'Checking for library imports in test files...';
 
   @override
   bool shouldAnalyze(String path) {
-    // only analyze files that are inside of the "lib" directory
-    final libDir = join(packageRoot, 'lib');
-    return isWithin(libDir, path);
+    // only analyze files that are inside of the "test" directory
+    final testDir = join(packageRoot, 'test');
+    return isWithin(testDir, path);
   }
 
   @override
@@ -53,7 +46,23 @@ class RelativeImportAnalyzer extends ImportAnalyzerBase {
       return true;
     }
 
-    // reject package imports of same package
+    // accept package imports that import from "src"
+    final expectedPath = join(importPackageName, 'src');
+    if (isWithin(expectedPath, directiveUri.path)) {
+      return true;
+    }
+
+    // accept package imports with an exclusion import
+    final hasImportComment = directive
+            .firstTokenAfterCommentAndMetadata.precedingComments
+            ?.value()
+            .contains('dart_test_tools:ignore-library-import') ??
+        false;
+    if (hasImportComment) {
+      return true;
+    }
+
+    // reject library imports of this package
     return false;
   }
 }

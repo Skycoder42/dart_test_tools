@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:args/args.dart';
-import 'package:dart_test_tools/src/import_analyzers/relative_import_analyzer.dart';
+import 'package:dart_test_tools/src/import_analyzers/test_import_analyzer.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
@@ -78,7 +78,7 @@ Future<void> main(List<String> rawArgs) async {
     }
     Logger.root.config('Using library name: $name');
 
-    final analyzer = RelativeImportAnalyzer(
+    final analyzer = TestImportAnalyzer(
       packageRoot: path,
       packageName: name,
       contextCollection: AnalysisContextCollection(
