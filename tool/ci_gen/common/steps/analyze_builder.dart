@@ -47,7 +47,7 @@ class AnalyzeBuilder implements StepBuilder {
         ...buildAnalyzeStep(),
         Step.run(
           name: 'Validate library imports',
-          run: '$pubTool global run dart_test_tools:import_analyzer -lALL',
+          run: '$pubTool global run dart_test_tools:import_analyzer',
           workingDirectory: workingDirectory.toString(),
         ),
         Step.run(
