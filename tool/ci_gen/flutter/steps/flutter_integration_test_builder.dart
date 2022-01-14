@@ -1,5 +1,6 @@
 import '../../common/api/step_builder.dart';
 import '../../common/steps/platforms_builder_mixin.dart';
+import '../../common/steps/project_prepare_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
@@ -72,6 +73,15 @@ class FlutterIntegrationTestBuilder
           pubTool: pubTool,
           runTool: runTool,
           ifExpression: _shouldRun,
+        ).build(),
+        ...ProjectPrepareBuilder(
+          titleSuffix: '(Integration test project)',
+          workingDirectory:
+              Expression.fake('$workingDirectory/$integrationTestProject'),
+          pubTool: pubTool,
+          runTool: runTool,
+          ifExpression: _shouldRun &
+              integrationTestProject.ne(const Expression.literal('')),
         ).build(),
         Step.run(
           name: 'Run platform test setup',

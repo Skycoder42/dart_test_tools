@@ -2,6 +2,7 @@ import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
 import 'checkout_builder.dart';
+import 'project_prepare_builder.dart';
 
 class ProjectSetupBuilder implements StepBuilder {
   final Expression repository;
@@ -42,23 +43,12 @@ class ProjectSetupBuilder implements StepBuilder {
           repository: repository,
           ifExpression: ifExpression,
         ).build(),
-        Step.run(
-          name: 'Remove dependency overrides',
+        ...ProjectPrepareBuilder(
+          workingDirectory: workingDirectory,
+          buildRunner: buildRunner,
+          pubTool: pubTool,
+          runTool: runTool,
           ifExpression: ifExpression,
-          run: 'yq e -i "del(.dependency_overrides)" pubspec.yaml',
-          workingDirectory: workingDirectory.toString(),
-        ),
-        Step.run(
-          name: 'Restore dart packages',
-          ifExpression: ifExpression,
-          run: '$pubTool get',
-          workingDirectory: workingDirectory.toString(),
-        ),
-        Step.run(
-          name: 'Create build files',
-          ifExpression: buildRunner & ifExpression,
-          run: '$runTool build_runner build',
-          workingDirectory: workingDirectory.toString(),
-        ),
+        ).build(),
       ];
 }

@@ -16,12 +16,14 @@ class Expression with _$Expression {
   )
   const factory Expression.literal(dynamic rawValue) = _LiteralExpression;
   const factory Expression.json(Object? jsonValue) = _JsonExpression;
+  const factory Expression.fake(String fakeValue) = _FakeExpression;
 
   String get value => when(
         (value) => value,
         literal: (dynamic rawValue) =>
             rawValue is String ? "'$rawValue'" : rawValue.toString(),
         json: (jsonValue) => json.encode(jsonValue),
+        fake: (fakeValue) => fakeValue,
       );
 
   Expression get not => Expression('!$value');
@@ -49,7 +51,11 @@ class Expression with _$Expression {
       other != null ? Expression('$value || ${other.value}') : this;
 
   @override
-  String toString() => '\${{ $value }}';
+  String toString() => maybeWhen(
+        null,
+        fake: (fakeValue) => fakeValue,
+        orElse: () => '\${{ $value }}',
+      );
 }
 
 class ExpressionConverter implements JsonConverter<Expression?, String?> {

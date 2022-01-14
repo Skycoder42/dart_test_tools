@@ -353,6 +353,14 @@ jobs:
         if: inputs.buildRunner && contains(fromJSON(inputs.platforms), matrix.platform)
         run: flutter pub run build_runner build
         working-directory: ${{ inputs.workingDirectory }}
+      - name: Remove dependency overrides (Integration test project)
+        if: contains(fromJSON(inputs.platforms), matrix.platform) && inputs.integrationTestProject != ''
+        run: yq e -i "del(.dependency_overrides)" pubspec.yaml
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+      - name: Restore dart packages (Integration test project)
+        if: contains(fromJSON(inputs.platforms), matrix.platform) && inputs.integrationTestProject != ''
+        run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
       - name: Run platform test setup
         if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && contains(fromJSON(inputs.platforms), matrix.platform)
         run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
