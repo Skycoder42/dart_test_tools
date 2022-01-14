@@ -19,7 +19,7 @@ class Expression with _$Expression {
 
   String get value => when(
         (value) => value,
-        literal: (rawValue) =>
+        literal: (dynamic rawValue) =>
             rawValue is String ? "'$rawValue'" : rawValue.toString(),
         json: (jsonValue) => json.encode(jsonValue),
       );

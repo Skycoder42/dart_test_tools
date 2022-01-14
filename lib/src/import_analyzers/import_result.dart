@@ -47,11 +47,12 @@ class ImportResult with _$ImportResult {
         rejected: (path, errors) {
           logger.severe('Found problematic imports in $path:');
           for (final error in errors) {
-            logger.severe(" > $error");
+            logger.severe(' > $error');
           }
         },
         failed: (path, error, stackTrace, directive) => logger.shout(
-          'Failed to analyze $path${directive != null ? ' at directive <$directive>' : ''}',
+          'Failed to analyze '
+          '$path${directive != null ? ' at directive <$directive>' : ''}',
           error,
           stackTrace,
         ),

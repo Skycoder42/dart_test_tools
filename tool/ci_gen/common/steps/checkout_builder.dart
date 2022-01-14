@@ -17,7 +17,7 @@ class CheckoutBuilder implements StepBuilder {
           name: 'Checkout repository $repository',
           ifExpression: ifExpression,
           uses: 'actions/checkout@v2',
-          withArgs: {
+          withArgs: <String, dynamic>{
             'repository': repository.toString(),
           },
         ),

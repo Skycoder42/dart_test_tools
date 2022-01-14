@@ -18,7 +18,7 @@ class DartSdkBuilder implements StepBuilder {
               '($dartSdkVersion)',
           ifExpression: ifExpression,
           uses: 'dart-lang/setup-dart@v1.3',
-          withArgs: {
+          withArgs: <String, dynamic>{
             'sdk': dartSdkVersion.toString(),
           },
         )

@@ -40,7 +40,7 @@ class IdOutput with _$IdOutput {
   const factory IdOutput.step(StepId id, String name) = StepIdOutput;
   const factory IdOutput.job(JobId id, String name) = JobIdOutput;
 
-  Id get id => throw StateError("Unreachable code was reached");
+  Id get id => throw StateError('Unreachable code was reached');
 
   Expression get expression => when(
         step: (id, name) => Expression('steps.$id.outputs.$name'),

@@ -93,7 +93,8 @@ Future<void> main(List<String> rawArgs) async {
     final succeeded = await analyzer.runAnalysis();
     exitCode = succeeded ? 0 : 1;
   } on FormatException catch (e) {
-    stderr.writeln('Error: ${e.message}\n');
-    stderr.writeln(parser.usage);
+    stderr
+      ..writeln('Error: ${e.message}\n')
+      ..writeln(parser.usage);
   }
 }

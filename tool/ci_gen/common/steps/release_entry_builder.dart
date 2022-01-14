@@ -57,7 +57,7 @@ ${releaseContentBodyPath.bashSetter('\$version_changelog_file')}
           name: 'Create Release',
           ifExpression: versionUpdate.eq(const Expression.literal('true')),
           uses: 'softprops/action-gh-release@v1',
-          withArgs: {
+          withArgs: <String, dynamic>{
             'tag_name': releaseContentTagName.expression.toString(),
             'name': releaseContentReleaseName.expression.toString(),
             'body_path': releaseContentBodyPath.expression.toString(),

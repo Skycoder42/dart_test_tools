@@ -21,6 +21,7 @@ class RelativeImportAnalyzer extends ImportAnalyzerBase {
   }) : super(
           contextCollection: contextCollection,
           logger: Logger(
+            // ignore: lines_longer_than_80_chars
             '${parentLogger != null ? '${parentLogger.fullName}.' : ''}RelativeImportAnalyzer',
           ),
         );

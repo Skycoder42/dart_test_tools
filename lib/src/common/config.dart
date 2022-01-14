@@ -35,8 +35,9 @@ abstract class DartTestToolsConfig {
     String key,
   ) async {
     final yaml = await readYaml(path);
-    final configRoot =
-        (yaml[_configRootKey] as Map<dynamic, dynamic>?) ?? const {};
-    return (configRoot[key] as Map<dynamic, dynamic>?) ?? const {};
+    final configRoot = (yaml[_configRootKey] as Map<dynamic, dynamic>?) ??
+        const <dynamic, dynamic>{};
+    return (configRoot[key] as Map<dynamic, dynamic>?) ??
+        const <dynamic, dynamic>{};
   }
 }

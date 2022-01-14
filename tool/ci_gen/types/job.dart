@@ -75,10 +75,11 @@ class JobsConverter implements JsonConverter<Jobs, Map<String, dynamic>> {
   const JobsConverter();
 
   @override
-  Jobs fromJson(Map<String, dynamic> json) =>
-      json.map((key, value) => MapEntry(JobId(key), Job.fromJson(json)));
+  Jobs fromJson(Map<String, dynamic> json) => json
+      .map((key, dynamic value) => MapEntry(JobId(key), Job.fromJson(json)));
 
   @override
-  Map<String, dynamic> toJson(Jobs jobs) =>
-      jobs.map((key, value) => MapEntry(key.id, value.toJson()));
+  Map<String, dynamic> toJson(Jobs jobs) => jobs.map<String, dynamic>(
+        (key, value) => MapEntry<String, dynamic>(key.id, value.toJson()),
+      );
 }

@@ -105,43 +105,41 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
   bool get needsFormatting;
 
   @override
-  Job build() {
-    return Job(
-      name: 'Unit tests',
-      ifExpression: unitTestPaths.ne(const Expression.literal('')),
-      needs: {analyzeJobId},
-      strategy: Strategy(
-        failFast: false,
-        matrix: Matrix(
-          {
-            'platform': _platformIncludes.map((i) => i.platform).toList(),
-          },
-          include: _platformIncludes.map((i) => i.toJson()).toList(),
-        ),
-      ),
-      runsOn: _matrix.os.toString(),
-      steps: [
-        ...buildSetupSdkSteps(
-          PlatformsBuilderMixin.createShouldRunExpression(
-            platforms,
-            _matrix.platform,
+  Job build() => Job(
+        name: 'Unit tests',
+        ifExpression: unitTestPaths.ne(const Expression.literal('')),
+        needs: {analyzeJobId},
+        strategy: Strategy(
+          failFast: false,
+          matrix: Matrix(
+            {
+              'platform': _platformIncludes.map((i) => i.platform).toList(),
+            },
+            include: _platformIncludes.map((i) => i.toJson()).toList(),
           ),
         ),
-        ...UnitTestBuilder(
-          repository: repository,
-          workingDirectory: workingDirectory,
-          buildRunner: buildRunner,
-          unitTestPaths: unitTestPaths,
-          minCoverage: minCoverage,
-          platforms: platforms,
-          baseTool: baseTool,
-          pubTool: pubTool,
-          runTool: runTool,
-          matrix: _matrix,
-          coverageArgs: coverageArgs,
-          needsFormatting: needsFormatting,
-        ).build(),
-      ],
-    );
-  }
+        runsOn: _matrix.os.toString(),
+        steps: [
+          ...buildSetupSdkSteps(
+            PlatformsBuilderMixin.createShouldRunExpression(
+              platforms,
+              _matrix.platform,
+            ),
+          ),
+          ...UnitTestBuilder(
+            repository: repository,
+            workingDirectory: workingDirectory,
+            buildRunner: buildRunner,
+            unitTestPaths: unitTestPaths,
+            minCoverage: minCoverage,
+            platforms: platforms,
+            baseTool: baseTool,
+            pubTool: pubTool,
+            runTool: runTool,
+            matrix: _matrix,
+            coverageArgs: coverageArgs,
+            needsFormatting: needsFormatting,
+          ).build(),
+        ],
+      );
 }

@@ -18,7 +18,7 @@ class FlutterSdkBuilder implements StepBuilder {
               '($flutterSdkChannel)',
           ifExpression: ifExpression,
           uses: 'subosito/flutter-action@v1',
-          withArgs: {
+          withArgs: <String, dynamic>{
             'channel': flutterSdkChannel.toString(),
           },
         )

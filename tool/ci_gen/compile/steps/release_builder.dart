@@ -46,7 +46,7 @@ fi
           ifExpression:
               versionUpdate.expression.eq(const Expression.literal('true')),
           uses: 'actions/download-artifact@v2',
-          withArgs: {
+          withArgs: <String, dynamic>{
             'path': 'artifacts',
           },
         ),

@@ -1,0 +1,29 @@
+include: package:lint/analysis_options.yaml
+
+analyzer:
+  strong-mode:
+    implicit-casts: false
+    implicit-dynamic: false
+  exclude:
+    - "**/*.freezed.dart"
+    - "**/*.g.dart"
+
+linter:
+  rules:
+    always_use_package_imports: false
+    avoid_classes_with_only_static_members: false
+    avoid_private_typedef_functions: false
+    cascade_invocations: true
+    close_sinks: true
+    lines_longer_than_80_chars: true
+    literal_only_boolean_expressions: true
+    omit_local_variable_types: true
+    only_throw_errors: true
+    prefer_adjacent_string_concatenation: true
+    prefer_expression_function_bodies: true
+    prefer_foreach: true
+    prefer_mixin: true
+    prefer_relative_imports: true
+    prefer_single_quotes: true
+    unawaited_futures: true
+    use_if_null_to_convert_nulls_to_bools: true
