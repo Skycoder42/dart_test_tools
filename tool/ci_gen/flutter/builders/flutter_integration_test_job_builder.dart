@@ -92,7 +92,7 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     ),
     _PlatformInclude(
       platform: 'web',
-      os: 'ubuntu-latest',
+      os: 'windows-latest',
     ),
   ];
 
