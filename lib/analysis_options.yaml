@@ -4,9 +4,6 @@ analyzer:
   strong-mode:
     implicit-casts: false
     implicit-dynamic: false
-  exclude:
-    - "**/*.freezed.dart"
-    - "**/*.g.dart"
 
 linter:
   rules:
