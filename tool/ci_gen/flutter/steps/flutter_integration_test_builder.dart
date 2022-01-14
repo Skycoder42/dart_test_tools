@@ -8,6 +8,7 @@ abstract class IFlutterIntegrationTestMatrix {
   Expression get platform;
   Expression get testDevice;
   Expression get runPrefix;
+  Expression get desktop;
 }
 
 class FlutterIntegrationTestBuilder
@@ -53,6 +54,11 @@ class FlutterIntegrationTestBuilder
           ifExpression:
               matrix.platform.eq(const Expression.literal('web')) & _shouldRun,
           uses: 'nanasess/setup-chromedriver@master',
+        ),
+        Step.run(
+          name: 'Enable experimental platforms',
+          ifExpression: matrix.desktop,
+          run: 'flutter config --enable-${matrix.platform}-desktop',
         ),
         Step.run(
           name: 'Validate flutter setup',

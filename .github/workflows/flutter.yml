@@ -296,17 +296,21 @@ jobs:
         include:
           - platform: linux
             os: ubuntu-latest
+            desktop: true
             testDevice: -d linux
             runPrefix: xvfb-run --auto-servernum
           - platform: windows
             os: windows-latest
+            desktop: true
             testDevice: -d windows
           - platform: macos
             os: macos-latest
+            desktop: true
             testDevice: -d macos
           - platform: web
             os: ubuntu-latest
             testDevice: -d chrome
+            runPrefix: chromedriver --port=4444 & ;
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
@@ -320,6 +324,9 @@ jobs:
       - name: Install test dependencies (web)
         if: matrix.platform == 'web' && contains(fromJSON(inputs.platforms), matrix.platform)
         uses: nanasess/setup-chromedriver@master
+      - name: Enable experimental platforms
+        if: matrix.desktop
+        run: flutter config --enable-${{ matrix.platform }}-desktop
       - name: Validate flutter setup
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: flutter doctor -v

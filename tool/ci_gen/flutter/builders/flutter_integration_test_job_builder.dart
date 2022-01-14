@@ -22,12 +22,15 @@ class _FlutterIntegrationTestJobMatrix
   final Expression testDevice;
   @override
   final Expression runPrefix;
+  @override
+  final Expression desktop;
   final Expression os;
 
   const _FlutterIntegrationTestJobMatrix({
     required this.platform,
     required this.testDevice,
     required this.runPrefix,
+    required this.desktop,
     required this.os,
   });
 }
@@ -37,6 +40,8 @@ class _PlatformInclude with _$_PlatformInclude {
   const factory _PlatformInclude({
     required String platform,
     required String os,
+    // ignore: invalid_annotation_target
+    @JsonKey(includeIfNull: false) bool? desktop,
     // ignore: invalid_annotation_target
     @JsonKey(includeIfNull: false) String? testDevice,
     // ignore: invalid_annotation_target
@@ -53,6 +58,7 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     platform: Expression('matrix.platform'),
     testDevice: Expression('matrix.testDevice'),
     runPrefix: Expression('matrix.runPrefix'),
+    desktop: Expression('matrix.desktop'),
     os: Expression('matrix.os'),
   );
 
@@ -67,17 +73,20 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     // ),
     _PlatformInclude(
       platform: 'linux',
+      desktop: true,
       os: 'ubuntu-latest',
       testDevice: '-d linux',
       runPrefix: 'xvfb-run --auto-servernum',
     ),
     _PlatformInclude(
       platform: 'windows',
+      desktop: true,
       os: 'windows-latest',
       testDevice: '-d windows',
     ),
     _PlatformInclude(
       platform: 'macos',
+      desktop: true,
       os: 'macos-latest',
       testDevice: '-d macos',
     ),
@@ -85,6 +94,7 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
       platform: 'web',
       os: 'ubuntu-latest',
       testDevice: '-d chrome',
+      runPrefix: 'chromedriver --port=4444 & ;',
     ),
   ];
 
