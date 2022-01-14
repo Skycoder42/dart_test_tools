@@ -114,7 +114,7 @@ jobs:
         run: flutter analyze
         working-directory: ${{ inputs.workingDirectory }}
       - name: Validate library imports
-        run: flutter pub global run dart_test_tools:import_analyzer -lALL
+        run: flutter pub global run dart_test_tools:import_analyzer
         working-directory: ${{ inputs.workingDirectory }}
       - name: Validate correct formatting
         run: flutter format -onone --set-exit-if-changed .

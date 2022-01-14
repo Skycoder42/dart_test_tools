@@ -110,7 +110,7 @@ jobs:
         run: dart analyze --fatal-infos
         working-directory: ${{ inputs.workingDirectory }}
       - name: Validate library imports
-        run: dart pub global run dart_test_tools:import_analyzer -lALL
+        run: dart pub global run dart_test_tools:import_analyzer
         working-directory: ${{ inputs.workingDirectory }}
       - name: Validate correct formatting
         run: dart format -onone --set-exit-if-changed .
