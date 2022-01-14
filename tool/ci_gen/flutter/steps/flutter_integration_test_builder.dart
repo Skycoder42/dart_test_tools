@@ -50,12 +50,6 @@ class FlutterIntegrationTestBuilder
               _shouldRun,
           run: 'sudo apt-get -qq install ninja-build libgtk-3-dev xvfb',
         ),
-        Step.uses(
-          name: 'Install test dependencies (web)',
-          ifExpression:
-              matrix.platform.eq(const Expression.literal('web')) & _shouldRun,
-          uses: 'nanasess/setup-chromedriver@master',
-        ),
         Step.run(
           name: 'Enable experimental platforms',
           ifExpression: matrix.desktop,
@@ -102,7 +96,7 @@ class FlutterIntegrationTestBuilder
           name: 'Run integration tests (web)',
           ifExpression:
               matrix.platform.eq(const Expression.literal('web')) & _shouldRun,
-          run: 'chromedriver --port=4444 & $baseTool drive '
+          run: '\$CHROMEWEBDRIVER/chromedriver --port=4444 & $baseTool drive '
               '--driver=test_driver/integration_test.dart '
               '--target=$integrationTestPaths '
               '--release '
