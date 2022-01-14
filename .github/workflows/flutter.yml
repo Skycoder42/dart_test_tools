@@ -366,13 +366,6 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
       - name: Run integration tests (web)
         if: matrix.platform == 'web' && contains(fromJSON(inputs.platforms), matrix.platform)
-        run: |
-          set -ex
-          env
-          $CHROMEWEBDRIVER/chromedriver --port=4444 &
-          flutter drive \
-            --driver=test_driver/integration_test.dart \
-            --target=${{ inputs.integrationTestPaths }} \
-            --release -d chrome --browser-name=chrome
+        run: $ChromeWebDriver/chromedriver --port=4444 & flutter drive --driver=test_driver/integration_test.dart --target=${{ inputs.integrationTestPaths }} --release -d chrome --browser-name=chrome
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
         shell: bash

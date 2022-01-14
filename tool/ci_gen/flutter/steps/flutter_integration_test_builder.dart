@@ -96,15 +96,12 @@ class FlutterIntegrationTestBuilder
           name: 'Run integration tests (web)',
           ifExpression:
               matrix.platform.eq(const Expression.literal('web')) & _shouldRun,
-          run: '''
-set -ex
-env
-\$CHROMEWEBDRIVER/chromedriver --port=4444 &
-$baseTool drive \\
-  --driver=test_driver/integration_test.dart \\
-  --target=$integrationTestPaths \\
-  --release -d chrome --browser-name=chrome
-''',
+          run: '\$ChromeWebDriver/chromedriver --port=4444 & '
+              '$baseTool drive '
+              '--driver=test_driver/integration_test.dart '
+              '--target=$integrationTestPaths '
+              '--release '
+              '-d chrome --browser-name=chrome',
           workingDirectory: '$workingDirectory/$integrationTestProject',
           shell: 'bash',
         ),
