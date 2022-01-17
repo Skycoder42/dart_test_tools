@@ -349,14 +349,11 @@ jobs:
         if: matrix.platform == 'android' && contains(fromJSON(inputs.platforms), matrix.platform)
         run: |
           set -ex
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
-            --install \
-            "emulator" \
-            '${{ inputs.androidAVDImage }}'
-          $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager \
-            create avd \
+          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+          yes | sdkmanager --install emulator '${{ inputs.androidAVDImage }}'
+          yes | avdmanager create avd \
             --force \
-            --name 'default' \
+            --name default \
             --package '${{ inputs.androidAVDImage }}' \
             --device '${{ inputs.androidAVDDevice }}'
       - name: Install test dependencies (linux)
