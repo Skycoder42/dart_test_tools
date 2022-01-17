@@ -84,7 +84,7 @@ on:
       androidAVDImage:
         type: string
         required: false
-        default: system-images;android-31;google_apis;x86_64
+        default: system-images;android-31;default;x86_64
         description: The AVD-Image to be used for android integration testing
       androidAVDDevice:
         type: string
@@ -314,7 +314,7 @@ jobs:
           - web
         include:
           - platform: android
-            os: ubuntu-latest
+            os: macos-latest
           - platform: ios
             os: macos-latest
           - platform: linux

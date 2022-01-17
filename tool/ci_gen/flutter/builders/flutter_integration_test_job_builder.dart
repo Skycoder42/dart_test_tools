@@ -65,7 +65,7 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   static const _platformIncludes = [
     _PlatformInclude(
       platform: 'android',
-      os: 'ubuntu-latest',
+      os: 'macos-latest',
     ),
     _PlatformInclude(
       platform: 'ios',
