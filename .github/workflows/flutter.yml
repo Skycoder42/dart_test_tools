@@ -45,10 +45,11 @@ on:
       platforms:
         type: string
         required: false
-        default: '["ios","linux","windows","macos","web"]'
+        default: '["android","ios","linux","windows","macos","web"]'
         description: |
           A JSON-Formatted list of platforms that unit and integration tests should be run on.
           By default, all platforms are active. The available platforms are:
+          - android
           - ios
           - linux
           - windows
@@ -80,6 +81,16 @@ on:
         type: string
         required: false
         description: Specifies the project in which integration tests are placed. Useful in case of flutter libraries, where integration tests are typically inside the example instead of the package itself
+      androidAVDImage:
+        type: string
+        required: false
+        default: system-images;android-31;google_apis;x86_64
+        description: The AVD-Image to be used for android integration testing
+      androidAVDDevice:
+        type: string
+        required: false
+        default: pixel_4
+        description: The AVD device template to be used for android integration testing
 jobs:
   analyze:
     name: Analyze
@@ -295,12 +306,15 @@ jobs:
       fail-fast: false
       matrix:
         platform:
+          - android
           - ios
           - linux
           - windows
           - macos
           - web
         include:
+          - platform: android
+            os: ubuntu-latest
           - platform: ios
             os: macos-latest
           - platform: linux
@@ -325,15 +339,29 @@ jobs:
         uses: subosito/flutter-action@v1
         with:
           channel: ${{ inputs.flutterSdkChannel }}
+      - name: Enable experimental platforms
+        if: matrix.desktop && contains(fromJSON(inputs.platforms), matrix.platform)
+        run: flutter config --enable-${{ matrix.platform }}-desktop
       - name: Download flutter binary artifacts
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: flutter precache --universal --${{ matrix.platform }}
+      - name: Install test dependencies (android)
+        if: matrix.platform == 'android' && contains(fromJSON(inputs.platforms), matrix.platform)
+        run: |
+          set -ex
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
+            --install \
+            "emulator" \
+            '${{ inputs.androidAVDImage }}'
+          $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager \
+            create avd \
+            --force \
+            --name 'default' \
+            --package '${{ inputs.androidAVDImage }}' \
+            --device '${{ inputs.androidAVDDevice }}'
       - name: Install test dependencies (linux)
         if: matrix.platform == 'linux' && contains(fromJSON(inputs.platforms), matrix.platform)
         run: sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
-      - name: Enable experimental platforms
-        if: matrix.desktop
-        run: flutter config --enable-${{ matrix.platform }}-desktop
       - name: Validate flutter setup
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: flutter doctor -v
@@ -371,6 +399,14 @@ jobs:
       - name: Run platform test setup
         if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && contains(fromJSON(inputs.platforms), matrix.platform)
         run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Start Android-Emulator
+        if: matrix.platform == 'android' && contains(fromJSON(inputs.platforms), matrix.platform)
+        run: |
+          set -ex
+          nohup $ANDROID_HOME/emulator/emulator -no-window @default &
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
+          flutter devices
         working-directory: ${{ inputs.workingDirectory }}
       - name: Start iOS-Simulator
         if: matrix.platform == 'ios' && contains(fromJSON(inputs.platforms), matrix.platform)

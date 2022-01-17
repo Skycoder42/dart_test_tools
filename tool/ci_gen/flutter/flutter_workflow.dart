@@ -51,6 +51,8 @@ abstract class FlutterWorkflow {
       integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
       integrationTestProject:
           inputContext(WorkflowInputs.integrationTestProject),
+      androidAVDImage: inputContext(WorkflowInputs.androidAVDImage),
+      androidAVDDevice: inputContext(WorkflowInputs.androidAVDDevice),
       platforms: inputContext.builder(WorkflowInputs.platforms),
     );
 

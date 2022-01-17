@@ -4,14 +4,19 @@ import '../../types/step.dart';
 
 class FlutterSdkBuilder implements StepBuilder {
   final Expression flutterSdkChannel;
+  final Expression? buildPlatform;
+  final Expression? enableDesktopCondition;
   final Expression? ifExpression;
-  final String? preCacheTarget;
 
-  FlutterSdkBuilder({
+  const FlutterSdkBuilder({
     required this.flutterSdkChannel,
+    this.buildPlatform,
+    this.enableDesktopCondition,
     this.ifExpression,
-    this.preCacheTarget,
-  });
+  }) : assert(
+          enableDesktopCondition == null || buildPlatform != null,
+          'If enableDesktopCondition is set, buildPlatform must be too',
+        );
 
   @override
   Iterable<Step> build() => [
@@ -24,13 +29,19 @@ class FlutterSdkBuilder implements StepBuilder {
             'channel': flutterSdkChannel.toString(),
           },
         ),
+        if (enableDesktopCondition != null)
+          Step.run(
+            name: 'Enable experimental platforms',
+            ifExpression: enableDesktopCondition! & ifExpression,
+            run: 'flutter config --enable-$buildPlatform-desktop',
+          ),
         Step.run(
           name: 'Download flutter binary artifacts',
           ifExpression: ifExpression,
-          run: 'flutter precache --universal$_preCacheTargetArgs',
+          run: 'flutter precache --universal$_preCachePlatformArgs',
         ),
       ];
 
-  String get _preCacheTargetArgs =>
-      preCacheTarget != null ? ' --$preCacheTarget' : '';
+  String get _preCachePlatformArgs =>
+      buildPlatform != null ? ' --$buildPlatform' : '';
 }

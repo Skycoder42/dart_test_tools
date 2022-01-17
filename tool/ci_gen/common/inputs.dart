@@ -230,4 +230,25 @@ Example:
           'typically inside the example instead of the package itself',
     ),
   );
+
+  static const androidAVDImage = WorkflowInput(
+    name: 'androidAVDImage',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: 'system-images;android-31;google_apis;x86_64',
+      description: 'The AVD-Image to be used for android integration testing',
+    ),
+  );
+
+  static const androidAVDDevice = WorkflowInput(
+    name: 'androidAVDDevice',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: 'pixel_4',
+      description:
+          'The AVD device template to be used for android integration testing',
+    ),
+  );
 }

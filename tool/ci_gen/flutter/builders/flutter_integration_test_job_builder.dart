@@ -63,10 +63,10 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   );
 
   static const _platformIncludes = [
-    // _PlatformInclude(
-    //   platform: 'android',
-    //   os: 'ubuntu-latest',
-    // ),
+    _PlatformInclude(
+      platform: 'android',
+      os: 'ubuntu-latest',
+    ),
     _PlatformInclude(
       platform: 'ios',
       os: 'macos-latest',
@@ -105,6 +105,8 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression integrationTestSetup;
   final Expression integrationTestPaths;
   final Expression integrationTestProject;
+  final Expression androidAVDImage;
+  final Expression androidAVDDevice;
   final Expression platforms;
 
   FlutterIntegrationTestJobBuilder({
@@ -116,6 +118,8 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     required this.integrationTestSetup,
     required this.integrationTestPaths,
     required this.integrationTestProject,
+    required this.androidAVDImage,
+    required this.androidAVDDevice,
     required ExpressionBuilderFn<List<String>> platforms,
   }) : platforms = platforms(_platformIncludes.map((i) => i.platform).toList());
 
@@ -143,7 +147,8 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
               platforms,
               _matrix.platform,
             ),
-            _matrix.platform.toString(),
+            _matrix.platform,
+            _matrix.desktop,
           ),
           ...FlutterIntegrationTestBuilder(
             repository: repository,
@@ -153,6 +158,8 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
             integrationTestSetup: integrationTestSetup,
             integrationTestPaths: integrationTestPaths,
             integrationTestProject: integrationTestProject,
+            androidAVDImage: androidAVDImage,
+            androidAVDDevice: androidAVDDevice,
             baseTool: baseTool,
             pubTool: pubTool,
             runTool: runTool,

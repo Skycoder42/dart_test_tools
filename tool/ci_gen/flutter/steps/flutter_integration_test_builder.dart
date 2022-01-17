@@ -21,6 +21,8 @@ class FlutterIntegrationTestBuilder
   final Expression integrationTestSetup;
   final Expression integrationTestPaths;
   final Expression integrationTestProject;
+  final Expression androidAVDImage;
+  final Expression androidAVDDevice;
   @override
   final Expression platforms;
   final String baseTool;
@@ -35,6 +37,8 @@ class FlutterIntegrationTestBuilder
     required this.integrationTestSetup,
     required this.integrationTestPaths,
     required this.integrationTestProject,
+    required this.androidAVDImage,
+    required this.androidAVDDevice,
     required this.platforms,
     required this.baseTool,
     required this.pubTool,
@@ -45,15 +49,29 @@ class FlutterIntegrationTestBuilder
   @override
   Iterable<Step> build() => [
         Step.run(
+          name: 'Install test dependencies (android)',
+          ifExpression:
+              matrix.platform.eq(const Expression.literal('android')) &
+                  _shouldRun,
+          run: '''
+set -ex
+\$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \\
+  --install \\
+  "emulator" \\
+  '$androidAVDImage'
+\$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager \\
+  create avd \\
+  --force \\
+  --name 'default' \\
+  --package '$androidAVDImage' \\
+  --device '$androidAVDDevice'
+''',
+        ),
+        Step.run(
           name: 'Install test dependencies (linux)',
           ifExpression: matrix.platform.eq(const Expression.literal('linux')) &
               _shouldRun,
           run: 'sudo apt-get -qq install ninja-build libgtk-3-dev xvfb',
-        ),
-        Step.run(
-          name: 'Enable experimental platforms',
-          ifExpression: matrix.desktop,
-          run: '$baseTool config --enable-${matrix.platform}-desktop',
         ),
         Step.run(
           name: 'Validate flutter setup',
@@ -82,6 +100,19 @@ class FlutterIntegrationTestBuilder
           ifExpression:
               _platformTestSetup.ne(const Expression.literal('')) & _shouldRun,
           run: _platformTestSetup.toString(),
+          workingDirectory: workingDirectory.toString(),
+        ),
+        Step.run(
+          name: 'Start Android-Emulator',
+          ifExpression:
+              matrix.platform.eq(const Expression.literal('android')) &
+                  _shouldRun,
+          run: '''
+set -ex
+nohup \$ANDROID_HOME/emulator/emulator -no-window @default &
+\$ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z \$(getprop sys.boot_completed | tr -d '\\r') ]]; do sleep 1; done; input keyevent 82'
+$baseTool devices
+''',
           workingDirectory: workingDirectory.toString(),
         ),
         Step.run(

@@ -12,13 +12,15 @@ mixin FlutterSdkJobBuilderMixin on SdkJobBuilder {
   @override
   Iterable<Step> buildSetupSdkSteps([
     Expression? ifExpression,
-    String? preCacheTarget,
+    Expression? buildPlatform,
+    Expression? enableDesktopCondition,
   ]) =>
       [
         ...FlutterSdkBuilder(
           flutterSdkChannel: flutterSdkChannel,
           ifExpression: ifExpression,
-          preCacheTarget: preCacheTarget,
+          buildPlatform: buildPlatform,
+          enableDesktopCondition: enableDesktopCondition,
         ).build(),
       ];
 }
