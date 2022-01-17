@@ -45,10 +45,11 @@ on:
       platforms:
         type: string
         required: false
-        default: '["linux","windows","macos","web"]'
+        default: '["ios","linux","windows","macos","web"]'
         description: |
           A JSON-Formatted list of platforms that unit and integration tests should be run on.
           By default, all platforms are active. The available platforms are:
+          - ios
           - linux
           - windows
           - macos
@@ -88,6 +89,8 @@ jobs:
         uses: subosito/flutter-action@v1
         with:
           channel: ${{ inputs.flutterSdkChannel }}
+      - name: Download flutter binary artifacts
+        run: flutter precache --universal
       - name: Install dart_test_tools
         run: flutter pub global activate dart_test_tools ^2.0.0-test.1
       - name: Install yq (Windows)
@@ -180,6 +183,9 @@ jobs:
         uses: subosito/flutter-action@v1
         with:
           channel: ${{ inputs.flutterSdkChannel }}
+      - name: Download flutter binary artifacts
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        run: flutter precache --universal
       - name: Install yq (Windows)
         if: runner.os == 'Windows' && contains(fromJSON(inputs.platforms), matrix.platform)
         run: choco install yq
@@ -289,11 +295,14 @@ jobs:
       fail-fast: false
       matrix:
         platform:
+          - ios
           - linux
           - windows
           - macos
           - web
         include:
+          - platform: ios
+            os: macos-latest
           - platform: linux
             os: ubuntu-latest
             desktop: true
@@ -316,6 +325,9 @@ jobs:
         uses: subosito/flutter-action@v1
         with:
           channel: ${{ inputs.flutterSdkChannel }}
+      - name: Download flutter binary artifacts
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        run: flutter precache --universal --${{ matrix.platform }}
       - name: Install test dependencies (linux)
         if: matrix.platform == 'linux' && contains(fromJSON(inputs.platforms), matrix.platform)
         run: sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
@@ -359,6 +371,13 @@ jobs:
       - name: Run platform test setup
         if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && contains(fromJSON(inputs.platforms), matrix.platform)
         run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Start iOS-Simulator
+        if: matrix.platform == 'ios' && contains(fromJSON(inputs.platforms), matrix.platform)
+        run: |
+          set -e
+          open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
+          flutter devices
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run integration tests (dart-vm)
         if: matrix.platform != 'web' && contains(fromJSON(inputs.platforms), matrix.platform)

@@ -67,10 +67,10 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     //   platform: 'android',
     //   os: 'ubuntu-latest',
     // ),
-    // _PlatformInclude(
-    //   platform: 'ios',
-    //   os: 'macos-latest',
-    // ),
+    _PlatformInclude(
+      platform: 'ios',
+      os: 'macos-latest',
+    ),
     _PlatformInclude(
       platform: 'linux',
       desktop: true,
@@ -143,6 +143,7 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
               platforms,
               _matrix.platform,
             ),
+            _matrix.platform.toString(),
           ),
           ...FlutterIntegrationTestBuilder(
             repository: repository,

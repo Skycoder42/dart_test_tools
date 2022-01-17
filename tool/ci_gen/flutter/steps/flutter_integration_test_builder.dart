@@ -53,12 +53,12 @@ class FlutterIntegrationTestBuilder
         Step.run(
           name: 'Enable experimental platforms',
           ifExpression: matrix.desktop,
-          run: 'flutter config --enable-${matrix.platform}-desktop',
+          run: '$baseTool config --enable-${matrix.platform}-desktop',
         ),
         Step.run(
           name: 'Validate flutter setup',
           ifExpression: _shouldRun,
-          run: 'flutter doctor -v',
+          run: '$baseTool doctor -v',
         ),
         ...ProjectSetupBuilder(
           repository: repository,
@@ -82,6 +82,17 @@ class FlutterIntegrationTestBuilder
           ifExpression:
               _platformTestSetup.ne(const Expression.literal('')) & _shouldRun,
           run: _platformTestSetup.toString(),
+          workingDirectory: workingDirectory.toString(),
+        ),
+        Step.run(
+          name: 'Start iOS-Simulator',
+          ifExpression:
+              matrix.platform.eq(const Expression.literal('ios')) & _shouldRun,
+          run: '''
+set -e
+open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
+$baseTool devices
+''',
           workingDirectory: workingDirectory.toString(),
         ),
         Step.run(

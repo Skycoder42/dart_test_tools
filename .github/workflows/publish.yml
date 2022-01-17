@@ -135,6 +135,9 @@ jobs:
         uses: subosito/flutter-action@v1
         with:
           channel: ${{ inputs.flutterSdkChannel }}
+      - name: Download flutter binary artifacts
+        if: inputs.flutter
+        run: flutter precache --universal
       - id: tools
         name: Prepare build tools
         run: |

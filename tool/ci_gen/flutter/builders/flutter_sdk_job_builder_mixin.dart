@@ -10,10 +10,15 @@ mixin FlutterSdkJobBuilderMixin on SdkJobBuilder {
   String get baseTool => 'flutter';
 
   @override
-  Iterable<Step> buildSetupSdkSteps([Expression? ifExpression]) => [
+  Iterable<Step> buildSetupSdkSteps([
+    Expression? ifExpression,
+    String? preCacheTarget,
+  ]) =>
+      [
         ...FlutterSdkBuilder(
           flutterSdkChannel: flutterSdkChannel,
           ifExpression: ifExpression,
+          preCacheTarget: preCacheTarget,
         ).build(),
       ];
 }

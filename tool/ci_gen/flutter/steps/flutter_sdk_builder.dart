@@ -5,10 +5,12 @@ import '../../types/step.dart';
 class FlutterSdkBuilder implements StepBuilder {
   final Expression flutterSdkChannel;
   final Expression? ifExpression;
+  final String? preCacheTarget;
 
   FlutterSdkBuilder({
     required this.flutterSdkChannel,
     this.ifExpression,
+    this.preCacheTarget,
   });
 
   @override
@@ -21,6 +23,14 @@ class FlutterSdkBuilder implements StepBuilder {
           withArgs: <String, dynamic>{
             'channel': flutterSdkChannel.toString(),
           },
-        )
+        ),
+        Step.run(
+          name: 'Download flutter binary artifacts',
+          ifExpression: ifExpression,
+          run: 'flutter precache --universal$_preCacheTargetArgs',
+        ),
       ];
+
+  String get _preCacheTargetArgs =>
+      preCacheTarget != null ? ' --$preCacheTarget' : '';
 }
