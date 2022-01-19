@@ -56,7 +56,7 @@ class FlutterIntegrationTestBuilder
           run: '''
 set -ex
 export PATH="\$ANDROID_HOME/cmdline-tools/latest/bin:\$PATH"
-yes | sdkmanager --licenses
+printf 'y\\n%.0s' {1..10} | sdkmanager --licenses
 sdkmanager --install emulator '$androidAVDImage'
 avdmanager create avd \\
   --force \\
