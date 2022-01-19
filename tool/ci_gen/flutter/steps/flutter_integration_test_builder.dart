@@ -56,8 +56,9 @@ class FlutterIntegrationTestBuilder
           run: '''
 set -ex
 export PATH="\$ANDROID_HOME/cmdline-tools/latest/bin:\$PATH"
-yes | sdkmanager --install emulator '$androidAVDImage'
-yes | avdmanager create avd \\
+yes | sdkmanager --licenses
+sdkmanager --install emulator '$androidAVDImage'
+avdmanager create avd \\
   --force \\
   --name default \\
   --package '$androidAVDImage' \\
