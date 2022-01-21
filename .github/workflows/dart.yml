@@ -28,7 +28,7 @@ on:
       publishExclude:
         type: string
         required: false
-        default: '[]'
+        default: "[]"
         description: |
           Specify a JSON array of paths to be excluded from publishing.
           Example: '["secrets.txt","debug.log"]'
@@ -64,7 +64,7 @@ on:
       integrationTestSetup:
         type: string
         required: false
-        default: '{}'
+        default: "{}"
         description: |
           A JSON-Matrix with extra setup steps for each platform.
           contains key-value pairs for each platform with a command to be invoked.
@@ -84,8 +84,8 @@ jobs:
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
-      - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^2.0.0
+      # - name: Install dart_test_tools
+      #   run: dart pub global activate dart_test_tools ^2.0.0
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
         run: choco install yq
@@ -109,9 +109,9 @@ jobs:
       - name: Static analysis
         run: dart analyze --fatal-infos
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Validate library imports
-        run: dart pub global run dart_test_tools:import_analyzer
-        working-directory: ${{ inputs.workingDirectory }}
+      # - name: Validate library imports
+      #   run: dart pub global run dart_test_tools:import_analyzer
+      #   working-directory: ${{ inputs.workingDirectory }}
       - name: Validate correct formatting
         run: dart format -onone --set-exit-if-changed .
         working-directory: ${{ inputs.workingDirectory }}
