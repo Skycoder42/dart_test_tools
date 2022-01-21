@@ -53,11 +53,10 @@ class TestImportAnalyzer extends ImportAnalyzerBase {
     }
 
     // accept package imports with an exclusion import
-    final hasImportComment = directive
-            .firstTokenAfterCommentAndMetadata.precedingComments
-            ?.value()
-            .contains('dart_test_tools:ignore-library-import') ??
-        false;
+    final hasImportComment = hasIgnoreComment(
+      directive.firstTokenAfterCommentAndMetadata,
+      'test_library_import',
+    );
     if (hasImportComment) {
       return true;
     }

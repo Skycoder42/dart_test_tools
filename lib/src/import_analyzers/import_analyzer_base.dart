@@ -1,11 +1,19 @@
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:logging/logging.dart';
 
 import 'import_result.dart';
+
+class _TokenCastHelper<TToken extends Token> {
+  // ignore: avoid_unused_constructor_parameters
+  _TokenCastHelper(TToken? token);
+
+  TToken? call(Token? token) => token is TToken ? token : null;
+}
 
 abstract class ImportAnalyzerBase {
   final AnalysisContextCollection contextCollection;
@@ -49,6 +57,20 @@ abstract class ImportAnalyzerBase {
       throw Exception('Directive is not a valid URI');
     }
     return Uri.parse(uriString);
+  }
+
+  @protected
+  bool hasIgnoreComment(Token token, String comment) {
+    var commentToken = token.precedingComments;
+    final cast = _TokenCastHelper(commentToken);
+    while (commentToken != null) {
+      if (commentToken.value().contains('ignore: $comment')) {
+        return true;
+      }
+      commentToken = cast(commentToken.next);
+    }
+
+    return false;
   }
 
   Future<ImportResult> _analyzeFile(String path) async {
