@@ -25,6 +25,4 @@ dev_dependencies:
   json_serializable: ^6.1.4
 
 executables:
-  test: test
-  publish: publish
   import_analyzer: import_analyzer
