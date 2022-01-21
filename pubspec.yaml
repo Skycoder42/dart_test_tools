@@ -1,6 +1,6 @@
 name: dart_test_tools
 description: Additional tools and helpers for writing dart unit tests.
-version: 2.0.1
+version: 2.0.2
 homepage: https://github.com/Skycoder42/dart_test_tools
 
 environment:
@@ -13,7 +13,7 @@ dependencies:
   json_annotation: ^4.4.0
   lint: ^1.8.2
   logging: ^1.0.2
-  path: ^1.8.1
+  path: ^1.8.0
   pubspec_parse: ^1.2.0
   yaml: ^3.1.0
   yaml_writer: ^1.0.1
