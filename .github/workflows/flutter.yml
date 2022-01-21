@@ -103,7 +103,7 @@ jobs:
       - name: Download flutter binary artifacts
         run: flutter precache --universal
       - name: Install dart_test_tools
-        run: flutter pub global activate dart_test_tools ^2.0.0-test.1
+        run: flutter pub global activate dart_test_tools ^2.0.0
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
         run: choco install yq

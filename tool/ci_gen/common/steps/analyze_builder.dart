@@ -35,7 +35,7 @@ class AnalyzeBuilder implements StepBuilder {
   Iterable<Step> build() => [
         Step.run(
           name: 'Install dart_test_tools',
-          run: '$pubTool global activate dart_test_tools ^2.0.0-test.1',
+          run: '$pubTool global activate dart_test_tools ^2.0.0',
         ),
         ...ProjectSetupBuilder(
           repository: repository,

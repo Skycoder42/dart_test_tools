@@ -19,7 +19,6 @@ class TestImportAnalyzer extends ImportAnalyzerBase {
         );
 
   @override
-  // TODO: implement scannerDescription
   String get scannerDescription =>
       'Checking for library imports in test files...';
 

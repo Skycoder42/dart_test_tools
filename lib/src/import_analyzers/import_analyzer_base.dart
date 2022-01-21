@@ -64,7 +64,7 @@ abstract class ImportAnalyzerBase {
     var commentToken = token.precedingComments;
     final cast = _TokenCastHelper(commentToken);
     while (commentToken != null) {
-      if (commentToken.value().contains('ignore: $comment')) {
+      if (commentToken.value() == '// ignore: $comment') {
         return true;
       }
       commentToken = cast(commentToken.next);

@@ -20,6 +20,7 @@ Future<void> main() async {
 }
 
 Future<int> _writeWorkflowToFile(String name, Workflow workflow) async {
+  stdout.writeln('Generating $name workflow...');
   final writer = _createYamlWriter();
 
   final outFile = File('.github/workflows/$name.yml').openWrite();
