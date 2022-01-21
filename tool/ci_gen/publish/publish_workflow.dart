@@ -22,6 +22,7 @@ abstract class PublishWorkflow {
       tagPrefix: inputContext(WorkflowInputs.tagPrefix),
     );
     final publishJobBuilder = PublishJobBuilder(
+      releaseUpdate: ReleaseJobBuilder.updateOutput,
       flutter: inputContext(WorkflowInputs.flutter),
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
@@ -30,8 +31,8 @@ abstract class PublishWorkflow {
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       publish: inputContext(WorkflowInputs.publish),
       publishExclude: inputContext(WorkflowInputs.publishExclude),
+      prePublish: inputContext(WorkflowInputs.prePublish),
       pubDevCredentials: secretContext(WorkflowSecrets.pubDevCredentials),
-      releaseUpdate: ReleaseJobBuilder.updateOutput,
     );
 
     return Workflow(

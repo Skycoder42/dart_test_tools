@@ -16,6 +16,7 @@ class PublishBuilder implements StepBuilder {
   final Expression buildRunner;
   final Expression publishExclude;
   final Expression pubDevCredentials;
+  final Expression prePublish;
 
   PublishBuilder({
     required this.flutter,
@@ -24,6 +25,7 @@ class PublishBuilder implements StepBuilder {
     required this.buildRunner,
     required this.publishExclude,
     required this.pubDevCredentials,
+    required this.prePublish,
   });
 
   @override
@@ -49,6 +51,12 @@ fi
           runTool: toolsPubRun.expression.toString(),
           skipYqInstall: true,
         ).build(),
+        Step.run(
+          name: 'Run pre publish script',
+          ifExpression: prePublish.ne(Expression.empty),
+          run: prePublish.toString(),
+          workingDirectory: workingDirectory.toString(),
+        ),
         Step.run(
           name: 'Prepare pub.dev credentials',
           run: '''

@@ -107,7 +107,7 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
   @override
   Job build() => Job(
         name: 'Unit tests',
-        ifExpression: unitTestPaths.ne(const Expression.literal('')),
+        ifExpression: unitTestPaths.ne(Expression.empty),
         needs: {analyzeJobId},
         strategy: Strategy(
           failFast: false,

@@ -129,7 +129,7 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   @override
   Job build() => Job(
         name: 'Integration tests',
-        ifExpression: integrationTestPaths.ne(const Expression.literal('')),
+        ifExpression: integrationTestPaths.ne(Expression.empty),
         needs: {analyzeJobId},
         strategy: Strategy(
           failFast: false,

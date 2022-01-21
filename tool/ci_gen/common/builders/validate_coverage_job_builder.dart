@@ -36,7 +36,7 @@ class ValidateCoverageJobBuilder implements JobBuilder {
         ifExpression: CoverageBuilderMixin.createRunCoverageExpression(
               minCoverage,
             ) &
-            (unitTestPaths.ne(const Expression.literal(''))),
+            (unitTestPaths.ne(Expression.empty)),
         needs: {unitTestJobId},
         runsOn: 'ubuntu-latest',
         steps: [

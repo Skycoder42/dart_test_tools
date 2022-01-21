@@ -17,6 +17,7 @@ class PublishJobBuilder implements JobBuilder {
   final Expression buildRunner;
   final Expression publishExclude;
   final Expression pubDevCredentials;
+  final Expression prePublish;
 
   PublishJobBuilder({
     required this.publish,
@@ -29,6 +30,7 @@ class PublishJobBuilder implements JobBuilder {
     required this.buildRunner,
     required this.publishExclude,
     required this.pubDevCredentials,
+    required this.prePublish,
   });
 
   @override
@@ -57,6 +59,7 @@ class PublishJobBuilder implements JobBuilder {
             buildRunner: buildRunner,
             publishExclude: publishExclude,
             pubDevCredentials: pubDevCredentials,
+            prePublish: prePublish,
           ).build(),
         ],
       );

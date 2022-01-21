@@ -49,8 +49,7 @@ class DartIntegrationTestBuilder
         ).build(),
         Step.run(
           name: 'Run platform test setup',
-          ifExpression:
-              _platformTestSetup.ne(const Expression.literal('')) & _shouldRun,
+          ifExpression: _platformTestSetup.ne(Expression.empty) & _shouldRun,
           run: _platformTestSetup.toString(),
           workingDirectory: workingDirectory.toString(),
         ),

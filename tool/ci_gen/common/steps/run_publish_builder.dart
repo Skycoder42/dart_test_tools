@@ -23,8 +23,7 @@ class RunPublishBuilder implements StepBuilder {
   Iterable<Step> build() => [
         Step.run(
           name: 'Remove files to not be published',
-          ifExpression:
-              publishExclude.ne(const Expression.literal('')) & ifExpression,
+          ifExpression: publishExclude.ne(Expression.empty) & ifExpression,
           run: '''
 set -e
 echo '$publishExclude' | jq -cr '.[]' | while read exclude; do

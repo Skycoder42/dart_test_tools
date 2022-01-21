@@ -52,6 +52,10 @@ on:
         description: |
           Specify a JSON array of paths to be excluded from publishing.
           Example: '["secrets.txt","debug.log"]'
+      prePublish:
+        type: string
+        required: false
+        description: A command to be run before publishing the package
     secrets:
       PUB_DEV_CREDENTIALS:
         required: false
@@ -161,6 +165,10 @@ jobs:
       - name: Create build files
         if: inputs.buildRunner
         run: ${{ steps.tools.outputs.pubRun }} build_runner build
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Run pre publish script
+        if: inputs.prePublish != ''
+        run: ${{ inputs.prePublish }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Prepare pub.dev credentials
         run: |

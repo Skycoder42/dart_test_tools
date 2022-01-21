@@ -251,4 +251,13 @@ Example:
           'The AVD device template to be used for android integration testing',
     ),
   );
+
+  static const prePublish = WorkflowInput(
+    name: 'prePublish',
+    input: Input(
+      type: Type.string,
+      required: false,
+      description: 'A command to be run before publishing the package',
+    ),
+  );
 }
