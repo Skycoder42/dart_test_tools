@@ -24,7 +24,11 @@ Future<int> _writeWorkflowToFile(String name, Workflow workflow) async {
   final writer = _createYamlWriter();
 
   final outFile = File('.github/workflows/$name.yml').openWrite();
-  final yqProc = await Process.start('yq', const ['e', '-P']);
+  final yqProc = await Process.start(
+    'yq',
+    const ['e', '-P'],
+    runInShell: true,
+  );
   final errFuture = yqProc.stderr.listen(stderr.add).asFuture<void>();
   final outFuture = yqProc.stdout.pipe(outFile);
 
