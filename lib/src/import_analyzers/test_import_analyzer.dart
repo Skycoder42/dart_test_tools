@@ -35,7 +35,7 @@ class TestImportAnalyzer extends ImportAnalyzerBase {
 
     // Accept imports that are not package imports
     final directiveUri = getDirectiveUri(directive);
-    if (directiveUri.scheme != 'package') {
+    if (!directiveUri.isScheme('package')) {
       return true;
     }
 
