@@ -1,89 +1,176 @@
-import 'dart:io';
+import 'dart:async';
 
 import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/element/element.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/generated/source.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:logging/logging.dart';
-import 'package:path/path.dart' as path;
 
-import 'analyzer_base.dart';
+import 'common/analyzer_mixin.dart';
+import 'common/context_root_extensions.dart';
+import 'common/file_result.dart';
+import 'common/package_analyzer.dart';
 
-Future<void> main() async {
-  Logger.root.onRecord.listen(stdout.writeln);
-  Logger.root.level = Level.FINEST;
+part 'lib_export_analyzer.freezed.dart';
 
-  final analyzer = LibExportAnalyzer(
-    contextCollection: AnalysisContextCollection(
-      includedPaths: [
-        path.canonicalize(
-          'C:/Users/felix.barz/repos/other/libsodium_dart_bindings/packages/sodium',
-        ),
-      ],
-    ),
-    logger: Logger('LibExportAnalyzer'),
-  );
-
-  await analyzer.runAnalysis();
+@freezed
+class _ExportPartResult with _$_ExportPartResult {
+  const factory _ExportPartResult.path(String path) = _ExportPartPathResult;
+  const factory _ExportPartResult.skip(ResultLocation resultLocation) =
+      _ExportPartSkipResult;
 }
 
-class LibExportAnalyzer extends AnalyzerBase {
-  const LibExportAnalyzer({
-    required AnalysisContextCollection contextCollection,
-    required Logger logger,
-  }) : super(
-          contextCollection: contextCollection,
-          logger: logger,
-        );
+class LibExportAnalyzer with AnalyzerMixin implements PackageAnalyzer {
+  @override
+  final AnalysisContextCollection contextCollection;
+  @override
+  @internal
+  final Logger logger;
+
+  LibExportAnalyzer({
+    required this.contextCollection,
+    required this.logger,
+  });
 
   @override
-  Future<bool> runAnalysis() async {
+  Stream<FileResult> analyzePackage() async* {
     for (final context in contextCollection.contexts) {
-      final libDir = context.contextRoot.lib;
-      final srcDir = context.contextRoot.src;
+      try {
+        final sources = <String>{};
+        final exports = <String>{};
 
-      final exports = <String>{};
-      // final sources = <String>{};
+        for (final path in context.contextRoot.analyzedFiles()) {
+          if (!isDartFile(path)) {
+            continue;
+          }
 
-      for (final path in context.contextRoot.analyzedFiles()) {
-        if (!_isDartFile(path)) {
-          logSkipFile(path, 'not a dart file');
+          if (context.contextRoot.src.contains(path)) {
+            final srcResult = await _scanSrcFile(context, path);
+            if (srcResult != null) {
+              yield srcResult;
+            } else {
+              sources.add(path);
+            }
+          } else if (context.contextRoot.lib.contains(path)) {
+            await for (final result in _scanForExports(context, path)) {
+              if (result is _ExportPartSkipResult) {
+                yield FileResult.skipped(
+                  reason: 'Is a part file',
+                  resultLocation: result.resultLocation,
+                );
+              } else if (result is _ExportPartPathResult) {
+                exports.add(result.path);
+              } else {
+                throw StateError('Unexpected _ExportPartResult: $result');
+              }
+            }
+          } else {
+            // ignore all files not in the lib directory
+          }
         }
 
-        if (srcDir.contains(path)) {
-        } else if (libDir.contains(path)) {
-          exports.addAll(await _scanForExports(context, path).toList());
-        } else {
-          logSkipFile(path, 'not a package library file');
-        }
+        yield* _evaluteExportResults(context, sources, exports);
+      } on AnalysisException catch (e, s) {
+        yield e.toFailure(s);
+      }
+    }
+  }
+
+  Future<FileResult?> _scanSrcFile(AnalysisContext context, String path) async {
+    try {
+      final resultLocation = ResultLocation.fromFile(
+        context: context,
+        path: path,
+      );
+
+      final unit = await loadCompilationUnit(context, path);
+      if (unit == null) {
+        return FileResult.skipped(
+          reason: 'Is a part file',
+          resultLocation: resultLocation,
+        );
+      }
+
+      if (await _hasExportedElements(context, path, unit)) {
+        return null;
+      } else {
+        return FileResult.accepted(resultLocation: resultLocation);
+      }
+    } on AnalysisException catch (e, s) {
+      return e.toFailure(s);
+    }
+  }
+
+  Future<bool> _hasExportedElements(
+    AnalysisContext context,
+    String path,
+    CompilationUnit unit,
+  ) async {
+    // check if it exports any other files
+    if (unit.directives.whereType<ExportDirective>().isNotEmpty) {
+      return true;
+    }
+
+    // check if any top level declarations are public
+    for (final declaration in unit.declarations) {
+      if (declaration is TopLevelVariableDeclaration &&
+          declaration.externalKeyword != null) {
+        logWarning(
+          ResultLocation.fromFile(
+            context: context,
+            path: path,
+            node: declaration,
+            lineInfo: unit.lineInfo,
+          ),
+          'Skipping external declaration: %{code}',
+        );
+        continue;
+      }
+
+      final element = declaration.declaredElement;
+      if (element == null) {
+        throw AnalysisException(
+          ResultLocation.fromFile(
+            context: context,
+            path: path,
+            node: declaration,
+            lineInfo: unit.lineInfo,
+          ),
+          'Unabled to access declaration element for: %{code}',
+        );
+      }
+
+      if (element.isExportable) {
+        return true;
       }
     }
 
     return false;
   }
 
-  bool _isDartFile(String path) => path.endsWith('.dart');
-
-  Stream<String> _scanForExports(
+  Stream<_ExportPartResult> _scanForExports(
     AnalysisContext context,
-    String path, {
-    Level logLevel = Level.INFO,
-  }) async* {
-    final unit = await analyzeFile(context, path);
+    String path,
+  ) async* {
+    final unit = await loadCompilationUnit(context, path);
     if (unit == null) {
+      yield _ExportPartResult.skip(
+        ResultLocation.fromFile(context: context, path: path),
+      );
       return;
     }
 
-    logger.log(logLevel, 'Scanning $path for exports...');
-    yield* _getExports(context, unit);
+    yield* _getExports(context, path, unit);
   }
 
-  Stream<String> _getExports(
+  Stream<_ExportPartResult> _getExports(
     AnalysisContext context,
+    String path,
     CompilationUnit compilationUnit,
   ) async* {
-    final pubspec = context.contextRoot.pubspec;
-    final srcDir = context.contextRoot.src;
-
     final exportDirectives =
         compilationUnit.directives.whereType<ExportDirective>();
     for (final exportDirective in exportDirectives) {
@@ -91,48 +178,48 @@ class LibExportAnalyzer extends AnalyzerBase {
         exportDirective.uriSource,
         ...exportDirective.configurations.map((c) => c.uriSource),
       ];
+
       for (final exportSource in allExportSources) {
         // skip invalid sources
         if (exportSource == null) {
-          logger.warning(
-            'Unable to resolve source of directive $exportDirective',
+          logWarning(
+            ResultLocation.fromFile(
+              context: context,
+              path: path,
+              node: exportDirective,
+              lineInfo: compilationUnit.lineInfo,
+            ),
+            'Unable to resolve source of directive %{code}',
           );
           continue;
         }
 
-        // skip non package sources
-        final sourceUri = exportSource.uri;
-        if (!sourceUri.isScheme('package')) {
-          _logSkipExport(sourceUri, 'not a package export');
+        if (!_isSrcExport(
+          context: context,
+          exportDirective: exportDirective,
+          exportSource: exportSource,
+        )) {
           continue;
         }
 
-        // skip package exports of different packages
-        final exportPackageName = sourceUri.pathSegments.first;
-        if (exportPackageName != pubspec.name) {
-          _logSkipExport(sourceUri, 'not an export of this package');
-          continue;
-        }
-
-        final sourcePath = exportSource.fullName;
-        if (!srcDir.contains(sourcePath)) {
-          _logSkipExport(sourceUri, 'not a src file');
-          continue;
-        }
-
-        logger.fine('Found exported source $sourceUri');
-        yield sourcePath;
+        yield _ExportPartResult.path(exportSource.fullName);
 
         try {
           yield* _scanForExports(
-            contextCollection.contextFor(sourcePath),
-            sourcePath,
-            logLevel: Level.FINER,
+            contextCollection.contextFor(exportSource.fullName),
+            exportSource.fullName,
           );
           // ignore: avoid_catching_errors
         } on StateError catch (error, stackTrace) {
-          logger.warning(
-            'Unabled to scan $sourcePath for further exports',
+          logWarning(
+            ResultLocation.fromFile(
+              context: context,
+              path: path,
+              node: exportDirective,
+              lineInfo: compilationUnit.lineInfo,
+            ),
+            'Unabled to scan ${exportSource.fullName} for further exports, '
+            'detected from %{code}',
             error,
             stackTrace,
           );
@@ -141,6 +228,68 @@ class LibExportAnalyzer extends AnalyzerBase {
     }
   }
 
-  void _logSkipExport(Uri uri, String reason) =>
-      logger.finest('Skipping export $uri, $reason');
+  bool _isSrcExport({
+    required AnalysisContext context,
+    required ExportDirective exportDirective,
+    required Source exportSource,
+  }) {
+    // skip non package sources
+    final sourceUri = exportSource.uri;
+    if (!sourceUri.isScheme('package')) {
+      return false;
+    }
+
+    // skip package exports of different packages
+    final exportPackageName = sourceUri.pathSegments.first;
+    if (exportPackageName != context.contextRoot.pubspec.name) {
+      return false;
+    }
+
+    // skip non src exports
+    final sourcePath = exportSource.fullName;
+    if (!context.contextRoot.src.contains(sourcePath)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  Stream<FileResult> _evaluteExportResults(
+    AnalysisContext context,
+    Set<String> sources,
+    Set<String> exports,
+  ) async* {
+    for (final source in sources) {
+      final resultLocation = ResultLocation.fromFile(
+        context: context,
+        path: source,
+      );
+      if (exports.contains(source)) {
+        yield FileResult.accepted(resultLocation: resultLocation);
+      } else {
+        yield FileResult.rejected(
+          reason: 'Source file is not exported anywhere',
+          resultLocation: resultLocation,
+        );
+      }
+    }
+
+    for (final export in exports.difference(sources)) {
+      logWarning(
+        ResultLocation.fromFile(
+          context: context,
+          path: export,
+        ),
+        'Found exported source that is not covered by the analyzer',
+      );
+    }
+  }
+}
+
+extension _ElementX on Element {
+  bool get isExportable =>
+      isPublic &&
+      !hasInternal &&
+      !hasVisibleForTesting &&
+      !hasVisibleForOverriding;
 }
