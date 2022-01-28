@@ -6,6 +6,7 @@ import 'package:path/path.dart' show relative;
 
 part 'file_result.freezed.dart';
 
+@internal
 @freezed
 class ResultContext with _$ResultContext {
   const ResultContext._();
@@ -31,6 +32,7 @@ class ResultLocation with _$ResultLocation {
   const ResultLocation._();
 
   @literal
+  @internal
   // ignore: sort_unnamed_constructors_first
   const factory ResultLocation({
     required String relPath,
@@ -38,6 +40,7 @@ class ResultLocation with _$ResultLocation {
     String? codeSnippit,
   }) = _ResultLocation;
 
+  @internal
   factory ResultLocation.fromFile({
     required AnalysisContext context,
     required String path,
@@ -81,7 +84,7 @@ class FileResult with _$FileResult {
 
   @literal
   const factory FileResult.failure({
-    required Object error,
+    required String error,
     StackTrace? stackTrace,
     required ResultLocation resultLocation,
   }) = _Failure;

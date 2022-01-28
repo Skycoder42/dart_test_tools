@@ -1,3 +1,5 @@
-export 'src/import_analyzers/import_analyzer_base.dart';
-export 'src/import_analyzers/import_result.dart';
-export 'src/import_analyzers/test_import_analyzer.dart';
+export 'src/common/file_linter.dart';
+export 'src/common/file_result.dart' hide ResultContext;
+export 'src/common/linter.dart';
+export 'src/lib_export_linter.dart';
+export 'src/test_import_linter.dart';

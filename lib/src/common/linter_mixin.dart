@@ -2,11 +2,19 @@ import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart' hide FileResult;
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/token.dart';
-import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 
 import 'file_result.dart';
+import 'linter.dart';
 
+class _TokenCastHelper<TToken extends Token> {
+  // ignore: avoid_unused_constructor_parameters
+  _TokenCastHelper(TToken? token);
+
+  TToken? call(Token? token) => token is TToken ? token : null;
+}
+
+@internal
 class AnalysisException implements Exception {
   final String message;
   final ResultLocation resultLocation;
@@ -23,10 +31,8 @@ class AnalysisException implements Exception {
       );
 }
 
-mixin AnalyzerMixin {
-  @visibleForOverriding
-  Logger? get logger;
-
+@internal
+mixin LinterMixin implements Linter {
   @protected
   bool isDartFile(String path) => path.endsWith('.dart');
 
@@ -91,16 +97,9 @@ mixin AnalyzerMixin {
     Object? error,
     StackTrace? stackTrace,
   ]) =>
-      logger?.warning(
+      logger.warning(
         location.createLogMessage(message),
         error,
         stackTrace,
       );
-}
-
-class _TokenCastHelper<TToken extends Token> {
-  // ignore: avoid_unused_constructor_parameters
-  _TokenCastHelper(TToken? token);
-
-  TToken? call(Token? token) => token is TToken ? token : null;
 }

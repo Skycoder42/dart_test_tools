@@ -4,23 +4,29 @@ import 'package:analyzer/dart/ast/ast.dart';
 // ignore: implementation_imports
 import 'package:analyzer/src/generated/source.dart';
 import 'package:logging/logging.dart';
+import 'package:meta/meta.dart';
 
-import 'common/analyzer_mixin.dart';
 import 'common/context_root_extensions.dart';
-import 'common/file_analyzer.dart';
+import 'common/file_linter.dart';
 import 'common/file_result.dart';
+import 'common/linter_mixin.dart';
 
-class TestImportAnalyzer with AnalyzerMixin implements FileAnalyzer {
+class TestImportLinter extends FileLinter with LinterMixin {
   @override
-  final AnalysisContextCollection contextCollection;
+  late AnalysisContextCollection contextCollection;
 
   @override
-  final Logger? logger;
+  @internal
+  final Logger logger;
 
-  TestImportAnalyzer({
-    required this.contextCollection,
-    required this.logger,
-  });
+  @override
+  String get name => 'test-import';
+
+  @override
+  String get description => 'Checks if test files import sources only directly '
+      'via src imports instead of global library imports';
+
+  TestImportLinter([Logger? logger]) : logger = logger ?? Logger('test-import');
 
   @override
   bool shouldAnalyze(String path) {
@@ -46,12 +52,8 @@ class TestImportAnalyzer with AnalyzerMixin implements FileAnalyzer {
         );
       }
       return _analyzeUnit(context, path, unit);
-    } on AnalysisException catch (error, stackTrace) {
-      return FileResult.failure(
-        resultLocation: ResultLocation.fromFile(context: context, path: path),
-        error: error,
-        stackTrace: stackTrace,
-      );
+    } on AnalysisException catch (e, s) {
+      return e.toFailure(s);
     }
   }
 

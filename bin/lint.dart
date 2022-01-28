@@ -1,13 +1,91 @@
 import 'dart:io';
 
+import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:args/args.dart';
+import 'package:dart_test_tools/dart_test_tools.dart';
 import 'package:logging/logging.dart';
+import 'package:path/path.dart';
+
+class _LogPrinter {
+  bool _warningsAreErrors = false;
+  bool _hasWarnings = false;
+
+  bool get warningsAreErrors => _warningsAreErrors;
+  set warningsAreErrors(bool value) {
+    _warningsAreErrors = value;
+    if (_hasWarnings) {
+      exitCode = exitCode == 1 ? 1 : 2;
+    }
+  }
+
+  void call(LogRecord record) {
+    stdout.writeln(_formatRecord(record));
+
+    if (record.level >= Level.SEVERE) {
+      exitCode = 1;
+    } else if (record.level >= Level.WARNING) {
+      _hasWarnings = true;
+      if (_warningsAreErrors) {
+        exitCode = exitCode == 1 ? 1 : 2;
+      }
+    }
+  }
+
+  String _formatRecord(LogRecord record) {
+    final recordLog = _formatPlainRecord(record);
+    if (!stdout.supportsAnsiEscapes) {
+      return _formatPlainRecord(record);
+    } else {
+      if (record.level >= Level.SHOUT) {
+        return '\x1b[35m$recordLog\x1b[0m';
+      } else if (record.level >= Level.SEVERE) {
+        return '\x1b[31m$recordLog\x1b[0m';
+      } else if (record.level >= Level.WARNING) {
+        return '\x1b[33m$recordLog\x1b[0m';
+      } else if (record.level >= Level.INFO) {
+        return '\x1b[34m$recordLog\x1b[0m';
+      } else if (record.level >= Level.CONFIG) {
+        return '\x1b[36m$recordLog\x1b[0m';
+      } else if (record.level >= Level.FINE) {
+        return '\x1b[32m$recordLog\x1b[0m';
+      } else if (record.level >= Level.FINER) {
+        return '\x1b[37;40m$recordLog\x1b[0m';
+      } else if (record.level >= Level.FINEST) {
+        return '\x1b[30;47m$recordLog\x1b[0m';
+      } else {
+        return recordLog;
+      }
+    }
+  }
+
+  String _formatPlainRecord(LogRecord record) => record.toString();
+}
 
 Future<void> main(List<String> rawArgs) async {
+  final printer = _LogPrinter();
   Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen(stdout.writeln);
+  Logger.root.onRecord.listen(printer);
+
+  final linters = <Linter>[
+    LibExportLinter(),
+    TestImportLinter(),
+  ];
 
   final parser = ArgParser()
+    ..addSeparator('Lintings')
+    ..addMultiOption(
+      'linter',
+      aliases: ['analyzer'],
+      abbr: 'a',
+      allowed: linters.map((l) => l.name),
+      defaultsTo: linters.map((l) => l.name),
+      help: '',
+      valueHelp: 'linter',
+      allowedHelp: {
+        for (final linter in linters) linter.name: linter.description
+      },
+    )
+    ..addSeparator('Common Options')
     ..addOption(
       'path',
       abbr: 'p',
@@ -37,9 +115,91 @@ Future<void> main(List<String> rawArgs) async {
       },
     )
     ..addFlag(
+      'fatal-warnings',
+      abbr: 'W',
+      help: 'Failes with exit code 2 if any warnings occur.',
+    )
+    ..addFlag(
       'help',
       abbr: 'h',
       negatable: false,
-      help: 'Show this help',
+      help: 'Show this help.',
     );
+
+  try {
+    final args = parser.parse(rawArgs);
+    for (final arg in args.options) {
+      Logger.root.config('$arg: ${args[arg]}');
+    }
+
+    if (args['help'] as bool) {
+      stdout.writeln(parser.usage);
+      return;
+    }
+
+    printer.warningsAreErrors = args['fatal-warnings'] as bool;
+    final levelName = args['log-level'] as String;
+    Logger.root.level = Level.LEVELS.firstWhere(
+      (level) => level.name == levelName,
+    );
+
+    final selectedLinters = args['linter'] as List<String>;
+    final contextCollection = _createContextCollection(args);
+    for (final context in contextCollection.contexts) {
+      Logger.root.config(
+        'Found context: ${context.contextRoot.root} '
+        '(Workspace: ${context.contextRoot.workspace.root})',
+      );
+    }
+
+    for (final linter in linters) {
+      if (selectedLinters.contains(linter.name)) {
+        linter.contextCollection = contextCollection;
+        if (!await _runLinter(linter)) {
+          exitCode = 1;
+        }
+      }
+    }
+  } on FormatException catch (e) {
+    stderr
+      ..writeln('Error: ${e.message}\n')
+      ..writeln('Usage:')
+      ..writeln(parser.usage);
+    exitCode = 3;
+  }
 }
+
+AnalysisContextCollection _createContextCollection(ArgResults args) =>
+    AnalysisContextCollection(
+      includedPaths: [
+        canonicalize(args['path'] as String),
+        ...args['include-paths'] as List<String>,
+      ],
+      excludedPaths: args['exclude-paths'] as List<String>,
+    );
+
+Future<bool> _runLinter(Linter linter) => linter.call().map((result) {
+      result.when(
+        accepted: (resultLocation) =>
+            linter.logger.finer(resultLocation.createLogMessage('OK')),
+        rejected: (reason, resultLocation) => linter.logger
+            .info(resultLocation.createLogMessage('REJECTED: $reason')),
+        skipped: (reason, resultLocation) => linter.logger
+            .fine(resultLocation.createLogMessage('SKIPPED: $reason')),
+        failure: (error, stackTrace, resultLocation) => linter.logger.severe(
+          resultLocation.createLogMessage('FAILURE: $error'),
+          null,
+          stackTrace,
+        ),
+      );
+      return result;
+    }).fold(
+      true,
+      (previous, element) =>
+          previous &&
+          element.maybeWhen(
+            accepted: (_) => true,
+            skipped: (_, __) => true,
+            orElse: () => false,
+          ),
+    );

@@ -8,13 +8,14 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:logging/logging.dart';
+import 'package:path/path.dart' show relative;
 
-import 'common/analyzer_mixin.dart';
 import 'common/context_root_extensions.dart';
 import 'common/file_result.dart';
-import 'common/package_analyzer.dart';
+import 'common/linter.dart';
+import 'common/linter_mixin.dart';
 
-part 'lib_export_analyzer.freezed.dart';
+part 'lib_export_linter.freezed.dart';
 
 @freezed
 class _ExportPartResult with _$_ExportPartResult {
@@ -23,20 +24,26 @@ class _ExportPartResult with _$_ExportPartResult {
       _ExportPartSkipResult;
 }
 
-class LibExportAnalyzer with AnalyzerMixin implements PackageAnalyzer {
+class LibExportLinter with LinterMixin implements Linter {
   @override
-  final AnalysisContextCollection contextCollection;
+  late AnalysisContextCollection contextCollection;
+
   @override
   @internal
   final Logger logger;
 
-  LibExportAnalyzer({
-    required this.contextCollection,
-    required this.logger,
-  });
+  @override
+  String get name => 'lib-export';
 
   @override
-  Stream<FileResult> analyzePackage() async* {
+  String get description => 'Checks if all files within the lib/src directy, '
+      'that have package visible declarations are exported somwhere '
+      'from within the lib folder';
+
+  LibExportLinter([Logger? logger]) : logger = logger ?? Logger('lib-export');
+
+  @override
+  Stream<FileResult> call() async* {
     for (final context in contextCollection.contexts) {
       try {
         final sources = <String>{};
@@ -218,7 +225,10 @@ class LibExportAnalyzer with AnalyzerMixin implements PackageAnalyzer {
               node: exportDirective,
               lineInfo: compilationUnit.lineInfo,
             ),
-            'Unabled to scan ${exportSource.fullName} for further exports, '
+            'Unabled to scan ${relative(
+              exportSource.fullName,
+              from: context.contextRoot.root.path,
+            )} for further exports, '
             'detected from %{code}',
             error,
             stackTrace,
