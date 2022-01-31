@@ -37,28 +37,47 @@ class _LogPrinter {
       return _formatPlainRecord(record);
     } else {
       if (record.level >= Level.SHOUT) {
-        return '\x1b[35m$recordLog\x1b[0m';
+        return _colored(recordLog, 35);
       } else if (record.level >= Level.SEVERE) {
-        return '\x1b[31m$recordLog\x1b[0m';
+        return _colored(recordLog, 31);
       } else if (record.level >= Level.WARNING) {
-        return '\x1b[33m$recordLog\x1b[0m';
+        return _colored(recordLog, 33);
       } else if (record.level >= Level.INFO) {
-        return '\x1b[34m$recordLog\x1b[0m';
+        return _colored(recordLog, 34);
       } else if (record.level >= Level.CONFIG) {
-        return '\x1b[36m$recordLog\x1b[0m';
+        return _colored(recordLog, 36);
       } else if (record.level >= Level.FINE) {
-        return '\x1b[32m$recordLog\x1b[0m';
+        return _colored(recordLog, 32);
       } else if (record.level >= Level.FINER) {
-        return '\x1b[37;40m$recordLog\x1b[0m';
+        return _colored(recordLog, 37, 40);
       } else if (record.level >= Level.FINEST) {
-        return '\x1b[30;47m$recordLog\x1b[0m';
+        return _colored(recordLog, 30, 47);
       } else {
         return recordLog;
       }
     }
   }
 
-  String _formatPlainRecord(LogRecord record) => record.toString();
+  String _formatPlainRecord(LogRecord record) {
+    final logMessag = StringBuffer()..write('[${record.level}] ');
+    if (record.loggerName.isNotEmpty) {
+      logMessag.write('${record.loggerName}: ');
+    }
+    logMessag.write(record.message);
+    if (record.error != null) {
+      logMessag.write(' ${record.error}');
+    }
+    if (record.stackTrace != null) {
+      logMessag.write('\n${record.stackTrace}');
+    }
+    return logMessag.toString();
+  }
+
+  String _colored(String message, int foreground, [int? background]) {
+    final color =
+        background != null ? '$foreground;$background' : foreground.toString();
+    return '\x1b[${color}m$message\x1b[0m';
+  }
 }
 
 Future<void> main(List<String> rawArgs) async {

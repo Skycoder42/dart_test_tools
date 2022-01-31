@@ -102,4 +102,17 @@ mixin LinterMixin implements Linter {
         error,
         stackTrace,
       );
+
+  @protected
+  void logDebug(
+    ResultLocation location,
+    String message, [
+    Object? error,
+    StackTrace? stackTrace,
+  ]) =>
+      logger.finest(
+        location.createLogMessage(message),
+        error,
+        stackTrace,
+      );
 }
