@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2021-02-01
+This a a complete rewrite of the public API of this package. Differences are
+not listed, instead, only the new APIs are promoted here. The following things
+have been added:
+
+- Added new library with `Linter`s
+  - `TestImportLinter`: Ensures test-files only import src files of the tested library
+  - `LibExportLinter`: Ensures all sources with package-public members are exported somewhere
+- Revised and modernized `lint` binary which can be used to run these analyzers on a dart package
+- analysis_options.yaml and analysis_options_package.yaml from 2.0.0 have been kept
+- Generated CI/CD for dart and flutter has been kept
+  - Now uses the `lint` binary for extended analysis
+
 ## [2.0.2] - 2021-01-21
 ### Changed
 - Lower path required to be compatible with flutter
