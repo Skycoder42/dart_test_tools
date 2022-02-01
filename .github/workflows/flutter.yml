@@ -103,7 +103,7 @@ jobs:
       - name: Download flutter binary artifacts
         run: flutter precache --universal
       - name: Install dart_test_tools
-        run: flutter pub global activate dart_test_tools ^2.0.0
+        run: flutter pub global activate dart_test_tools ^3.0.0
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
         run: choco install yq
@@ -127,8 +127,8 @@ jobs:
       - name: Static analysis
         run: flutter analyze
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Validate library imports
-        run: flutter pub global run dart_test_tools:import_analyzer
+      - name: Run extended linters
+        run: flutter pub global run dart_test_tools:lint -lALL
         working-directory: ${{ inputs.workingDirectory }}
       - name: Validate correct formatting
         run: flutter format -onone --set-exit-if-changed .
