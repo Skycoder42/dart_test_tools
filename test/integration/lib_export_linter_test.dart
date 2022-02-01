@@ -10,12 +10,14 @@ void main() {
     Logger.root.onRecord.listen(print);
     Logger.root.level = Level.ALL;
   });
-  group('lib_export_linter', () {
+
+  group('LibExportLinter', () {
     analysisTest(
       'Succeeds by default',
       createLinter: LibExportLinter.new,
       expectResults: emitsDone,
     );
+
     analysisTest(
       'ignores non-dart files',
       createLinter: LibExportLinter.new,
@@ -25,6 +27,7 @@ void main() {
       },
       expectResults: emitsDone,
     );
+
     analysisTest(
       'ignores non-lib files',
       createLinter: LibExportLinter.new,
@@ -35,6 +38,7 @@ void main() {
       },
       expectResults: emitsDone,
     );
+
     analysisTest(
       'Accepts exported sources',
       createLinter: LibExportLinter.new,
@@ -44,11 +48,12 @@ void main() {
       },
       expectResults: emitsInAnyOrder(<dynamic>[
         isAccepted(
-          isResultLocation().havingRelPath('lib/src/impl.dart'),
+          resultLocation: (l) => l.havingRelPath('lib/src/impl.dart'),
         ),
         emitsDone,
       ]),
     );
+
     analysisTest(
       'Rejects unexported sources',
       createLinter: LibExportLinter.new,
@@ -58,13 +63,13 @@ void main() {
       },
       expectResults: emitsInAnyOrder(<dynamic>[
         isRejected(
-          resultLocationMatcher:
-              isResultLocation().havingRelPath('lib/src/impl.dart'),
-          reasonMatcher: 'Source file is not exported anywhere',
+          resultLocation: (l) => l.havingRelPath('lib/src/impl.dart'),
+          reason: 'Source file is not exported anywhere',
         ),
         emitsDone,
       ]),
     );
+
     group('src-files', () {
       analysisTest(
         'Skips part files',
@@ -74,13 +79,13 @@ void main() {
         },
         expectResults: emitsInAnyOrder(<dynamic>[
           isSkipped(
-            resultLocationMatcher:
-                isResultLocation().havingRelPath('lib/src/file.dart'),
-            reasonMatcher: 'Is a part file',
+            resultLocation: (l) => l.havingRelPath('lib/src/file.dart'),
+            reason: 'Is a part file',
           ),
           emitsDone,
         ]),
       );
+
       analysisTest(
         'Accepts files without public exports',
         createLinter: LibExportLinter.new,
@@ -89,11 +94,12 @@ void main() {
         },
         expectResults: emitsInAnyOrder(<dynamic>[
           isAccepted(
-            isResultLocation().havingRelPath('lib/src/file.dart'),
+            resultLocation: (l) => l.havingRelPath('lib/src/file.dart'),
           ),
           emitsDone,
         ]),
       );
+
       analysisTest(
         'Accepts files non public declarations',
         createLinter: LibExportLinter.new,
@@ -120,21 +126,23 @@ const int meaningOfLife = 42;
         },
         expectResults: emitsInAnyOrder(<dynamic>[
           isAccepted(
-            isResultLocation().havingRelPath('lib/src/private.dart'),
+            resultLocation: (l) => l.havingRelPath('lib/src/private.dart'),
           ),
           isAccepted(
-            isResultLocation().havingRelPath('lib/src/internal.dart'),
+            resultLocation: (l) => l.havingRelPath('lib/src/internal.dart'),
           ),
           isAccepted(
-            isResultLocation().havingRelPath('lib/src/visibleForTesting.dart'),
+            resultLocation: (l) =>
+                l.havingRelPath('lib/src/visibleForTesting.dart'),
           ),
           isAccepted(
-            isResultLocation()
-                .havingRelPath('lib/src/visibleForOverriding.dart'),
+            resultLocation: (l) =>
+                l.havingRelPath('lib/src/visibleForOverriding.dart'),
           ),
           emitsDone,
         ]),
       );
+
       analysisTest(
         'Accepts files with multiple non public exports',
         createLinter: LibExportLinter.new,
@@ -158,7 +166,7 @@ extension X on Test {
         },
         expectResults: emitsInAnyOrder(<dynamic>[
           isAccepted(
-            isResultLocation().havingRelPath('lib/src/file.dart'),
+            resultLocation: (l) => l.havingRelPath('lib/src/file.dart'),
           ),
           emitsDone,
         ]),
@@ -179,19 +187,16 @@ const int _right = 1;
         },
         expectResults: emitsInAnyOrder(<dynamic>[
           isRejected(
-            resultLocationMatcher:
-                isResultLocation().havingRelPath('lib/src/export.dart'),
-            reasonMatcher: 'Source file is not exported anywhere',
+            resultLocation: (l) => l.havingRelPath('lib/src/export.dart'),
+            reason: 'Source file is not exported anywhere',
           ),
           isRejected(
-            resultLocationMatcher:
-                isResultLocation().havingRelPath('lib/src/public.dart'),
-            reasonMatcher: 'Source file is not exported anywhere',
+            resultLocation: (l) => l.havingRelPath('lib/src/public.dart'),
+            reason: 'Source file is not exported anywhere',
           ),
           isRejected(
-            resultLocationMatcher:
-                isResultLocation().havingRelPath('lib/src/mixed.dart'),
-            reasonMatcher: 'Source file is not exported anywhere',
+            resultLocation: (l) => l.havingRelPath('lib/src/mixed.dart'),
+            reason: 'Source file is not exported anywhere',
           ),
           emitsDone,
         ]),
@@ -207,9 +212,8 @@ const int _right = 1;
         },
         expectResults: emitsInAnyOrder(<dynamic>[
           isSkipped(
-            resultLocationMatcher:
-                isResultLocation().havingRelPath('lib/file.dart'),
-            reasonMatcher: 'Is a part file',
+            resultLocation: (l) => l.havingRelPath('lib/file.dart'),
+            reason: 'Is a part file',
           ),
           emitsDone,
         ]),
@@ -234,10 +238,9 @@ const int _right = 1;
         },
         expectResults: emitsInAnyOrder(<dynamic>[
           isFailure(
-            resultLocationMatcher:
-                isResultLocation().havingRelPath('lib/src/impl.dart'),
-            errorMatcher: 'File does not exist',
-            stackTraceMatcher: isNot(StackTrace.empty),
+            resultLocation: (l) => l.havingRelPath('lib/src/impl.dart'),
+            error: 'File does not exist',
+            stackTrace: isNot(StackTrace.empty),
           ),
           emitsDone,
         ]),
@@ -285,11 +288,11 @@ export "exp5.dart";
         expectResults: emitsInAnyOrder(<dynamic>[
           for (var i = 1; i <= 5; ++i)
             isAccepted(
-              isResultLocation().havingRelPath('lib/src/file$i.dart'),
+              resultLocation: (l) => l.havingRelPath('lib/src/file$i.dart'),
             ),
           for (var i = 3; i <= 5; ++i)
             isAccepted(
-              isResultLocation().havingRelPath('lib/src/exp$i.dart'),
+              resultLocation: (l) => l.havingRelPath('lib/src/exp$i.dart'),
             ),
           emitsDone,
         ]),

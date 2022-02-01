@@ -38,17 +38,17 @@ class LibExportLinter with LinterMixin implements Linter {
   @override
   String get description => 'Checks if all files within the lib/src directy, '
       'that have package visible declarations are exported somwhere '
-      'from within the lib folder';
+      'from within the lib folder.';
 
   LibExportLinter([Logger? logger]) : logger = logger ?? Logger('lib-export');
 
   @override
   Stream<FileResult> call() async* {
+    final sources = <String>{};
+    final exports = <String>{};
+
     for (final context in contextCollection.contexts) {
       try {
-        final sources = <String>{};
-        final exports = <String>{};
-
         for (final path in context.contextRoot.analyzedFiles()) {
           if (!isDartFile(path)) {
             continue;
@@ -78,12 +78,12 @@ class LibExportLinter with LinterMixin implements Linter {
             // ignore all files not in the lib directory
           }
         }
-
-        yield* _evaluteExportResults(context, sources, exports);
       } on AnalysisException catch (e, s) {
         yield e.toFailure(s);
       }
     }
+
+    yield* _evaluteExportResults(sources, exports);
   }
 
   Future<FileResult?> _scanSrcFile(AnalysisContext context, String path) async {
@@ -206,13 +206,10 @@ class LibExportLinter with LinterMixin implements Linter {
 
         yield _ExportPartResult.path(exportSource.fullName);
 
-        try {
-          yield* _scanForExports(
-            contextCollection.contextFor(exportSource.fullName),
-            exportSource.fullName,
-          );
-          // ignore: avoid_catching_errors
-        } on StateError catch (error, stackTrace) {
+        final sourceContext = _findContextWithExcludes(exportSource.fullName);
+        if (sourceContext != null) {
+          yield* _scanForExports(sourceContext, exportSource.fullName);
+        } else {
           logWarning(
             ResultLocation.fromFile(
               context: context,
@@ -225,8 +222,6 @@ class LibExportLinter with LinterMixin implements Linter {
               from: context.contextRoot.root.path,
             )} for further exports, '
             'detected from %{code}',
-            error,
-            stackTrace,
           );
         }
       }
@@ -260,13 +255,12 @@ class LibExportLinter with LinterMixin implements Linter {
   }
 
   Stream<FileResult> _evaluteExportResults(
-    AnalysisContext context,
     Set<String> sources,
     Set<String> exports,
   ) async* {
     for (final source in sources) {
       final resultLocation = ResultLocation.fromFile(
-        context: context,
+        context: contextCollection.contextFor(source),
         path: source,
       );
       if (exports.contains(source)) {
@@ -280,6 +274,11 @@ class LibExportLinter with LinterMixin implements Linter {
     }
 
     for (final export in exports.difference(sources)) {
+      final context = _findContextWithExcludes(export);
+      if (context == null) {
+        continue;
+      }
+
       logWarning(
         ResultLocation.fromFile(
           context: context,
@@ -287,6 +286,15 @@ class LibExportLinter with LinterMixin implements Linter {
         ),
         'Found exported source that is not covered by the analyzer',
       );
+    }
+  }
+
+  AnalysisContext? _findContextWithExcludes(String path) {
+    try {
+      return contextCollection.contextFor(path);
+      // ignore: avoid_catching_errors
+    } on StateError {
+      return null;
     }
   }
 }

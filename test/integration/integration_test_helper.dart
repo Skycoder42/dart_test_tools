@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
+import 'package:dart_test_tools/src/common/file_linter.dart';
 import 'package:dart_test_tools/src/common/file_result.dart';
 import 'package:dart_test_tools/src/common/linter.dart';
 import 'package:logging/logging.dart';
@@ -12,17 +13,11 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
-typedef LinterFactor<TLinter extends Linter> = TLinter Function(Logger? logger);
+typedef LinterFactory<TLinter extends Linter> = TLinter Function(
+  Logger? logger,
+);
 
-typedef LinterExpectFn = FutureOr<void> Function(Stream<FileResult> result);
-
-typedef LoggerExpectFn = FutureOr<void> Function(Stream<LogRecord> onRecord);
-
-T _any<T>() => (null as dynamic) as T;
-
-TypeMatcher<T> _isAFileResult<T extends FileResult>(T Function() f) => isA<T>();
-
-TypeMatcher<ResultLocation> isResultLocation() => isA<ResultLocation>();
+typedef TypeMatcherCb<T> = TypeMatcher<T> Function(TypeMatcher<T> match);
 
 extension ResultLocationTypeMatcherX on TypeMatcher<ResultLocation> {
   TypeMatcher<ResultLocation> havingRelPath(String path) => having(
@@ -32,7 +27,14 @@ extension ResultLocationTypeMatcherX on TypeMatcher<ResultLocation> {
       );
 }
 
-Matcher isAccepted([dynamic resultLocationMatcher = anything]) =>
+Matcher pathEquals(String expected) => predicate<String>(
+      (actual) => path.equals(actual, expected),
+      'is same path as $expected',
+    );
+
+Matcher isAccepted({
+  TypeMatcherCb<ResultLocation>? resultLocation,
+}) =>
     _isAFileResult(
       () => $FileResult.accepted(
         resultLocation: _any(),
@@ -40,12 +42,12 @@ Matcher isAccepted([dynamic resultLocationMatcher = anything]) =>
     ).having(
       (r) => r.resultLocation,
       'resultLocation',
-      resultLocationMatcher,
+      resultLocation?.call(isA<ResultLocation>()) ?? anything,
     );
 
 Matcher isSkipped({
-  dynamic reasonMatcher = anything,
-  dynamic resultLocationMatcher = anything,
+  dynamic reason = anything,
+  TypeMatcherCb<ResultLocation>? resultLocation,
 }) =>
     _isAFileResult(
       () => $FileResult.skipped(
@@ -56,17 +58,17 @@ Matcher isSkipped({
         .having(
           (r) => r.reason,
           'reason',
-          reasonMatcher,
+          reason,
         )
         .having(
           (r) => r.resultLocation,
           'resultLocation',
-          resultLocationMatcher,
+          resultLocation?.call(isA<ResultLocation>()) ?? anything,
         );
 
 Matcher isRejected({
-  dynamic reasonMatcher = anything,
-  dynamic resultLocationMatcher = anything,
+  dynamic reason = anything,
+  TypeMatcherCb<ResultLocation>? resultLocation,
 }) =>
     _isAFileResult(
       () => $FileResult.rejected(
@@ -77,18 +79,18 @@ Matcher isRejected({
         .having(
           (r) => r.reason,
           'reason',
-          reasonMatcher,
+          reason,
         )
         .having(
           (r) => r.resultLocation,
           'resultLocation',
-          resultLocationMatcher,
+          resultLocation?.call(isA<ResultLocation>()) ?? anything,
         );
 
 Matcher isFailure({
-  dynamic errorMatcher = anything,
-  dynamic stackTraceMatcher = anything,
-  dynamic resultLocationMatcher = anything,
+  dynamic error = anything,
+  dynamic stackTrace = anything,
+  TypeMatcherCb<ResultLocation>? resultLocation,
 }) =>
     _isAFileResult(
       () => $FileResult.failure(
@@ -99,29 +101,24 @@ Matcher isFailure({
         .having(
           (r) => r.error,
           'error',
-          errorMatcher,
+          error,
         )
         .having(
           (r) => r.stackTrace,
           'stackTrace',
-          stackTraceMatcher,
+          stackTrace,
         )
         .having(
           (r) => r.resultLocation,
           'resultLocation',
-          resultLocationMatcher,
+          resultLocation?.call(isA<ResultLocation>()) ?? anything,
         );
-
-Matcher pathEquals(String expected) => predicate<String>(
-      (actual) => path.equals(actual, expected),
-      'is same path as $expected',
-    );
 
 @isTest
 void analysisTest<TLinter extends Linter>(
   String description, {
   Map<String, String> files = const {},
-  required LinterFactor<TLinter> createLinter,
+  required LinterFactory<TLinter> createLinter,
   required Matcher expectResults,
   Matcher? expectLog,
   String? testOn,
@@ -165,6 +162,39 @@ void analysisTest<TLinter extends Linter>(
       retry: retry,
     );
 
+@isTest
+void fileAnalysisTest<TLinter extends FileLinter>(
+  String description, {
+  required String fileName,
+  required String fileContent,
+  required LinterFactory<TLinter> createLinter,
+  required Matcher expectResult,
+  Matcher? expectLog,
+  String? testOn,
+  Timeout? timeout,
+  dynamic skip,
+  dynamic tags,
+  Map<String, dynamic>? onPlatform,
+  int? retry,
+}) =>
+    analysisTest(
+      description,
+      files: {fileName: fileContent},
+      createLinter: createLinter,
+      expectResults: emitsInOrder(<dynamic>[expectResult, emitsDone]),
+      expectLog: expectLog,
+      testOn: testOn,
+      timeout: timeout,
+      skip: skip,
+      tags: tags,
+      onPlatform: onPlatform,
+      retry: retry,
+    );
+
+T _any<T>() => (null as dynamic) as T;
+
+TypeMatcher<T> _isAFileResult<T extends FileResult>(T Function() f) => isA<T>();
+
 Future<Directory> _setup() async {
   final testDir = await Directory.systemTemp.createTemp();
   printOnFailure('Using temporary directory: $testDir');
@@ -184,12 +214,12 @@ Future<Directory> _setup() async {
 
   await _runDart(const ['pub', 'add', 'meta'], dartDir);
 
-  await File.fromUri(
-    dartDir.uri.resolve('lib/src/dart_test_tools_integration_test_base.dart'),
-  ).delete();
-  await File.fromUri(
-    dartDir.uri.resolve('lib/dart_test_tools_integration_test.dart'),
-  ).delete();
+  await Directory.fromUri(
+    dartDir.uri.resolve('lib'),
+  ).delete(recursive: true);
+  await Directory.fromUri(
+    dartDir.uri.resolve('test'),
+  ).delete(recursive: true);
 
   return dartDir;
 }
