@@ -1,0 +1,6 @@
+include: ../analysis_options_package.yaml
+
+analyzer:
+  exclude:
+    - "**/*.freezed.dart"
+    - "**/*.g.dart"

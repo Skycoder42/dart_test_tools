@@ -27,4 +27,4 @@ dev_dependencies:
   test: ^1.20.1
 
 executables:
-  import_analyzer: import_analyzer
+  lint: lint

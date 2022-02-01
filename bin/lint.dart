@@ -147,9 +147,6 @@ Future<void> main(List<String> rawArgs) async {
 
   try {
     final args = parser.parse(rawArgs);
-    for (final arg in args.options) {
-      Logger.root.config('$arg: ${args[arg]}');
-    }
 
     if (args['help'] as bool) {
       stdout.writeln(parser.usage);
@@ -161,6 +158,10 @@ Future<void> main(List<String> rawArgs) async {
     Logger.root.level = Level.LEVELS.firstWhere(
       (level) => level.name == levelName,
     );
+
+    for (final arg in args.options) {
+      Logger.root.config('$arg: ${args[arg]}');
+    }
 
     final selectedLinters = args['linter'] as List<String>;
     final contextCollection = _createContextCollection(args);
