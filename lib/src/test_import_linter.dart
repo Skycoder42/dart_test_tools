@@ -24,7 +24,7 @@ class TestImportLinter extends FileLinter with LinterMixin {
 
   @override
   String get description => 'Checks if test files import sources only directly '
-      'via src imports instead of global library imports';
+      'via src imports instead of global library imports.';
 
   TestImportLinter([Logger? logger]) : logger = logger ?? Logger('test-import');
 
@@ -93,6 +93,10 @@ class TestImportLinter extends FileLinter with LinterMixin {
       directive.firstTokenAfterCommentAndMetadata,
       'test_library_import',
     )) {
+      logDebug(
+        resultContext.createLocation(directive),
+        'Allowing ignored source import',
+      );
       return true;
     }
 
@@ -129,6 +133,10 @@ class TestImportLinter extends FileLinter with LinterMixin {
 
     // Accept imports that are not package imports
     if (!directiveSource.uri.isScheme('package')) {
+      logDebug(
+        resultContext.createLocation(directive),
+        'Accepting non package import',
+      );
       return true;
     }
 
@@ -136,11 +144,19 @@ class TestImportLinter extends FileLinter with LinterMixin {
     final sourcePath = directiveSource.fullName;
     final contextRoot = resultContext.context.contextRoot;
     if (!contextRoot.lib.contains(sourcePath)) {
+      logDebug(
+        resultContext.createLocation(directive),
+        'Accepting external package import',
+      );
       return true;
     }
 
     // accept package imports that import from "src"
     if (contextRoot.src.contains(sourcePath)) {
+      logDebug(
+        resultContext.createLocation(directive),
+        'Accepting self src import',
+      );
       return true;
     }
 
