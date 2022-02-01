@@ -121,6 +121,7 @@ void analysisTest<TLinter extends Linter>(
   required LinterFactory<TLinter> createLinter,
   required Matcher expectResults,
   Matcher? expectLog,
+  Level expectLogMinimalLevel = Level.INFO,
   String? testOn,
   Timeout? timeout,
   dynamic skip,
@@ -141,7 +142,11 @@ void analysisTest<TLinter extends Linter>(
         final Logger logger;
         if (expectLog != null) {
           logger = Logger.detached('test')..level = Level.ALL;
-          expect(logger.onRecord, expectLog);
+          expect(
+            logger.onRecord
+                .where((record) => record.level > expectLogMinimalLevel),
+            expectLog,
+          );
         } else {
           logger = Logger('test');
         }

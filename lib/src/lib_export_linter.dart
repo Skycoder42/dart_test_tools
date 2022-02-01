@@ -118,6 +118,10 @@ class LibExportLinter with LinterMixin implements Linter {
   ) async {
     // check if it exports any other files
     if (unit.directives.whereType<ExportDirective>().isNotEmpty) {
+      logDebug(
+        ResultLocation.fromFile(context: context, path: path),
+        'File has export directives',
+      );
       return true;
     }
 
@@ -145,6 +149,15 @@ class LibExportLinter with LinterMixin implements Linter {
         }
 
         if (element.isExportable) {
+          logDebug(
+            ResultLocation.fromFile(
+              context: context,
+              path: path,
+              lineInfo: unit.lineInfo,
+              node: declaration,
+            ),
+            'File has package-public declaration',
+          );
           return true;
         }
       }
@@ -176,6 +189,13 @@ class LibExportLinter with LinterMixin implements Linter {
     final exportDirectives =
         compilationUnit.directives.whereType<ExportDirective>();
     for (final exportDirective in exportDirectives) {
+      final resultLocation = ResultLocation.fromFile(
+        context: context,
+        path: path,
+        node: exportDirective,
+        lineInfo: compilationUnit.lineInfo,
+      );
+
       final allExportSources = [
         exportDirective.uriSource,
         ...exportDirective.configurations.map((c) => c.uriSource),
@@ -185,12 +205,7 @@ class LibExportLinter with LinterMixin implements Linter {
         // skip invalid sources
         if (exportSource == null) {
           logWarning(
-            ResultLocation.fromFile(
-              context: context,
-              path: path,
-              node: exportDirective,
-              lineInfo: compilationUnit.lineInfo,
-            ),
+            resultLocation,
             'Unable to resolve source of directive %{code}',
           );
           continue;
@@ -200,6 +215,7 @@ class LibExportLinter with LinterMixin implements Linter {
           context: context,
           exportDirective: exportDirective,
           exportSource: exportSource,
+          resultLocation: resultLocation,
         )) {
           continue;
         }
@@ -211,12 +227,7 @@ class LibExportLinter with LinterMixin implements Linter {
           yield* _scanForExports(sourceContext, exportSource.fullName);
         } else {
           logWarning(
-            ResultLocation.fromFile(
-              context: context,
-              path: path,
-              node: exportDirective,
-              lineInfo: compilationUnit.lineInfo,
-            ),
+            resultLocation,
             'Unabled to scan ${relative(
               exportSource.fullName,
               from: context.contextRoot.root.path,
@@ -232,22 +243,35 @@ class LibExportLinter with LinterMixin implements Linter {
     required AnalysisContext context,
     required ExportDirective exportDirective,
     required Source exportSource,
+    required ResultLocation resultLocation,
   }) {
     // skip non package sources
     final sourceUri = exportSource.uri;
     if (!sourceUri.isScheme('package')) {
+      logDebug(
+        resultLocation,
+        'Export is not a package export',
+      );
       return false;
     }
 
     // skip package exports of different packages
     final exportPackageName = sourceUri.pathSegments.first;
     if (exportPackageName != context.contextRoot.pubspec.name) {
+      logDebug(
+        resultLocation,
+        'Export is from external package',
+      );
       return false;
     }
 
     // skip non src exports
     final sourcePath = exportSource.fullName;
     if (!context.contextRoot.src.contains(sourcePath)) {
+      logDebug(
+        resultLocation,
+        'Export is not a src file',
+      );
       return false;
     }
 
