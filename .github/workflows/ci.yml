@@ -17,6 +17,7 @@ jobs:
       buildRunner: true
       publishExclude: '["lib/src/.gitignore", "tool/.gitignore"]'
       unitTestPaths: ""
+      integrationTestPaths: test/integration
       platforms: '["linux","windows","macos"]'
   cd:
     name: Continous Deployment

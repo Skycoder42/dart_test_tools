@@ -123,35 +123,30 @@ class LibExportLinter with LinterMixin implements Linter {
 
     // check if any top level declarations are public
     for (final declaration in unit.declarations) {
-      if (declaration is TopLevelVariableDeclaration &&
-          declaration.externalKeyword != null) {
-        logWarning(
-          ResultLocation.fromFile(
-            context: context,
-            path: path,
-            node: declaration,
-            lineInfo: unit.lineInfo,
-          ),
-          'Skipping external declaration: %{code}',
-        );
-        continue;
+      final Iterable<Element?> elements;
+      if (declaration is TopLevelVariableDeclaration) {
+        elements =
+            declaration.variables.variables.map((v) => v.declaredElement);
+      } else {
+        elements = [declaration.declaredElement];
       }
 
-      final element = declaration.declaredElement;
-      if (element == null) {
-        throw AnalysisException(
-          ResultLocation.fromFile(
-            context: context,
-            path: path,
-            node: declaration,
-            lineInfo: unit.lineInfo,
-          ),
-          'Unabled to access declaration element for: %{code}',
-        );
-      }
+      for (final element in elements) {
+        if (element == null) {
+          throw AnalysisException(
+            ResultLocation.fromFile(
+              context: context,
+              path: path,
+              node: declaration,
+              lineInfo: unit.lineInfo,
+            ),
+            'Unabled to access declaration element for: %{code}',
+          );
+        }
 
-      if (element.isExportable) {
-        return true;
+        if (element.isExportable) {
+          return true;
+        }
       }
     }
 

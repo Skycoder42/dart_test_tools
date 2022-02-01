@@ -24,6 +24,7 @@ dev_dependencies:
   dart_pre_commit: ^2.3.3
   freezed: ^1.1.1
   json_serializable: ^6.1.4
+  test: ^1.20.1
 
 executables:
   import_analyzer: import_analyzer
