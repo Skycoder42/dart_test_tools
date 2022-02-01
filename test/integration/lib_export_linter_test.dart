@@ -105,20 +105,17 @@ void main() {
         createLinter: LibExportLinter.new,
         files: const {
           'lib/src/private.dart': 'const int _meaningOfLife = 42;',
-          'lib/src/internal.dart':
-              '''
+          'lib/src/internal.dart': '''
 import 'package:meta/meta.dart';
 @internal
 const int meaningOfLife = 42;
 ''',
-          'lib/src/visibleForTesting.dart':
-              '''
+          'lib/src/visibleForTesting.dart': '''
 import 'package:meta/meta.dart';
 @visibleForTesting
 const int meaningOfLife = 42;
 ''',
-          'lib/src/visibleForOverriding.dart':
-              '''
+          'lib/src/visibleForOverriding.dart': '''
 import 'package:meta/meta.dart';
 @visibleForOverriding
 const int meaningOfLife = 42;
@@ -147,8 +144,7 @@ const int meaningOfLife = 42;
         'Accepts files with multiple non public exports',
         createLinter: LibExportLinter.new,
         files: const {
-          'lib/src/file.dart':
-              '''
+          'lib/src/file.dart': '''
 import 'package:meta/meta.dart';
 
 const int _meaningOfLife = 42;
@@ -178,8 +174,7 @@ extension X on Test {
         files: const {
           'lib/src/export.dart': 'export "public.dart";',
           'lib/src/public.dart': 'const int meaningOfLife = 42;',
-          'lib/src/mixed.dart':
-              '''
+          'lib/src/mixed.dart': '''
 const int _left = 0;
 const int meaningOfLife = 42;
 const int _right = 1;
@@ -250,8 +245,7 @@ const int _right = 1;
         'Ignores analysis excluded src files',
         createLinter: LibExportLinter.new,
         files: const {
-          'analysis_options.yaml':
-              '''
+          'analysis_options.yaml': '''
 analyzer:
   exclude:
     - lib/src/impl.dart
@@ -266,8 +260,7 @@ analyzer:
         'Recursively collects exported files',
         createLinter: LibExportLinter.new,
         files: const {
-          'lib/exp1.dart':
-              '''
+          'lib/exp1.dart': '''
 export "src/exp3.dart";
 export "src/file1.dart";
 export "src/file2.dart";
