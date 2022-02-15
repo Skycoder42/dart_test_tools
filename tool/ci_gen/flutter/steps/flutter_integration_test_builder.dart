@@ -128,7 +128,8 @@ $baseTool devices
           ifExpression:
               matrix.platform.ne(const Expression.literal('web')) & _shouldRun,
           run: '${matrix.runPrefix} '
-              '$baseTool test ${matrix.testDevice} $integrationTestPaths',
+              '$baseTool test ${matrix.testDevice} '
+              '--reporter expanded $integrationTestPaths',
           workingDirectory: '$workingDirectory/$integrationTestProject',
         ),
         Step.run(
@@ -137,10 +138,11 @@ $baseTool devices
               matrix.platform.eq(const Expression.literal('web')) & _shouldRun,
           run: '\$ChromeWebDriver/chromedriver --port=4444 & '
               '$baseTool drive '
-              '--driver=test_driver/integration_test.dart '
-              '--target=$integrationTestPaths '
+              '--driver test_driver/integration_test.dart '
+              '--target $integrationTestPaths '
               '--release '
-              '-d chrome --browser-name=chrome',
+              '-d chrome --browser-name chrome '
+              '--test-arguments "--reporter=expanded"',
           workingDirectory: '$workingDirectory/$integrationTestProject',
           shell: 'bash',
         ),
