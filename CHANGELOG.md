@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2022-02-23
+### Added
+- exported library `lint` to only import linters
+- added testing helpers, exported as `test``
+  - `testData` method to add tests with data
+  - Extensions on `When` from `mocktail` for simpler stream and future return mocking
+- `dart_test_tools` export exports all modules
+- enable `public_member_api_docs` in `analysis_options_package.yaml` by default
+### Changed
+- Use newer location for credentials.json
+### Fixed
+- Allow older versions of analyzer to gain compatibility with flutter
+
 ## [3.0.0] - 2021-02-01
 This a a complete rewrite of the public API of this package. Differences are
 not listed, instead, only the new APIs are promoted here. The following things

@@ -61,9 +61,9 @@ fi
           name: 'Prepare pub.dev credentials',
           run: '''
 set -e
-cache_dir="\${PUB_CACHE:-~/.pub-cache}"
+cache_dir="\$XDG_CONFIG_HOME/dart"
 mkdir -p "\$cache_dir"
-echo '$pubDevCredentials' > "\$cache_dir/credentials.json"
+echo '$pubDevCredentials' > "\$cache_dir/pub-credentials.json"
 ''',
         ),
         ...RunPublishBuilder(
@@ -76,7 +76,7 @@ echo '$pubDevCredentials' > "\$cache_dir/credentials.json"
         const Step.run(
           name: 'Clean up credentials',
           ifExpression: Expression('always()'),
-          run: r'shred -fzvu "${PUB_CACHE:-~/.pub-cache}/credentials.json"',
+          run: r'shred -fzvu "$XDG_CONFIG_HOME/dart/pub-credentials.json"',
         ),
       ];
 }

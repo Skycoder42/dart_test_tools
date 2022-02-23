@@ -173,9 +173,9 @@ jobs:
       - name: Prepare pub.dev credentials
         run: |
           set -e
-          cache_dir="${PUB_CACHE:-~/.pub-cache}"
+          cache_dir="$XDG_CONFIG_HOME/dart"
           mkdir -p "$cache_dir"
-          echo '${{ secrets.PUB_DEV_CREDENTIALS }}' > "$cache_dir/credentials.json"
+          echo '${{ secrets.PUB_DEV_CREDENTIALS }}' > "$cache_dir/pub-credentials.json"
       - name: Remove files to not be published
         if: inputs.publishExclude != ''
         run: |
@@ -192,4 +192,4 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Clean up credentials
         if: always()
-        run: shred -fzvu "${PUB_CACHE:-~/.pub-cache}/credentials.json"
+        run: shred -fzvu "$XDG_CONFIG_HOME/dart/pub-credentials.json"

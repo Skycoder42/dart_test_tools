@@ -1,4 +1,4 @@
-import 'package:dart_test_tools/src/lib_export_linter.dart';
+import 'package:dart_test_tools/src/lint/lib_export_linter.dart';
 import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
