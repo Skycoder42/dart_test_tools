@@ -1,90 +1,15 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:args/args.dart';
 import 'package:dart_test_tools/dart_test_tools.dart';
+import 'package:dart_test_tools/src/lint/bin/console_printer.dart';
+import 'package:dart_test_tools/src/lint/bin/github_actions_printer.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 
-class _LogPrinter {
-  bool _warningsAreErrors = false;
-  bool _hasWarnings = false;
-
-  bool get warningsAreErrors => _warningsAreErrors;
-  set warningsAreErrors(bool value) {
-    _warningsAreErrors = value;
-    if (_hasWarnings) {
-      exitCode = exitCode == 1 ? 1 : 2;
-    }
-  }
-
-  void call(LogRecord record) {
-    stdout.writeln(_formatRecord(record));
-
-    if (record.level >= Level.SEVERE) {
-      exitCode = 1;
-    } else if (record.level >= Level.WARNING) {
-      _hasWarnings = true;
-      if (_warningsAreErrors) {
-        exitCode = exitCode == 1 ? 1 : 2;
-      }
-    }
-  }
-
-  String _formatRecord(LogRecord record) {
-    final recordLog = _formatPlainRecord(record);
-    if (!stdout.supportsAnsiEscapes) {
-      return _formatPlainRecord(record);
-    } else {
-      if (record.level >= Level.SHOUT) {
-        return _colored(recordLog, 35);
-      } else if (record.level >= Level.SEVERE) {
-        return _colored(recordLog, 31);
-      } else if (record.level >= Level.WARNING) {
-        return _colored(recordLog, 33);
-      } else if (record.level >= Level.INFO) {
-        return _colored(recordLog, 34);
-      } else if (record.level >= Level.CONFIG) {
-        return _colored(recordLog, 36);
-      } else if (record.level >= Level.FINE) {
-        return _colored(recordLog, 32);
-      } else if (record.level >= Level.FINER) {
-        return _colored(recordLog, 37, 40);
-      } else if (record.level >= Level.FINEST) {
-        return _colored(recordLog, 30, 47);
-      } else {
-        return recordLog;
-      }
-    }
-  }
-
-  String _formatPlainRecord(LogRecord record) {
-    final logMessag = StringBuffer()..write('[${record.level}] ');
-    if (record.loggerName.isNotEmpty) {
-      logMessag.write('${record.loggerName}: ');
-    }
-    logMessag.write(record.message);
-    if (record.error != null) {
-      logMessag.write(' ${record.error}');
-    }
-    if (record.stackTrace != null) {
-      logMessag.write('\n${record.stackTrace}');
-    }
-    return logMessag.toString();
-  }
-
-  String _colored(String message, int foreground, [int? background]) {
-    final color =
-        background != null ? '$foreground;$background' : foreground.toString();
-    return '\x1b[${color}m$message\x1b[0m';
-  }
-}
-
 Future<void> main(List<String> rawArgs) async {
-  final printer = _LogPrinter();
-  Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen(printer);
-
   final linters = <Linter>[
     LibExportLinter(),
     TestImportLinter(),
@@ -136,7 +61,11 @@ Future<void> main(List<String> rawArgs) async {
     ..addFlag(
       'fatal-warnings',
       abbr: 'W',
-      help: 'Failes with exit code 2 if any warnings occur.',
+      help: 'Fails with exit code 2 if any warnings occur.',
+    )
+    ..addFlag(
+      'actions-printer',
+      help: 'Enables the GitHub Actions log printer',
     )
     ..addFlag(
       'help',
@@ -153,11 +82,18 @@ Future<void> main(List<String> rawArgs) async {
       return;
     }
 
-    printer.warningsAreErrors = args['fatal-warnings'] as bool;
+    final warningsAreErrors = args['fatal-warnings'] as bool;
+    final printer = (args['actions-printer'] as bool)
+        ? GithubActionsPrinter(warningsAreErrors)
+        : ConsolePrinter(warningsAreErrors);
+
     final levelName = args['log-level'] as String;
     Logger.root.level = Level.LEVELS.firstWhere(
       (level) => level.name == levelName,
     );
+
+    // ignore: unawaited_futures
+    Logger.root.onRecord.pipe(printer);
 
     for (final arg in args.options) {
       Logger.root.config('$arg: ${args[arg]}');
