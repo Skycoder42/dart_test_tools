@@ -35,7 +35,7 @@ class AnalyzeBuilder implements StepBuilder {
   Iterable<Step> build() => [
         Step.run(
           name: 'Install dart_test_tools',
-          run: '$pubTool global activate dart_test_tools ^3.0.0',
+          run: '$pubTool global activate dart_test_tools ^3.2.0',
         ),
         ...ProjectSetupBuilder(
           repository: repository,
@@ -47,7 +47,8 @@ class AnalyzeBuilder implements StepBuilder {
         ...buildAnalyzeStep(),
         Step.run(
           name: 'Run extended linters',
-          run: '$pubTool global run dart_test_tools:lint -lALL',
+          run: '$pubTool global run dart_test_tools:lint '
+              '-lALL --actions-printer',
           workingDirectory: workingDirectory.toString(),
         ),
         Step.run(
