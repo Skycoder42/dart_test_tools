@@ -17,6 +17,7 @@ class DartIntegrationTestBuilder
   final Expression buildRunner;
   final Expression integrationTestSetup;
   final Expression integrationTestPaths;
+  final Expression integrationTestVmArgs;
   @override
   final Expression platforms;
   final String baseTool;
@@ -30,6 +31,7 @@ class DartIntegrationTestBuilder
     required this.buildRunner,
     required this.integrationTestSetup,
     required this.integrationTestPaths,
+    required this.integrationTestVmArgs,
     required this.platforms,
     required this.baseTool,
     required this.pubTool,
@@ -56,7 +58,7 @@ class DartIntegrationTestBuilder
         Step.run(
           name: 'Run integration tests',
           ifExpression: _shouldRun,
-          run: '$baseTool test ${matrix.dartTestArgs} '
+          run: '$baseTool $integrationTestVmArgs test ${matrix.dartTestArgs} '
               '--reporter expanded $integrationTestPaths',
           workingDirectory: workingDirectory.toString(),
         ),

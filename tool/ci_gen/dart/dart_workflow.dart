@@ -49,6 +49,7 @@ abstract class DartWorkflow {
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
       integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
+      integrationTestVmArgs: inputContext(WorkflowInputs.integrationTestVmArgs),
       platforms: inputContext.builder(WorkflowInputs.platforms),
     );
 

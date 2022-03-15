@@ -118,6 +118,16 @@ Example: '["secrets.txt","debug.log"]'
     ),
   );
 
+  static const integrationTestVmArgs = WorkflowInput(
+    name: 'integrationTestVmArgs',
+    input: Input(
+      type: Type.string,
+      required: false,
+      description: 'Additional args to be passed to dart before test. '
+          'Useful for setting defines.',
+    ),
+  );
+
   static final integrationTestSetup = WorkflowInput(
     name: 'integrationTestSetup',
     input: Input.json(
