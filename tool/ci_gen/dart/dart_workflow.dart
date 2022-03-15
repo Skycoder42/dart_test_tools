@@ -1,6 +1,8 @@
 import '../common/api/workflow_input.dart';
+import '../common/api/workflow_secret.dart';
 import '../common/builders/validate_coverage_job_builder.dart';
 import '../common/inputs.dart';
+import '../common/secrets.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
@@ -13,6 +15,7 @@ abstract class DartWorkflow {
 
   static Workflow buildWorkflow() {
     final inputContext = WorkflowInputContext();
+    final secretContext = WorkflowSecretContext();
 
     final analyzeJobBuilder = DartAnalyzeJobBuilder(
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
@@ -49,7 +52,8 @@ abstract class DartWorkflow {
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
       integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
-      integrationTestVmArgs: inputContext(WorkflowInputs.integrationTestVmArgs),
+      integrationTestVmArgs:
+          secretContext(WorkflowSecrets.integrationTestVmArgs),
       platforms: inputContext.builder(WorkflowInputs.platforms),
     );
 
@@ -57,6 +61,7 @@ abstract class DartWorkflow {
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
+          secrets: secretContext.createSecrets(),
         ),
       ),
       jobs: {

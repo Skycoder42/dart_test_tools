@@ -75,10 +75,10 @@ on:
             "linux": "dart run tools/install-deps.dart",
             "web": "./setup-web.sh"
           }
+    secrets:
       integrationTestVmArgs:
-        type: string
         required: false
-        description: Additional args to be passed to dart before test. Useful for setting defines.
+        description: Additional args to be passed to dart before test. Useful for setting defines. Typically contains secrets like API keys, thus defined as a secret.
 jobs:
   analyze:
     name: Analyze
@@ -343,5 +343,5 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run integration tests
         if: contains(fromJSON(inputs.platforms), matrix.platform)
-        run: dart ${{ inputs.integrationTestVmArgs }} test ${{ matrix.dartTestArgs }} --reporter expanded ${{ inputs.integrationTestPaths }}
+        run: dart ${{ secrets.integrationTestVmArgs }} test ${{ matrix.dartTestArgs }} --reporter expanded ${{ inputs.integrationTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}
