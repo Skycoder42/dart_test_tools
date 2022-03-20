@@ -1,6 +1,7 @@
 import '../../common/api/step_builder.dart';
 import '../../common/steps/platforms_builder_mixin.dart';
 import '../../common/steps/project_setup_builder.dart';
+import '../../types/env.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
@@ -17,7 +18,7 @@ class DartIntegrationTestBuilder
   final Expression buildRunner;
   final Expression integrationTestSetup;
   final Expression integrationTestPaths;
-  final Expression integrationTestVmArgs;
+  final Expression integrationTestEnvVars;
   @override
   final Expression platforms;
   final String baseTool;
@@ -31,7 +32,7 @@ class DartIntegrationTestBuilder
     required this.buildRunner,
     required this.integrationTestSetup,
     required this.integrationTestPaths,
-    required this.integrationTestVmArgs,
+    required this.integrationTestEnvVars,
     required this.platforms,
     required this.baseTool,
     required this.pubTool,
@@ -58,8 +59,11 @@ class DartIntegrationTestBuilder
         Step.run(
           name: 'Run integration tests',
           ifExpression: _shouldRun,
-          run: '$baseTool $integrationTestVmArgs test ${matrix.dartTestArgs} '
+          run: '$baseTool test ${matrix.dartTestArgs} '
               '--reporter expanded $integrationTestPaths',
+          env: Env.expression(
+            Expression('fromJSON(${integrationTestEnvVars.value})'),
+          ),
           workingDirectory: workingDirectory.toString(),
         ),
       ];

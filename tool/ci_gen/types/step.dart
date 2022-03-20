@@ -2,6 +2,7 @@
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'env.dart';
 import 'expression.dart';
 import 'id.dart';
 
@@ -18,7 +19,7 @@ class Step with _$Step {
     @JsonKey(name: 'if', includeIfNull: false)
     @ExpressionConverter()
         Expression? ifExpression,
-    @JsonKey(includeIfNull: false) Map<String, String>? env,
+    @JsonKey(includeIfNull: false) Env? env,
     required String run,
     @JsonKey(name: 'working-directory', includeIfNull: false)
         String? workingDirectory,

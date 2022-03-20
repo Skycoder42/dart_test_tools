@@ -12,14 +12,20 @@ abstract class WorkflowSecrets {
     ),
   );
 
-  static const integrationTestVmArgs = WorkflowSecret(
-    name: 'integrationTestVmArgs',
+  static const integrationTestEnvVars = WorkflowSecret(
+    name: 'integrationTestEnvVars',
     secret: Secret(
       required: false,
-      description:
-          'Additional args to be passed to dart before test. Useful for '
-          'setting defines. Typically contains secrets like API keys, '
-          'thus defined as a secret.',
+      description: r'''
+Secret environment variables to be set for the integration test run step.
+Pass a JSON object with key value pairs of variables. You should only use
+secrets for the values of these objects.
+
+Example:
+{
+  "MY_API_KEY": "${{ secrets.MY_API_KEY }}"
+}
+''',
     ),
   );
 }

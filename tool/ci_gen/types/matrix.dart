@@ -14,6 +14,7 @@ class Matrix with _$Matrix {
     List<Map<String, dynamic>>? include,
     List<Map<String, dynamic>>? exclude,
   }) = _Matrix;
+
   const factory Matrix.expression(Expression expression) = _MatrixExpression;
 
   factory Matrix.fromJson(Map<String, dynamic> json) {
