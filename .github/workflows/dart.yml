@@ -355,6 +355,7 @@ jobs:
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: echo '${{ secrets.integrationTestEnvVars }}' > .env
         working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Run platform test setup
         if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && contains(fromJSON(inputs.platforms), matrix.platform)
         run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}

@@ -54,6 +54,7 @@ class DartIntegrationTestBuilder
           ifExpression: _shouldRun,
           run: "echo '$integrationTestEnvVars' > .env",
           workingDirectory: workingDirectory.toString(),
+          shell: 'bash',
         ),
         Step.run(
           name: 'Run platform test setup',
