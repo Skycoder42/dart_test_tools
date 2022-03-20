@@ -16,14 +16,14 @@ abstract class WorkflowSecrets {
     name: 'integrationTestEnvVars',
     secret: Secret(
       required: false,
-      description: r'''
+      description: '''
 Secret environment variables to be set for the integration test run step.
 Pass a JSON object with key value pairs of variables. You should only use
 secrets for the values of these objects.
 
 Example:
 {
-  "MY_API_KEY": "${{ secrets.MY_API_KEY }}"
+  "MY_API_KEY": "<reference secrets here>"
 }
 ''',
     ),
