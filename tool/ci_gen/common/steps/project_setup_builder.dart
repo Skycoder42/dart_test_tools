@@ -33,10 +33,13 @@ class ProjectSetupBuilder implements StepBuilder {
             run: 'choco install yq',
           ),
           Step.run(
-            name: 'Install yq (macOS)',
+            name: 'Install yq and coreutils (macOS)',
             ifExpression:
                 const Expression("runner.os == 'macOS'") & ifExpression,
-            run: 'brew install yq',
+            run: r'''
+brew install yq coreutils
+echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+''',
           ),
         ],
         ...CheckoutBuilder(

@@ -87,9 +87,11 @@ jobs:
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
         run: choco install yq
-      - name: Install yq (macOS)
+      - name: Install yq and coreutils (macOS)
         if: runner.os == 'macOS'
-        run: brew install yq
+        run: |
+          brew install yq coreutils
+          echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
       - name: Checkout repository ${{ inputs.repository }}
         uses: actions/checkout@v2
         with:
