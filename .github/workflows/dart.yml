@@ -346,8 +346,8 @@ jobs:
         run: dart run build_runner build
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create .env file from secrets
-        if: secrets.integrationTestEnvVars != '' && contains(fromJSON(inputs.platforms), matrix.platform)
-        run: echo ${{ secrets.integrationTestEnvVars }} > .env
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        run: echo '${{ secrets.integrationTestEnvVars }}' > .env
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run platform test setup
         if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && contains(fromJSON(inputs.platforms), matrix.platform)
@@ -355,10 +355,9 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run integration tests
         if: contains(fromJSON(inputs.platforms), matrix.platform)
-        env: ${{ fromJSON(secrets.integrationTestEnvVars || '{}') }}
         run: dart test ${{ matrix.dartTestArgs }} --reporter expanded ${{ inputs.integrationTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Shred .env file
-        if: always() && secrets.integrationTestEnvVars != '' && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: always() && contains(fromJSON(inputs.platforms), matrix.platform)
         run: shred -fzvu .env
         working-directory: ${{ inputs.workingDirectory }}

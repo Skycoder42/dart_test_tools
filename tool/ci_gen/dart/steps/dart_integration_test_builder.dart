@@ -1,7 +1,6 @@
 import '../../common/api/step_builder.dart';
 import '../../common/steps/platforms_builder_mixin.dart';
 import '../../common/steps/project_setup_builder.dart';
-import '../../types/env.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
@@ -52,9 +51,8 @@ class DartIntegrationTestBuilder
         ).build(),
         Step.run(
           name: 'Create .env file from secrets',
-          ifExpression:
-              integrationTestEnvVars.ne(Expression.empty) & _shouldRun,
-          run: 'echo $integrationTestEnvVars > .env',
+          ifExpression: _shouldRun,
+          run: "echo '$integrationTestEnvVars' > .env",
           workingDirectory: workingDirectory.toString(),
         ),
         Step.run(
@@ -68,16 +66,11 @@ class DartIntegrationTestBuilder
           ifExpression: _shouldRun,
           run: '$baseTool test ${matrix.dartTestArgs} '
               '--reporter expanded $integrationTestPaths',
-          env: Env.expression(
-            Expression("fromJSON(${integrationTestEnvVars.value} || '{}')"),
-          ),
           workingDirectory: workingDirectory.toString(),
         ),
         Step.run(
           name: 'Shred .env file',
-          ifExpression: const Expression('always()') &
-              integrationTestEnvVars.ne(Expression.empty) &
-              _shouldRun,
+          ifExpression: const Expression('always()') & _shouldRun,
           run: 'shred -fzvu .env',
           workingDirectory: workingDirectory.toString(),
         ),
