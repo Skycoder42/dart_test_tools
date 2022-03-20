@@ -18,13 +18,13 @@ abstract class WorkflowSecrets {
       required: false,
       description: '''
 Secret environment variables to be set for the integration test run step.
-Pass a JSON object with key value pairs of variables. You should only use
-secrets for the values of these objects.
+Pass a multi line string of key-value pairs. You should only use
+secrets for the values of these objects. The CI will create a .env file in the
+workingDirectory containing those values. You can use
+https://pub.dev/packages/dotenv to read them in your integration tests.
 
 Example:
-{
-  "MY_API_KEY": "<reference secrets here>"
-}
+MY_API_KEY=<reference secret here>"
 ''',
     ),
   );

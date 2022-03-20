@@ -51,6 +51,13 @@ class DartIntegrationTestBuilder
           ifExpression: _shouldRun,
         ).build(),
         Step.run(
+          name: 'Create .env file from secrets',
+          ifExpression:
+              integrationTestEnvVars.ne(Expression.empty) & _shouldRun,
+          run: 'echo $integrationTestEnvVars > .env',
+          workingDirectory: workingDirectory.toString(),
+        ),
+        Step.run(
           name: 'Run platform test setup',
           ifExpression: _platformTestSetup.ne(Expression.empty) & _shouldRun,
           run: _platformTestSetup.toString(),
@@ -64,6 +71,14 @@ class DartIntegrationTestBuilder
           env: Env.expression(
             Expression("fromJSON(${integrationTestEnvVars.value} || '{}')"),
           ),
+          workingDirectory: workingDirectory.toString(),
+        ),
+        Step.run(
+          name: 'Shred .env file',
+          ifExpression: const Expression('always()') &
+              integrationTestEnvVars.ne(Expression.empty) &
+              _shouldRun,
+          run: 'shred -fzvu .env',
           workingDirectory: workingDirectory.toString(),
         ),
       ];
