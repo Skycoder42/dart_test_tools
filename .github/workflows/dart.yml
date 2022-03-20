@@ -351,6 +351,6 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run integration tests
         if: contains(fromJSON(inputs.platforms), matrix.platform)
-        env: ${{ fromJSON(secrets.integrationTestEnvVars) }}
+        env: ${{ fromJSON(secrets.integrationTestEnvVars || '{}') }}
         run: dart test ${{ matrix.dartTestArgs }} --reporter expanded ${{ inputs.integrationTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}

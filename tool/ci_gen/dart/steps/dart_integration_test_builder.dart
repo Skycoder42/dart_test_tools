@@ -62,7 +62,7 @@ class DartIntegrationTestBuilder
           run: '$baseTool test ${matrix.dartTestArgs} '
               '--reporter expanded $integrationTestPaths',
           env: Env.expression(
-            Expression('fromJSON(${integrationTestEnvVars.value})'),
+            Expression("fromJSON(${integrationTestEnvVars.value} || '{}')"),
           ),
           workingDirectory: workingDirectory.toString(),
         ),
