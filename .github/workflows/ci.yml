@@ -17,13 +17,17 @@ jobs:
       buildRunner: true
       publishExclude: >-
         [
-          "lib/src/.gitignore", 
+          "lib/src/.gitignore",
           "lib/src/analysis_options.yaml",
           "tool/.gitignore"
         ]
       unitTestPaths: ""
       integrationTestPaths: test/integration
       platforms: '["linux","windows","macos"]'
+    secrets:
+      integrationTestEnvVars: |
+        TEST_KEY=test-value
+
   cd:
     name: Continous Deployment
     needs:
@@ -33,7 +37,7 @@ jobs:
       buildRunner: true
       publishExclude: >-
         [
-          "lib/src/.gitignore", 
+          "lib/src/.gitignore",
           "lib/src/analysis_options.yaml",
           "tool/.gitignore"
         ]

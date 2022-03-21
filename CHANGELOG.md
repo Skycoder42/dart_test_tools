@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.0] - 2022-03-21
+### Added
+- New test helper: `TestEnv.load()`, which loads an environment config from a
+`'.env'` file, works in VM and JS contexts.
+- Added `integrationTestEnvVars` secret to dart tests which writes the value
+of the variable to a `.env` file for the integration tests.
+### Changed
+- updated dependencies
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+
 ## [3.2.1] - 2022-03-02
 ### Changed
 - Updated mocktail to 0.3.0 (major update)

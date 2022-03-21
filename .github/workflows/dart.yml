@@ -82,8 +82,8 @@ on:
           Secret environment variables to be set for the integration test run step.
           Pass a multi line string of key-value pairs. You should only use
           secrets for the values of these objects. The CI will create a .env file in the
-          workingDirectory containing those values. You can use
-          https://pub.dev/packages/dotenv to read them in your integration tests.
+          workingDirectory containing those values. You can use the 'TestEnv.load()' of
+          the dart_test_tools package to read them in your integration tests.
 
           Example:
           MY_API_KEY=<reference secret here>"
