@@ -334,8 +334,8 @@ export "exp5.dart";
         ]),
         expectLog: emitsInAnyOrder(<dynamic>[
           for (final path in [
-            'lib/src/exp3.dart',
-            'lib/src/sub/exp4.dart',
+            'exp3.dart',
+            'exp4.dart',
           ])
             isA<LogRecord>()
                 .having((r) => r.level, 'level', Level.WARNING)
