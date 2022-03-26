@@ -169,7 +169,7 @@ extension X on Test {
       );
 
       analysisTest(
-        'Rejects files with public exports',
+        'Accepts files with public exports, but rejects those exports',
         createLinter: LibExportLinter.new,
         files: const {
           'lib/src/export.dart': 'export "public.dart";',
@@ -181,9 +181,8 @@ const int _right = 1;
 ''',
         },
         expectResults: emitsInAnyOrder(<dynamic>[
-          isRejected(
+          isAccepted(
             resultLocation: (l) => l.havingRelPath('lib/src/export.dart'),
-            reason: 'Source file is not exported anywhere',
           ),
           isRejected(
             resultLocation: (l) => l.havingRelPath('lib/src/public.dart'),
@@ -290,14 +289,61 @@ export "exp5.dart";
           emitsDone,
         ]),
         expectLog: emitsInAnyOrder(<dynamic>[
-          for (var i = 1; i <= 5; ++i)
+          for (final config in [
+            ['file', 1, 5],
+            ['exp', 3, 5]
+          ])
+            for (var i = config[1] as int; i <= (config[2] as int); ++i)
+              isA<LogRecord>()
+                  .having((r) => r.level, 'level', Level.WARNING)
+                  .having(
+                    (r) => r.message,
+                    'message',
+                    allOf(
+                      contains('${config[0]}$i.dart'),
+                      contains(
+                        'Found exported source that '
+                        'is not covered by the analyzer',
+                      ),
+                    ),
+                  ),
+        ]),
+      );
+
+      analysisTest(
+        'accepts recursively exported file',
+        createLinter: LibExportLinter.new,
+        files: {
+          'lib/exp1.dart': "export 'exp2.dart';",
+          'lib/exp2.dart': "export 'src/exp3.dart';",
+          'lib/src/exp3.dart': "export 'sub/exp4.dart';",
+          'lib/src/sub/exp4.dart': "export 'file5.dart';",
+          'lib/src/sub/file5.dart': 'const int meaningOfLife = 42;',
+        },
+        expectResults: emitsInAnyOrder(<dynamic>[
+          isAccepted(
+            resultLocation: (l) => l.havingRelPath('lib/src/exp3.dart'),
+          ),
+          isAccepted(
+            resultLocation: (l) => l.havingRelPath('lib/src/sub/exp4.dart'),
+          ),
+          isAccepted(
+            resultLocation: (l) => l.havingRelPath('lib/src/sub/file5.dart'),
+          ),
+          emitsDone,
+        ]),
+        expectLog: emitsInAnyOrder(<dynamic>[
+          for (final path in [
+            'lib/src/exp3.dart',
+            'lib/src/sub/exp4.dart',
+          ])
             isA<LogRecord>()
                 .having((r) => r.level, 'level', Level.WARNING)
                 .having(
                   (r) => r.message,
                   'message',
                   allOf(
-                    contains('file$i.dart'),
+                    contains(path),
                     contains(
                       'Found exported source that '
                       'is not covered by the analyzer',

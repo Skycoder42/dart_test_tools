@@ -116,15 +116,6 @@ class LibExportLinter with LinterMixin implements Linter {
     String path,
     CompilationUnit unit,
   ) async {
-    // check if it exports any other files
-    if (unit.directives.whereType<ExportDirective>().isNotEmpty) {
-      logDebug(
-        ResultLocation.fromFile(context: context, path: path),
-        'File has export directives',
-      );
-      return true;
-    }
-
     // check if any top level declarations are public
     for (final declaration in unit.declarations) {
       final Iterable<Element?> elements;

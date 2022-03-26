@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.1] - 2022-03-26
+### Fixed
+- files that export other files are no longer reported as unexported, if they
+do not re-export anything publicly visible
+
 ## [3.3.0] - 2022-03-21
 ### Added
 - New test helper: `TestEnv.load()`, which loads an environment config from a
