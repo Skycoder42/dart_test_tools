@@ -69,7 +69,11 @@ avdmanager create avd \\
           name: 'Install test dependencies (linux)',
           ifExpression: matrix.platform.eq(const Expression.literal('linux')) &
               _shouldRun,
-          run: 'sudo apt-get -qq install ninja-build libgtk-3-dev xvfb',
+          run: '''
+set -e
+sudo apt-get -qq update
+sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
+''',
         ),
         Step.run(
           name: 'Validate flutter setup',

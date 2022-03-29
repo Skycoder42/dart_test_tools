@@ -30,7 +30,11 @@ class ValidateCoverageBuilder
   Iterable<Step> build() => [
         const Step.run(
           name: 'Install coverage tools',
-          run: 'sudo apt-get -qq install lcov dos2unix',
+          run: '''
+set -e
+sudo apt-get -qq update
+sudo apt-get -qq install lcov dos2unix
+''',
         ),
         ...CheckoutBuilder(
           repository: repository,

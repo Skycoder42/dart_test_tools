@@ -241,7 +241,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install coverage tools
-        run: sudo apt-get -qq install lcov dos2unix
+        run: |
+          set -e
+          sudo apt-get -qq update
+          sudo apt-get -qq install lcov dos2unix
       - name: Checkout repository ${{ inputs.repository }}
         uses: actions/checkout@v2
         with:
