@@ -28,7 +28,7 @@ class RunPublishBuilder implements StepBuilder {
 set -e
 echo '$publishExclude' | jq -cr '.[]' | while read exclude; do
   if [ -e "\$exclude" ]; then
-    git rm "\$exclude"
+    git rm -rf "\$exclude" || rm -rf "\$exclude"
   fi
 done
 ''',
