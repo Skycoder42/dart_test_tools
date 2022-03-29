@@ -145,8 +145,7 @@ $baseTool devices
               '--driver test_driver/integration_test.dart '
               '--target $integrationTestPaths '
               '--release '
-              '-d chrome --browser-name chrome '
-              '--test-arguments "--reporter=expanded"',
+              '-d chrome --browser-name chrome',
           workingDirectory: '$workingDirectory/$integrationTestProject',
           shell: 'bash',
         ),
