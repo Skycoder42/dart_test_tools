@@ -7,7 +7,7 @@ import '../../types/step.dart';
 
 abstract class IFlutterIntegrationTestMatrix {
   Expression get platform;
-  Expression get testDevice;
+  Expression get testArgs;
   Expression get runPrefix;
   Expression get desktop;
 }
@@ -132,7 +132,7 @@ $baseTool devices
           ifExpression:
               matrix.platform.ne(const Expression.literal('web')) & _shouldRun,
           run: '${matrix.runPrefix} '
-              '$baseTool test ${matrix.testDevice} '
+              '$baseTool test ${matrix.testArgs} '
               '--reporter expanded $integrationTestPaths',
           workingDirectory: '$workingDirectory/$integrationTestProject',
         ),

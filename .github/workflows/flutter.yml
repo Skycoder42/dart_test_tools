@@ -133,7 +133,7 @@ jobs:
         run: flutter pub global run dart_test_tools:lint -lALL --actions-printer
         working-directory: ${{ inputs.workingDirectory }}
       - name: Validate correct formatting
-        run: flutter format -onone --set-exit-if-changed .
+        run: flutter format -onone --set-exit-if-changed $(git ls-files '*.dart')
         working-directory: ${{ inputs.workingDirectory }}
       - id: checkPublish
         name: Check if package is publishable
@@ -322,21 +322,23 @@ jobs:
         include:
           - platform: android
             os: macos-latest
+            testArgs: --timeout 3x
           - platform: ios
             os: macos-latest
+            testArgs: --timeout 3x
           - platform: linux
             os: ubuntu-latest
             desktop: true
-            testDevice: -d linux
+            testArgs: -d linux
             runPrefix: xvfb-run --auto-servernum
           - platform: windows
             os: windows-latest
             desktop: true
-            testDevice: -d windows
+            testArgs: -d windows
           - platform: macos
             os: macos-latest
             desktop: true
-            testDevice: -d macos
+            testArgs: -d macos
           - platform: web
             os: windows-latest
     runs-on: ${{ matrix.os }}
@@ -427,7 +429,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run integration tests (dart-vm)
         if: matrix.platform != 'web' && contains(fromJSON(inputs.platforms), matrix.platform)
-        run: ${{ matrix.runPrefix }} flutter test ${{ matrix.testDevice }} --reporter expanded ${{ inputs.integrationTestPaths }}
+        run: ${{ matrix.runPrefix }} flutter test ${{ matrix.testArgs }} --reporter expanded ${{ inputs.integrationTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
       - name: Run integration tests (web)
         if: matrix.platform == 'web' && contains(fromJSON(inputs.platforms), matrix.platform)

@@ -19,7 +19,7 @@ class _FlutterIntegrationTestJobMatrix
   @override
   final Expression platform;
   @override
-  final Expression testDevice;
+  final Expression testArgs;
   @override
   final Expression runPrefix;
   @override
@@ -28,7 +28,7 @@ class _FlutterIntegrationTestJobMatrix
 
   const _FlutterIntegrationTestJobMatrix({
     required this.platform,
-    required this.testDevice,
+    required this.testArgs,
     required this.runPrefix,
     required this.desktop,
     required this.os,
@@ -43,7 +43,7 @@ class _PlatformInclude with _$_PlatformInclude {
     // ignore: invalid_annotation_target
     @JsonKey(includeIfNull: false) bool? desktop,
     // ignore: invalid_annotation_target
-    @JsonKey(includeIfNull: false) String? testDevice,
+    @JsonKey(includeIfNull: false) String? testArgs,
     // ignore: invalid_annotation_target
     @JsonKey(includeIfNull: false) String? runPrefix,
   }) = __PlatformInclude;
@@ -56,7 +56,7 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     with FlutterSdkJobBuilderMixin {
   static const _matrix = _FlutterIntegrationTestJobMatrix(
     platform: Expression('matrix.platform'),
-    testDevice: Expression('matrix.testDevice'),
+    testArgs: Expression('matrix.testArgs'),
     runPrefix: Expression('matrix.runPrefix'),
     desktop: Expression('matrix.desktop'),
     os: Expression('matrix.os'),
@@ -66,29 +66,31 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     _PlatformInclude(
       platform: 'android',
       os: 'macos-latest',
+      testArgs: '--timeout 3x',
     ),
     _PlatformInclude(
       platform: 'ios',
       os: 'macos-latest',
+      testArgs: '--timeout 3x',
     ),
     _PlatformInclude(
       platform: 'linux',
       desktop: true,
       os: 'ubuntu-latest',
-      testDevice: '-d linux',
+      testArgs: '-d linux',
       runPrefix: 'xvfb-run --auto-servernum',
     ),
     _PlatformInclude(
       platform: 'windows',
       desktop: true,
       os: 'windows-latest',
-      testDevice: '-d windows',
+      testArgs: '-d windows',
     ),
     _PlatformInclude(
       platform: 'macos',
       desktop: true,
       os: 'macos-latest',
-      testDevice: '-d macos',
+      testArgs: '-d macos',
     ),
     _PlatformInclude(
       platform: 'web',

@@ -127,7 +127,7 @@ jobs:
         run: dart pub global run dart_test_tools:lint -lALL --actions-printer
         working-directory: ${{ inputs.workingDirectory }}
       - name: Validate correct formatting
-        run: dart format -onone --set-exit-if-changed .
+        run: dart format -onone --set-exit-if-changed $(git ls-files '*.dart')
         working-directory: ${{ inputs.workingDirectory }}
       - id: checkPublish
         name: Check if package is publishable
