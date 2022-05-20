@@ -37,6 +37,7 @@ class _PlatformInclude with _$_PlatformInclude {
     @JsonKey(includeIfNull: false) String? dartTestArgs,
   }) = __PlatformInclude;
 
+  // ignore: unused_element
   factory _PlatformInclude.fromJson(Map<String, dynamic> json) =>
       _$_PlatformIncludeFromJson(json);
 }
