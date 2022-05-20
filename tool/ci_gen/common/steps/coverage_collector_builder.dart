@@ -36,7 +36,7 @@ class CoverageCollectorBuilder
             ifExpression: _coverageExpression,
             run: '$runTool coverage:format_coverage --lcov --check-ignore '
                 '--in=coverage --out=coverage/lcov.info '
-                '--packages=.packages --report-on=lib',
+                '--report-on=lib',
             workingDirectory: workingDirectory.toString(),
           ),
         Step.run(
