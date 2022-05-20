@@ -68,24 +68,24 @@ class FileResult with _$FileResult {
   @literal
   const factory FileResult.accepted({
     required ResultLocation resultLocation,
-  }) = _Accepted;
+  }) = FileResultAccepted;
 
   @literal
   const factory FileResult.rejected({
     required String reason,
     required ResultLocation resultLocation,
-  }) = _Rejected;
+  }) = FileResultRejected;
 
   @literal
   const factory FileResult.skipped({
     required String reason,
     required ResultLocation resultLocation,
-  }) = _Skipped;
+  }) = FileResultSkipped;
 
   @literal
   const factory FileResult.failure({
     required String error,
     StackTrace? stackTrace,
     required ResultLocation resultLocation,
-  }) = _Failure;
+  }) = FileResultFailure;
 }

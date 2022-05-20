@@ -36,7 +36,7 @@ Matcher isAccepted({
   TypeMatcherCb<ResultLocation>? resultLocation,
 }) =>
     _isAFileResult(
-      () => $FileResult.accepted(
+      () => FileResult.accepted(
         resultLocation: _any(),
       ),
     ).having(
@@ -50,7 +50,7 @@ Matcher isSkipped({
   TypeMatcherCb<ResultLocation>? resultLocation,
 }) =>
     _isAFileResult(
-      () => $FileResult.skipped(
+      () => FileResultSkipped(
         reason: _any(),
         resultLocation: _any(),
       ),
@@ -71,7 +71,7 @@ Matcher isRejected({
   TypeMatcherCb<ResultLocation>? resultLocation,
 }) =>
     _isAFileResult(
-      () => $FileResult.rejected(
+      () => FileResultRejected(
         resultLocation: _any(),
         reason: _any(),
       ),
@@ -93,7 +93,7 @@ Matcher isFailure({
   TypeMatcherCb<ResultLocation>? resultLocation,
 }) =>
     _isAFileResult(
-      () => $FileResult.failure(
+      () => FileResultFailure(
         resultLocation: _any(),
         error: _any(),
       ),

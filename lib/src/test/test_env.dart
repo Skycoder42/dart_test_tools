@@ -1,4 +1,4 @@
-import 'package:dotenv/dotenv.dart' as dotenv;
+import 'package:dotenv/dotenv.dart';
 
 abstract class TestEnv {
   static const defaultPath = '.env';
@@ -6,7 +6,7 @@ abstract class TestEnv {
   TestEnv._();
 
   static Future<Map<String, String>> load([String path = defaultPath]) async {
-    dotenv.load(path);
-    return dotenv.env;
+    final env = DotEnv()..load([path]);
+    return env.map;
   }
 }
