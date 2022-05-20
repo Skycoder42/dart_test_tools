@@ -6,6 +6,8 @@ import 'project_setup_builder.dart';
 import 'run_publish_builder.dart';
 
 class AnalyzeBuilder implements StepBuilder {
+  static const dartTestToolsVersion = '3.3.0';
+
   static const checkPublishStepId = StepId('checkPublish');
   static late final checkPublish = checkPublishStepId.output('publish');
 
@@ -35,7 +37,8 @@ class AnalyzeBuilder implements StepBuilder {
   Iterable<Step> build() => [
         Step.run(
           name: 'Install dart_test_tools',
-          run: '$pubTool global activate dart_test_tools ^3.2.0',
+          run:
+              '$pubTool global activate dart_test_tools ^$dartTestToolsVersion',
         ),
         ...ProjectSetupBuilder(
           repository: repository,

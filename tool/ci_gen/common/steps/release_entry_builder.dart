@@ -47,7 +47,7 @@ ${releaseContentReleaseName.bashSetter('\$release_name')}
 
 version_changelog_file=\$(mktemp)
 echo "## Changelog" > \$version_changelog_file
-cat CHANGELOG.md | sed '/^## \\['\$package_version'\\].*\$/,/^## \\[/!d;//d' >> \$version_changelog_file
+cat CHANGELOG.md | sed '/^## '\$package_version'.*\$/,/^## /!d;//d' >> \$version_changelog_file
 echo "" >> \$version_changelog_file${changelogExtra != null ? '\necho "$changelogExtra" >> \$version_changelog_file' : ''}
 ${releaseContentBodyPath.bashSetter('\$version_changelog_file')}
 ''',

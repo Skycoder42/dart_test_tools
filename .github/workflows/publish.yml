@@ -110,7 +110,7 @@ jobs:
 
           version_changelog_file=$(mktemp)
           echo "## Changelog" > $version_changelog_file
-          cat CHANGELOG.md | sed '/^## \['$package_version'\].*$/,/^## \[/!d;//d' >> $version_changelog_file
+          cat CHANGELOG.md | sed '/^## '$package_version'.*$/,/^## /!d;//d' >> $version_changelog_file
           echo "" >> $version_changelog_file
           echo "The package and it's documentation are available at [pub.dev](https://pub.dev/packages/$package_name/versions/$package_version)." >> $version_changelog_file
           echo "::set-output name=body_path::$version_changelog_file"
