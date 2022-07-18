@@ -6,6 +6,11 @@ and this project adheres to Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## 3.3.2
 ### Changed
+- Update all dependencies
+- Allow custom arguments for extended linters build step via `extendedAnalyzerArgs`
+
+## 3.3.2
+### Changed
 - Update SDK requirement to 2.17.0 and update all dependencies
 
 ## 3.3.1
