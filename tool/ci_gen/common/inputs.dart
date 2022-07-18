@@ -97,6 +97,20 @@ Example: '["secrets.txt","debug.log"]'
     ),
   );
 
+  static const extendedAnalyzerArgs = WorkflowInput(
+    name: 'extendedAnalyzerArgs',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: '',
+      description: '''
+Additional arguments to pass to the dart_test_tools:lint tool when running the
+extended linters step. Can for example be used to enable or disable specific
+linters.
+''',
+    ),
+  );
+
   static const unitTestPaths = WorkflowInput(
     name: 'unitTestPaths',
     input: Input(

@@ -16,6 +16,7 @@ class AnalyzeBuilder implements StepBuilder {
   final Expression buildRunner;
   final Expression analyzeImage;
   final Expression publishExclude;
+  final Expression extendedAnalyzerArgs;
   final String baseTool;
   final String pubTool;
   final String runTool;
@@ -27,6 +28,7 @@ class AnalyzeBuilder implements StepBuilder {
     required this.buildRunner,
     required this.analyzeImage,
     required this.publishExclude,
+    required this.extendedAnalyzerArgs,
     required this.baseTool,
     required this.pubTool,
     required this.runTool,
@@ -51,7 +53,7 @@ class AnalyzeBuilder implements StepBuilder {
         Step.run(
           name: 'Run extended linters',
           run: '$pubTool global run dart_test_tools:lint '
-              '-lALL --actions-printer',
+              '-lALL --actions-printer $extendedAnalyzerArgs',
           workingDirectory: workingDirectory.toString(),
         ),
         Step.run(

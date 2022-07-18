@@ -32,6 +32,14 @@ on:
         description: |
           Specify a JSON array of paths to be excluded from publishing.
           Example: '["secrets.txt","debug.log"]'
+      extendedAnalyzerArgs:
+        type: string
+        required: false
+        default: ""
+        description: |
+          Additional arguments to pass to the dart_test_tools:lint tool when running the
+          extended linters step. Can for example be used to enable or disable specific
+          linters.
       unitTestPaths:
         type: string
         required: false
@@ -124,7 +132,7 @@ jobs:
         run: dart analyze --fatal-infos
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run extended linters
-        run: dart pub global run dart_test_tools:lint -lALL --actions-printer
+        run: dart pub global run dart_test_tools:lint -lALL --actions-printer ${{ inputs.extendedAnalyzerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Validate correct formatting
         run: dart format -onone --set-exit-if-changed $(git ls-files '*.dart')

@@ -14,6 +14,7 @@ class DartAnalyzeJobBuilder extends AnalyzeJobBuilder
     required Expression buildRunner,
     required Expression analyzeImage,
     required Expression publishExclude,
+    required Expression extendedAnalyzerArgs,
     required this.dartSdkVersion,
   }) : super(
           repository: repository,
@@ -21,6 +22,7 @@ class DartAnalyzeJobBuilder extends AnalyzeJobBuilder
           buildRunner: buildRunner,
           analyzeImage: analyzeImage,
           publishExclude: publishExclude,
+          extendedAnalyzerArgs: extendedAnalyzerArgs,
         );
 
   @override

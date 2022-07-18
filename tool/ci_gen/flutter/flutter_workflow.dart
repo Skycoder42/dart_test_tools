@@ -21,6 +21,7 @@ abstract class FlutterWorkflow {
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       analyzeImage: inputContext(WorkflowInputs.analyzeImage),
       publishExclude: inputContext(WorkflowInputs.publishExclude),
+      extendedAnalyzerArgs: inputContext(WorkflowInputs.extendedAnalyzerArgs),
     );
     final unitTestBuilder = FlutterUnitTestJobBuilder(
       analyzeJobId: analyzeJobBuilder.id,

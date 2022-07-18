@@ -15,12 +15,14 @@ class FlutterAnalyzeJobBuilder extends AnalyzeJobBuilder
     required Expression buildRunner,
     required Expression analyzeImage,
     required Expression publishExclude,
+    required Expression extendedAnalyzerArgs,
   }) : super(
           repository: repository,
           workingDirectory: workingDirectory,
           buildRunner: buildRunner,
           analyzeImage: analyzeImage,
           publishExclude: publishExclude,
+          extendedAnalyzerArgs: extendedAnalyzerArgs,
         );
 
   @override
