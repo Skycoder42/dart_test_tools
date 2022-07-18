@@ -10,20 +10,13 @@ class FlutterAnalyzeJobBuilder extends AnalyzeJobBuilder
 
   const FlutterAnalyzeJobBuilder({
     required this.flutterSdkChannel,
-    required Expression repository,
-    required Expression workingDirectory,
-    required Expression buildRunner,
-    required Expression analyzeImage,
-    required Expression publishExclude,
-    required Expression extendedAnalyzerArgs,
-  }) : super(
-          repository: repository,
-          workingDirectory: workingDirectory,
-          buildRunner: buildRunner,
-          analyzeImage: analyzeImage,
-          publishExclude: publishExclude,
-          extendedAnalyzerArgs: extendedAnalyzerArgs,
-        );
+    required super.repository,
+    required super.workingDirectory,
+    required super.buildRunner,
+    required super.analyzeImage,
+    required super.publishExclude,
+    required super.extendedAnalyzerArgs,
+  });
 
   @override
   Iterable<Step> buildAnalyzeSteps() => [

@@ -9,21 +9,14 @@ class DartAnalyzeJobBuilder extends AnalyzeJobBuilder
   final Expression dartSdkVersion;
 
   const DartAnalyzeJobBuilder({
-    required Expression repository,
-    required Expression workingDirectory,
-    required Expression buildRunner,
-    required Expression analyzeImage,
-    required Expression publishExclude,
-    required Expression extendedAnalyzerArgs,
+    required super.repository,
+    required super.workingDirectory,
+    required super.buildRunner,
+    required super.analyzeImage,
+    required super.publishExclude,
+    required super.extendedAnalyzerArgs,
     required this.dartSdkVersion,
-  }) : super(
-          repository: repository,
-          workingDirectory: workingDirectory,
-          buildRunner: buildRunner,
-          analyzeImage: analyzeImage,
-          publishExclude: publishExclude,
-          extendedAnalyzerArgs: extendedAnalyzerArgs,
-        );
+  });
 
   @override
   Iterable<Step> buildAnalyzeSteps() => [

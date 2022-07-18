@@ -140,7 +140,7 @@ $baseTool devices
           name: 'Run integration tests (web)',
           ifExpression:
               matrix.platform.eq(const Expression.literal('web')) & _shouldRun,
-          run: '\$ChromeWebDriver/chromedriver --port=4444 & '
+          run: r'$ChromeWebDriver/chromedriver --port=4444 & '
               '$baseTool drive '
               '--driver test_driver/integration_test.dart '
               '--target $integrationTestPaths '

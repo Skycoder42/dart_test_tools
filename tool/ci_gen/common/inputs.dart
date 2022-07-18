@@ -61,9 +61,9 @@ abstract class WorkflowInputs {
     ),
   );
 
-  static final platforms = WorkflowInputBuilder(
+  static final platforms = WorkflowInputBuilder<List<String>>(
     name: 'platforms',
-    builder: (List<String> defaultPlatforms) => Input.json(
+    builder: (defaultPlatforms) => Input.json(
       required: false,
       defaultValue: defaultPlatforms,
       description: '''

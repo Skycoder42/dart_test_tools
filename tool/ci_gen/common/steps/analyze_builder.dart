@@ -9,7 +9,7 @@ class AnalyzeBuilder implements StepBuilder {
   static const dartTestToolsVersion = '3.3.0';
 
   static const checkPublishStepId = StepId('checkPublish');
-  static late final checkPublish = checkPublishStepId.output('publish');
+  static final checkPublish = checkPublishStepId.output('publish');
 
   final Expression repository;
   final Expression workingDirectory;
@@ -59,7 +59,7 @@ class AnalyzeBuilder implements StepBuilder {
         Step.run(
           name: 'Validate correct formatting',
           run: '$baseTool format -onone --set-exit-if-changed '
-              "\$(git ls-files '*.dart')",
+              r"$(git ls-files '*.dart')",
           workingDirectory: workingDirectory.toString(),
         ),
         Step.run(

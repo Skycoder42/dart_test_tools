@@ -6,7 +6,7 @@ import '../steps/release_builder.dart';
 
 class ReleaseJobBuilder implements JobBuilder {
   static const jobId = JobId('release');
-  static late final updateOutput = jobId.output('update');
+  static final updateOutput = jobId.output('update');
 
   final Expression releaseRef;
   final Expression repository;

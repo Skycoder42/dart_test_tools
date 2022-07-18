@@ -20,7 +20,7 @@ class Input with _$Input {
         '(identical(type, Type.boolean) && defaultValue is bool) || '
         '(identical(type, Type.number) && defaultValue is num) || '
         '(identical(type, Type.string) && defaultValue is String)',
-    'default must be a of type \$type',
+    r'default must be a of type $type',
   )
   const factory Input({
     required Type type,

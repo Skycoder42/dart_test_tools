@@ -7,8 +7,8 @@ import '../../types/step.dart';
 
 class PublishBuilder implements StepBuilder {
   static const toolsStepId = StepId('tools');
-  static late final toolsPub = toolsStepId.output('pub');
-  static late final toolsPubRun = toolsStepId.output('pubRun');
+  static final toolsPub = toolsStepId.output('pub');
+  static final toolsPubRun = toolsStepId.output('pubRun');
 
   final Expression flutter;
   final Expression repository;

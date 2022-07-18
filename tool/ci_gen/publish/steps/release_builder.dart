@@ -7,7 +7,7 @@ import '../../types/step.dart';
 
 class ReleaseBuilder implements StepBuilder {
   static const versionStepId = StepId('version');
-  static late final versionUpdate = versionStepId.output('update');
+  static final versionUpdate = versionStepId.output('update');
 
   final Expression repository;
   final Expression workingDirectory;
