@@ -1,4 +1,5 @@
 import '../../common/api/step_builder.dart';
+import '../../common/steps/platforms_builder_mixin.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
@@ -9,11 +10,13 @@ abstract class ICompileMatrix {
   Expression get compileArgs;
 }
 
-class CompileBuilder implements StepBuilder {
+class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
   final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression targets;
+  @override
+  final Expression platforms;
   final ICompileMatrix matrix;
   final String pubTool;
   final String runTool;
@@ -23,6 +26,7 @@ class CompileBuilder implements StepBuilder {
     required this.workingDirectory,
     required this.buildRunner,
     required this.targets,
+    required this.platforms,
     required this.matrix,
     required this.pubTool,
     required this.runTool,
@@ -36,9 +40,11 @@ class CompileBuilder implements StepBuilder {
           buildRunner: buildRunner,
           pubTool: pubTool,
           runTool: runTool,
+          ifExpression: _shouldRun,
         ).build(),
         Step.run(
           name: 'Compile executables',
+          ifExpression: _shouldRun,
           run: '''
 set -e
 echo '$targets' | jq -cr '.[]' | sed 's/\\r\$//' | while read target; do
@@ -50,6 +56,7 @@ done
         ),
         Step.uses(
           name: 'Upload compiled binaries artifact',
+          ifExpression: _shouldRun,
           uses: 'actions/upload-artifact@v2',
           withArgs: <String, dynamic>{
             'name': 'binaries-${matrix.platform}',
@@ -57,4 +64,6 @@ done
           },
         ),
       ];
+
+  Expression get _shouldRun => shouldRunExpression(matrix.platform);
 }

@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../common/api/expression_builder.dart';
 import '../../common/builders/sdk_job_builder.dart';
+import '../../common/steps/platforms_builder_mixin.dart';
 import '../../dart/builders/dart_sdk_job_builder_mixin.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
@@ -119,12 +120,18 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
         ),
         runsOn: _matrix.os.toString(),
         steps: [
-          ...buildSetupSdkSteps(),
+          ...buildSetupSdkSteps(
+            PlatformsBuilderMixin.createShouldRunExpression(
+              platforms,
+              _matrix.platform,
+            ),
+          ),
           ...CompileBuilder(
             repository: repository,
             workingDirectory: workingDirectory,
             buildRunner: buildRunner,
             targets: targets,
+            platforms: platforms,
             matrix: _matrix,
             pubTool: pubTool,
             runTool: runTool,

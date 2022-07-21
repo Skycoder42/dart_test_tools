@@ -81,32 +81,37 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install yq (Windows)
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && contains(fromJSON(inputs.platforms), matrix.platform)
         run: choco install yq
       - name: Install yq and coreutils (macOS)
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && contains(fromJSON(inputs.platforms), matrix.platform)
         run: |
           brew install yq coreutils
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
       - name: Checkout repository ${{ inputs.repository }}
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/checkout@v2
         with:
           repository: ${{ inputs.repository }}
       - name: Remove dependency overrides
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: yq e -i "del(.dependency_overrides)" pubspec.yaml
         working-directory: ${{ inputs.workingDirectory }}
       - name: Restore dart packages
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: dart pub get
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
-        if: inputs.buildRunner
+        if: inputs.buildRunner && contains(fromJSON(inputs.platforms), matrix.platform)
         run: dart run build_runner build
         working-directory: ${{ inputs.workingDirectory }}
       - name: Compile executables
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: |
           set -e
           echo '${{ inputs.targets }}' | jq -cr '.[]' | sed 's/\r$//' | while read target; do
@@ -115,6 +120,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Upload compiled binaries artifact
+        if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/upload-artifact@v2
         with:
           name: binaries-${{ matrix.platform }}
