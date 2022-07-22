@@ -5,8 +5,8 @@ import '../../types/job.dart';
 import '../steps/release_builder.dart';
 
 class ReleaseJobBuilder implements JobBuilder {
-  @override
-  JobId get id => const JobId('release');
+  static const jobId = JobId('release');
+  static final updateOutput = jobId.output('update');
 
   final JobId compileJobId;
   final Expression releaseRef;
@@ -23,10 +23,16 @@ class ReleaseJobBuilder implements JobBuilder {
   });
 
   @override
+  JobId get id => jobId;
+
+  @override
   Job build() => Job(
         name: 'Create release if needed',
         needs: {compileJobId},
         ifExpression: const Expression('github.ref').eq(releaseRef),
+        outputs: {
+          updateOutput: ReleaseBuilder.versionUpdate,
+        },
         runsOn: 'ubuntu-latest',
         steps: [
           ...ReleaseBuilder(

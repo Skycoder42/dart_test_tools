@@ -56,6 +56,10 @@ on:
         type: string
         required: false
         description: A command to be run before publishing the package
+    outputs:
+      releaseCreated:
+        value: ${{ jobs.release.outputs.update }}
+        description: Holds a boolean value string ("true" or "false"), indicating whether a release was created or not.
     secrets:
       PUB_DEV_CREDENTIALS:
         required: false

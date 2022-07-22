@@ -1,6 +1,7 @@
 import '../common/api/workflow_input.dart';
 import '../common/inputs.dart';
 import '../types/on.dart';
+import '../types/output.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'builders/compile_job_builder.dart';
@@ -33,6 +34,13 @@ abstract class CompileWorkflow {
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
+          outputs: {
+            'releaseCreated': Output(
+              value: ReleaseJobBuilder.updateOutput,
+              description: 'Holds a boolean value string ("true" or "false"), '
+                  'indicating whether a release was created or not.',
+            ),
+          },
         ),
       ),
       jobs: {

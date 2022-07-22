@@ -50,6 +50,10 @@ on:
         required: false
         default: v
         description: The prefix of git tags. The tag is the prefix, followed by the package version.
+    outputs:
+      releaseCreated:
+        value: ${{ jobs.release.outputs.update }}
+        description: Holds a boolean value string ("true" or "false"), indicating whether a release was created or not.
 jobs:
   compile:
     name: Create compiled artifacts
@@ -130,6 +134,8 @@ jobs:
     needs:
       - compile
     if: github.ref == inputs.releaseRef
+    outputs:
+      update: ${{ steps.version.outputs.update }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository ${{ inputs.repository }}

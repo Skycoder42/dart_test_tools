@@ -3,6 +3,7 @@ import '../common/api/workflow_secret.dart';
 import '../common/inputs.dart';
 import '../common/secrets.dart';
 import '../types/on.dart';
+import '../types/output.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'builders/publish_job_builder.dart';
@@ -40,6 +41,13 @@ abstract class PublishWorkflow {
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
           secrets: secretContext.createSecrets(),
+          outputs: {
+            'releaseCreated': Output(
+              value: ReleaseJobBuilder.updateOutput,
+              description: 'Holds a boolean value string ("true" or "false"), '
+                  'indicating whether a release was created or not.',
+            ),
+          },
         ),
       ),
       jobs: {

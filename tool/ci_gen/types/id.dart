@@ -52,6 +52,13 @@ class IdOutput with _$IdOutput {
         orElse: () =>
             throw UnsupportedError('Cannot create a bash setter for $this'),
       );
+
+  Expression get workflowExpression => maybeWhen(
+        job: (id, name) => Expression('jobs.$id.outputs.$name'),
+        orElse: () => throw UnsupportedError(
+          'Cannot create a workflowExpression for $this',
+        ),
+      );
 }
 
 abstract class _IdConverter<TStep extends Id>
