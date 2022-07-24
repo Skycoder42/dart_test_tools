@@ -274,4 +274,14 @@ Example:
       description: 'A command to be run before publishing the package',
     ),
   );
+
+  static const createAurUpdate = WorkflowInput(
+    name: 'createAurUpdate',
+    input: Input(
+      type: Type.boolean,
+      required: true,
+      description:
+          'A boolean indicating whether the AUR-Deploy step should run.',
+    ),
+  );
 }

@@ -103,6 +103,7 @@ jobs:
   analyze:
     name: Analyze
     runs-on: ${{ inputs.analyzeImage }}
+    container: null
     steps:
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
         uses: subosito/flutter-action@v1
@@ -198,6 +199,7 @@ jobs:
             lcovCleanCommand: sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info
             dartTestArgs: -p chrome
     runs-on: ${{ matrix.os }}
+    container: null
     steps:
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
         if: contains(fromJSON(inputs.platforms), matrix.platform)
@@ -252,6 +254,7 @@ jobs:
       - unit_tests
     if: inputs.minCoverage > 0 && inputs.unitTestPaths != ''
     runs-on: ubuntu-latest
+    container: null
     steps:
       - name: Install coverage tools
         run: |
@@ -350,6 +353,7 @@ jobs:
           - platform: web
             os: windows-latest
     runs-on: ${{ matrix.os }}
+    container: null
     steps:
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
         if: contains(fromJSON(inputs.platforms), matrix.platform)

@@ -5,10 +5,12 @@ import '../api/step_builder.dart';
 class CheckoutBuilder implements StepBuilder {
   final Expression repository;
   final Expression? ifExpression;
+  final String? path;
 
   const CheckoutBuilder({
     required this.repository,
     this.ifExpression,
+    this.path,
   });
 
   @override
@@ -19,6 +21,7 @@ class CheckoutBuilder implements StepBuilder {
           uses: 'actions/checkout@v2',
           withArgs: <String, dynamic>{
             'repository': repository.toString(),
+            if (path != null) 'path': path,
           },
         ),
       ];

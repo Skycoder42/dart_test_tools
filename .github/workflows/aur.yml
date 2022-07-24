@@ -1,0 +1,28 @@
+on:
+  workflow_call:
+    inputs:
+      createAurUpdate:
+        type: boolean
+        required: true
+        description: A boolean indicating whether the AUR-Deploy step should run.
+      repository:
+        type: string
+        required: false
+        description: The repository to check out. Passed as "repository" to "actions/checkout".
+    secrets:
+jobs:
+  aur_deploy:
+    name: Deploy to AUR
+    if: inputs.createAurUpdate
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
+    steps:
+      - name: Install pacman dependencies
+        run: pacman -Sy --noconfirm git openssh go-yq pacman-contrib dart namcap
+      - name: Create build user
+        run: useradd -m build
+      - name: Checkout repository ${{ inputs.repository }}
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ inputs.repository }}
+          path: src

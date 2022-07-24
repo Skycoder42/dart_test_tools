@@ -71,6 +71,7 @@ jobs:
     outputs:
       update: ${{ steps.version.outputs.update }}
     runs-on: ubuntu-latest
+    container: null
     steps:
       - name: Checkout repository ${{ inputs.repository }}
         uses: actions/checkout@v2
@@ -132,6 +133,7 @@ jobs:
       - release
     if: inputs.publish && needs.release.outputs.update == 'true'
     runs-on: ubuntu-latest
+    container: null
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         if: '!inputs.flutter'

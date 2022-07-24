@@ -63,6 +63,7 @@ class Job with _$Job {
     @_StepOutputMapConverter()
         Map<JobIdOutput, StepIdOutput>? outputs,
     @JsonKey(name: 'runs-on') required String runsOn,
+    String? container,
     required Steps steps,
   }) = _Job;
 

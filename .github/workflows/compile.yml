@@ -83,6 +83,7 @@ jobs:
             compileArgs: -m -o "bin/$target.js"
             os: ubuntu-latest
     runs-on: ${{ matrix.os }}
+    container: null
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         if: contains(fromJSON(inputs.platforms), matrix.platform)
@@ -137,6 +138,7 @@ jobs:
     outputs:
       update: ${{ steps.version.outputs.update }}
     runs-on: ubuntu-latest
+    container: null
     steps:
       - name: Checkout repository ${{ inputs.repository }}
         uses: actions/checkout@v2

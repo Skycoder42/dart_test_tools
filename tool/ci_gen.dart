@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:yaml_writer/yaml_writer.dart';
 
+import 'ci_gen/aur/aur_workflow.dart';
 import 'ci_gen/compile/compile_workflow.dart';
 import 'ci_gen/dart/dart_workflow.dart';
 import 'ci_gen/flutter/flutter_workflow.dart';
@@ -17,6 +18,7 @@ Future<void> main() async {
       await _writeWorkflowToFile('publish', PublishWorkflow.buildWorkflow());
   exitCode +=
       await _writeWorkflowToFile('compile', CompileWorkflow.buildWorkflow());
+  exitCode += await _writeWorkflowToFile('aur', AurWorkflow.buildWorkflow());
 }
 
 Future<int> _writeWorkflowToFile(String name, Workflow workflow) async {

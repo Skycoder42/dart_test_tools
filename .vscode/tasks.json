@@ -17,6 +17,21 @@
 				"kind": "build",
 				"isDefault": true
 			}
+		},
+		{
+			"type": "dart",
+			"command": "dart",
+			"cwd": "",
+			"args": [
+				"run",
+				"tool/ci_gen.dart",
+			],
+			"problemMatcher": [],
+			"label": "dart: dart run tool/ci_gen.dart",
+			"detail": "",
+			"group": {
+				"kind": "build",
+			}
 		}
 	]
 }
