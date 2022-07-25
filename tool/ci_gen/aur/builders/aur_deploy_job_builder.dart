@@ -3,15 +3,18 @@ import '../../common/steps/checkout_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
+import '../steps/clone_aur_builder.dart';
 import '../steps/prepare_arch_builder.dart';
 
 class AurDeployJobBuilder implements JobBuilder {
   final Expression createAurUpdate;
   final Expression repository;
+  final Expression aurSshPrivateKey;
 
   const AurDeployJobBuilder({
     required this.createAurUpdate,
     required this.repository,
+    required this.aurSshPrivateKey,
   });
 
   @override
@@ -28,6 +31,9 @@ class AurDeployJobBuilder implements JobBuilder {
           ...CheckoutBuilder(
             repository: repository,
             path: 'src',
+          ).build(),
+          ...CloneAurBuilder(
+            aurSshPrivateKey: aurSshPrivateKey,
           ).build(),
         ],
       );

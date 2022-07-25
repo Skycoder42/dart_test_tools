@@ -2,12 +2,11 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
+import '../globals.dart';
 import 'project_setup_builder.dart';
 import 'run_publish_builder.dart';
 
 class AnalyzeBuilder implements StepBuilder {
-  static const dartTestToolsVersion = '3.3.0';
-
   static const checkPublishStepId = StepId('checkPublish');
   static final checkPublish = checkPublishStepId.output('publish');
 

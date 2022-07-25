@@ -28,4 +28,14 @@ MY_API_KEY=<reference secret here>"
 ''',
     ),
   );
+
+  static const aurSshPrivateKey = WorkflowSecret(
+    name: 'AUR_SSH_PRIVATE_KEY',
+    secret: Secret(
+      required: true,
+      description: 'The ASCII armored private SSH key to use to push changes '
+          'to the AUR. The corresponding public key must have been added at '
+          'https://aur.archlinux.org/ under "My Account".',
+    ),
+  );
 }
