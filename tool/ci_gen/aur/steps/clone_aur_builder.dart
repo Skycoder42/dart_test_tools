@@ -24,8 +24,8 @@ class CloneAurBuilder implements StepBuilder {
           name: 'Setup git author',
           run: r'''
 set -eo pipefail
-git --global config user.name "$GITHUB_ACTOR"
-git --global config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+git config --global user.name "$GITHUB_ACTOR"
+git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
 ''',
         ),
         const Step.run(

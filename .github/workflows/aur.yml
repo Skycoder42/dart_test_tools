@@ -23,7 +23,7 @@ jobs:
       - name: Install pacman dependencies
         run: pacman -Sy --noconfirm git openssh go-yq pacman-contrib dart namcap
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^4.1.0
+        run: dart pub global activate dart_test_tools ^4.2.0
       - name: Create build user
         run: |
           set -eo pipefail
@@ -37,8 +37,8 @@ jobs:
       - name: Setup git author
         run: |
           set -eo pipefail
-          git --global config user.name "$GITHUB_ACTOR"
-          git --global config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git config --global user.name "$GITHUB_ACTOR"
+          git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
       - name: Ensure SSH configuration directory exists
         run: mkdir -p /etc/ssh
       - name: Setup known host keys
