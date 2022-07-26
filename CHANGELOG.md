@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.1.0
+### Changed
+- Add the `generate-pkgbuild` command to the package
+  - Generates a PKGBUILD for publishing an Arch Linux package from the pubspec.yaml
+  - Added a new callable workflow, `aur.yml` that automatically publishes a dart
+    package to the AUR
+
 ## 4.0.0
 ### Changed
 - Use the official `lints` package as base for linting
