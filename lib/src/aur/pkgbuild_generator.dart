@@ -58,7 +58,9 @@ class PkgBuildGenerator {
     final pkgBuild = Pkgbuild(
       maintainer: options.aurOptions.maintainer,
       properties: {
-        'pkgname': PkgProperty(options.pubspec.name),
+        'pkgname': PkgProperty(
+          options.aurOptions.pkgname ?? options.pubspec.name,
+        ),
         'pkgdesc': PkgProperty(options.pubspec.description),
         'pkgver': PkgProperty(version.toString().replaceAll('-', '_')),
         'pkgrel': PkgProperty(options.aurOptions.pkgrel),
@@ -68,7 +70,7 @@ class PkgBuildGenerator {
         'license': PkgProperty(options.aurOptions.license),
         'depends': PkgProperty.literalList(options.aurOptions.depends),
         'makedepends': _getDartDependency(options.pubspec),
-        '_pkgdir': const PkgProperty.interpolate(r'$pkgname-${pkgver//_/-}'),
+        '_pkgdir': PkgProperty('${options.pubspec.name}-$version'),
         'source': _getSourceUrls(options.pubspec),
         'b2sums': PkgProperty.literalList(const ['PLACEHOLDER']),
         'changelog': PkgProperty(changelogFileName),
@@ -135,7 +137,7 @@ class PkgBuildGenerator {
 
     final repoUri = Uri.parse(
       baseRepoString.endsWith('/') ? baseRepoString : '$baseRepoString/',
-    ).resolve('archive/refs/tags/v${pubspec.version}.tar.gz');
+    ).resolveUri(Uri(path: 'archive/refs/tags/v${pubspec.version}.tar.gz'));
 
     return PkgProperty.list([
       PkgProperty.interpolate('\$_pkgdir.tar.gz::$repoUri'),
@@ -172,6 +174,11 @@ class PkgBuildGenerator {
           "'bin/${entry.key}' "
           "\"\$pkgdir/usr/bin/\"'${entry.key}'",
     );
+
+    for (final install in options.aurOptions.install) {
+      yield "install -D -m${install.permissions} '${install.source}' "
+          '"\$pkgdir${install.target}"';
+    }
 
     if (licenseFileName != null) {
       yield 'install -D -m644 '

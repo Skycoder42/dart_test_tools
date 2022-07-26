@@ -14,7 +14,8 @@ class PrepareArchBuilder implements StepBuilder {
         ),
         const Step.run(
           name: 'Install dart_test_tools',
-          run: 'dart global activate dart_test_tools ^$dartTestToolsVersion',
+          run:
+              'dart pub global activate dart_test_tools ^$dartTestToolsVersion',
         ),
         const Step.run(
           name: 'Create build user',

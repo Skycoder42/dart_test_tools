@@ -92,5 +92,5 @@ ${actualCommands.map((c) => '  $c').join('\n')}
 @internal
 extension PkgFunctionMapX on Map<String, PkgFunction> {
   String encode() =>
-      entries.map((entry) => entry.value.encode(entry.key)).join('\n\n');
+      entries.map((entry) => entry.value.encode(entry.key)).join('\n');
 }

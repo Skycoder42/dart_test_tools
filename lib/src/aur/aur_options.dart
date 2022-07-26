@@ -45,12 +45,32 @@ class AurOptions with _$AurOptions {
   )
   const factory AurOptions({
     required String maintainer,
+    String? pkgname,
     int? epoch,
     @Default(1) int pkgrel,
     @Default('custom') String license,
     @Default(<String>[]) List<String> depends,
+    @Default(<InstallTarget>[]) List<InstallTarget> install,
   }) = _AurOptions;
 
   factory AurOptions.fromJson(Map<String, dynamic> json) =>
       _$AurOptionsFromJson(json);
+}
+
+@internal
+@freezed
+class InstallTarget with _$InstallTarget {
+  @JsonSerializable(
+    anyMap: true,
+    checked: true,
+    disallowUnrecognizedKeys: true,
+  )
+  const factory InstallTarget({
+    required String source,
+    required String target,
+    @Default(644) int permissions,
+  }) = _InstallTarget;
+
+  factory InstallTarget.fromJson(Map<String, dynamic> json) =>
+      _$InstallTargetFromJson(json);
 }
