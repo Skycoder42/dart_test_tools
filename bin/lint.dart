@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:args/args.dart';
-import 'package:dart_test_tools/dart_test_tools.dart';
+import 'package:dart_test_tools/lint.dart';
 import 'package:dart_test_tools/src/lint/bin/console_printer.dart';
 import 'package:dart_test_tools/src/lint/bin/github_actions_printer.dart';
 import 'package:logging/logging.dart';
@@ -15,7 +15,9 @@ Future<void> main(List<String> rawArgs) async {
     TestImportLinter(),
   ];
 
-  final parser = ArgParser()
+  final parser = ArgParser(
+    usageLineLength: stdout.hasTerminal ? stdout.terminalColumns : null,
+  )
     ..addSeparator('Lintings')
     ..addMultiOption(
       'linter',
