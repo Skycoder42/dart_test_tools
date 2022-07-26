@@ -133,7 +133,7 @@ pkgrel=1
 # epoch=
 arch=('x86_64' 'i686' 'armv7h' 'aarch64')
 url='https://example.com/home'
-license='custom'
+license=('custom')
 depends=()
 makedepends=('dart')
 _pkgdir='test_package-1.2.3-dev+5'
@@ -173,7 +173,7 @@ pkgrel=3
 epoch=1
 arch=('x86_64' 'i686' 'armv7h' 'aarch64')
 url='https://example.com/home'
-license='MIT'
+license=('MIT')
 depends=('dependency-a' 'dependency-b' 'dependency-c')
 makedepends=('dart>=2.17.0' 'dart<3.0.0')
 _pkgdir='test_package-1.2.3-dev+5'

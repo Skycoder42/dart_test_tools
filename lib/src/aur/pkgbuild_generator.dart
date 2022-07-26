@@ -67,7 +67,7 @@ class PkgBuildGenerator {
         'epoch': PkgProperty(options.aurOptions.epoch),
         'arch': PkgProperty.literalList(_supportedArchs),
         'url': PkgProperty(url),
-        'license': PkgProperty(options.aurOptions.license),
+        'license': PkgProperty.literalList([options.aurOptions.license]),
         'depends': PkgProperty.literalList(options.aurOptions.depends),
         'makedepends': _getDartDependency(options.pubspec),
         '_pkgdir': PkgProperty('${options.pubspec.name}-$version'),
