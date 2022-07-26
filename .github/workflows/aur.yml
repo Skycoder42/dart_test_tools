@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: Install pacman dependencies
         run: pacman -Sy --noconfirm git openssh go-yq pacman-contrib dart namcap
+      - name: Install dart_test_tools
+        run: dart global activate dart_test_tools ^4.1.0
       - name: Create build user
         run: |
           set -eo pipefail
@@ -57,3 +59,33 @@ jobs:
           echo "  User aur" >> /etc/ssh/ssh_config
       - name: Clone AUR repository
         run: git clone "ssh://aur@aur.archlinux.org/$(yq ".name" src/pubspec.yaml).git" ./aur
+      - name: Generate PKGBUILD from dart package
+        run: dart pub global run dart_test_tools:generate-pkgbuild --input src --output aur
+      - name: Change ownership of AUR repo to the build user
+        run: chown -R build:build aur
+      - name: Update source checksums
+        run: su build -c 'updpkgsums'
+        working-directory: aur
+      - name: Run namcap linter
+        run: su build -c 'namcap -i PKGBUILD'
+        working-directory: aur
+      - name: Test if package can be build
+        run: su build -c 'makepkg -sfC --check --noconfirm'
+        working-directory: aur
+      - name: Generate SRCINFO
+        run: su build -c 'makepkg --printsrcinfo > .SRCINFO'
+        working-directory: aur
+      - name: Change ownership of AUR repo back to the root user
+        run: chown -R root:root aur
+      - name: Stage package files
+        run: git add PKGBUILD CHANGELOG.md .SRCINFO
+        working-directory: aur
+      - name: Create update commit
+        run: git commit -m "Update $(yq ".name" ../src/pubspec.yaml) to version $(yq ".version" ../src/pubspec.yaml)"
+        working-directory: aur
+      - name: Push update to AUR
+        run: git push
+        working-directory: aur
+      - name: Clean up SSH key
+        if: always()
+        run: shred -fzvu "$RUNNER_TEMP/ssh-key"

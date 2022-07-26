@@ -99,14 +99,13 @@ jobs:
   analyze:
     name: Analyze
     runs-on: ${{ inputs.analyzeImage }}
-    container: null
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         uses: dart-lang/setup-dart@v1.3
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^3.3.0
+        run: dart pub global activate dart_test_tools ^4.1.0
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
         run: choco install yq
@@ -193,7 +192,6 @@ jobs:
             lcovCleanCommand: sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info
             dartTestArgs: -p chrome
     runs-on: ${{ matrix.os }}
-    container: null
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         if: contains(fromJSON(inputs.platforms), matrix.platform)
@@ -249,7 +247,6 @@ jobs:
       - unit_tests
     if: inputs.minCoverage > 0 && inputs.unitTestPaths != ''
     runs-on: ubuntu-latest
-    container: null
     steps:
       - name: Install coverage tools
         run: |
@@ -334,7 +331,6 @@ jobs:
             os: ubuntu-latest
             dartTestArgs: -p chrome
     runs-on: ${{ matrix.os }}
-    container: null
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         if: contains(fromJSON(inputs.platforms), matrix.platform)

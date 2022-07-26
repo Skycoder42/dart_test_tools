@@ -14,7 +14,7 @@ class CloneAurBuilder implements StepBuilder {
 
   final Expression aurSshPrivateKey;
 
-  CloneAurBuilder({
+  const CloneAurBuilder({
     required this.aurSshPrivateKey,
   });
 

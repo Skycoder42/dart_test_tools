@@ -3,6 +3,8 @@ import '../../common/globals.dart';
 import '../../types/step.dart';
 
 class PrepareArchBuilder implements StepBuilder {
+  const PrepareArchBuilder();
+
   @override
   Iterable<Step> build() => [
         const Step.run(

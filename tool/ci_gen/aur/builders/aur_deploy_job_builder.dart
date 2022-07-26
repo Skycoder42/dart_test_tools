@@ -4,7 +4,9 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
 import '../steps/clone_aur_builder.dart';
+import '../steps/create_aur_package_builder.dart';
 import '../steps/prepare_arch_builder.dart';
+import '../steps/push_aur_builder.dart';
 
 class AurDeployJobBuilder implements JobBuilder {
   final Expression createAurUpdate;
@@ -27,7 +29,7 @@ class AurDeployJobBuilder implements JobBuilder {
         runsOn: 'ubuntu-latest',
         container: 'archlinux:base-devel',
         steps: [
-          ...PrepareArchBuilder().build(),
+          ...const PrepareArchBuilder().build(),
           ...CheckoutBuilder(
             repository: repository,
             path: 'src',
@@ -35,6 +37,8 @@ class AurDeployJobBuilder implements JobBuilder {
           ...CloneAurBuilder(
             aurSshPrivateKey: aurSshPrivateKey,
           ).build(),
+          ...const CreateAurPackageBuilder().build(),
+          ...const PushAurBuilder().build(),
         ],
       );
 }
