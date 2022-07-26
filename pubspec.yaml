@@ -1,6 +1,6 @@
 name: dart_test_tools
 description: Additional tools and helpers for writing dart unit tests.
-version: 4.2.0
+version: 4.2.1
 homepage: https://github.com/Skycoder42/dart_test_tools
 
 environment:
@@ -8,7 +8,7 @@ environment:
 
 executables:
   lint: lint
-  generate-pkgbuild: generate_pkgbuild
+  generate_pkgbuild: generate_pkgbuild
 
 dependencies:
   analyzer: ^4.3.1

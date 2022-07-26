@@ -9,7 +9,7 @@ class CreateAurPackageBuilder implements StepBuilder {
         const Step.run(
           name: 'Generate PKGBUILD from dart package',
           run: 'dart pub global run '
-              'dart_test_tools:generate-pkgbuild --input src --output aur',
+              'dart_test_tools:generate_pkgbuild --input src --output aur',
         ),
         const Step.run(
           name: 'Change ownership of AUR repo to the build user',

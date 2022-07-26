@@ -60,7 +60,7 @@ jobs:
       - name: Clone AUR repository
         run: git clone "ssh://aur@aur.archlinux.org/$(yq ".name" src/pubspec.yaml).git" ./aur
       - name: Generate PKGBUILD from dart package
-        run: dart pub global run dart_test_tools:generate-pkgbuild --input src --output aur
+        run: dart pub global run dart_test_tools:generate_pkgbuild --input src --output aur
       - name: Change ownership of AUR repo to the build user
         run: chown -R build:build aur
       - name: Update source checksums
