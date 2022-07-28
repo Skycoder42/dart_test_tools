@@ -66,7 +66,7 @@ class DartIntegrationTestBuilder
           name: 'Run integration tests',
           ifExpression: _shouldRun,
           run: '$baseTool test ${matrix.dartTestArgs} '
-              '--reporter expanded $integrationTestPaths',
+              '--reporter github $integrationTestPaths',
           workingDirectory: workingDirectory.toString(),
         ),
         Step.run(

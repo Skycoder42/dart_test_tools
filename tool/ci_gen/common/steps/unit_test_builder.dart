@@ -53,7 +53,7 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
           name: 'Run unit tests',
           ifExpression: shouldRunExpression(matrix.platform),
           run: '$baseTool test ${matrix.dartTestArgs} '
-              '$coverageArgs --reporter expanded $unitTestPaths',
+              '$coverageArgs --reporter github $unitTestPaths',
           workingDirectory: workingDirectory.toString(),
         ),
         ...CoverageCollectorBuilder(

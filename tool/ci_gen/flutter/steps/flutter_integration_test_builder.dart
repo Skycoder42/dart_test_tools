@@ -133,7 +133,7 @@ $baseTool devices
               matrix.platform.ne(const Expression.literal('web')) & _shouldRun,
           run: '${matrix.runPrefix} '
               '$baseTool test ${matrix.testArgs} '
-              '--reporter expanded $integrationTestPaths',
+              '--reporter github $integrationTestPaths',
           workingDirectory: '$workingDirectory/$integrationTestProject',
         ),
         Step.run(

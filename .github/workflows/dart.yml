@@ -225,7 +225,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run unit tests
         if: contains(fromJSON(inputs.platforms), matrix.platform)
-        run: dart test ${{ matrix.dartTestArgs }} --coverage=coverage --reporter expanded ${{ inputs.unitTestPaths }}
+        run: dart test ${{ matrix.dartTestArgs }} --coverage=coverage --reporter github ${{ inputs.unitTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Convert coverage data to lcov format
         if: inputs.minCoverage > 0 && contains(fromJSON(inputs.platforms), matrix.platform)
@@ -373,7 +373,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run integration tests
         if: contains(fromJSON(inputs.platforms), matrix.platform)
-        run: dart test ${{ matrix.dartTestArgs }} --reporter expanded ${{ inputs.integrationTestPaths }}
+        run: dart test ${{ matrix.dartTestArgs }} --reporter github ${{ inputs.integrationTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Shred .env file
         if: always() && contains(fromJSON(inputs.platforms), matrix.platform)
