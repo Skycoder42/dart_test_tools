@@ -140,6 +140,7 @@ _pkgdir='test_package-1.2.3-dev+5'
 source=("$_pkgdir.tar.gz::https://example.com/home/archive/refs/tags/v1.2.3-dev+5.tar.gz")
 b2sums=('PLACEHOLDER')
 # changelog=
+options=('!strip')
 
 prepare() {
   cd "$_pkgdir"
@@ -180,6 +181,7 @@ _pkgdir='test_package-1.2.3-dev+5'
 source=("$_pkgdir.tar.gz::https://example.com/home/git/archive/refs/tags/v1.2.3-dev+5.tar.gz")
 b2sums=('PLACEHOLDER')
 changelog='CHANGELOG.md'
+options=('!strip')
 
 prepare() {
   cd "$_pkgdir"

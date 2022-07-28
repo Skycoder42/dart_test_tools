@@ -74,6 +74,7 @@ class PkgBuildGenerator {
         'source': _getSourceUrls(options.pubspec),
         'b2sums': PkgProperty.literalList(const ['PLACEHOLDER']),
         'changelog': PkgProperty(changelogFileName),
+        'options': PkgProperty.literalList(const ['!strip']),
       },
       functions: {
         'prepare': const PkgFunction([
