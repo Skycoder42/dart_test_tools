@@ -1,6 +1,7 @@
 import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
+import '../tools.dart';
 import 'coverage_builder_mixin.dart';
 
 abstract class ICoverageCollectorMatrix {
@@ -48,7 +49,7 @@ class CoverageCollectorBuilder
         Step.uses(
           name: 'Upload coverage data',
           ifExpression: _coverageExpression,
-          uses: 'actions/upload-artifact@v3', // TODO globalize
+          uses: Tools.actionsUploadArtifact,
           withArgs: <String, dynamic>{
             'name': 'coverage-info-${matrix.platform}',
             'path': '$workingDirectory/coverage/lcov.info',

@@ -1,4 +1,5 @@
 import '../../common/api/step_builder.dart';
+import '../../common/tools.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
@@ -24,7 +25,7 @@ class FlutterSdkBuilder implements StepBuilder {
           name: 'Install Flutter-SDK '
               '($flutterSdkChannel)',
           ifExpression: ifExpression,
-          uses: 'subosito/flutter-action@v2',
+          uses: Tools.subositoFlutterAction,
           withArgs: <String, dynamic>{
             'channel': flutterSdkChannel.toString(),
             'cache': true,

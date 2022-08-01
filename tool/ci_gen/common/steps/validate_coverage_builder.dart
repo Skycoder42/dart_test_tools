@@ -1,6 +1,7 @@
 import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
+import '../tools.dart';
 import 'checkout_builder.dart';
 import 'coverage_builder_mixin.dart';
 import 'platforms_builder_mixin.dart';
@@ -69,7 +70,7 @@ lcov $LCOV_ARGS --output-file coverage/combined.info
         ),
         Step.uses(
           name: 'Upload coverage HTML report',
-          uses: 'actions/upload-artifact@v3',
+          uses: Tools.actionsUploadArtifact,
           withArgs: <String, dynamic>{
             'name': 'coverage-html',
             'path': '$workingDirectory/coverage/html',
@@ -77,7 +78,7 @@ lcov $LCOV_ARGS --output-file coverage/combined.info
         ),
         Step.uses(
           name: 'Validate coverage is at least $minCoverage%',
-          uses: 'VeryGoodOpenSource/very_good_coverage@v1',
+          uses: Tools.veryGoodOpenSourceVeryGoodCoverage,
           withArgs: <String, dynamic>{
             'path': '$workingDirectory/coverage/cleaned.info',
             'min_coverage': minCoverage.toString(),
@@ -88,7 +89,7 @@ lcov $LCOV_ARGS --output-file coverage/combined.info
   Step _createCoverageDownloadStep(String platform) => Step.uses(
         name: 'Download $platform coverage data',
         ifExpression: shouldRunExpression(Expression.literal(platform)),
-        uses: 'actions/download-artifact@v3',
+        uses: Tools.actionsDownloadArtifact,
         withArgs: <String, dynamic>{
           'name': 'coverage-info-$platform',
           'path': '$workingDirectory/coverage/$platform',

@@ -1,6 +1,7 @@
 import '../../common/api/step_builder.dart';
 import '../../common/steps/checkout_builder.dart';
 import '../../common/steps/release_entry_builder.dart';
+import '../../common/tools.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
@@ -46,7 +47,7 @@ fi
           name: 'Download all binary artifacts',
           ifExpression:
               versionUpdate.expression.eq(const Expression.literal('true')),
-          uses: 'actions/download-artifact@v3',
+          uses: Tools.actionsDownloadArtifact,
           withArgs: <String, dynamic>{
             'path': 'artifacts',
           },

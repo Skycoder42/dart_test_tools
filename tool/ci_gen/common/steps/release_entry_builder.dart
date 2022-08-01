@@ -2,6 +2,7 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
+import '../tools.dart';
 
 class ReleaseEntryBuilder implements StepBuilder {
   static const releaseContentStepId = StepId('release_content');
@@ -55,7 +56,7 @@ ${releaseContentBodyPath.bashSetter(r'$version_changelog_file')}
         Step.uses(
           name: 'Create Release',
           ifExpression: versionUpdate.eq(const Expression.literal('true')),
-          uses: 'softprops/action-gh-release@v1',
+          uses: Tools.softpropsActionGhRelease,
           withArgs: <String, dynamic>{
             'tag_name': releaseContentTagName.expression.toString(),
             'name': releaseContentReleaseName.expression.toString(),

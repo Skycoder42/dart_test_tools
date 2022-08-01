@@ -1,6 +1,7 @@
 import '../../common/api/step_builder.dart';
 import '../../common/steps/platforms_builder_mixin.dart';
 import '../../common/steps/project_setup_builder.dart';
+import '../../common/tools.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
@@ -57,7 +58,7 @@ done
         Step.uses(
           name: 'Upload compiled binaries artifact',
           ifExpression: _shouldRun,
-          uses: 'actions/upload-artifact@v3',
+          uses: Tools.actionsUploadArtifact,
           withArgs: <String, dynamic>{
             'name': 'binaries-${matrix.platform}',
             'path': '$workingDirectory/bin/*.${matrix.binaryType}*',
