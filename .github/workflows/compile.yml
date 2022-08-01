@@ -147,6 +147,7 @@ jobs:
         run: |
           set -exo pipefail
           package_version=$(cat pubspec.yaml | yq e ".version" -)
+          git fetch --tags
           git tag
           git tag -l "${{ inputs.tagPrefix }}$package_version"
           tag_exists=$(git tag -l "${{ inputs.tagPrefix }}$package_version")
