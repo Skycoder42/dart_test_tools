@@ -24,9 +24,10 @@ class FlutterSdkBuilder implements StepBuilder {
           name: 'Install Flutter-SDK '
               '($flutterSdkChannel)',
           ifExpression: ifExpression,
-          uses: 'subosito/flutter-action@v1',
+          uses: 'subosito/flutter-action@v2',
           withArgs: <String, dynamic>{
             'channel': flutterSdkChannel.toString(),
+            'cache': true,
           },
         ),
         if (enableDesktopCondition != null)

@@ -69,7 +69,7 @@ lcov $LCOV_ARGS --output-file coverage/combined.info
         ),
         Step.uses(
           name: 'Upload coverage HTML report',
-          uses: 'actions/upload-artifact@v2',
+          uses: 'actions/upload-artifact@v3',
           withArgs: <String, dynamic>{
             'name': 'coverage-html',
             'path': '$workingDirectory/coverage/html',
@@ -77,7 +77,7 @@ lcov $LCOV_ARGS --output-file coverage/combined.info
         ),
         Step.uses(
           name: 'Validate coverage is at least $minCoverage%',
-          uses: 'VeryGoodOpenSource/very_good_coverage@v1.1.1',
+          uses: 'VeryGoodOpenSource/very_good_coverage@v1',
           withArgs: <String, dynamic>{
             'path': '$workingDirectory/coverage/cleaned.info',
             'min_coverage': minCoverage.toString(),
@@ -88,7 +88,7 @@ lcov $LCOV_ARGS --output-file coverage/combined.info
   Step _createCoverageDownloadStep(String platform) => Step.uses(
         name: 'Download $platform coverage data',
         ifExpression: shouldRunExpression(Expression.literal(platform)),
-        uses: 'actions/download-artifact@v2',
+        uses: 'actions/download-artifact@v3',
         withArgs: <String, dynamic>{
           'name': 'coverage-info-$platform',
           'path': '$workingDirectory/coverage/$platform',

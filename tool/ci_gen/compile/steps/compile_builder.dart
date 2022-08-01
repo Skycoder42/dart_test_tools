@@ -57,7 +57,7 @@ done
         Step.uses(
           name: 'Upload compiled binaries artifact',
           ifExpression: _shouldRun,
-          uses: 'actions/upload-artifact@v2',
+          uses: 'actions/upload-artifact@v3',
           withArgs: <String, dynamic>{
             'name': 'binaries-${matrix.platform}',
             'path': '$workingDirectory/bin/*.${matrix.binaryType}*',

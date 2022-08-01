@@ -48,7 +48,7 @@ class CoverageCollectorBuilder
         Step.uses(
           name: 'Upload coverage data',
           ifExpression: _coverageExpression,
-          uses: 'actions/upload-artifact@v2', // TODO globalize
+          uses: 'actions/upload-artifact@v3', // TODO globalize
           withArgs: <String, dynamic>{
             'name': 'coverage-info-${matrix.platform}',
             'path': '$workingDirectory/coverage/lcov.info',

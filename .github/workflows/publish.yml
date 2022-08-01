@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository ${{ inputs.repository }}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ${{ inputs.repository }}
       - id: version
@@ -135,14 +135,15 @@ jobs:
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         if: '!inputs.flutter'
-        uses: dart-lang/setup-dart@v1.3
+        uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
         if: inputs.flutter
-        uses: subosito/flutter-action@v1
+        uses: subosito/flutter-action@v2
         with:
           channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
       - name: Download flutter binary artifacts
         if: inputs.flutter
         run: flutter precache --universal
@@ -157,7 +158,7 @@ jobs:
             echo "::set-output name=pubRun::dart run"
           fi
       - name: Checkout repository ${{ inputs.repository }}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ${{ inputs.repository }}
       - name: Remove dependency overrides

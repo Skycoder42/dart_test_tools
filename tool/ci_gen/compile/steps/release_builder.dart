@@ -30,6 +30,7 @@ class ReleaseBuilder implements StepBuilder {
           run: '''
 set -eo pipefail
 package_version=\$(cat pubspec.yaml | yq e ".version" -)
+git fetch --tags > /dev/null
 tag_exists=\$(git tag -l "$tagPrefix\$package_version")
 
 if [[ -z "\$tag_exists" ]]; then
@@ -45,7 +46,7 @@ fi
           name: 'Download all binary artifacts',
           ifExpression:
               versionUpdate.expression.eq(const Expression.literal('true')),
-          uses: 'actions/download-artifact@v2',
+          uses: 'actions/download-artifact@v3',
           withArgs: <String, dynamic>{
             'path': 'artifacts',
           },
@@ -56,7 +57,7 @@ fi
               versionUpdate.expression.eq(const Expression.literal('true')),
           run: r'''
 set -eo pipefail
-for artifact in $(ls); do
+for artifact in $(find . -type d -name "binaries-*"); do
   zip -9 "$artifact.zip" "$artifact"/*.exe "$artifact"/*.js
 done
 ''',

@@ -86,7 +86,7 @@ jobs:
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         if: contains(fromJSON(inputs.platforms), matrix.platform)
-        uses: dart-lang/setup-dart@v1.3
+        uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install yq (Windows)
@@ -99,7 +99,7 @@ jobs:
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
       - name: Checkout repository ${{ inputs.repository }}
         if: contains(fromJSON(inputs.platforms), matrix.platform)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ${{ inputs.repository }}
       - name: Remove dependency overrides
@@ -125,7 +125,7 @@ jobs:
         shell: bash
       - name: Upload compiled binaries artifact
         if: contains(fromJSON(inputs.platforms), matrix.platform)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: binaries-${{ matrix.platform }}
           path: ${{ inputs.workingDirectory }}/bin/*.${{ matrix.binaryType }}*
@@ -139,17 +139,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository ${{ inputs.repository }}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ${{ inputs.repository }}
       - id: version
         name: Check if a release should be created
         run: |
-          set -exo pipefail
+          set -eo pipefail
           package_version=$(cat pubspec.yaml | yq e ".version" -)
-          git fetch --tags
-          git tag
-          git tag -l "${{ inputs.tagPrefix }}$package_version"
+          git fetch --tags > /dev/null
           tag_exists=$(git tag -l "${{ inputs.tagPrefix }}$package_version")
 
           if [[ -z "$tag_exists" ]]; then
@@ -161,14 +159,14 @@ jobs:
           fi
       - name: Download all binary artifacts
         if: steps.version.outputs.update == 'true'
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           path: artifacts
       - name: Create asset archives
         if: steps.version.outputs.update == 'true'
         run: |
-          set -exo pipefail
-          for artifact in $(ls); do
+          set -eo pipefail
+          for artifact in $(find . -type d -name "binaries-*"); do
             zip -9 "$artifact.zip" "$artifact"/*.exe "$artifact"/*.js
           done
         working-directory: artifacts

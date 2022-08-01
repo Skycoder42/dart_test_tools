@@ -101,7 +101,7 @@ jobs:
     runs-on: ${{ inputs.analyzeImage }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        uses: dart-lang/setup-dart@v1.3
+        uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install dart_test_tools
@@ -115,7 +115,7 @@ jobs:
           brew install yq coreutils
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
       - name: Checkout repository ${{ inputs.repository }}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ${{ inputs.repository }}
       - name: Remove dependency overrides
@@ -195,7 +195,7 @@ jobs:
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         if: contains(fromJSON(inputs.platforms), matrix.platform)
-        uses: dart-lang/setup-dart@v1.3
+        uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install yq (Windows)
@@ -208,7 +208,7 @@ jobs:
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
       - name: Checkout repository ${{ inputs.repository }}
         if: contains(fromJSON(inputs.platforms), matrix.platform)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ${{ inputs.repository }}
       - name: Remove dependency overrides
@@ -237,7 +237,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload coverage data
         if: inputs.minCoverage > 0 && contains(fromJSON(inputs.platforms), matrix.platform)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: coverage-info-${{ matrix.platform }}
           path: ${{ inputs.workingDirectory }}/coverage/lcov.info
@@ -254,30 +254,30 @@ jobs:
           sudo apt-get -qq update
           sudo apt-get -qq install lcov dos2unix
       - name: Checkout repository ${{ inputs.repository }}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ${{ inputs.repository }}
       - name: Download linux coverage data
         if: contains(fromJSON(inputs.platforms), 'linux')
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: coverage-info-linux
           path: ${{ inputs.workingDirectory }}/coverage/linux
       - name: Download windows coverage data
         if: contains(fromJSON(inputs.platforms), 'windows')
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: coverage-info-windows
           path: ${{ inputs.workingDirectory }}/coverage/windows
       - name: Download macos coverage data
         if: contains(fromJSON(inputs.platforms), 'macos')
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: coverage-info-macos
           path: ${{ inputs.workingDirectory }}/coverage/macos
       - name: Download web coverage data
         if: contains(fromJSON(inputs.platforms), 'web')
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: coverage-info-web
           path: ${{ inputs.workingDirectory }}/coverage/web
@@ -298,12 +298,12 @@ jobs:
         run: genhtml --no-function-coverage -o coverage/html coverage/cleaned.info
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload coverage HTML report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: coverage-html
           path: ${{ inputs.workingDirectory }}/coverage/html
       - name: Validate coverage is at least ${{ inputs.minCoverage }}%
-        uses: VeryGoodOpenSource/very_good_coverage@v1.1.1
+        uses: VeryGoodOpenSource/very_good_coverage@v1
         with:
           path: ${{ inputs.workingDirectory }}/coverage/cleaned.info
           min_coverage: ${{ inputs.minCoverage }}
@@ -334,7 +334,7 @@ jobs:
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         if: contains(fromJSON(inputs.platforms), matrix.platform)
-        uses: dart-lang/setup-dart@v1.3
+        uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install yq (Windows)
@@ -347,7 +347,7 @@ jobs:
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
       - name: Checkout repository ${{ inputs.repository }}
         if: contains(fromJSON(inputs.platforms), matrix.platform)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ${{ inputs.repository }}
       - name: Remove dependency overrides
