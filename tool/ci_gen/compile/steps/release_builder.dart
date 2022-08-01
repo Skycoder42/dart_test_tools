@@ -28,7 +28,7 @@ class ReleaseBuilder implements StepBuilder {
           id: versionStepId,
           name: 'Check if a release should be created',
           run: '''
-set -e
+set -eo pipefail
 package_version=\$(cat pubspec.yaml | yq e ".version" -)
 tag_exists=\$(git tag -l "$tagPrefix\$package_version")
 
@@ -55,7 +55,7 @@ fi
           ifExpression:
               versionUpdate.expression.eq(const Expression.literal('true')),
           run: r'''
-set -e
+set -eo pipefail
 for artifact in $(ls); do
   zip -9 "$artifact.zip" "$artifact"/*.exe "$artifact"/*.js
 done

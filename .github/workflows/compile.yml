@@ -145,8 +145,10 @@ jobs:
       - id: version
         name: Check if a release should be created
         run: |
-          set -e
+          set -exo pipefail
           package_version=$(cat pubspec.yaml | yq e ".version" -)
+          git tag
+          git tag -l "${{ inputs.tagPrefix }}$package_version"
           tag_exists=$(git tag -l "${{ inputs.tagPrefix }}$package_version")
 
           if [[ -z "$tag_exists" ]]; then
@@ -164,7 +166,7 @@ jobs:
       - name: Create asset archives
         if: steps.version.outputs.update == 'true'
         run: |
-          set -e
+          set -exo pipefail
           for artifact in $(ls); do
             zip -9 "$artifact.zip" "$artifact"/*.exe "$artifact"/*.js
           done
