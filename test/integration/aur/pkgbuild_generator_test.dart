@@ -55,6 +55,7 @@ void main() {
             'dependency-b',
             'dependency-c',
           ],
+        if (!minimal) 'testArgs': '--reporter=expanded -P arch',
         if (!minimal)
           'install': const [
             {
@@ -67,6 +68,7 @@ void main() {
               'permissions': 600,
             },
           ],
+        if (!minimal) 'backup': ['etc/config.json'],
       },
     });
 
@@ -127,10 +129,8 @@ Matcher hasBaseName(String name) =>
 const _minimalPkgbuild = r'''
 # Maintainer: Maintainer <maintainer@maintain.org>
 pkgname='test_package'
-# pkgdesc=
 pkgver='1.2.3_dev+5'
 pkgrel=1
-# epoch=
 arch=('x86_64' 'i686' 'armv7h' 'aarch64')
 url='https://example.com/home'
 license=('custom')
@@ -139,7 +139,6 @@ makedepends=('dart')
 _pkgdir='test_package-1.2.3-dev+5'
 source=("$_pkgdir.tar.gz::https://example.com/home/archive/refs/tags/v1.2.3-dev+5.tar.gz")
 b2sums=('PLACEHOLDER')
-# changelog=
 options=('!strip')
 
 prepare() {
@@ -181,6 +180,7 @@ _pkgdir='test_package-1.2.3-dev+5'
 source=("$_pkgdir.tar.gz::https://example.com/home/git/archive/refs/tags/v1.2.3-dev+5.tar.gz")
 b2sums=('PLACEHOLDER')
 changelog='CHANGELOG.md'
+backup=('etc/config.json')
 options=('!strip')
 
 prepare() {
@@ -198,7 +198,7 @@ build() {
 check() {
   cd "$_pkgdir"
   dart analyze --no-fatal-warnings
-  dart test
+  dart test --reporter=expanded -P arch
 }
 
 package() {

@@ -68,12 +68,16 @@ class PkgBuildGenerator {
         'arch': PkgProperty.literalList(_supportedArchs),
         'url': PkgProperty(url),
         'license': PkgProperty.literalList([options.aurOptions.license]),
-        'depends': PkgProperty.literalList(options.aurOptions.depends),
+        'depends': PkgProperty.literalList(
+          options.aurOptions.depends,
+          skipEmpty: false,
+        ),
         'makedepends': _getDartDependency(options.pubspec),
         '_pkgdir': PkgProperty('${options.pubspec.name}-$version'),
         'source': _getSourceUrls(options.pubspec),
         'b2sums': PkgProperty.literalList(const ['PLACEHOLDER']),
         'changelog': PkgProperty(changelogFileName),
+        'backup': PkgProperty.literalList(options.aurOptions.backup),
         'options': PkgProperty.literalList(const ['!strip']),
       },
       functions: {
@@ -81,9 +85,11 @@ class PkgBuildGenerator {
           'dart pub get',
         ]),
         'build': PkgFunction(_getBuildSteps(options).toList()),
-        'check': const PkgFunction([
+        'check': PkgFunction([
           'dart analyze --no-fatal-warnings',
-          'dart test',
+          options.aurOptions.testArgs == null
+              ? 'dart test'
+              : 'dart test ${options.aurOptions.testArgs}',
         ]),
         'package': PkgFunction(
           _getInstallSteps(options, licenseFileName).toList(),

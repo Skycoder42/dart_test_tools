@@ -30,12 +30,22 @@ class PkgProperty with _$PkgProperty {
 
   const factory PkgProperty(Object? value) = _Single;
   const factory PkgProperty.interpolate(String value) = _Interpolate;
-  const factory PkgProperty.list(List<PkgProperty> values) = _List;
-  factory PkgProperty.literalList(List<String> values) =>
-      PkgProperty.list(values.map(PkgProperty.new).toList());
+  const factory PkgProperty.list(
+    List<PkgProperty> values, {
+    @Default(true) bool skipEmpty,
+  }) = _List;
+  factory PkgProperty.literalList(
+    List<String> values, {
+    bool skipEmpty = true,
+  }) =>
+      PkgProperty.list(
+        values.map(PkgProperty.new).toList(),
+        skipEmpty: skipEmpty,
+      );
 
-  bool get isNull => maybeWhen(
+  bool get isEmpty => maybeWhen(
         (value) => value == null,
+        list: (values, skipEmpty) => skipEmpty && values.isEmpty,
         orElse: () => false,
       );
 
@@ -50,19 +60,20 @@ class PkgProperty with _$PkgProperty {
           }
         },
         interpolate: (value) => '"$value"',
-        list: (values) => '(${values.map((v) => v.encode()).join(' ')})',
+        list: (values, skipEmpty) =>
+            '(${values.map((v) => v.encode()).join(' ')})',
       );
 }
 
 @internal
 extension PkgPropertyMapX on Map<String, PkgProperty> {
-  String encode() => entries.map((entry) {
-        if (entry.value.isNull) {
-          return '# ${entry.key}=';
-        } else {
-          return '${entry.key}=${entry.value.encode()}';
-        }
-      }).join('\n');
+  String encode() => entries
+      .map(
+        (entry) =>
+            entry.value.isEmpty ? null : '${entry.key}=${entry.value.encode()}',
+      )
+      .whereType<String>()
+      .join('\n');
 }
 
 @internal

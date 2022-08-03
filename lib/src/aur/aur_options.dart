@@ -50,7 +50,9 @@ class AurOptions with _$AurOptions {
     @Default(1) int pkgrel,
     @Default('custom') String license,
     @Default(<String>[]) List<String> depends,
+    String? testArgs,
     @Default(<InstallTarget>[]) List<InstallTarget> install,
+    @Default(<String>[]) List<String> backup,
   }) = _AurOptions;
 
   factory AurOptions.fromJson(Map<String, dynamic> json) =>
