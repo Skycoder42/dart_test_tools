@@ -23,21 +23,22 @@ class PkgBuildGenerator {
     final aurOptions = await aurOptionsLoader.loadAurOptions(sourceDirectory);
     final changelogFile = await aurOptionsLoader.findChangelog(sourceDirectory);
     final licenseFile = await aurOptionsLoader.findLicense(sourceDirectory);
+    final installFile = aurOptionsLoader.findByName(
+      sourceDirectory,
+      aurOptions.aurOptions.install,
+    );
 
     await aurDirectory.create(recursive: true);
 
     final pkgBuildFile = File.fromUri(aurDirectory.uri.resolve('PKGBUILD'));
     await pkgBuildFile.writeAsString(_pkgbuildTemplate(
-      aurOptions,
-      _fileName(changelogFile),
-      _fileName(licenseFile),
+      options: aurOptions,
+      licenseFileName: _fileName(licenseFile),
+      installFileName: _fileName(installFile),
+      changelogFileName: _fileName(changelogFile),
     ));
 
-    final installFileName = aurOptions.aurOptions.install;
-    if (installFileName != null) {
-      final installFile = File.fromUri(
-        sourceDirectory.uri.resolve(installFileName),
-      );
+    if (installFile != null) {
       await _copyToDir(installFile, aurDirectory);
     }
 
@@ -52,11 +53,12 @@ class PkgBuildGenerator {
         directory.uri.resolve(basename(file.path)).toFilePath(),
       );
 
-  String _pkgbuildTemplate(
-    PubspecWithAur options,
-    String? changelogFileName,
-    String? licenseFileName,
-  ) {
+  String _pkgbuildTemplate({
+    required PubspecWithAur options,
+    required String? licenseFileName,
+    required String? installFileName,
+    required String? changelogFileName,
+  }) {
     final version = options.pubspec.version;
     if (version == null) {
       throw Exception('pubspec version must not be null!');
@@ -86,7 +88,7 @@ class PkgBuildGenerator {
         '_pkgdir': PkgProperty('${options.pubspec.name}-$version'),
         'source': _getSourceUrls(options.pubspec),
         'b2sums': PkgProperty.literalList(const ['PLACEHOLDER']),
-        'install': PkgProperty(options.aurOptions.install),
+        'install': PkgProperty(installFileName),
         'changelog': PkgProperty(changelogFileName),
         'backup': PkgProperty.literalList(options.aurOptions.backup),
         'options': PkgProperty.literalList(const ['!strip']),

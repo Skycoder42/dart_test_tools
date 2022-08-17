@@ -48,6 +48,16 @@ class AurOptionsLoader {
     );
   }
 
+  File? findByName(Directory projectDirectory, String? name) {
+    if (name != null) {
+      return File.fromUri(
+        projectDirectory.uri.resolve(name),
+      );
+    } else {
+      return null;
+    }
+  }
+
   Future<File?> findChangelog(Directory projectDirectory) => _findByPattern(
         projectDirectory,
         _changelogRegex,
