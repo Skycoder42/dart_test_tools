@@ -121,9 +121,9 @@ class LibExportLinter with LinterMixin implements Linter {
       final Iterable<Element?> elements;
       if (declaration is TopLevelVariableDeclaration) {
         elements =
-            declaration.variables.variables.map((v) => v.declaredElement);
+            declaration.variables.variables.map((v) => v.declaredElement2);
       } else {
-        elements = [declaration.declaredElement];
+        elements = [declaration.declaredElement2];
       }
 
       for (final element in elements) {
@@ -187,14 +187,14 @@ class LibExportLinter with LinterMixin implements Linter {
         lineInfo: compilationUnit.lineInfo,
       );
 
-      final allExportSources = [
-        exportDirective.uriSource,
-        ...exportDirective.configurations.map((c) => c.uriSource),
+      final allExportUris = [
+        exportDirective.element2?.uri,
+        ...exportDirective.configurations.map((c) => c.resolvedUri),
       ];
 
-      for (final exportSource in allExportSources) {
+      for (final exportUri in allExportUris) {
         // skip invalid sources
-        if (exportSource == null) {
+        if (exportUri is! DirectiveUriWithSource) {
           logWarning(
             resultLocation,
             'Unable to resolve source of directive %{code}',
@@ -202,6 +202,7 @@ class LibExportLinter with LinterMixin implements Linter {
           continue;
         }
 
+        final exportSource = exportUri.source;
         if (!_isSrcExport(
           context: context,
           exportDirective: exportDirective,
