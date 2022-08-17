@@ -56,8 +56,9 @@ void main() {
             'dependency-c',
           ],
         if (!minimal) 'testArgs': '--reporter=expanded -P arch',
+        if (!minimal) 'install': 'custom_package.install',
         if (!minimal)
-          'install': const [
+          'files': const [
             {
               'source': 'config/config.json',
               'target': '/etc/config.json',
@@ -80,6 +81,8 @@ void main() {
           .writeAsString('# The Changelog');
       await File.fromUri(srcDir.uri.resolve('LICENSE.txt'))
           .writeAsString('THE LICENSE');
+      await File.fromUri(srcDir.uri.resolve('custom_package.install'))
+          .writeAsString('install');
     }
   }
 
@@ -105,9 +108,10 @@ void main() {
     await sut.generatePkgbuild(sourceDirectory: srcDir, aurDirectory: aurDir);
 
     final aurFiles = aurDir.listSync();
-    expect(aurFiles, hasLength(2));
+    expect(aurFiles, hasLength(3));
     expect(aurFiles, contains(hasBaseName('PKGBUILD')));
     expect(aurFiles, contains(hasBaseName('CHANGELOG.md')));
+    expect(aurFiles, contains(hasBaseName('custom_package.install')));
 
     final pkgBuildContent = await File.fromUri(
       aurDir.uri.resolve('PKGBUILD'),
@@ -120,6 +124,12 @@ void main() {
     ).readAsString();
 
     expect(changelogContent, '# The Changelog');
+
+    final installContent = await File.fromUri(
+      aurDir.uri.resolve('custom_package.install'),
+    ).readAsString();
+
+    expect(installContent, 'install');
   });
 }
 
@@ -179,6 +189,7 @@ makedepends=('dart>=2.17.0' 'dart<3.0.0')
 _pkgdir='test_package-1.2.3-dev+5'
 source=("$_pkgdir.tar.gz::https://example.com/home/git/archive/refs/tags/v1.2.3-dev+5.tar.gz")
 b2sums=('PLACEHOLDER')
+install='custom_package.install'
 changelog='CHANGELOG.md'
 backup=('etc/config.json')
 options=('!strip')

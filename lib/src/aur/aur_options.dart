@@ -51,7 +51,8 @@ class AurOptions with _$AurOptions {
     @Default('custom') String license,
     @Default(<String>[]) List<String> depends,
     String? testArgs,
-    @Default(<InstallTarget>[]) List<InstallTarget> install,
+    String? install,
+    @Default(<InstallTarget>[]) List<InstallTarget> files,
     @Default(<String>[]) List<String> backup,
   }) = _AurOptions;
 

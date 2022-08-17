@@ -33,14 +33,24 @@ class PkgBuildGenerator {
       _fileName(licenseFile),
     ));
 
-    if (changelogFile != null) {
-      await changelogFile.copy(
-        aurDirectory.uri.resolve(basename(changelogFile.path)).toFilePath(),
+    final installFileName = aurOptions.aurOptions.install;
+    if (installFileName != null) {
+      final installFile = File.fromUri(
+        sourceDirectory.uri.resolve(installFileName),
       );
+      await _copyToDir(installFile, aurDirectory);
+    }
+
+    if (changelogFile != null) {
+      await _copyToDir(changelogFile, aurDirectory);
     }
   }
 
   String? _fileName(File? file) => file != null ? basename(file.path) : null;
+
+  Future<void> _copyToDir(File file, Directory directory) => file.copy(
+        directory.uri.resolve(basename(file.path)).toFilePath(),
+      );
 
   String _pkgbuildTemplate(
     PubspecWithAur options,
@@ -76,6 +86,7 @@ class PkgBuildGenerator {
         '_pkgdir': PkgProperty('${options.pubspec.name}-$version'),
         'source': _getSourceUrls(options.pubspec),
         'b2sums': PkgProperty.literalList(const ['PLACEHOLDER']),
+        'install': PkgProperty(options.aurOptions.install),
         'changelog': PkgProperty(changelogFileName),
         'backup': PkgProperty.literalList(options.aurOptions.backup),
         'options': PkgProperty.literalList(const ['!strip']),
@@ -182,7 +193,7 @@ class PkgBuildGenerator {
           "\"\$pkgdir/usr/bin/\"'${entry.key}'",
     );
 
-    for (final install in options.aurOptions.install) {
+    for (final install in options.aurOptions.files) {
       yield "install -D -m${install.permissions} '${install.source}' "
           '"\$pkgdir${install.target}"';
     }
