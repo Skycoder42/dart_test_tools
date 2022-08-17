@@ -23,7 +23,7 @@ jobs:
       - name: Install pacman dependencies
         run: pacman -Sy --noconfirm git openssh go-yq pacman-contrib dart namcap
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^4.3.0
+        run: dart pub global activate dart_test_tools ^4.4.0
       - name: Create build user
         run: |
           set -eo pipefail
