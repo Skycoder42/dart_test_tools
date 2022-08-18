@@ -65,7 +65,8 @@ echo "  User aur" >> /etc/ssh/ssh_config
         ),
         const Step.run(
           name: 'Cleanup AUR repository',
-          run: r'find ./aur -type f -not -path "./.git*" -exec git rm {} \;',
+          run: r'find . -type f -not -path "./.git*" -exec git rm {} \;',
+          workingDirectory: 'aur',
         ),
       ];
 }

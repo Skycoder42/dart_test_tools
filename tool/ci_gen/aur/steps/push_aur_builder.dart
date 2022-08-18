@@ -12,7 +12,7 @@ class PushAurBuilder implements StepBuilder {
           run: r'''
 set -e
 git add $(cat .files) .SRCINFO
-git status
+git status --short
 ''',
           workingDirectory: 'aur',
         ),

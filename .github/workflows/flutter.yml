@@ -440,7 +440,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run integration tests (dart-vm)
         if: matrix.platform != 'web' && contains(fromJSON(inputs.platforms), matrix.platform)
-        run: ${{ matrix.runPrefix }} flutter test ${{ matrix.testArgs }} --reporter github ${{ inputs.integrationTestPaths }}
+        run: ${{ matrix.runPrefix }} flutter test ${{ matrix.testArgs }} --reporter expanded ${{ inputs.integrationTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
       - name: Run integration tests (web)
         if: matrix.platform == 'web' && contains(fromJSON(inputs.platforms), matrix.platform)
