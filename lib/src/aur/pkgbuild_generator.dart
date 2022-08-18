@@ -37,6 +37,7 @@ class PkgBuildGenerator {
       installFileName: _fileName(installFile),
       changelogFileName: _fileName(changelogFile),
     ));
+    _printFileName(pkgBuildFile);
 
     if (installFile != null) {
       await _copyToDir(installFile, aurDirectory);
@@ -49,9 +50,14 @@ class PkgBuildGenerator {
 
   String? _fileName(File? file) => file != null ? basename(file.path) : null;
 
-  Future<void> _copyToDir(File file, Directory directory) => file.copy(
-        directory.uri.resolve(basename(file.path)).toFilePath(),
-      );
+  Future<void> _copyToDir(File file, Directory aurDirectory) async {
+    final copiedFile = await file.copy(
+      aurDirectory.uri.resolve(basename(file.path)).toFilePath(),
+    );
+    _printFileName(copiedFile);
+  }
+
+  void _printFileName(File file) => print(_fileName(file));
 
   String _pkgbuildTemplate({
     required PubspecWithAur options,

@@ -89,7 +89,10 @@ void main() {
   test('generates minimal PKGBUILD file', () async {
     await _createSources(true);
 
-    await sut.generatePkgbuild(sourceDirectory: srcDir, aurDirectory: aurDir);
+    await expectLater(
+      () => sut.generatePkgbuild(sourceDirectory: srcDir, aurDirectory: aurDir),
+      prints('PKGBUILD\n'),
+    );
 
     final aurFiles = aurDir.listSync();
     expect(aurFiles, hasLength(1));
@@ -105,7 +108,10 @@ void main() {
   test('generates full PKGBUILD file', () async {
     await _createSources(false);
 
-    await sut.generatePkgbuild(sourceDirectory: srcDir, aurDirectory: aurDir);
+    await expectLater(
+      () => sut.generatePkgbuild(sourceDirectory: srcDir, aurDirectory: aurDir),
+      prints('PKGBUILD\ncustom_package.install\nCHANGELOG.md\n'),
+    );
 
     final aurFiles = aurDir.listSync();
     expect(aurFiles, hasLength(3));
