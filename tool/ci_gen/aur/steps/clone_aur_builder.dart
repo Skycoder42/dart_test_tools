@@ -63,5 +63,9 @@ echo "  User aur" >> /etc/ssh/ssh_config
               r'"ssh://aur@aur.archlinux.org/$(yq ".name" src/pubspec.yaml).git" '
               './aur',
         ),
+        const Step.run(
+          name: 'Cleanup AUR repository',
+          run: r'find ./aur -type f -not -path "./.git*" -exec git rm {} \;',
+        ),
       ];
 }

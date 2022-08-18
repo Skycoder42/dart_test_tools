@@ -1,1 +1,1 @@
-const dartTestToolsVersion = '4.4.0';
+const dartTestToolsVersion = '4.5.0';

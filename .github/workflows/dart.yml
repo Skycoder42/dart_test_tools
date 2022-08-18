@@ -105,7 +105,7 @@ jobs:
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^4.4.0
+        run: dart pub global activate dart_test_tools ^4.5.0
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
         run: choco install yq

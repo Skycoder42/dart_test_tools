@@ -9,7 +9,11 @@ class PushAurBuilder implements StepBuilder {
   Iterable<Step> build() => [
         const Step.run(
           name: 'Stage package files',
-          run: 'git add PKGBUILD CHANGELOG.md .SRCINFO',
+          run: r'''
+set -e
+git add $(cat .files) .SRCINFO
+git status
+''',
           workingDirectory: 'aur',
         ),
         const Step.run(
