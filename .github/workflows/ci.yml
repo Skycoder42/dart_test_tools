@@ -1,4 +1,4 @@
-name: Continous Integration and Deployment
+name: Continuos Integration and Deployment
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ on:
 
 jobs:
   ci:
-    name: Continous Integration
+    name: CI
     uses: Skycoder42/dart_test_tools/.github/workflows/dart.yml@main
     with:
       buildRunner: true
@@ -29,7 +29,7 @@ jobs:
         TEST_KEY=test-value
 
   cd:
-    name: Continous Deployment
+    name: CD
     needs:
       - ci
     uses: Skycoder42/dart_test_tools/.github/workflows/publish.yml@main

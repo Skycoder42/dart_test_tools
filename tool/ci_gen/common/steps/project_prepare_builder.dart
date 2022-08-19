@@ -22,10 +22,12 @@ class ProjectPrepareBuilder implements StepBuilder {
   @override
   Iterable<Step> build() => [
         Step.run(
-          name: 'Remove dependency overrides$_titleSuffix',
+          name: 'Remove pubspec_overrides.yaml$_titleSuffix',
           ifExpression: ifExpression,
-          run: 'yq e -i "del(.dependency_overrides)" pubspec.yaml',
+          run: 'find . -type f -name "pubspec_overrides.yaml" '
+              r'-exec git rm -f {} \;',
           workingDirectory: workingDirectory.toString(),
+          shell: 'bash',
         ),
         Step.run(
           name: 'Restore dart packages$_titleSuffix',

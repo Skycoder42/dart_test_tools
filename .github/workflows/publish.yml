@@ -161,9 +161,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: ${{ inputs.repository }}
-      - name: Remove dependency overrides
-        run: yq e -i "del(.dependency_overrides)" pubspec.yaml
+      - name: Remove pubspec_overrides.yaml
+        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Restore dart packages
         run: ${{ steps.tools.outputs.pub }} get
         working-directory: ${{ inputs.workingDirectory }}
