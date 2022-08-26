@@ -1,7 +1,14 @@
 include: analysis_options.yaml
-
-linter:
-  rules:
-    - library_private_types_in_public_api
-    - package_api_docs
-    - public_member_api_docs
+analyzer: 
+  strong-mode: 
+    implicit-casts: false
+    implicit-dynamic: false
+linter: 
+  rules: 
+    # rules from package:lint/analysis_options_package.yaml
+    package_api_docs: true
+    # custom rules
+    comment_references: true # overwritten
+    prefer_asserts_with_message: true # overwritten
+    public_member_api_docs: true # overwritten
+    # new rules
