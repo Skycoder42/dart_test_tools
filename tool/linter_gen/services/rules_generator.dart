@@ -22,7 +22,7 @@ class RulesGenerator {
     List<AnalysisOptionsRef> mergeOptions = const [],
     AnalysisOptionsRef? customOptions,
   }) async {
-    final knownRules = await knownRulesLoader.loadKnownRules();
+    final newRules = await knownRulesLoader.loadNewRules();
 
     final relativeToDir = relativeTo != null
         ? rulesCollector.analysisOptionsLoader.findDirectory(relativeTo)
@@ -43,7 +43,7 @@ class RulesGenerator {
       mergeOptions,
       mergeRules,
       customRules,
-      knownRules,
+      newRules,
     );
 
     return AnalysisOptions(
@@ -65,7 +65,7 @@ class RulesGenerator {
     List<AnalysisOptionsRef> mergeOptions,
     List<Map<String, bool>> mergeRules,
     Map<String, bool>? customRules,
-    Set<String> knownRules,
+    Set<String> newRules,
   ) {
     // only mark positive rules as processed, so merge rules can apply
     final processedRules = baseRules.entries
@@ -106,9 +106,9 @@ class RulesGenerator {
       }
     }
 
-    final newRules = knownRules.difference(processedRules);
+    final actualNewRules = newRules.difference(processedRules);
     appliedRules['# new rules'] = null;
-    for (final rule in newRules) {
+    for (final rule in actualNewRules) {
       appliedRules[rule] = false;
     }
     return appliedRules;

@@ -8,14 +8,18 @@ import 'linter_gen/services/rules_collector.dart';
 import 'linter_gen/services/rules_generator.dart';
 
 Future<void> main() async {
-  final generator = RulesGenerator(
-    knownRulesLoader: KnownRulesLoader(),
-    rulesCollector: RulesCollector(
-      analysisOptionsLoader: AnalysisOptionsLoader(),
-    ),
-  );
+  final loader = AnalysisOptionsLoader();
   final writer = AnalysisOptionsWriter(
     yamlWriter: YAMLWriter(),
+  );
+  final generator = RulesGenerator(
+    knownRulesLoader: KnownRulesLoader(
+      analysisOptionsLoader: loader,
+      analysisOptionsWriter: writer,
+    ),
+    rulesCollector: RulesCollector(
+      analysisOptionsLoader: loader,
+    ),
   );
 
   await _writeNormalOptions(generator, writer);

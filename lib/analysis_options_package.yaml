@@ -8,7 +8,9 @@ linter:
     # rules from package:lint/analysis_options_package.yaml
     package_api_docs: true
     # custom rules
-    comment_references: true # overwritten
-    prefer_asserts_with_message: true # overwritten
-    public_member_api_docs: true # overwritten
+    avoid_equals_and_hash_code_on_mutable_classes: true
+    comment_references: true
+    do_not_use_environment: true
+    prefer_asserts_with_message: true
+    public_member_api_docs: true
     # new rules
