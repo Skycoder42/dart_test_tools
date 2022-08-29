@@ -67,11 +67,8 @@ class RulesGenerator {
     Map<String, bool>? customRules,
     Set<String> newRules,
   ) {
-    // only mark positive rules as processed, so merge rules can apply
-    final processedRules = baseRules.entries
-        .where((entry) => entry.value)
-        .map((entry) => entry.key)
-        .toSet();
+    // mark base rules as processed, so merge rules can apply
+    final processedRules = baseRules.keys.toSet();
     final appliedRules = <String, dynamic>{};
 
     for (var i = 0; i < mergeRules.length; i++) {

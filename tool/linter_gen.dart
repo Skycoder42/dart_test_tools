@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:yaml_writer/yaml_writer.dart';
 
 import 'linter_gen/models/analysis_options_ref.dart';
@@ -33,6 +35,7 @@ Future<void> _writeNormalOptions(
   const normalOptionsRef = AnalysisOptionsRef.local(
     'lib/analysis_options.yaml',
   );
+  stdout.writeln('Generating $normalOptionsRef');
   final normalOptions = await generator.generateRules(
     baseOptions: const AnalysisOptionsRef.package(
       packageName: 'lint',
@@ -60,6 +63,7 @@ Future<void> _writePackageOptions(
   const packageOptionsRef = AnalysisOptionsRef.local(
     'lib/analysis_options_package.yaml',
   );
+  stdout.writeln('Generating $packageOptionsRef');
   final packageOptions = await generator.generateRules(
     baseOptions: const AnalysisOptionsRef.local(
       'analysis_options.yaml',

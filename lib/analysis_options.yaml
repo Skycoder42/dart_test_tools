@@ -13,6 +13,9 @@ linter:
     # rules from package:flutter_lints/flutter.yaml
     use_key_in_widget_constructors: true
     # custom rules
+    always_use_package_imports: false # overwritten
+    avoid_classes_with_only_static_members: false # overwritten
+    avoid_private_typedef_functions: false # overwritten
     avoid_catches_without_on_clauses: true
     avoid_js_rounded_ints: true
     avoid_slow_async_io: true
