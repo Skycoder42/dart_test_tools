@@ -20,6 +20,8 @@ class Expression with _$Expression {
   const factory Expression.json(Object? jsonValue) = _JsonExpression;
   const factory Expression.fake(String fakeValue) = _FakeExpression;
 
+  factory Expression.parens(Expression value) => Expression('(${value.value})');
+
   String get value => when(
         (value) => value,
         literal: (dynamic rawValue) =>

@@ -104,6 +104,7 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression flutterSdkChannel;
   final Expression repository;
   final Expression workingDirectory;
+  final Expression releaseRef;
   final Expression buildRunner;
   final Expression integrationTestSetup;
   final Expression integrationTestPaths;
@@ -117,6 +118,7 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     required this.flutterSdkChannel,
     required this.repository,
     required this.workingDirectory,
+    required this.releaseRef,
     required this.buildRunner,
     required this.integrationTestSetup,
     required this.integrationTestPaths,
@@ -156,6 +158,7 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
           ...FlutterIntegrationTestBuilder(
             repository: repository,
             workingDirectory: workingDirectory,
+            releaseRef: releaseRef,
             buildRunner: buildRunner,
             platforms: platforms,
             integrationTestSetup: integrationTestSetup,

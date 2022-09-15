@@ -14,6 +14,7 @@ class PublishJobBuilder implements JobBuilder {
   final Expression flutterSdkChannel;
   final Expression repository;
   final Expression workingDirectory;
+  final Expression releaseRef;
   final Expression buildRunner;
   final Expression publishExclude;
   final Expression pubDevCredentials;
@@ -27,6 +28,7 @@ class PublishJobBuilder implements JobBuilder {
     required this.flutterSdkChannel,
     required this.repository,
     required this.workingDirectory,
+    required this.releaseRef,
     required this.buildRunner,
     required this.publishExclude,
     required this.pubDevCredentials,
@@ -56,6 +58,7 @@ class PublishJobBuilder implements JobBuilder {
             flutter: flutter,
             repository: repository,
             workingDirectory: workingDirectory,
+            releaseRef: releaseRef,
             buildRunner: buildRunner,
             publishExclude: publishExclude,
             pubDevCredentials: pubDevCredentials,

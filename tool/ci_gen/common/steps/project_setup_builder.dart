@@ -7,6 +7,7 @@ import 'project_prepare_builder.dart';
 class ProjectSetupBuilder implements StepBuilder {
   final Expression repository;
   final Expression workingDirectory;
+  final Expression releaseRef;
   final Expression buildRunner;
   final String pubTool;
   final String runTool;
@@ -16,6 +17,7 @@ class ProjectSetupBuilder implements StepBuilder {
   const ProjectSetupBuilder({
     required this.repository,
     required this.workingDirectory,
+    required this.releaseRef,
     required this.buildRunner,
     required this.pubTool,
     required this.runTool,
@@ -48,6 +50,7 @@ echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
         ).build(),
         ...ProjectPrepareBuilder(
           workingDirectory: workingDirectory,
+          releaseRef: releaseRef,
           buildRunner: buildRunner,
           pubTool: pubTool,
           runTool: runTool,

@@ -11,6 +11,7 @@ class DartUnitTestJobBuilder extends UnitTestJobBuilder
     required super.analyzeJobId,
     required super.repository,
     required super.workingDirectory,
+    required super.releaseRef,
     required super.buildRunner,
     required super.unitTestPaths,
     required super.minCoverage,

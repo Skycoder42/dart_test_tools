@@ -15,6 +15,11 @@ on:
         required: false
         default: .
         description: The root directory of the dart package to build and test.
+      releaseRef:
+        type: string
+        required: false
+        default: refs/heads/main
+        description: The git ref that is allowed to publish releases.
       buildRunner:
         type: boolean
         required: false
@@ -40,11 +45,6 @@ on:
           - windows
           - macos
           - web
-      releaseRef:
-        type: string
-        required: false
-        default: refs/heads/main
-        description: The git ref that is allowed to publish releases.
       tagPrefix:
         type: string
         required: false
@@ -103,7 +103,7 @@ jobs:
         with:
           repository: ${{ inputs.repository }}
       - name: Remove pubspec_overrides.yaml
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        if: (!inputs.releaseRef || github.ref == inputs.releaseRef) && contains(fromJSON(inputs.platforms), matrix.platform)
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash

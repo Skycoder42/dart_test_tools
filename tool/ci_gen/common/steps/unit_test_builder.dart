@@ -12,6 +12,7 @@ abstract class IUnitTextMatrix implements ICoverageCollectorMatrix {
 class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
   final Expression repository;
   final Expression workingDirectory;
+  final Expression releaseRef;
   final Expression buildRunner;
   final Expression unitTestPaths;
   final Expression minCoverage;
@@ -27,6 +28,7 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
   const UnitTestBuilder({
     required this.repository,
     required this.workingDirectory,
+    required this.releaseRef,
     required this.buildRunner,
     required this.unitTestPaths,
     required this.minCoverage,
@@ -44,6 +46,7 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
         ...ProjectSetupBuilder(
           repository: repository,
           workingDirectory: workingDirectory,
+          releaseRef: releaseRef,
           buildRunner: buildRunner,
           pubTool: pubTool,
           runTool: runTool,
