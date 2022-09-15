@@ -81,7 +81,6 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
   final JobId analyzeJobId;
   final Expression repository;
   final Expression workingDirectory;
-  final Expression releaseRef;
   final Expression buildRunner;
   final Expression unitTestPaths;
   final Expression minCoverage;
@@ -91,7 +90,6 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
     required this.analyzeJobId,
     required this.repository,
     required this.workingDirectory,
-    required this.releaseRef,
     required this.buildRunner,
     required this.unitTestPaths,
     required this.minCoverage,
@@ -132,7 +130,6 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
           ...UnitTestBuilder(
             repository: repository,
             workingDirectory: workingDirectory,
-            releaseRef: releaseRef,
             buildRunner: buildRunner,
             unitTestPaths: unitTestPaths,
             minCoverage: minCoverage,

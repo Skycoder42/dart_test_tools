@@ -13,7 +13,6 @@ class PublishBuilder implements StepBuilder {
   final Expression flutter;
   final Expression repository;
   final Expression workingDirectory;
-  final Expression releaseRef;
   final Expression buildRunner;
   final Expression publishExclude;
   final Expression pubDevCredentials;
@@ -23,7 +22,6 @@ class PublishBuilder implements StepBuilder {
     required this.flutter,
     required this.repository,
     required this.workingDirectory,
-    required this.releaseRef,
     required this.buildRunner,
     required this.publishExclude,
     required this.pubDevCredentials,
@@ -48,7 +46,6 @@ fi
         ...ProjectSetupBuilder(
           repository: repository,
           workingDirectory: workingDirectory,
-          releaseRef: releaseRef,
           buildRunner: buildRunner,
           pubTool: toolsPub.expression.toString(),
           runTool: toolsPubRun.expression.toString(),

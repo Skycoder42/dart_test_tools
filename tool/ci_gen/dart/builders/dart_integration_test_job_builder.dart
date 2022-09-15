@@ -75,7 +75,6 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression dartSdkVersion;
   final Expression repository;
   final Expression workingDirectory;
-  final Expression releaseRef;
   final Expression buildRunner;
   final Expression integrationTestSetup;
   final Expression integrationTestPaths;
@@ -87,7 +86,6 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
     required this.dartSdkVersion,
     required this.repository,
     required this.workingDirectory,
-    required this.releaseRef,
     required this.buildRunner,
     required this.integrationTestSetup,
     required this.integrationTestPaths,
@@ -123,7 +121,6 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
           ...DartIntegrationTestBuilder(
             repository: repository,
             workingDirectory: workingDirectory,
-            releaseRef: releaseRef,
             buildRunner: buildRunner,
             integrationTestSetup: integrationTestSetup,
             integrationTestPaths: integrationTestPaths,

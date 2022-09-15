@@ -14,7 +14,6 @@ class DartIntegrationTestBuilder
     implements StepBuilder {
   final Expression repository;
   final Expression workingDirectory;
-  final Expression releaseRef;
   final Expression buildRunner;
   final Expression integrationTestSetup;
   final Expression integrationTestPaths;
@@ -29,7 +28,6 @@ class DartIntegrationTestBuilder
   const DartIntegrationTestBuilder({
     required this.repository,
     required this.workingDirectory,
-    required this.releaseRef,
     required this.buildRunner,
     required this.integrationTestSetup,
     required this.integrationTestPaths,
@@ -46,7 +44,6 @@ class DartIntegrationTestBuilder
         ...ProjectSetupBuilder(
           repository: repository,
           workingDirectory: workingDirectory,
-          releaseRef: releaseRef,
           buildRunner: buildRunner,
           pubTool: pubTool,
           runTool: runTool,

@@ -12,7 +12,6 @@ class AnalyzeBuilder implements StepBuilder {
 
   final Expression repository;
   final Expression workingDirectory;
-  final Expression releaseRef;
   final Expression buildRunner;
   final Expression analyzeImage;
   final Expression publishExclude;
@@ -25,7 +24,6 @@ class AnalyzeBuilder implements StepBuilder {
   const AnalyzeBuilder({
     required this.repository,
     required this.workingDirectory,
-    required this.releaseRef,
     required this.buildRunner,
     required this.analyzeImage,
     required this.publishExclude,
@@ -46,7 +44,6 @@ class AnalyzeBuilder implements StepBuilder {
         ...ProjectSetupBuilder(
           repository: repository,
           workingDirectory: workingDirectory,
-          releaseRef: releaseRef,
           buildRunner: buildRunner,
           pubTool: pubTool,
           runTool: runTool,

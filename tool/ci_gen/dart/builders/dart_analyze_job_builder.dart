@@ -11,7 +11,6 @@ class DartAnalyzeJobBuilder extends AnalyzeJobBuilder
   const DartAnalyzeJobBuilder({
     required super.repository,
     required super.workingDirectory,
-    required super.releaseRef,
     required super.buildRunner,
     required super.analyzeImage,
     required super.publishExclude,

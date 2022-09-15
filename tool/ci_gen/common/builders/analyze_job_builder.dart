@@ -10,7 +10,6 @@ import 'sdk_job_builder.dart';
 abstract class AnalyzeJobBuilder extends SdkJobBuilder {
   final Expression repository;
   final Expression workingDirectory;
-  final Expression releaseRef;
   final Expression buildRunner;
   final Expression analyzeImage;
   final Expression publishExclude;
@@ -19,7 +18,6 @@ abstract class AnalyzeJobBuilder extends SdkJobBuilder {
   const AnalyzeJobBuilder({
     required this.repository,
     required this.workingDirectory,
-    required this.releaseRef,
     required this.buildRunner,
     required this.analyzeImage,
     required this.publishExclude,
@@ -38,7 +36,6 @@ abstract class AnalyzeJobBuilder extends SdkJobBuilder {
           ...AnalyzeBuilder(
             repository: repository,
             workingDirectory: workingDirectory,
-            releaseRef: releaseRef,
             buildRunner: buildRunner,
             analyzeImage: analyzeImage,
             publishExclude: publishExclude,

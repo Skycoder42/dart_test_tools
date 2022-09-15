@@ -162,7 +162,6 @@ jobs:
         with:
           repository: ${{ inputs.repository }}
       - name: Remove pubspec_overrides.yaml
-        if: (!inputs.releaseRef || github.ref == inputs.releaseRef)
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash

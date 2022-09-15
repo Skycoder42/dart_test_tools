@@ -12,7 +12,6 @@ class FlutterUnitTestJobBuilder extends UnitTestJobBuilder
     required this.flutterSdkChannel,
     required super.repository,
     required super.workingDirectory,
-    required super.releaseRef,
     required super.buildRunner,
     required super.unitTestPaths,
     required super.minCoverage,

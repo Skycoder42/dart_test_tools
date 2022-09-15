@@ -17,7 +17,6 @@ class FlutterIntegrationTestBuilder
     implements StepBuilder {
   final Expression repository;
   final Expression workingDirectory;
-  final Expression releaseRef;
   final Expression buildRunner;
   final Expression integrationTestSetup;
   final Expression integrationTestPaths;
@@ -34,7 +33,6 @@ class FlutterIntegrationTestBuilder
   const FlutterIntegrationTestBuilder({
     required this.repository,
     required this.workingDirectory,
-    required this.releaseRef,
     required this.buildRunner,
     required this.integrationTestSetup,
     required this.integrationTestPaths,
@@ -85,7 +83,6 @@ sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
         ...ProjectSetupBuilder(
           repository: repository,
           workingDirectory: workingDirectory,
-          releaseRef: releaseRef,
           buildRunner: buildRunner,
           pubTool: pubTool,
           runTool: runTool,
@@ -95,7 +92,6 @@ sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
           titleSuffix: '(Integration test project)',
           workingDirectory:
               Expression.fake('$workingDirectory/$integrationTestProject'),
-          releaseRef: releaseRef,
           pubTool: pubTool,
           runTool: runTool,
           ifExpression:

@@ -17,7 +17,6 @@ abstract class CompileWorkflow {
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      releaseRef: inputContext(WorkflowInputs.releaseRef),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       platforms: inputContext.builder(WorkflowInputs.platforms),
       targets: inputContext(WorkflowInputs.targets),

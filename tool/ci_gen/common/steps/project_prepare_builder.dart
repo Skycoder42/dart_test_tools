@@ -5,7 +5,6 @@ import '../api/step_builder.dart';
 class ProjectPrepareBuilder implements StepBuilder {
   final String? titleSuffix;
   final Expression workingDirectory;
-  final Expression releaseRef;
   final Expression? buildRunner;
   final String pubTool;
   final String runTool;
@@ -14,7 +13,6 @@ class ProjectPrepareBuilder implements StepBuilder {
   const ProjectPrepareBuilder({
     this.titleSuffix,
     required this.workingDirectory,
-    required this.releaseRef,
     this.buildRunner,
     required this.pubTool,
     required this.runTool,
@@ -25,10 +23,7 @@ class ProjectPrepareBuilder implements StepBuilder {
   Iterable<Step> build() => [
         Step.run(
           name: 'Remove pubspec_overrides.yaml$_titleSuffix',
-          ifExpression: Expression.parens(
-                releaseRef.not | const Expression('github.ref').eq(releaseRef),
-              ) &
-              ifExpression,
+          ifExpression: ifExpression,
           run: 'find . -type f -name "pubspec_overrides.yaml" '
               r'-exec git rm -f {} \;',
           workingDirectory: workingDirectory.toString(),
