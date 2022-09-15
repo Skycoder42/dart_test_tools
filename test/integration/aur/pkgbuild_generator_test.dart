@@ -25,7 +25,8 @@ void main() {
     await testDir.delete(recursive: true);
   });
 
-  Future<void> _createSources(bool minimal) async {
+  // ignore: avoid_positional_boolean_parameters
+  Future<void> createSources(bool minimal) async {
     final writer = YAMLWriter();
     final pubspecYaml = writer.write({
       'name': 'test_package',
@@ -87,7 +88,7 @@ void main() {
   }
 
   test('generates minimal PKGBUILD file', () async {
-    await _createSources(true);
+    await createSources(true);
 
     await expectLater(
       () => sut.generatePkgbuild(sourceDirectory: srcDir, aurDirectory: aurDir),
@@ -106,7 +107,7 @@ void main() {
   });
 
   test('generates full PKGBUILD file', () async {
-    await _createSources(false);
+    await createSources(false);
 
     await expectLater(
       () => sut.generatePkgbuild(sourceDirectory: srcDir, aurDirectory: aurDir),
