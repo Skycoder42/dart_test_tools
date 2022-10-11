@@ -121,9 +121,9 @@ class LibExportLinter with LinterMixin implements Linter {
       final Iterable<Element?> elements;
       if (declaration is TopLevelVariableDeclaration) {
         elements =
-            declaration.variables.variables.map((v) => v.declaredElement2);
+            declaration.variables.variables.map((v) => v.declaredElement);
       } else {
-        elements = [declaration.declaredElement2];
+        elements = [declaration.declaredElement];
       }
 
       for (final element in elements) {
