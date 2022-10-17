@@ -21,5 +21,5 @@ abstract class Tools {
 
   /// https://github.com/VeryGoodOpenSource/very_good_coverage/releases
   static const veryGoodOpenSourceVeryGoodCoverage =
-      'VeryGoodOpenSource/very_good_coverage@v1';
+      'VeryGoodOpenSource/very_good_coverage@v2';
 }

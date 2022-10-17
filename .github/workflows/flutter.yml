@@ -312,7 +312,7 @@ jobs:
           name: coverage-html
           path: ${{ inputs.workingDirectory }}/coverage/html
       - name: Validate coverage is at least ${{ inputs.minCoverage }}%
-        uses: VeryGoodOpenSource/very_good_coverage@v1
+        uses: VeryGoodOpenSource/very_good_coverage@v2
         with:
           path: ${{ inputs.workingDirectory }}/coverage/cleaned.info
           min_coverage: ${{ inputs.minCoverage }}
