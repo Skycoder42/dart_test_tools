@@ -144,9 +144,9 @@ jobs:
           set -e
           publish_to=$(cat pubspec.yaml | yq e ".publish_to" -)
           if [[ "$publish_to" == "none" ]]; then
-            echo "::set-output name=publish::false"
+            echo "publish=false" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=publish::true"
+            echo "publish=true" >> $GITHUB_OUTPUT
           fi
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash

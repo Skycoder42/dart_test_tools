@@ -48,7 +48,7 @@ class IdOutput with _$IdOutput {
       );
 
   String bashSetter(String value) => maybeWhen(
-        step: (id, name) => 'echo "::set-output name=$name::$value"',
+        step: (id, name) => 'echo "$name=$value" >> \$GITHUB_OUTPUT',
         orElse: () =>
             throw UnsupportedError('Cannot create a bash setter for $this'),
       );
