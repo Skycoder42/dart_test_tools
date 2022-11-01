@@ -102,9 +102,9 @@ class TestImportLinter extends FileLinter with LinterMixin {
 
     final DirectiveUri? directiveUri;
     if (directive is ImportDirective) {
-      directiveUri = directive.element2?.uri;
+      directiveUri = directive.element?.uri;
     } else if (directive is ExportDirective) {
-      directiveUri = directive.element2?.uri;
+      directiveUri = directive.element?.uri;
     } else {
       logWarning(
         resultContext.createLocation(directive),

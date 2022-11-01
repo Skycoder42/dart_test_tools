@@ -82,6 +82,7 @@ lcov $LCOV_ARGS --output-file coverage/combined.info
           withArgs: <String, dynamic>{
             'path': '$workingDirectory/coverage/cleaned.info',
             'min_coverage': minCoverage.toString(),
+            'retention-days': 14,
           },
         ),
       ];

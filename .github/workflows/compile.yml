@@ -130,6 +130,7 @@ jobs:
         with:
           name: binaries-${{ matrix.platform }}
           path: ${{ inputs.workingDirectory }}/bin/*.${{ matrix.binaryType }}*
+          retention-days: 3
   release:
     name: Create release if needed
     needs:

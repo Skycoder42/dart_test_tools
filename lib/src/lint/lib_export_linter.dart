@@ -188,7 +188,7 @@ class LibExportLinter with LinterMixin implements Linter {
       );
 
       final allExportUris = [
-        exportDirective.element2?.uri,
+        exportDirective.element?.uri,
         ...exportDirective.configurations.map((c) => c.resolvedUri),
       ];
 

@@ -53,6 +53,7 @@ class CoverageCollectorBuilder
           withArgs: <String, dynamic>{
             'name': 'coverage-info-${matrix.platform}',
             'path': '$workingDirectory/coverage/lcov.info',
+            'retention-days': 1,
           },
         ),
       ];

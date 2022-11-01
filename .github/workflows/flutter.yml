@@ -250,6 +250,7 @@ jobs:
         with:
           name: coverage-info-${{ matrix.platform }}
           path: ${{ inputs.workingDirectory }}/coverage/lcov.info
+          retention-days: 1
   coverage:
     name: Validate coverage
     needs:
@@ -316,6 +317,7 @@ jobs:
         with:
           path: ${{ inputs.workingDirectory }}/coverage/cleaned.info
           min_coverage: ${{ inputs.minCoverage }}
+          retention-days: 14
   integration_tests:
     name: Integration tests
     needs:

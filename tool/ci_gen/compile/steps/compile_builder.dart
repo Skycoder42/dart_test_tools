@@ -62,6 +62,7 @@ done
           withArgs: <String, dynamic>{
             'name': 'binaries-${matrix.platform}',
             'path': '$workingDirectory/bin/*.${matrix.binaryType}*',
+            'retention-days': 3,
           },
         ),
       ];
