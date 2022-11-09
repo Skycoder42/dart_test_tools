@@ -74,6 +74,7 @@ lcov $LCOV_ARGS --output-file coverage/combined.info
           withArgs: <String, dynamic>{
             'name': 'coverage-html',
             'path': '$workingDirectory/coverage/html',
+            'retention-days': 14,
           },
         ),
         Step.uses(
@@ -82,7 +83,6 @@ lcov $LCOV_ARGS --output-file coverage/combined.info
           withArgs: <String, dynamic>{
             'path': '$workingDirectory/coverage/cleaned.info',
             'min_coverage': minCoverage.toString(),
-            'retention-days': 14,
           },
         ),
       ];

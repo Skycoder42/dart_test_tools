@@ -312,12 +312,12 @@ jobs:
         with:
           name: coverage-html
           path: ${{ inputs.workingDirectory }}/coverage/html
+          retention-days: 14
       - name: Validate coverage is at least ${{ inputs.minCoverage }}%
         uses: VeryGoodOpenSource/very_good_coverage@v2
         with:
           path: ${{ inputs.workingDirectory }}/coverage/cleaned.info
           min_coverage: ${{ inputs.minCoverage }}
-          retention-days: 14
   integration_tests:
     name: Integration tests
     needs:
