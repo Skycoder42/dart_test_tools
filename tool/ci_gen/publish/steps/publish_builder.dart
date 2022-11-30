@@ -50,6 +50,7 @@ fi
           workingDirectory: workingDirectory,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
+          releaseMode: true,
           pubTool: toolsPub.expression.toString(),
           runTool: toolsPubRun.expression.toString(),
           skipYqInstall: true,

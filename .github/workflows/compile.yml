@@ -118,7 +118,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
         if: inputs.buildRunner && contains(fromJSON(inputs.platforms), matrix.platform)
-        run: dart run build_runner build ${{ inputs.buildRunnerArgs }}
+        run: dart run build_runner build --release ${{ inputs.buildRunnerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Compile executables
         if: contains(fromJSON(inputs.platforms), matrix.platform)

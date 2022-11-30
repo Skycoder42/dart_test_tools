@@ -175,7 +175,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
         if: inputs.buildRunner
-        run: ${{ steps.tools.outputs.pubRun }} build_runner build ${{ inputs.buildRunnerArgs }}
+        run: ${{ steps.tools.outputs.pubRun }} build_runner build --release ${{ inputs.buildRunnerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run pre publish script
         if: inputs.prePublish != ''

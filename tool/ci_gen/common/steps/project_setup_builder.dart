@@ -9,6 +9,7 @@ class ProjectSetupBuilder implements StepBuilder {
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
+  final bool releaseMode;
   final String pubTool;
   final String runTool;
   final Expression? ifExpression;
@@ -19,6 +20,7 @@ class ProjectSetupBuilder implements StepBuilder {
     required this.workingDirectory,
     required this.buildRunner,
     required this.buildRunnerArgs,
+    this.releaseMode = false,
     required this.pubTool,
     required this.runTool,
     this.ifExpression,
@@ -52,6 +54,7 @@ echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
           workingDirectory: workingDirectory,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
+          releaseMode: releaseMode,
           pubTool: pubTool,
           runTool: runTool,
           ifExpression: ifExpression,

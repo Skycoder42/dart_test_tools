@@ -42,6 +42,7 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
           workingDirectory: workingDirectory,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
+          releaseMode: true,
           pubTool: pubTool,
           runTool: runTool,
           ifExpression: _shouldRun,

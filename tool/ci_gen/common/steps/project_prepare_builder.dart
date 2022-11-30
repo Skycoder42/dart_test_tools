@@ -7,6 +7,7 @@ class ProjectPrepareBuilder implements StepBuilder {
   final Expression workingDirectory;
   final Expression? buildRunner;
   final Expression? buildRunnerArgs;
+  final bool releaseMode;
   final String pubTool;
   final String runTool;
   final Expression? ifExpression;
@@ -16,6 +17,7 @@ class ProjectPrepareBuilder implements StepBuilder {
     required this.workingDirectory,
     this.buildRunner,
     this.buildRunnerArgs,
+    this.releaseMode = false,
     required this.pubTool,
     required this.runTool,
     this.ifExpression,
@@ -41,10 +43,14 @@ class ProjectPrepareBuilder implements StepBuilder {
           Step.run(
             name: 'Create build files$_titleSuffix',
             ifExpression: buildRunner! & ifExpression,
-            run: '$runTool build_runner build ${buildRunnerArgs ?? ''}',
+            run: '$runTool build_runner build '
+                '$_releaseArg'
+                '${buildRunnerArgs ?? ''}',
             workingDirectory: workingDirectory.toString(),
           ),
       ];
 
   String get _titleSuffix => titleSuffix != null ? ' $titleSuffix' : '';
+
+  String get _releaseArg => releaseMode ? '--release ' : '';
 }
