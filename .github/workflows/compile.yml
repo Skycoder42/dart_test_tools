@@ -20,6 +20,11 @@ on:
         required: false
         default: false
         description: Specify whether build_runner is used in the project (defaults to false).
+      buildRunnerArgs:
+        type: string
+        required: false
+        default: ""
+        description: Optional additional arguments to be passed to the build runner.
       targets:
         type: string
         required: true
@@ -113,7 +118,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
         if: inputs.buildRunner && contains(fromJSON(inputs.platforms), matrix.platform)
-        run: dart run build_runner build
+        run: dart run build_runner build ${{ inputs.buildRunnerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Compile executables
         if: contains(fromJSON(inputs.platforms), matrix.platform)

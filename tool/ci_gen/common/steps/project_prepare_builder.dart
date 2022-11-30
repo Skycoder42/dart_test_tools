@@ -6,6 +6,7 @@ class ProjectPrepareBuilder implements StepBuilder {
   final String? titleSuffix;
   final Expression workingDirectory;
   final Expression? buildRunner;
+  final Expression? buildRunnerArgs;
   final String pubTool;
   final String runTool;
   final Expression? ifExpression;
@@ -14,6 +15,7 @@ class ProjectPrepareBuilder implements StepBuilder {
     this.titleSuffix,
     required this.workingDirectory,
     this.buildRunner,
+    this.buildRunnerArgs,
     required this.pubTool,
     required this.runTool,
     this.ifExpression,
@@ -39,7 +41,7 @@ class ProjectPrepareBuilder implements StepBuilder {
           Step.run(
             name: 'Create build files$_titleSuffix',
             ifExpression: buildRunner! & ifExpression,
-            run: '$runTool build_runner build',
+            run: '$runTool build_runner build ${buildRunnerArgs ?? ''}',
             workingDirectory: workingDirectory.toString(),
           ),
       ];

@@ -13,6 +13,7 @@ class AnalyzeBuilder implements StepBuilder {
   final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
+  final Expression buildRunnerArgs;
   final Expression analyzeImage;
   final Expression publishExclude;
   final Expression extendedAnalyzerArgs;
@@ -25,6 +26,7 @@ class AnalyzeBuilder implements StepBuilder {
     required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
+    required this.buildRunnerArgs,
     required this.analyzeImage,
     required this.publishExclude,
     required this.extendedAnalyzerArgs,
@@ -45,6 +47,7 @@ class AnalyzeBuilder implements StepBuilder {
           repository: repository,
           workingDirectory: workingDirectory,
           buildRunner: buildRunner,
+          buildRunnerArgs: buildRunnerArgs,
           pubTool: pubTool,
           runTool: runTool,
         ).build(),

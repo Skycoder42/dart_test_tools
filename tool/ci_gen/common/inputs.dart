@@ -39,6 +39,17 @@ abstract class WorkflowInputs {
     ),
   );
 
+  static const buildRunnerArgs = WorkflowInput(
+    name: 'buildRunnerArgs',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: '',
+      description:
+          'Optional additional arguments to be passed to the build runner.',
+    ),
+  );
+
   static const dartSdkVersion = WorkflowInput(
     name: 'dartSdkVersion',
     input: Input(

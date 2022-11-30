@@ -96,6 +96,7 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
   final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
+  final Expression buildRunnerArgs;
 
   CompileJobBuilder({
     required this.targets,
@@ -103,6 +104,7 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
     required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
+    required this.buildRunnerArgs,
     required ExpressionBuilderFn<List<String>> platforms,
   }) : platforms = platforms(_platformIncludes.map((i) => i.platform).toList());
 
@@ -130,6 +132,7 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
             repository: repository,
             workingDirectory: workingDirectory,
             buildRunner: buildRunner,
+            buildRunnerArgs: buildRunnerArgs,
             targets: targets,
             platforms: platforms,
             matrix: _matrix,

@@ -22,6 +22,7 @@ abstract class DartWorkflow {
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
+      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       analyzeImage: inputContext(WorkflowInputs.analyzeImage),
       publishExclude: inputContext(WorkflowInputs.publishExclude),
       extendedAnalyzerArgs: inputContext(WorkflowInputs.extendedAnalyzerArgs),
@@ -32,6 +33,7 @@ abstract class DartWorkflow {
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
+      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
       minCoverage: inputContext(WorkflowInputs.minCoverage),
       platforms: inputContext.builder(WorkflowInputs.platforms),
@@ -51,6 +53,7 @@ abstract class DartWorkflow {
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
+      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
       integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
       integrationTestEnvVars:

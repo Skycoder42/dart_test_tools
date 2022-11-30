@@ -19,6 +19,7 @@ abstract class FlutterWorkflow {
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
+      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       analyzeImage: inputContext(WorkflowInputs.analyzeImage),
       publishExclude: inputContext(WorkflowInputs.publishExclude),
       extendedAnalyzerArgs: inputContext(WorkflowInputs.extendedAnalyzerArgs),
@@ -29,6 +30,7 @@ abstract class FlutterWorkflow {
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
+      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
       minCoverage: inputContext(WorkflowInputs.minCoverage),
       platforms: inputContext.builder(WorkflowInputs.platforms),
@@ -48,6 +50,7 @@ abstract class FlutterWorkflow {
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
+      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
       integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
       integrationTestProject:

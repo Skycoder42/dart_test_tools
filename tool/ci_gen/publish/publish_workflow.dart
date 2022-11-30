@@ -30,6 +30,7 @@ abstract class PublishWorkflow {
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
+      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       publish: inputContext(WorkflowInputs.publish),
       publishExclude: inputContext(WorkflowInputs.publishExclude),
       prePublish: inputContext(WorkflowInputs.prePublish),

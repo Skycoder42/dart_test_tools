@@ -15,6 +15,7 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
   final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
+  final Expression buildRunnerArgs;
   final Expression targets;
   @override
   final Expression platforms;
@@ -26,6 +27,7 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
     required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
+    required this.buildRunnerArgs,
     required this.targets,
     required this.platforms,
     required this.matrix,
@@ -39,6 +41,7 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
           repository: repository,
           workingDirectory: workingDirectory,
           buildRunner: buildRunner,
+          buildRunnerArgs: buildRunnerArgs,
           pubTool: pubTool,
           runTool: runTool,
           ifExpression: _shouldRun,

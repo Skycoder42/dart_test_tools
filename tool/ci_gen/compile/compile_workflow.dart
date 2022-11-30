@@ -18,6 +18,7 @@ abstract class CompileWorkflow {
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
+      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       platforms: inputContext.builder(WorkflowInputs.platforms),
       targets: inputContext(WorkflowInputs.targets),
     );

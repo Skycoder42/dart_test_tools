@@ -14,6 +14,7 @@ class PublishBuilder implements StepBuilder {
   final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
+  final Expression buildRunnerArgs;
   final Expression publishExclude;
   final Expression pubDevCredentials;
   final Expression prePublish;
@@ -23,6 +24,7 @@ class PublishBuilder implements StepBuilder {
     required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
+    required this.buildRunnerArgs,
     required this.publishExclude,
     required this.pubDevCredentials,
     required this.prePublish,
@@ -47,6 +49,7 @@ fi
           repository: repository,
           workingDirectory: workingDirectory,
           buildRunner: buildRunner,
+          buildRunnerArgs: buildRunnerArgs,
           pubTool: toolsPub.expression.toString(),
           runTool: toolsPubRun.expression.toString(),
           skipYqInstall: true,

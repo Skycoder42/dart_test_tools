@@ -13,6 +13,7 @@ class FlutterAnalyzeJobBuilder extends AnalyzeJobBuilder
     required super.repository,
     required super.workingDirectory,
     required super.buildRunner,
+    required super.buildRunnerArgs,
     required super.analyzeImage,
     required super.publishExclude,
     required super.extendedAnalyzerArgs,

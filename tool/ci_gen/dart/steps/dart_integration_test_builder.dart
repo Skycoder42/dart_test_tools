@@ -15,6 +15,7 @@ class DartIntegrationTestBuilder
   final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
+  final Expression buildRunnerArgs;
   final Expression integrationTestSetup;
   final Expression integrationTestPaths;
   final Expression integrationTestEnvVars;
@@ -29,6 +30,7 @@ class DartIntegrationTestBuilder
     required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
+    required this.buildRunnerArgs,
     required this.integrationTestSetup,
     required this.integrationTestPaths,
     required this.integrationTestEnvVars,
@@ -45,6 +47,7 @@ class DartIntegrationTestBuilder
           repository: repository,
           workingDirectory: workingDirectory,
           buildRunner: buildRunner,
+          buildRunnerArgs: buildRunnerArgs,
           pubTool: pubTool,
           runTool: runTool,
           ifExpression: _shouldRun,
