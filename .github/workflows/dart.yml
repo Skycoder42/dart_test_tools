@@ -390,7 +390,7 @@ jobs:
         if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && inputs.integrationTestCacheConfig != '' && contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/cache@v3
         with:
-          key: ${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
+          key: ${{ runner.os }}-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
           path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}
           restore-keys: ${{ fromJSON(inputs.integrationTestCacheConfig)['restore-keys'] }}
           upload-chunk-size: ${{ fromJSON(inputs.integrationTestCacheConfig)['upload-chunk-size'] }}

@@ -115,7 +115,14 @@ class DartIntegrationTestBuilder
 
   Expression get _shouldRun => shouldRunExpression(matrix.platform);
 
-  Expression _cacheConfig(String key) => Expression(
-        "fromJSON(${integrationTestCacheConfig.value})['$key']",
-      );
+  String _cacheConfig(String key) {
+    final expression = Expression(
+      "fromJSON(${integrationTestCacheConfig.value})['$key']",
+    );
+    if (key == 'key') {
+      return '${const Expression('runner.os')}-$expression';
+    } else {
+      return expression.toString();
+    }
+  }
 }
