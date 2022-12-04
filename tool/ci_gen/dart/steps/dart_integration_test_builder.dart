@@ -71,7 +71,7 @@ class DartIntegrationTestBuilder
               'restore-keys',
               'upload-chunk-size'
             ])
-              key: _cacheConfig(key).toString(),
+              key: _cacheConfig(key),
           },
         ),
         Step.run(

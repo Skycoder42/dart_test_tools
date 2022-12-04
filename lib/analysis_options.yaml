@@ -1,4 +1,4 @@
-include: package:lint/analysis_options.yaml
+include: package:lint/strict.yaml
 analyzer: 
   strong-mode: 
     implicit-casts: false
@@ -37,11 +37,15 @@ linter:
     prefer_single_quotes: true
     unawaited_futures: true
     unnecessary_lambdas: true
-    unnecessary_null_aware_operator_on_extension_on_nullable: true
-    unnecessary_to_list_in_spreads: true
     unreachable_from_main: true
     use_if_null_to_convert_nulls_to_bools: true
     use_raw_strings: true
     use_string_in_part_of_directives: true
     use_to_and_as_if_applicable: true
+    collection_methods_unrelated_type: true
+    dangling_library_doc_comments: true
+    enable_null_safety: true
+    implicit_call_tearoffs: true
+    library_annotations: true
+    unnecessary_library_directive: true
     # new rules

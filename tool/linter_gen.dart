@@ -39,7 +39,7 @@ Future<void> _writeNormalOptions(
   final normalOptions = await generator.generateRules(
     baseOptions: const AnalysisOptionsRef.package(
       packageName: 'lint',
-      path: 'analysis_options.yaml',
+      path: 'strict.yaml',
     ),
     mergeOptions: const [
       AnalysisOptionsRef.package(
@@ -72,7 +72,7 @@ Future<void> _writePackageOptions(
     mergeOptions: const [
       AnalysisOptionsRef.package(
         packageName: 'lint',
-        path: 'analysis_options_package.yaml',
+        path: 'package.yaml',
       )
     ],
     customOptions: packageOptionsRef,

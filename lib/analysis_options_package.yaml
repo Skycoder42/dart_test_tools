@@ -5,7 +5,7 @@ analyzer:
     implicit-dynamic: false
 linter: 
   rules: 
-    # rules from package:lint/analysis_options_package.yaml
+    # rules from package:lint/package.yaml
     package_api_docs: true
     # custom rules
     avoid_equals_and_hash_code_on_mutable_classes: true

@@ -56,12 +56,14 @@ linter:
     - cascade_invocations
     - cast_nullable_to_non_nullable
     - close_sinks
+    - collection_methods_unrelated_type
     - combinators_ordering
     - comment_references
     - conditional_uri_does_not_exist
     - constant_identifier_names
     - control_flow_in_finally
     - curly_braces_in_flow_control_structures
+    - dangling_library_doc_comments
     - depend_on_referenced_packages
     - deprecated_consistency
     - diagnostic_describe_all_properties
@@ -71,15 +73,18 @@ linter:
     - empty_catches
     - empty_constructor_bodies
     - empty_statements
+    - enable_null_safety
     - eol_at_end_of_file
     - exhaustive_cases
     - file_names
     - flutter_style_todos
     - hash_and_equals
     - implementation_imports
+    - implicit_call_tearoffs
     - iterable_contains_unrelated_type
     - join_return_with_assignment
     - leading_newlines_in_multiline_strings
+    - library_annotations
     - library_names
     - library_prefixes
     - library_private_types_in_public_api
@@ -118,7 +123,6 @@ linter:
     - prefer_constructors_over_static_methods
     - prefer_contains
     - prefer_double_quotes
-    - prefer_equal_for_default_values
     - prefer_expression_function_bodies
     - prefer_final_fields
     - prefer_final_in_for_each
@@ -172,6 +176,7 @@ linter:
     - unnecessary_getters_setters
     - unnecessary_lambdas
     - unnecessary_late
+    - unnecessary_library_directive
     - unnecessary_new
     - unnecessary_null_aware_assignments
     - unnecessary_null_aware_operator_on_extension_on_nullable
