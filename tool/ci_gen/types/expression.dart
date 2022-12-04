@@ -28,6 +28,8 @@ class Expression with _$Expression {
         fake: (fakeValue) => fakeValue,
       );
 
+  Expression get parenthesized => Expression('($value)');
+
   Expression get not => Expression('!$value');
 
   Expression operator <(Expression other) =>

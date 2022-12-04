@@ -88,6 +88,19 @@ on:
             "linux": "dart run tools/install-deps.dart",
             "web": "./setup-web.sh"
           }
+      integrationTestCacheConfig:
+        type: string
+        required: false
+        default: ""
+        description: |
+          A JSON-Matrix a caching configuration, if needed. Can be used to enable caching
+          for expensive integration test setup scenarios.
+
+          Example:
+          {
+            "key": "test-cache-key",
+            "path": "path/to/cache-dir"
+          }
     secrets:
       integrationTestEnvVars:
         required: false
@@ -372,13 +385,22 @@ jobs:
         if: inputs.buildRunner && contains(fromJSON(inputs.platforms), matrix.platform)
         run: dart run build_runner build ${{ inputs.buildRunnerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
+      - id: test-setup-cache
+        name: Restore integration test cache
+        if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && inputs.integrationTestCacheConfig != '' && contains(fromJSON(inputs.platforms), matrix.platform)
+        uses: actions/cache@v3
+        with:
+          key: ${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
+          path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}
+          restore-keys: ${{ fromJSON(inputs.integrationTestCacheConfig)['restore-keys'] }}
+          upload-chunk-size: ${{ fromJSON(inputs.integrationTestCacheConfig)['upload-chunk-size'] }}
       - name: Create .env file from secrets
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: echo '${{ secrets.integrationTestEnvVars }}' > .env
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Run platform test setup
-        if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && (inputs.integrationTestCacheConfig == '' || steps.test-setup-cache.outputs.cache-hit != 'true') && contains(fromJSON(inputs.platforms), matrix.platform)
         run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run integration tests

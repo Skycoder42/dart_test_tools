@@ -162,6 +162,25 @@ Example:
     ),
   );
 
+  static const integrationTestCacheConfig = WorkflowInput(
+    name: 'integrationTestCacheConfig',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: '',
+      description: '''
+A JSON-Matrix a caching configuration, if needed. Can be used to enable caching
+for expensive integration test setup scenarios.
+
+Example:
+{
+  "key": "test-cache-key",
+  "path": "path/to/cache-dir"
+}
+''',
+    ),
+  );
+
   static const minCoverage = WorkflowInput(
     name: 'minCoverage',
     input: Input(

@@ -80,6 +80,7 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression integrationTestSetup;
   final Expression integrationTestPaths;
   final Expression integrationTestEnvVars;
+  final Expression integrationTestCacheConfig;
   final Expression platforms;
 
   DartIntegrationTestJobBuilder({
@@ -92,6 +93,7 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
     required this.integrationTestSetup,
     required this.integrationTestPaths,
     required this.integrationTestEnvVars,
+    required this.integrationTestCacheConfig,
     required ExpressionBuilderFn<List<String>> platforms,
   }) : platforms = platforms(_platformIncludes.map((i) => i.platform).toList());
 
@@ -128,6 +130,7 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
             integrationTestSetup: integrationTestSetup,
             integrationTestPaths: integrationTestPaths,
             integrationTestEnvVars: integrationTestEnvVars,
+            integrationTestCacheConfig: integrationTestCacheConfig,
             platforms: platforms,
             baseTool: baseTool,
             pubTool: pubTool,
