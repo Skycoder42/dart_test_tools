@@ -400,7 +400,9 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Run platform test setup
-        if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && (inputs.integrationTestCacheConfig == '' || steps.test-setup-cache.outputs.cache-hit != 'true') && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && contains(fromJSON(inputs.platforms), matrix.platform)
+        env:
+          CACHE_HIT: ${{ steps.test-setup-cache.outputs.cache-hit }}
         run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run integration tests

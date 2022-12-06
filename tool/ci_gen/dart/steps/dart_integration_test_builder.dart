@@ -1,6 +1,7 @@
 import '../../common/api/step_builder.dart';
 import '../../common/steps/platforms_builder_mixin.dart';
 import '../../common/steps/project_setup_builder.dart';
+import '../../types/env.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
@@ -83,16 +84,13 @@ class DartIntegrationTestBuilder
         ),
         Step.run(
           name: 'Run platform test setup',
-          ifExpression: _platformTestSetup.ne(Expression.empty) &
-              (integrationTestCacheConfig.eq(Expression.empty) |
-                      testSetupCacheStepId
-                          .output('cache-hit')
-                          .expression
-                          .ne(const Expression.literal('true')))
-                  .parenthesized &
-              _shouldRun,
+          ifExpression: _platformTestSetup.ne(Expression.empty) & _shouldRun,
           run: _platformTestSetup.toString(),
           workingDirectory: workingDirectory.toString(),
+          env: Env({
+            'CACHE_HIT':
+                testSetupCacheStepId.output('cache-hit').expression.toString(),
+          }),
         ),
         Step.run(
           name: 'Run integration tests',

@@ -48,7 +48,7 @@ YAMLWriter _createYamlWriter() => YAMLWriter()
     // ignore: avoid_dynamic_calls
     final dynamic jsonData = data.toJson != null ? data.toJson() : data;
     if (jsonData is Map) {
-      jsonData.remove('runtimeType');
+      return <dynamic, dynamic>{...jsonData}..remove('runtimeType');
     }
     return jsonData;
   };
