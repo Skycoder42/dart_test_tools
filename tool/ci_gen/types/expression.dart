@@ -20,10 +20,10 @@ class Expression with _$Expression {
   const factory Expression.json(Object? jsonValue) = _JsonExpression;
   const factory Expression.fake(String fakeValue) = _FakeExpression;
 
-  String get value => when(
+  dynamic get value => when<dynamic>(
         (value) => value,
         literal: (dynamic rawValue) =>
-            rawValue is String ? "'$rawValue'" : rawValue.toString(),
+            rawValue is String ? "'$rawValue'" : rawValue,
         json: (jsonValue) => json.encode(jsonValue),
         fake: (fakeValue) => fakeValue,
       );
@@ -62,12 +62,13 @@ class Expression with _$Expression {
       );
 }
 
-class ExpressionConverter implements JsonConverter<Expression?, String?> {
+class ExpressionConverter implements JsonConverter<Expression?, dynamic> {
   const ExpressionConverter();
 
   @override
-  Expression? fromJson(String? json) => json != null ? Expression(json) : null;
+  Expression? fromJson(dynamic json) =>
+      json != null ? Expression(json as String) : null;
 
   @override
-  String? toJson(Expression? expression) => expression?.value;
+  dynamic toJson(Expression? expression) => expression?.value;
 }

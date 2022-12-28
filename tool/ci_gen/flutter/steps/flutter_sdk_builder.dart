@@ -5,12 +5,14 @@ import '../../types/step.dart';
 
 class FlutterSdkBuilder implements StepBuilder {
   final Expression flutterSdkChannel;
+  final Expression javaJdkVersion;
   final Expression? buildPlatform;
   final Expression? enableDesktopCondition;
   final Expression? ifExpression;
 
   const FlutterSdkBuilder({
     required this.flutterSdkChannel,
+    required this.javaJdkVersion,
     this.buildPlatform,
     this.enableDesktopCondition,
     this.ifExpression,
@@ -21,6 +23,17 @@ class FlutterSdkBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
+        if (buildPlatform != null)
+          Step.uses(
+            name: 'Install JDK Version $javaJdkVersion',
+            ifExpression:
+                buildPlatform!.eq(const Expression.literal('android')),
+            uses: Tools.actionsSetupJava,
+            withArgs: <String, dynamic>{
+              'distribution': 'temurin',
+              'java-version': javaJdkVersion.toString(),
+            },
+          ),
         Step.uses(
           name: 'Install Flutter-SDK '
               '($flutterSdkChannel)',

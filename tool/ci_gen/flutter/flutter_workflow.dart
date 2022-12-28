@@ -16,6 +16,7 @@ abstract class FlutterWorkflow {
 
     final analyzeJobBuilder = FlutterAnalyzeJobBuilder(
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
+      javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
@@ -27,6 +28,7 @@ abstract class FlutterWorkflow {
     final unitTestBuilder = FlutterUnitTestJobBuilder(
       analyzeJobId: analyzeJobBuilder.id,
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
+      javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
@@ -47,6 +49,7 @@ abstract class FlutterWorkflow {
     final integrationTestBuilder = FlutterIntegrationTestJobBuilder(
       analyzeJobId: analyzeJobBuilder.id,
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
+      javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),

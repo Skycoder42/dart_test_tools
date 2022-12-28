@@ -6,6 +6,11 @@ on:
         required: false
         default: stable
         description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action".
+      javaJdkVersion:
+        type: number
+        required: false
+        default: 11
+        description: The Java-SDK version (mayor only). Passed as "java-version" to "actions/setup-java".
       repository:
         type: string
         required: false
@@ -375,6 +380,12 @@ jobs:
             os: windows-latest
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Install JDK Version ${{ inputs.javaJdkVersion }}
+        if: matrix.platform == 'android'
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: ${{ inputs.javaJdkVersion }}
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: subosito/flutter-action@v2

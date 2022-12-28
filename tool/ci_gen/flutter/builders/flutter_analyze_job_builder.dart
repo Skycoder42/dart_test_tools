@@ -7,9 +7,12 @@ class FlutterAnalyzeJobBuilder extends AnalyzeJobBuilder
     with FlutterSdkJobBuilderMixin {
   @override
   final Expression flutterSdkChannel;
+  @override
+  final Expression javaJdkVersion;
 
   const FlutterAnalyzeJobBuilder({
     required this.flutterSdkChannel,
+    required this.javaJdkVersion,
     required super.repository,
     required super.workingDirectory,
     required super.buildRunner,

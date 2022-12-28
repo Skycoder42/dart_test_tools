@@ -5,6 +5,7 @@ import '../steps/flutter_sdk_builder.dart';
 
 mixin FlutterSdkJobBuilderMixin on SdkJobBuilder {
   Expression get flutterSdkChannel;
+  Expression get javaJdkVersion;
 
   @override
   String get baseTool => 'flutter';
@@ -18,6 +19,7 @@ mixin FlutterSdkJobBuilderMixin on SdkJobBuilder {
       [
         ...FlutterSdkBuilder(
           flutterSdkChannel: flutterSdkChannel,
+          javaJdkVersion: javaJdkVersion,
           ifExpression: ifExpression,
           buildPlatform: buildPlatform,
           enableDesktopCondition: enableDesktopCondition,

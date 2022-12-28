@@ -72,6 +72,17 @@ abstract class WorkflowInputs {
     ),
   );
 
+  static const javaJdkVersion = WorkflowInput(
+    name: 'javaJdkVersion',
+    input: Input(
+      type: Type.number,
+      required: false,
+      defaultValue: 11,
+      description: 'The Java-SDK version (mayor only). '
+          'Passed as "java-version" to "actions/setup-java".',
+    ),
+  );
+
   static final platforms = WorkflowInputBuilder<List<String>>(
     name: 'platforms',
     builder: (defaultPlatforms) => Input.json(

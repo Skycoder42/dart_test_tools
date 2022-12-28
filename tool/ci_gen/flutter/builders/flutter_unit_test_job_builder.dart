@@ -6,10 +6,13 @@ class FlutterUnitTestJobBuilder extends UnitTestJobBuilder
     with FlutterSdkJobBuilderMixin {
   @override
   final Expression flutterSdkChannel;
+  @override
+  final Expression javaJdkVersion;
 
   FlutterUnitTestJobBuilder({
     required super.analyzeJobId,
     required this.flutterSdkChannel,
+    required this.javaJdkVersion,
     required super.repository,
     required super.workingDirectory,
     required super.buildRunner,

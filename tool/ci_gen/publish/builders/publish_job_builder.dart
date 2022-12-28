@@ -12,6 +12,7 @@ class PublishJobBuilder implements JobBuilder {
   final Expression flutter;
   final Expression dartSdkVersion;
   final Expression flutterSdkChannel;
+  final Expression javaJdkVersion;
   final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
@@ -26,6 +27,7 @@ class PublishJobBuilder implements JobBuilder {
     required this.flutter,
     required this.dartSdkVersion,
     required this.flutterSdkChannel,
+    required this.javaJdkVersion,
     required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
@@ -52,6 +54,7 @@ class PublishJobBuilder implements JobBuilder {
           ).build(),
           ...FlutterSdkBuilder(
             flutterSdkChannel: flutterSdkChannel,
+            javaJdkVersion: javaJdkVersion,
             ifExpression: flutter,
           ).build(),
           ...PublishBuilder(

@@ -35,6 +35,11 @@ on:
         required: false
         default: stable
         description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action".
+      javaJdkVersion:
+        type: number
+        required: false
+        default: 11
+        description: The Java-SDK version (mayor only). Passed as "java-version" to "actions/setup-java".
       buildRunner:
         type: boolean
         required: false
