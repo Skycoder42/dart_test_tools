@@ -109,6 +109,7 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression integrationTestSetup;
   final Expression integrationTestPaths;
   final Expression integrationTestProject;
+  final Expression integrationTestCacheConfig;
   final Expression androidAVDImage;
   final Expression androidAVDDevice;
   final Expression platforms;
@@ -123,6 +124,7 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     required this.integrationTestSetup,
     required this.integrationTestPaths,
     required this.integrationTestProject,
+    required this.integrationTestCacheConfig,
     required this.androidAVDImage,
     required this.androidAVDDevice,
     required ExpressionBuilderFn<List<String>> platforms,
@@ -164,6 +166,7 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
             integrationTestSetup: integrationTestSetup,
             integrationTestPaths: integrationTestPaths,
             integrationTestProject: integrationTestProject,
+            integrationTestCacheConfig: integrationTestCacheConfig,
             androidAVDImage: androidAVDImage,
             androidAVDDevice: androidAVDDevice,
             baseTool: baseTool,

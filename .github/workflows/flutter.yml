@@ -94,6 +94,19 @@ on:
         type: string
         required: false
         description: Specifies the project in which integration tests are placed. Useful in case of flutter libraries, where integration tests are typically inside the example instead of the package itself
+      integrationTestCacheConfig:
+        type: string
+        required: false
+        default: ""
+        description: |
+          A JSON-Matrix a caching configuration, if needed. Can be used to enable caching
+          for expensive integration test setup scenarios.
+
+          Example:
+          {
+            "key": "test-cache-key",
+            "path": "path/to/cache-dir"
+          }
       androidAVDImage:
         type: string
         required: false
@@ -430,8 +443,19 @@ jobs:
         if: contains(fromJSON(inputs.platforms), matrix.platform) && inputs.integrationTestProject != ''
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+      - id: test-setup-cache
+        name: Restore integration test cache
+        if: inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && contains(fromJSON(inputs.platforms), matrix.platform)
+        uses: actions/cache@v3
+        with:
+          key: ${{ matrix.platform }}-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
+          path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}
+          restore-keys: ${{ fromJSON(inputs.integrationTestCacheConfig)['restore-keys'] }}
+          upload-chunk-size: ${{ fromJSON(inputs.integrationTestCacheConfig)['upload-chunk-size'] }}
       - name: Run platform test setup
         if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && contains(fromJSON(inputs.platforms), matrix.platform)
+        env:
+          CACHE_HIT: ${{ steps.test-setup-cache.outputs.cache-hit }}
         run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Start Android-Emulator

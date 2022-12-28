@@ -387,10 +387,10 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - id: test-setup-cache
         name: Restore integration test cache
-        if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && inputs.integrationTestCacheConfig != '' && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/cache@v3
         with:
-          key: ${{ runner.os }}-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
+          key: ${{ matrix.platform }}-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
           path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}
           restore-keys: ${{ fromJSON(inputs.integrationTestCacheConfig)['restore-keys'] }}
           upload-chunk-size: ${{ fromJSON(inputs.integrationTestCacheConfig)['upload-chunk-size'] }}

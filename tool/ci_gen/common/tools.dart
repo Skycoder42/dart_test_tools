@@ -10,6 +10,9 @@ abstract class Tools {
   /// https://github.com/actions/download-artifact/releases
   static const actionsDownloadArtifact = 'actions/download-artifact@v3';
 
+  /// https://github.com/actions/cache/releases
+  static const actionsCache = 'actions/cache@v3';
+
   /// https://github.com/dart-lang/setup-dart/releases
   static const dartLangSetupDart = 'dart-lang/setup-dart@v1';
 

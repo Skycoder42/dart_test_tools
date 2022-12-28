@@ -1,7 +1,7 @@
 import '../../common/api/step_builder.dart';
+import '../../common/steps/cache_builder.dart';
 import '../../common/steps/platforms_builder_mixin.dart';
 import '../../common/steps/project_setup_builder.dart';
-import '../../types/env.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
@@ -58,23 +58,12 @@ class DartIntegrationTestBuilder
           runTool: runTool,
           ifExpression: _shouldRun,
         ).build(),
-        Step.uses(
-          name: 'Restore integration test cache',
-          id: testSetupCacheStepId,
-          uses: 'actions/cache@v3',
-          ifExpression: _platformTestSetup.ne(Expression.empty) &
-              integrationTestCacheConfig.ne(Expression.empty) &
-              _shouldRun,
-          withArgs: <String, dynamic>{
-            for (final key in [
-              'key',
-              'path',
-              'restore-keys',
-              'upload-chunk-size'
-            ])
-              key: _cacheConfig(key),
-          },
-        ),
+        ...CacheBuilder(
+          cacheStepId: testSetupCacheStepId,
+          platform: matrix.platform,
+          cacheConfig: integrationTestCacheConfig,
+          ifExpression: _platformTestSetup.ne(Expression.empty) & _shouldRun,
+        ).build(),
         Step.run(
           name: 'Create .env file from secrets',
           ifExpression: _shouldRun,
@@ -87,10 +76,7 @@ class DartIntegrationTestBuilder
           ifExpression: _platformTestSetup.ne(Expression.empty) & _shouldRun,
           run: _platformTestSetup.toString(),
           workingDirectory: workingDirectory.toString(),
-          env: Env({
-            'CACHE_HIT':
-                testSetupCacheStepId.output('cache-hit').expression.toString(),
-          }),
+          env: CacheBuilder.createEnv(testSetupCacheStepId),
         ),
         Step.run(
           name: 'Run integration tests',
@@ -112,15 +98,4 @@ class DartIntegrationTestBuilder
       );
 
   Expression get _shouldRun => shouldRunExpression(matrix.platform);
-
-  String _cacheConfig(String key) {
-    final expression = Expression(
-      "fromJSON(${integrationTestCacheConfig.value})['$key']",
-    );
-    if (key == 'key') {
-      return '${const Expression('runner.os')}-$expression';
-    } else {
-      return expression.toString();
-    }
-  }
 }

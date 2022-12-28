@@ -1,8 +1,10 @@
 import '../../common/api/step_builder.dart';
+import '../../common/steps/cache_builder.dart';
 import '../../common/steps/platforms_builder_mixin.dart';
 import '../../common/steps/project_prepare_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../types/expression.dart';
+import '../../types/id.dart';
 import '../../types/step.dart';
 
 abstract class IFlutterIntegrationTestMatrix {
@@ -15,6 +17,8 @@ abstract class IFlutterIntegrationTestMatrix {
 class FlutterIntegrationTestBuilder
     with PlatformsBuilderMixin
     implements StepBuilder {
+  static const testSetupCacheStepId = StepId('test-setup-cache');
+
   final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
@@ -22,6 +26,7 @@ class FlutterIntegrationTestBuilder
   final Expression integrationTestSetup;
   final Expression integrationTestPaths;
   final Expression integrationTestProject;
+  final Expression integrationTestCacheConfig;
   final Expression androidAVDImage;
   final Expression androidAVDDevice;
   @override
@@ -39,6 +44,7 @@ class FlutterIntegrationTestBuilder
     required this.integrationTestSetup,
     required this.integrationTestPaths,
     required this.integrationTestProject,
+    required this.integrationTestCacheConfig,
     required this.androidAVDImage,
     required this.androidAVDDevice,
     required this.platforms,
@@ -100,11 +106,18 @@ sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
           ifExpression:
               _shouldRun & integrationTestProject.ne(Expression.empty),
         ).build(),
+        ...CacheBuilder(
+          cacheStepId: testSetupCacheStepId,
+          platform: matrix.platform,
+          cacheConfig: integrationTestCacheConfig,
+          ifExpression: _platformTestSetup.ne(Expression.empty) & _shouldRun,
+        ).build(),
         Step.run(
           name: 'Run platform test setup',
           ifExpression: _platformTestSetup.ne(Expression.empty) & _shouldRun,
           run: _platformTestSetup.toString(),
           workingDirectory: workingDirectory.toString(),
+          env: CacheBuilder.createEnv(testSetupCacheStepId),
         ),
         Step.run(
           name: 'Start Android-Emulator',
