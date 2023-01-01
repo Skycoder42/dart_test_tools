@@ -20,6 +20,7 @@ class PublishJobBuilder implements JobBuilder {
   final Expression publishExclude;
   final Expression pubDevCredentials;
   final Expression prePublish;
+  final Expression extraArtifacts;
 
   PublishJobBuilder({
     required this.publish,
@@ -35,6 +36,7 @@ class PublishJobBuilder implements JobBuilder {
     required this.publishExclude,
     required this.pubDevCredentials,
     required this.prePublish,
+    required this.extraArtifacts,
   });
 
   @override
@@ -66,6 +68,7 @@ class PublishJobBuilder implements JobBuilder {
             publishExclude: publishExclude,
             pubDevCredentials: pubDevCredentials,
             prePublish: prePublish,
+            extraArtifacts: extraArtifacts,
           ).build(),
         ],
       );

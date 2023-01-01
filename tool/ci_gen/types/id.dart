@@ -37,11 +37,8 @@ class IdOutput with _$IdOutput {
   const IdOutput._();
 
   // ignore: unused_element
-  const factory IdOutput.step(StepId id, String name) = StepIdOutput;
-  const factory IdOutput.job(JobId id, String name) = JobIdOutput;
-
-  @override
-  Id get id => throw StateError('Unreachable code was reached');
+  const factory IdOutput.step(StepId stepId, String name) = StepIdOutput;
+  const factory IdOutput.job(JobId jobId, String name) = JobIdOutput;
 
   Expression get expression => when(
         step: (id, name) => Expression('steps.$id.outputs.$name'),
@@ -60,6 +57,21 @@ class IdOutput with _$IdOutput {
           'Cannot create a workflowExpression for $this',
         ),
       );
+}
+
+extension IdOutputX on IdOutput {
+  Id get id => when(
+        step: (stepId, name) => stepId,
+        job: (jobId, name) => jobId,
+      );
+}
+
+extension StepIdOutputX on StepIdOutput {
+  StepId get id => stepId;
+}
+
+extension JobIdOutputX on JobIdOutput {
+  JobId get id => jobId;
 }
 
 abstract class _IdConverter<TStep extends Id>

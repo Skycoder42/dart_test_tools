@@ -28,7 +28,6 @@ on:
       buildRunnerArgs:
         type: string
         required: false
-        default: ""
         description: Optional additional arguments to be passed to the build runner.
       analyzeImage:
         type: string
@@ -45,7 +44,6 @@ on:
       extendedAnalyzerArgs:
         type: string
         required: false
-        default: ""
         description: |
           Additional arguments to pass to the dart_test_tools:lint tool when running the
           extended linters step. Can for example be used to enable or disable specific
@@ -102,7 +100,6 @@ on:
       integrationTestCacheConfig:
         type: string
         required: false
-        default: ""
         description: |
           A JSON-Matrix a caching configuration, if needed. Can be used to enable caching
           for expensive integration test setup scenarios.

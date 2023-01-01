@@ -23,7 +23,6 @@ on:
       buildRunnerArgs:
         type: string
         required: false
-        default: ""
         description: Optional additional arguments to be passed to the build runner.
       targets:
         type: string

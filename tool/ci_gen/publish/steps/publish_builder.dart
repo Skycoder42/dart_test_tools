@@ -1,6 +1,7 @@
 import '../../common/api/step_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../common/steps/run_publish_builder.dart';
+import '../../common/tools.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
@@ -18,6 +19,7 @@ class PublishBuilder implements StepBuilder {
   final Expression publishExclude;
   final Expression pubDevCredentials;
   final Expression prePublish;
+  final Expression extraArtifacts;
 
   PublishBuilder({
     required this.flutter,
@@ -28,6 +30,7 @@ class PublishBuilder implements StepBuilder {
     required this.publishExclude,
     required this.pubDevCredentials,
     required this.prePublish,
+    required this.extraArtifacts,
   });
 
   @override
@@ -55,6 +58,14 @@ fi
           runTool: toolsPubRun.expression.toString(),
           skipYqInstall: true,
         ).build(),
+        Step.uses(
+          name: 'Download additional artifacts',
+          ifExpression: extraArtifacts.ne(Expression.empty),
+          uses: Tools.actionsDownloadArtifact,
+          withArgs: <String, dynamic>{
+            for (final key in ['name', 'path']) key: _artifactConfig(key),
+          },
+        ),
         Step.run(
           name: 'Run pre publish script',
           ifExpression: prePublish.ne(Expression.empty),
@@ -83,4 +94,8 @@ echo '$pubDevCredentials' > "\$cache_dir/pub-credentials.json"
           run: r'shred -fzvu "$XDG_CONFIG_HOME/dart/pub-credentials.json"',
         ),
       ];
+
+  String _artifactConfig(String key) => Expression(
+        "fromJSON(${extraArtifacts.value})['$key']",
+      ).toString();
 }

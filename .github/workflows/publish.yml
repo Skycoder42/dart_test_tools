@@ -48,7 +48,6 @@ on:
       buildRunnerArgs:
         type: string
         required: false
-        default: ""
         description: Optional additional arguments to be passed to the build runner.
       publish:
         type: boolean
@@ -66,6 +65,19 @@ on:
         type: string
         required: false
         description: A command to be run before publishing the package
+      extraArtifacts:
+        type: string
+        required: false
+        description: |
+          A JSON-Matrix a artifact download configuration, if needed. Can be used to
+          download artifacts before publishing the package. Can be combined with
+          `prePublish` to process the downloaded artifacts.
+
+          Example:
+          {
+            "name": "test-artifact",
+            "path": "path/to/artifact-dir"
+          }
     outputs:
       releaseCreated:
         value: ${{ jobs.release.outputs.update }}
@@ -182,6 +194,12 @@ jobs:
         if: inputs.buildRunner
         run: ${{ steps.tools.outputs.pubRun }} build_runner build --release ${{ inputs.buildRunnerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
+      - name: Download additional artifacts
+        if: inputs.extraArtifacts != ''
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ fromJSON(inputs.extraArtifacts)['name'] }}
+          path: ${{ fromJSON(inputs.extraArtifacts)['path'] }}
       - name: Run pre publish script
         if: inputs.prePublish != ''
         run: ${{ inputs.prePublish }}

@@ -35,6 +35,7 @@ abstract class PublishWorkflow {
       publish: inputContext(WorkflowInputs.publish),
       publishExclude: inputContext(WorkflowInputs.publishExclude),
       prePublish: inputContext(WorkflowInputs.prePublish),
+      extraArtifacts: inputContext(WorkflowInputs.extraArtifacts),
       pubDevCredentials: secretContext(WorkflowSecrets.pubDevCredentials),
     );
 

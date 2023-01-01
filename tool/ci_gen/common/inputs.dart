@@ -44,7 +44,6 @@ abstract class WorkflowInputs {
     input: Input(
       type: Type.string,
       required: false,
-      defaultValue: '',
       description:
           'Optional additional arguments to be passed to the build runner.',
     ),
@@ -124,7 +123,6 @@ Example: '["secrets.txt","debug.log"]'
     input: Input(
       type: Type.string,
       required: false,
-      defaultValue: '',
       description: '''
 Additional arguments to pass to the dart_test_tools:lint tool when running the
 extended linters step. Can for example be used to enable or disable specific
@@ -178,7 +176,6 @@ Example:
     input: Input(
       type: Type.string,
       required: false,
-      defaultValue: '',
       description: '''
 A JSON-Matrix a caching configuration, if needed. Can be used to enable caching
 for expensive integration test setup scenarios.
@@ -313,6 +310,25 @@ Example:
       type: Type.string,
       required: false,
       description: 'A command to be run before publishing the package',
+    ),
+  );
+
+  static const extraArtifacts = WorkflowInput(
+    name: 'extraArtifacts',
+    input: Input(
+      type: Type.string,
+      required: false,
+      description: '''
+A JSON-Matrix a artifact download configuration, if needed. Can be used to
+download artifacts before publishing the package. Can be combined with
+`prePublish` to process the downloaded artifacts.
+
+Example:
+{
+  "name": "test-artifact",
+  "path": "path/to/artifact-dir"
+}
+''',
     ),
   );
 
