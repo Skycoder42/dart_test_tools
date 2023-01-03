@@ -1,6 +1,7 @@
 import '../../common/api/step_builder.dart';
 import '../../common/steps/checkout_builder.dart';
 import '../../common/steps/release_entry_builder.dart';
+import '../../dart/steps/dart_sdk_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
@@ -9,11 +10,13 @@ class ReleaseBuilder implements StepBuilder {
   static const versionStepId = StepId('version');
   static final versionUpdate = versionStepId.output('update');
 
+  final Expression dartSdkVersion;
   final Expression repository;
   final Expression workingDirectory;
   final Expression tagPrefix;
 
   ReleaseBuilder({
+    required this.dartSdkVersion,
     required this.repository,
     required this.workingDirectory,
     required this.tagPrefix,
@@ -21,6 +24,9 @@ class ReleaseBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
+        ...DartSdkBuilder(
+          dartSdkVersion: dartSdkVersion,
+        ).build(),
         ...CheckoutBuilder(
           repository: repository,
         ).build(),

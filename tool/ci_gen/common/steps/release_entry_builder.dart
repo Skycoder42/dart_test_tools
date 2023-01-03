@@ -30,6 +30,10 @@ class ReleaseEntryBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
+        const Step.run(
+          name: 'Activate cider',
+          run: 'dart pub global activate cider',
+        ),
         Step.run(
           id: releaseContentStepId,
           name: 'Generate release content',
@@ -46,8 +50,8 @@ release_name="Release of package \$package_name - Version \$package_version"
 ${releaseContentReleaseName.bashSetter(r'$release_name')}
 
 version_changelog_file=\$(mktemp)
-echo "## Changelog" > \$version_changelog_file
-cat CHANGELOG.md | sed '/^## '\$package_version'.*\$/,/^## /!d;//d' >> \$version_changelog_file
+echo "# Changelog" > \$version_changelog_file
+dart pub global run cider describe "\$package_version" >> \$version_changelog_file
 echo "" >> \$version_changelog_file${changelogExtra != null ? '\necho "$changelogExtra" >> \$version_changelog_file' : ''}
 ${releaseContentBodyPath.bashSetter(r'$version_changelog_file')}
 ''',

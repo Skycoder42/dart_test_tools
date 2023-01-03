@@ -17,6 +17,7 @@ abstract class PublishWorkflow {
     final secretContext = WorkflowSecretContext();
 
     final releaseJobBuilder = ReleaseJobBuilder(
+      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       releaseRef: inputContext(WorkflowInputs.releaseRef),

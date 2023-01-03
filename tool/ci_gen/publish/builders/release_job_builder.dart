@@ -9,12 +9,14 @@ class ReleaseJobBuilder implements JobBuilder {
   static final updateOutput = jobId.output('update');
 
   final Expression releaseRef;
+  final Expression dartSdkVersion;
   final Expression repository;
   final Expression workingDirectory;
   final Expression tagPrefix;
 
   ReleaseJobBuilder({
     required this.releaseRef,
+    required this.dartSdkVersion,
     required this.repository,
     required this.workingDirectory,
     required this.tagPrefix,
@@ -33,6 +35,7 @@ class ReleaseJobBuilder implements JobBuilder {
         },
         steps: [
           ...ReleaseBuilder(
+            dartSdkVersion: dartSdkVersion,
             repository: repository,
             workingDirectory: workingDirectory,
             tagPrefix: tagPrefix,
