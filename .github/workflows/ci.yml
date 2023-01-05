@@ -14,6 +14,7 @@ jobs:
     name: CI
     uses: Skycoder42/dart_test_tools/.github/workflows/dart.yml@main
     with:
+      platforms: '["linux","windows","macos"]'
       buildRunner: true
       publishExclude: >-
         [
@@ -23,7 +24,12 @@ jobs:
         ]
       unitTestPaths: ""
       integrationTestPaths: test/integration
-      platforms: '["linux","windows","macos"]'
+      integrationTestSetup: >-
+        {
+          "linux": "dart run tool/ci_install_flutter.dart",
+          "windows": "dart run tool/ci_install_flutter.dart",
+          "macos": "dart run tool/ci_install_flutter.dart"
+        }
     secrets:
       integrationTestEnvVars: |
         TEST_KEY=test-value
