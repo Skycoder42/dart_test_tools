@@ -9,6 +9,7 @@ environment:
 executables:
   lint: lint
   generate_pkgbuild: generate_pkgbuild
+  cider: cider
 
 dependencies:
   analyzer: ">=4.7.0 <6.0.0"
