@@ -5,6 +5,7 @@ import 'package:args/args.dart';
 import 'package:cider/cider.dart';
 import 'package:dart_test_tools/src/cider_plugins/cider_plugin.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
+import 'package:yaml/yaml.dart';
 
 class VersionSyncPlugin implements CiderPlugin {
   const VersionSyncPlugin();
@@ -23,8 +24,9 @@ class VersionSyncPlugin implements CiderPlugin {
     final rootDir = get<Directory>('root');
 
     final pubspecFile = File.fromUri(rootDir.uri.resolve('pubspec.yaml'));
+    final pubspecYaml = await pubspecFile.readAsString();
     final pubspec = Pubspec.parse(
-      await pubspecFile.readAsString(),
+      pubspecYaml,
       sourceUrl: pubspecFile.uri,
     );
 
@@ -38,6 +40,13 @@ class VersionSyncPlugin implements CiderPlugin {
     await _updateAndroid(stdout, rootDir, pubspec);
     await _updateDarwin(stdout, rootDir, pubspec, 'ios');
     await _updateDarwin(stdout, rootDir, pubspec, 'macos');
+    await _updateConfigured(
+      stdout,
+      rootDir,
+      pubspec,
+      pubspecYaml,
+      pubspecFile.uri,
+    );
 
     return 0;
   }
@@ -57,7 +66,7 @@ class VersionSyncPlugin implements CiderPlugin {
 
     await _replaceInFileMapped(
       buildGradle,
-      RegExp(r"^version '.*'$", multiLine: true),
+      r"^version '.*'$",
       (m) => "version '${pubspec.version}'",
     );
     stdout.writeln('Synced version with android');
@@ -79,19 +88,57 @@ class VersionSyncPlugin implements CiderPlugin {
 
     await _replaceInFileMapped(
       buildGradle,
-      RegExp(r"^(\s*)s.version(\s*)= '.*'$", multiLine: true),
+      r"^(\s*)s.version(\s*)= '.*'$",
       (m) => "${m[1]}s.version${m[2]}= '${pubspec.version}'",
     );
     stdout.writeln('Synced version with $os');
   }
 
+  Future<void> _updateConfigured(
+    Stdout stdout,
+    Directory rootDir,
+    Pubspec pubspec,
+    String pubspecYaml,
+    Uri pubspecUrl,
+  ) async {
+    final yaml = loadYaml(pubspecYaml, sourceUrl: pubspecUrl) as YamlMap?;
+    final cider = yaml?['cider'] as YamlMap?;
+    final versionSync = cider?['version_sync'] as YamlMap?;
+    if (versionSync == null) {
+      return;
+    }
+
+    for (final entry in versionSync.entries) {
+      final path = entry.key as String;
+      final config = entry.value as YamlMap;
+
+      final file = File.fromUri(rootDir.uri.resolve(path));
+      if (!file.existsSync()) {
+        stdout.writeln('Skipping $path');
+        continue;
+      }
+
+      await _replaceInFileMapped(
+        file,
+        config['pattern'] as String,
+        (m) => (config['replacement'] as String)
+            .replaceAll('%{version}', pubspec.version!.toString()),
+      );
+
+      stdout.writeln('Synced version with $path');
+    }
+  }
+
   Future<void> _replaceInFileMapped(
     File file,
-    Pattern pattern,
+    String pattern,
     String Function(Match) replace,
   ) async {
     final content = await file.readAsString();
-    final updatedContent = content.replaceFirstMapped(pattern, replace);
+    final updatedContent = content.replaceFirstMapped(
+      RegExp(pattern, multiLine: true),
+      replace,
+    );
     await file.writeAsString(updatedContent);
   }
 }
