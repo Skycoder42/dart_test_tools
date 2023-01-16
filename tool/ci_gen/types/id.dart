@@ -4,12 +4,22 @@ import 'expression.dart';
 
 part 'id.freezed.dart';
 
+abstract class StepId implements Id {
+  const factory StepId(String id) = _StepId;
+}
+
+abstract class JobId implements Id {
+  const factory JobId(String id) = _JobId;
+}
+
 @freezed
 class Id with _$Id {
   const Id._();
 
-  const factory Id.step(String id) = StepId;
-  const factory Id.job(String id) = JobId;
+  @Implements<StepId>()
+  const factory Id.step(String id) = _StepId;
+  @Implements<JobId>()
+  const factory Id.job(String id) = _JobId;
 
   @override
   String toString() => id;
@@ -86,14 +96,14 @@ class StepIdConverter extends _IdConverter<StepId> {
   const StepIdConverter();
 
   @override
-  StepId? fromJson(String? json) => json != null ? StepId(json) : null;
+  StepId? fromJson(String? json) => json != null ? _StepId(json) : null;
 }
 
 class JobIdConverter extends _IdConverter<JobId> {
   const JobIdConverter();
 
   @override
-  JobId? fromJson(String? json) => json != null ? JobId(json) : null;
+  JobId? fromJson(String? json) => json != null ? _JobId(json) : null;
 }
 
 class IdOutputConverter implements JsonConverter<IdOutput, String> {

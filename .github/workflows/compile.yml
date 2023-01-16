@@ -181,6 +181,7 @@ jobs:
           done
         working-directory: artifacts
       - name: Activate cider
+        if: steps.version.outputs.update == 'true'
         run: dart pub global activate cider
       - id: release_content
         name: Generate release content

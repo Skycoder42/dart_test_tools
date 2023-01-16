@@ -3,16 +3,26 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:cider/cider.dart';
-import 'package:dart_test_tools/src/cider_plugins/cider_plugin.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
+
+import 'cider_plugin.dart';
+
+class _VersionSyncCommand extends CiderCommand {
+  _VersionSyncCommand()
+      : super(
+          'version-sync',
+          'Updates the native package versions of flutter plugins '
+              'to match the pubspec.yaml version',
+        );
+}
 
 class VersionSyncPlugin implements CiderPlugin {
   const VersionSyncPlugin();
 
   @override
   void call(Cider cider) {
-    cider.addCommand(_BumpAllCommand(), _versionSyncHandler);
+    cider.addCommand(_VersionSyncCommand(), _versionSyncHandler);
   }
 
   Future<int> _versionSyncHandler(
@@ -141,13 +151,4 @@ class VersionSyncPlugin implements CiderPlugin {
     );
     await file.writeAsString(updatedContent);
   }
-}
-
-class _BumpAllCommand extends CiderCommand {
-  _BumpAllCommand()
-      : super(
-          'version-sync',
-          'Updates the native package versions of flutter plugins '
-              'to match the pubspec.yaml version',
-        );
 }

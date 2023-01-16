@@ -30,8 +30,9 @@ class ReleaseEntryBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        const Step.run(
+        Step.run(
           name: 'Activate cider',
+          ifExpression: versionUpdate.eq(const Expression.literal('true')),
           run: 'dart pub global activate cider',
         ),
         Step.run(
