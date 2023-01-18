@@ -19,6 +19,18 @@ abstract class Tools {
   /// https://github.com/dart-lang/setup-dart/releases
   static const dartLangSetupDart = 'dart-lang/setup-dart@v1';
 
+  /// https://github.com/docker/setup-qemu-action/releases
+  static const dockerSetupQemuAction = 'docker/setup-qemu-action@v2';
+
+  /// https://github.com/docker/setup-buildx-action/releases
+  static const dockerSetupBuildxAction = 'docker/setup-buildx-action@v2';
+
+  /// https://github.com/docker/login-action/releases
+  static const dockerLoginAction = 'docker/login-action@v2';
+
+  /// https://github.com/docker/build-push-action/releases
+  static const dockerBuildAndPushAction = 'docker/build-push-action@v3';
+
   /// https://github.com/subosito/flutter-action/releases
   static const subositoFlutterAction = 'subosito/flutter-action@v2';
 
