@@ -48,6 +48,9 @@ class PublishJobBuilder implements JobBuilder {
         needs: {releaseUpdate.id},
         ifExpression: publish &
             releaseUpdate.expression.eq(const Expression.literal('true')),
+        permissions: const {
+          'id-token': 'write',
+        },
         runsOn: 'ubuntu-latest',
         steps: [
           ...DartSdkBuilder(

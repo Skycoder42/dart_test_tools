@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog\](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to Semantic Versioning\](https://semver.org/spec/v2.0.0.html).
 
+## [4.8.0] - 2023-01-19
+### Added
+- create docker workflow
+- add [cider](https://pub.dev/packages/cider) version-sync plugin to sync version to secondary files
+- add `cider` command that executes [cider](https://pub.dev/packages/cider), but with the version sync plugin enabled
+
+### Changed
+- use new service authentication for publishing to pub.dev (dart only for now)
+
 ## [4.7.0] - 2023-01-03
 ### Changed
 - require the use of cider for release changelog generation
@@ -166,6 +175,7 @@ have been added:
 ### Added
 - Initial release
 
+[4.8.0]: https://github.com/Skycoder42/dart_test_tools/compare/v4.7.0...v4.8.0
 [4.7.0]: https://github.com/Skycoder42/dart_test_tools/compare/v4.6.0...v4.7.0
 [4.6.0]: https://github.com/Skycoder42/dart_test_tools/compare/v4.5.3+1...v4.6.0
 [4.5.3+1]: https://github.com/Skycoder42/dart_test_tools/compare/v4.5.3...v4.5.3+1

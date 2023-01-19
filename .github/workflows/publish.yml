@@ -165,6 +165,8 @@ jobs:
     needs:
       - release
     if: inputs.publish && needs.release.outputs.update == 'true'
+    permissions:
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
@@ -217,6 +219,7 @@ jobs:
         run: ${{ inputs.prePublish }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Prepare pub.dev credentials
+        if: inputs.flutter
         run: |
           set -e
           cache_dir="$XDG_CONFIG_HOME/dart"
@@ -237,5 +240,5 @@ jobs:
         run: ${{ steps.tools.outputs.pub }} publish --force
         working-directory: ${{ inputs.workingDirectory }}
       - name: Clean up credentials
-        if: always()
+        if: always() && inputs.flutter
         run: shred -fzvu "$XDG_CONFIG_HOME/dart/pub-credentials.json"

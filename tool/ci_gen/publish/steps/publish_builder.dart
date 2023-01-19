@@ -74,6 +74,7 @@ fi
         ),
         Step.run(
           name: 'Prepare pub.dev credentials',
+          ifExpression: flutter,
           run: '''
 set -e
 cache_dir="\$XDG_CONFIG_HOME/dart"
@@ -88,9 +89,9 @@ echo '$pubDevCredentials' > "\$cache_dir/pub-credentials.json"
           publishStepName: 'Publish package',
           publishArgs: '--force',
         ).build(),
-        const Step.run(
+        Step.run(
           name: 'Clean up credentials',
-          ifExpression: Expression('always()'),
+          ifExpression: const Expression('always()') & flutter,
           run: r'shred -fzvu "$XDG_CONFIG_HOME/dart/pub-credentials.json"',
         ),
       ];

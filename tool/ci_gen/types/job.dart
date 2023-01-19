@@ -58,6 +58,7 @@ class Job with _$Job {
     @JsonKey(name: 'if', includeIfNull: false)
     @ExpressionConverter()
         Expression? ifExpression,
+    @JsonKey(includeIfNull: false) Map<String, String>? permissions,
     @JsonKey(includeIfNull: false) Strategy? strategy,
     @JsonKey(includeIfNull: false)
     @_StepOutputMapConverter()
