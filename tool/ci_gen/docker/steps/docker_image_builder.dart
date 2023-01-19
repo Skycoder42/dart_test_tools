@@ -44,7 +44,7 @@ class DockerImageBuilder implements StepBuilder {
           run: '''
 set -eo pipefail
 
-fullTagList=\$(echo '$dockerImageTags' | awk -vimage='$dockerImageName' '{print image "/" \$0}')
+fullTagList=\$(echo '$dockerImageTags' | awk -vimage='$dockerImageName' '{print image ":" \$0}')
 ${generateTagsOutput.bashSetterMultiLine(r'$fullTagList')}
 ''',
         ),
