@@ -82,6 +82,9 @@ on:
       releaseCreated:
         value: ${{ jobs.release.outputs.update }}
         description: Holds a boolean value string ("true" or "false"), indicating whether a release was created or not.
+      releaseVersion:
+        value: ${{ jobs.release.outputs.version }}
+        description: Holds the version number of the created release, if the releaseCreated output is true. Otherwise, it is not set.
     secrets:
       PUB_DEV_CREDENTIALS:
         required: false
@@ -92,6 +95,7 @@ jobs:
     if: github.ref == inputs.releaseRef
     outputs:
       update: ${{ steps.version.outputs.update }}
+      version: ${{ steps.version.outputs.version }}
     runs-on: ubuntu-latest
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
@@ -122,6 +126,7 @@ jobs:
           else
             echo Version does not exists on pub.dev - creating release
             echo "update=true" >> $GITHUB_OUTPUT
+            echo "version=$package_version" >> $GITHUB_OUTPUT
           fi
         working-directory: ${{ inputs.workingDirectory }}
       - name: Activate cider

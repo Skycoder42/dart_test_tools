@@ -9,6 +9,7 @@ import '../../types/step.dart';
 class ReleaseBuilder implements StepBuilder {
   static const versionStepId = StepId('version');
   static final versionUpdate = versionStepId.output('update');
+  static final versionOutput = versionStepId.output('version');
 
   final Expression dartSdkVersion;
   final Expression repository;
@@ -51,6 +52,7 @@ if cat \$pub_info_file | jq -e "\$version_exists_query" > /dev/null; then
 else
   echo Version does not exists on pub.dev - creating release
   ${versionUpdate.bashSetter('true')}
+  ${versionOutput.bashSetter(r'$package_version')}
 fi
 ''',
           workingDirectory: workingDirectory.toString(),

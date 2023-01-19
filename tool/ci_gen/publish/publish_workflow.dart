@@ -51,6 +51,12 @@ abstract class PublishWorkflow {
               description: 'Holds a boolean value string ("true" or "false"), '
                   'indicating whether a release was created or not.',
             ),
+            'releaseVersion': Output(
+              value: ReleaseJobBuilder.versionOutput,
+              description:
+                  'Holds the version number of the created release, if the '
+                  'releaseCreated output is true. Otherwise, it is not set.',
+            ),
           },
         ),
       ),
