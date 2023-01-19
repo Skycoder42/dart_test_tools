@@ -38,4 +38,20 @@ MY_API_KEY=<reference secret here>"
           'https://aur.archlinux.org/ under "My Account".',
     ),
   );
+
+  static const dockerHubUsername = WorkflowSecret(
+    name: 'dockerHubUsername',
+    secret: Secret(
+      required: true,
+      description: 'The user name to log into docker hub with.',
+    ),
+  );
+
+  static const dockerHubToken = WorkflowSecret(
+    name: 'dockerHubToken',
+    secret: Secret(
+      required: true,
+      description: 'The personal access token to log into docker hub with.',
+    ),
+  );
 }

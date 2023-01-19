@@ -1,0 +1,61 @@
+on:
+  workflow_call:
+    inputs:
+      dockerImageName:
+        type: string
+        required: true
+        description: The name (e.g. owern/image) of the image to be built and published. The name is combined with dockerImageTags - See below for details.
+      dockerImageTags:
+        type: string
+        required: false
+        default: latest
+        description: A comma or newline separated list of docker tag versions to be built and published. By default, only "latest" is used. These tags are joined with the dockerImageName to generate the full tag values. These are the passed to docker/build-push-action@v3 as "tags".
+      dockerPlatforms:
+        type: string
+        required: false
+        description: A comma or newline separated list of docker target platforms to build the docker image for. If not specified, the image is built for all available platforms. Passed to docker/build-push-action@v3 as "platforms".
+      dockerBuildArgs:
+        type: string
+        required: false
+        description: A newline separated list of docker build arguments to build the docker image with. Passed to docker/build-push-action@v3 as "build-args"
+    secrets:
+      dockerHubUsername:
+        required: true
+        description: The user name to log into docker hub with.
+      dockerHubToken:
+        required: true
+        description: The personal access token to log into docker hub with.
+jobs:
+  docker:
+    name: Build and publish Docker images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v2
+      - id: setup-docker-buildx
+        name: Setup docker buildx
+        uses: docker/setup-buildx-action@v2
+      - id: generate-tags
+        name: Generate docker image tags
+        run: |
+          set -eo pipefail
+
+          fullTagList=$(echo '${{ inputs.dockerImageTags }}' | awk -vimage='${{ inputs.dockerImageName }}' '{print image "/" $0}')
+          echo "tags<<EOF" >> $GITHUB_OUTPUT
+          echo "$fullTagList" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.dockerHubUsername }}
+          password: ${{ secrets.dockerHubToken }}
+      - name: Build and push image
+        uses: docker/build-push-action@v3
+        with:
+          platforms: ${{ inputs.dockerPlatforms != '' && inputs.dockerPlatforms || steps.setup-docker-buildx.outputs.platforms }}
+          build-args: ${{ inputs.dockerBuildArgs }}
+          tags: ${{ steps.generate-tags.outputs.tags }}
+          pull: true
+          sbom: true
+          provenance: true
+          push: true

@@ -1,5 +1,6 @@
 import '../types/input.dart';
 import 'api/workflow_input.dart';
+import 'tools.dart';
 
 abstract class WorkflowInputs {
   WorkflowInputs._();
@@ -339,6 +340,57 @@ Example:
       required: true,
       description:
           'A boolean indicating whether the AUR-Deploy step should run.',
+    ),
+  );
+
+  static const dockerPlatforms = WorkflowInput(
+    name: 'dockerPlatforms',
+    input: Input(
+      type: Type.string,
+      required: false,
+      description:
+          'A comma or newline separated list of docker target platforms to '
+          'build the docker image for. If not specified, the image is built '
+          'for all available platforms. Passed to '
+          '${Tools.dockerBuildAndPushAction} as "platforms".',
+    ),
+  );
+
+  static const dockerBuildArgs = WorkflowInput(
+    name: 'dockerBuildArgs',
+    input: Input(
+      type: Type.string,
+      required: false,
+      description:
+          'A newline separated list of docker build arguments to build the '
+          'docker image with. Passed to ${Tools.dockerBuildAndPushAction} as '
+          '"build-args"',
+    ),
+  );
+
+  static const dockerImageName = WorkflowInput(
+    name: 'dockerImageName',
+    input: Input(
+      type: Type.string,
+      required: true,
+      description:
+          'The name (e.g. owern/image) of the image to be built and published. '
+          'The name is combined with dockerImageTags - See below for details.',
+    ),
+  );
+
+  static const dockerImageTags = WorkflowInput(
+    name: 'dockerImageTags',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: 'latest',
+      description:
+          'A comma or newline separated list of docker tag versions to be '
+          'built and published. By default, only "latest" is used. These tags '
+          'are joined with the dockerImageName to generate the full tag '
+          'values. These are the passed to ${Tools.dockerBuildAndPushAction} '
+          'as "tags".',
     ),
   );
 }

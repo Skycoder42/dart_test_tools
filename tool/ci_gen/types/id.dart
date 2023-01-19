@@ -61,6 +61,16 @@ class IdOutput with _$IdOutput {
             throw UnsupportedError('Cannot create a bash setter for $this'),
       );
 
+  String bashSetterMultiLine(String value) => maybeWhen(
+        step: (id, name) => '''
+echo "$name<<EOF" >> \$GITHUB_OUTPUT
+echo "$value" >> \$GITHUB_OUTPUT
+echo "EOF" >> \$GITHUB_OUTPUT
+''',
+        orElse: () =>
+            throw UnsupportedError('Cannot create a bash setter for $this'),
+      );
+
   Expression get workflowExpression => maybeWhen(
         job: (id, name) => Expression('jobs.$id.outputs.$name'),
         orElse: () => throw UnsupportedError(

@@ -6,11 +6,13 @@ import '../tools.dart';
 class CheckoutBuilder implements StepBuilder {
   final Expression repository;
   final Expression? ifExpression;
+  final Expression? gitRef;
   final String? path;
 
   const CheckoutBuilder({
     required this.repository,
     this.ifExpression,
+    this.gitRef,
     this.path,
   });
 
@@ -23,6 +25,7 @@ class CheckoutBuilder implements StepBuilder {
           withArgs: <String, dynamic>{
             'repository': repository.toString(),
             if (path != null) 'path': path,
+            if (gitRef != null) 'ref': gitRef.toString(),
           },
         ),
       ];

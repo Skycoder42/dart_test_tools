@@ -1,4 +1,7 @@
-import '../types/expression.dart';
+import '../common/api/workflow_input.dart';
+import '../common/api/workflow_secret.dart';
+import '../common/inputs.dart';
+import '../common/secrets.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
@@ -8,17 +11,24 @@ abstract class DockerWorkflow {
   DockerWorkflow._();
 
   static Workflow buildWorkflow() {
+    final inputContext = WorkflowInputContext();
+    final secretContext = WorkflowSecretContext();
+
     final dockerJobBuilder = DockerJobBuilder(
-      repository: const Expression('repository'),
-      dockerHubUsername: const Expression('dockerHubUsername'),
-      dockerHubToken: const Expression('dockerHubToken'),
-      dockerPlatforms: const Expression('dockerPlatforms'),
-      dockerBuildArgs: const Expression('dockerBuildArgs'),
+      dockerHubUsername: secretContext(WorkflowSecrets.dockerHubUsername),
+      dockerHubToken: secretContext(WorkflowSecrets.dockerHubToken),
+      dockerImageName: inputContext(WorkflowInputs.dockerImageName),
+      dockerImageTags: inputContext(WorkflowInputs.dockerImageTags),
+      dockerPlatforms: inputContext(WorkflowInputs.dockerPlatforms),
+      dockerBuildArgs: inputContext(WorkflowInputs.dockerBuildArgs),
     );
 
     return Workflow(
-      on: const On(
-        workflowCall: WorkflowCall(),
+      on: On(
+        workflowCall: WorkflowCall(
+          inputs: inputContext.createInputs(),
+          secrets: secretContext.createSecrets(),
+        ),
       ),
       jobs: {
         dockerJobBuilder.id: dockerJobBuilder.build(),

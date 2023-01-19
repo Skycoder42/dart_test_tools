@@ -13,8 +13,9 @@ class Expression with _$Expression {
   // ignore: sort_unnamed_constructors_first
   const factory Expression(String value) = _Expression;
   @Assert(
-    'rawValue is String || rawValue is num || rawValue is bool',
-    'Only YAML primitives (string, number, bool) are allowed',
+    // ignore: lines_longer_than_80_chars
+    'rawValue is String || rawValue is num || rawValue is bool || rawValue is Null',
+    'Only YAML primitives (string, number, bool, null) are allowed',
   )
   const factory Expression.literal(dynamic rawValue) = _LiteralExpression;
   const factory Expression.json(Object? jsonValue) = _JsonExpression;

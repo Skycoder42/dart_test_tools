@@ -7,16 +7,18 @@ import '../steps/docker_image_builder.dart';
 class DockerJobBuilder implements JobBuilder {
   static const jobId = JobId('docker');
 
-  final Expression repository;
   final Expression dockerHubUsername;
   final Expression dockerHubToken;
+  final Expression dockerImageName;
+  final Expression dockerImageTags;
   final Expression dockerPlatforms;
   final Expression dockerBuildArgs;
 
   DockerJobBuilder({
-    required this.repository,
     required this.dockerHubUsername,
     required this.dockerHubToken,
+    required this.dockerImageName,
+    required this.dockerImageTags,
     required this.dockerPlatforms,
     required this.dockerBuildArgs,
   });
@@ -30,9 +32,10 @@ class DockerJobBuilder implements JobBuilder {
         runsOn: 'ubuntu-latest',
         steps: [
           ...DockerImageBuilder(
-            repository: repository,
             dockerHubUsername: dockerHubUsername,
             dockerHubToken: dockerHubToken,
+            dockerImageName: dockerImageName,
+            dockerImageTags: dockerImageTags,
             dockerPlatforms: dockerPlatforms,
             dockerBuildArgs: dockerBuildArgs,
           ).build(),
