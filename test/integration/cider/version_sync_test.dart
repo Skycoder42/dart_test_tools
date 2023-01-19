@@ -133,6 +133,7 @@ Future<void> _run(
     arguments,
     workingDirectory: workingDirectory,
     mode: ProcessStartMode.inheritStdio,
+    runInShell: Platform.isWindows,
   );
   await expectLater(proc.exitCode, completion(0));
 }
