@@ -40,4 +40,8 @@ abstract class Tools {
   /// https://github.com/VeryGoodOpenSource/very_good_coverage/releases
   static const veryGoodOpenSourceVeryGoodCoverage =
       'VeryGoodOpenSource/very_good_coverage@v2';
+
+  /// https://github.com/peter-evans/repository-dispatch/releases
+  static const peterEvansRepositoryDispatch =
+      'peter-evans/repository-dispatch@v2';
 }

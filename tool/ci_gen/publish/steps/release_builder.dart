@@ -1,6 +1,7 @@
 import '../../common/api/step_builder.dart';
 import '../../common/steps/checkout_builder.dart';
 import '../../common/steps/release_entry_builder.dart';
+import '../../common/tools.dart';
 import '../../dart/steps/dart_sdk_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
@@ -9,7 +10,6 @@ import '../../types/step.dart';
 class ReleaseBuilder implements StepBuilder {
   static const versionStepId = StepId('version');
   static final versionUpdate = versionStepId.output('update');
-  static final versionOutput = versionStepId.output('version');
 
   final Expression dartSdkVersion;
   final Expression repository;
@@ -52,7 +52,6 @@ if cat \$pub_info_file | jq -e "\$version_exists_query" > /dev/null; then
 else
   echo Version does not exists on pub.dev - creating release
   ${versionUpdate.bashSetter('true')}
-  ${versionOutput.bashSetter(r'$package_version')}
 fi
 ''',
           workingDirectory: workingDirectory.toString(),
@@ -61,9 +60,34 @@ fi
           repository: repository,
           workingDirectory: workingDirectory,
           tagPrefix: tagPrefix,
-          versionUpdate: versionUpdate.expression,
+          versionUpdate: versionUpdate.expression, // TODO check equals here
           changelogExtra: "The package and it's documentation are available at "
               r'[pub.dev](https://pub.dev/packages/$package_name/versions/$package_version).',
         ).build(),
+        Step.uses(
+          name: 'Dispatch release event',
+          ifExpression: _hasUpdate,
+          uses: Tools.peterEvansRepositoryDispatch,
+          withArgs: <String, dynamic>{
+            // TODO constant
+            'event-type': 'de.skycoder42.dart_test_tools.create-release',
+            'client-payload': _buildClientPayload().toString(),
+          },
+        ),
       ];
+
+  Expression get _hasUpdate =>
+      versionUpdate.expression.eq(const Expression.literal('true'));
+
+  Expression _buildClientPayload() {
+    final payload = {
+      'tag': ReleaseEntryBuilder.releaseContentTagName,
+      'release': ReleaseEntryBuilder.releaseContentReleaseName,
+      'body': ReleaseEntryBuilder.releaseContentBodyContent,
+    };
+    final encodedPayload = payload.entries
+        .map((e) => '${e.key}: ${e.value.expression.value}')
+        .join(', ');
+    return Expression('toJson({$encodedPayload})');
+  }
 }

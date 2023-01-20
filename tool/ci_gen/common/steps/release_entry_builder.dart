@@ -2,15 +2,14 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
-import '../tools.dart';
 
 class ReleaseEntryBuilder implements StepBuilder {
   static const releaseContentStepId = StepId('release_content');
   static final releaseContentTagName = releaseContentStepId.output('tag_name');
   static final releaseContentReleaseName =
       releaseContentStepId.output('release_name');
-  static final releaseContentBodyPath =
-      releaseContentStepId.output('body_path');
+  static final releaseContentBodyContent =
+      releaseContentStepId.output('body_content');
 
   final Expression repository;
   final Expression workingDirectory;
@@ -54,20 +53,9 @@ version_changelog_file=\$(mktemp)
 echo "# Changelog" > \$version_changelog_file
 dart pub global run cider describe "\$package_version" >> \$version_changelog_file
 echo "" >> \$version_changelog_file${changelogExtra != null ? '\necho "$changelogExtra" >> \$version_changelog_file' : ''}
-${releaseContentBodyPath.bashSetter(r'$version_changelog_file')}
+${releaseContentBodyContent.bashSetterMultiLine(r"cat $version_changelog_file", fromFile: true)}
 ''',
           workingDirectory: workingDirectory.toString(),
-        ),
-        Step.uses(
-          name: 'Create Release',
-          ifExpression: versionUpdate.eq(const Expression.literal('true')),
-          uses: Tools.softpropsActionGhRelease,
-          withArgs: <String, dynamic>{
-            'tag_name': releaseContentTagName.expression.toString(),
-            'name': releaseContentReleaseName.expression.toString(),
-            'body_path': releaseContentBodyPath.expression.toString(),
-            if (files != null) 'files': files,
-          },
         ),
       ];
 }

@@ -12,16 +12,38 @@ import 'ci_gen/publish/publish_workflow.dart';
 import 'ci_gen/types/workflow.dart';
 
 Future<void> main() async {
-  exitCode += await _writeWorkflowToFile('dart', DartWorkflow.buildWorkflow());
-  exitCode +=
-      await _writeWorkflowToFile('flutter', FlutterWorkflow.buildWorkflow());
-  exitCode +=
-      await _writeWorkflowToFile('publish', PublishWorkflow.buildWorkflow());
-  exitCode +=
-      await _writeWorkflowToFile('compile', CompileWorkflow.buildWorkflow());
-  exitCode += await _writeWorkflowToFile('aur', AurWorkflow.buildWorkflow());
-  exitCode +=
-      await _writeWorkflowToFile('docker', DockerWorkflow.buildWorkflow());
+  exitCode += await _writeWorkflowToFile(
+    'dart',
+    DartWorkflow.buildWorkflow(),
+  );
+  exitCode += await _writeWorkflowToFile(
+    'flutter',
+    FlutterWorkflow.buildWorkflow(),
+  );
+  exitCode += await _writeWorkflowToFile(
+    'publish',
+    PublishWorkflow.buildPublishWorkflow(),
+  );
+  exitCode += await _writeWorkflowToFile(
+    'create-release',
+    PublishWorkflow.buildCreateReleaseWorkflow(),
+  );
+  exitCode += await _writeWorkflowToFile(
+    'pub-publish',
+    PublishWorkflow.buildPubPublishWorkflow(),
+  );
+  exitCode += await _writeWorkflowToFile(
+    'compile',
+    CompileWorkflow.buildWorkflow(),
+  );
+  exitCode += await _writeWorkflowToFile(
+    'aur',
+    AurWorkflow.buildWorkflow(),
+  );
+  exitCode += await _writeWorkflowToFile(
+    'docker',
+    DockerWorkflow.buildWorkflow(),
+  );
 }
 
 Future<int> _writeWorkflowToFile(String name, Workflow workflow) async {

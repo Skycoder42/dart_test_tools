@@ -8,7 +8,7 @@ import '../steps/publish_builder.dart';
 
 class PublishJobBuilder implements JobBuilder {
   final Expression publish;
-  final JobIdOutput releaseUpdate;
+  // final JobIdOutput releaseUpdate;
   final Expression flutter;
   final Expression dartSdkVersion;
   final Expression flutterSdkChannel;
@@ -24,7 +24,7 @@ class PublishJobBuilder implements JobBuilder {
 
   PublishJobBuilder({
     required this.publish,
-    required this.releaseUpdate,
+    // required this.releaseUpdate,
     required this.flutter,
     required this.dartSdkVersion,
     required this.flutterSdkChannel,
@@ -45,9 +45,9 @@ class PublishJobBuilder implements JobBuilder {
   @override
   Job build() => Job(
         name: 'Publish to pub.dev',
-        needs: {releaseUpdate.id},
-        ifExpression: publish &
-            releaseUpdate.expression.eq(const Expression.literal('true')),
+        // needs: {releaseUpdate.id},
+        // ifExpression: publish &
+        //     releaseUpdate.expression.eq(const Expression.literal('true')),
         permissions: const {
           'id-token': 'write',
         },
