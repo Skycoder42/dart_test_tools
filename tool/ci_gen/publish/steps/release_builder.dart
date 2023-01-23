@@ -1,6 +1,6 @@
 import '../../common/api/step_builder.dart';
 import '../../common/steps/checkout_builder.dart';
-import '../../common/steps/release_entry_builder.dart';
+import '../../common/steps/release_data_builder.dart';
 import '../../common/tools.dart';
 import '../../dart/steps/dart_sdk_builder.dart';
 import '../../types/expression.dart';
@@ -56,7 +56,7 @@ fi
 ''',
           workingDirectory: workingDirectory.toString(),
         ),
-        ...ReleaseEntryBuilder(
+        ...ReleaseDataBuilder(
           repository: repository,
           workingDirectory: workingDirectory,
           tagPrefix: tagPrefix,
@@ -81,12 +81,13 @@ fi
 
   Expression _buildClientPayload() {
     final payload = {
-      'tag': ReleaseEntryBuilder.releaseContentTagName,
-      'release': ReleaseEntryBuilder.releaseContentReleaseName,
-      'body': ReleaseEntryBuilder.releaseContentBodyContent,
+      'ref': const Expression('github.ref'),
+      'tag': ReleaseDataBuilder.releaseContentTagName.expression,
+      'release': ReleaseDataBuilder.releaseContentReleaseName.expression,
+      'body': ReleaseDataBuilder.releaseContentBodyContent.expression,
     };
     final encodedPayload = payload.entries
-        .map((e) => '${e.key}: ${e.value.expression.value}')
+        .map((param) => '${param.key}: ${param.value.value}')
         .join(', ');
     return Expression('toJson({$encodedPayload})');
   }

@@ -201,7 +201,7 @@ jobs:
           echo "# Changelog" > $version_changelog_file
           dart pub global run cider describe "$package_version" >> $version_changelog_file
           echo "" >> $version_changelog_file
-          echo "body_path=$version_changelog_file" >> $GITHUB_OUTPUT
+          echo "body_content=$version_changelog_file" >> $GITHUB_OUTPUT
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create Release
         if: steps.version.outputs.update == 'true'
@@ -209,5 +209,5 @@ jobs:
         with:
           tag_name: ${{ steps.release_content.outputs.tag_name }}
           name: ${{ steps.release_content.outputs.release_name }}
-          body_path: ${{ steps.release_content.outputs.body_path }}
+          body_path: ${{ steps.release_content.outputs.body_content }}
           files: artifacts/*.zip

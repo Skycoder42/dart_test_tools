@@ -5,8 +5,9 @@ import '../common/secrets.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
-import 'builders/publish_job_builder.dart';
-import 'builders/release_job_builder.dart';
+import 'jobs/create_release_job_builder.dart';
+import 'jobs/publish_job_builder.dart';
+import 'jobs/release_job_builder.dart';
 
 abstract class PublishWorkflow {
   PublishWorkflow._();
@@ -37,12 +38,8 @@ abstract class PublishWorkflow {
   static Workflow buildCreateReleaseWorkflow() {
     final inputContext = WorkflowInputContext();
 
-    final releaseJobBuilder = ReleaseJobBuilder(
-      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-      repository: inputContext(WorkflowInputs.repository),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      releaseRef: inputContext(WorkflowInputs.releaseRef),
-      tagPrefix: inputContext(WorkflowInputs.tagPrefix),
+    final createReleaseJobBuilder = CreateReleaseJobBuilder(
+      clientPayload: inputContext(WorkflowInputs.clientPayload),
     );
 
     return Workflow(
@@ -52,7 +49,7 @@ abstract class PublishWorkflow {
         ),
       ),
       jobs: {
-        releaseJobBuilder.id: releaseJobBuilder.build(),
+        createReleaseJobBuilder.id: createReleaseJobBuilder.build(),
       },
     );
   }

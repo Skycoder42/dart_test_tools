@@ -1,0 +1,19 @@
+on:
+  workflow_call:
+    inputs:
+      clientPayload:
+        type: string
+        required: true
+        description: 'The client payload of the repository_dispatch event. Simply set it to: github.event.client_payload'
+jobs:
+  createRelease:
+    name: Create release if needed
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ inputs.clientPayload.tag }}
+          name: ${{ inputs.clientPayload.name }}
+          body: ${{ inputs.clientPayload.body }}
+          target_commitish: ${{ inputs.clientPayload.ref }}

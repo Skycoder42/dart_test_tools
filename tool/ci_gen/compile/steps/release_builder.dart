@@ -1,5 +1,6 @@
 import '../../common/api/step_builder.dart';
 import '../../common/steps/checkout_builder.dart';
+import '../../common/steps/release_data_builder.dart';
 import '../../common/steps/release_entry_builder.dart';
 import '../../common/tools.dart';
 import '../../dart/steps/dart_sdk_builder.dart';
@@ -70,12 +71,20 @@ done
 ''',
           workingDirectory: 'artifacts',
         ),
-        ...ReleaseEntryBuilder(
+        ...ReleaseDataBuilder(
           repository: repository,
           workingDirectory: workingDirectory,
           tagPrefix: tagPrefix,
           versionUpdate: versionUpdate.expression,
-          files: 'artifacts/*.zip',
+          bodyAsFile: true,
         ).build(),
+        ...ReleaseEntryBuilder(
+          versionUpdate: versionUpdate.expression,
+          tag: ReleaseDataBuilder.releaseContentTagName.expression,
+          name: ReleaseDataBuilder.releaseContentReleaseName.expression,
+          body: ReleaseDataBuilder.releaseContentBodyContent.expression,
+          bodyAsFile: true,
+          files: 'artifacts/*.zip',
+        ).build()
       ];
 }
