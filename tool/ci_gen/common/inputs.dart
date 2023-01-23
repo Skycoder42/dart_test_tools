@@ -401,7 +401,7 @@ Example:
       required: true,
       description:
           'The client payload of the repository_dispatch event. Simply set it '
-          'to: github.event.client_payload',
+          'to: toJson(github.event.client_payload)',
     ),
   );
 }

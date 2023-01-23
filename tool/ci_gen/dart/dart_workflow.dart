@@ -24,7 +24,6 @@ abstract class DartWorkflow {
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       analyzeImage: inputContext(WorkflowInputs.analyzeImage),
-      publishExclude: inputContext(WorkflowInputs.publishExclude),
       extendedAnalyzerArgs: inputContext(WorkflowInputs.extendedAnalyzerArgs),
     );
     final unitTestBuilder = DartUnitTestJobBuilder(

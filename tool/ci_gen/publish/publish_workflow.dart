@@ -1,7 +1,5 @@
 import '../common/api/workflow_input.dart';
-import '../common/api/workflow_secret.dart';
 import '../common/inputs.dart';
-import '../common/secrets.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
@@ -56,10 +54,9 @@ abstract class PublishWorkflow {
 
   static Workflow buildPubPublishWorkflow() {
     final inputContext = WorkflowInputContext();
-    final secretContext = WorkflowSecretContext();
 
     final publishJobBuilder = PublishJobBuilder(
-      // releaseUpdate: ReleaseJobBuilder.updateOutput,
+      tagPrefix: inputContext(WorkflowInputs.tagPrefix),
       flutter: inputContext(WorkflowInputs.flutter),
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
@@ -68,18 +65,14 @@ abstract class PublishWorkflow {
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-      publish: inputContext(WorkflowInputs.publish),
-      publishExclude: inputContext(WorkflowInputs.publishExclude),
       prePublish: inputContext(WorkflowInputs.prePublish),
       extraArtifacts: inputContext(WorkflowInputs.extraArtifacts),
-      pubDevCredentials: secretContext(WorkflowSecrets.pubDevCredentials),
     );
 
     return Workflow(
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
-          secrets: secretContext.createSecrets(),
         ),
       ),
       jobs: {

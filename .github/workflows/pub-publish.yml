@@ -1,0 +1,123 @@
+on:
+  workflow_call:
+    inputs:
+      tagPrefix:
+        type: string
+        required: false
+        default: v
+        description: The prefix of git tags. The tag is the prefix, followed by the package version.
+      flutter:
+        type: boolean
+        required: false
+        default: false
+        description: Specifies, whether the package is a dart or a flutter package.
+      dartSdkVersion:
+        type: string
+        required: false
+        default: stable
+        description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
+      flutterSdkChannel:
+        type: string
+        required: false
+        default: stable
+        description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action".
+      javaJdkVersion:
+        type: number
+        required: false
+        default: 11
+        description: The Java-SDK version (mayor only). Passed as "java-version" to "actions/setup-java".
+      repository:
+        type: string
+        required: false
+        description: The repository to check out. Passed as "repository" to "actions/checkout".
+      workingDirectory:
+        type: string
+        required: false
+        default: .
+        description: The root directory of the dart package to build and test.
+      buildRunner:
+        type: boolean
+        required: false
+        default: false
+        description: Specify whether build_runner is used in the project (defaults to false).
+      buildRunnerArgs:
+        type: string
+        required: false
+        description: Optional additional arguments to be passed to the build runner.
+      prePublish:
+        type: string
+        required: false
+        description: A command to be run before publishing the package
+      extraArtifacts:
+        type: string
+        required: false
+        description: |
+          A JSON-Matrix a artifact download configuration, if needed. Can be used to
+          download artifacts before publishing the package. Can be combined with
+          `prePublish` to process the downloaded artifacts.
+
+          Example:
+          {
+            "name": "test-artifact",
+            "path": "path/to/artifact-dir"
+          }
+jobs:
+  publish:
+    name: Publish to pub.dev
+    if: github.ref.startsWith('refs/tags/' + inputs.tagPrefix)
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
+        if: '!inputs.flutter'
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ inputs.dartSdkVersion }}
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        if: inputs.flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
+      - name: Download flutter binary artifacts
+        if: inputs.flutter
+        run: flutter precache --universal
+      - id: tools
+        name: Prepare build tools
+        run: |
+          if ${{ inputs.flutter }}; then
+            echo "pub=flutter pub" >> $GITHUB_OUTPUT
+            echo "pubRun=flutter pub run" >> $GITHUB_OUTPUT
+          else
+            echo "pub=dart pub" >> $GITHUB_OUTPUT
+            echo "pubRun=dart run" >> $GITHUB_OUTPUT
+          fi
+      - name: Checkout repository ${{ inputs.repository }}
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ inputs.repository }}
+      - name: Remove pubspec_overrides.yaml
+        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Restore dart packages
+        run: ${{ steps.tools.outputs.pub }} get
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Create build files
+        if: inputs.buildRunner
+        run: ${{ steps.tools.outputs.pubRun }} build_runner build --release ${{ inputs.buildRunnerArgs }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Download additional artifacts
+        if: inputs.extraArtifacts != ''
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ fromJSON(inputs.extraArtifacts)['name'] }}
+          path: ${{ fromJSON(inputs.extraArtifacts)['path'] }}
+      - name: Run pre publish script
+        if: inputs.prePublish != ''
+        run: ${{ inputs.prePublish }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Publish package
+        run: ${{ steps.tools.outputs.pub }} publish --force
+        working-directory: ${{ inputs.workingDirectory }}

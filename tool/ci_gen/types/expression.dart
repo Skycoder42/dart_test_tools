@@ -29,9 +29,17 @@ class Expression with _$Expression {
         fake: (fakeValue) => fakeValue,
       );
 
+  Expression call(List<Expression> parameters) {
+    final params = parameters.map<dynamic>((p) => p.value).join(', ');
+    return Expression('$value($params)');
+  }
+
   Expression get parenthesized => Expression('($value)');
 
   Expression get not => Expression('!$value');
+
+  Expression operator +(Expression other) =>
+      Expression('$value + ${other.value}');
 
   Expression operator <(Expression other) =>
       Expression('$value < ${other.value}');

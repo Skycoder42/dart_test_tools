@@ -7,8 +7,7 @@ import '../../types/job.dart';
 import '../steps/publish_builder.dart';
 
 class PublishJobBuilder implements JobBuilder {
-  final Expression publish;
-  // final JobIdOutput releaseUpdate;
+  final Expression tagPrefix;
   final Expression flutter;
   final Expression dartSdkVersion;
   final Expression flutterSdkChannel;
@@ -17,14 +16,11 @@ class PublishJobBuilder implements JobBuilder {
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
-  final Expression publishExclude;
-  final Expression pubDevCredentials;
   final Expression prePublish;
   final Expression extraArtifacts;
 
   PublishJobBuilder({
-    required this.publish,
-    // required this.releaseUpdate,
+    required this.tagPrefix,
     required this.flutter,
     required this.dartSdkVersion,
     required this.flutterSdkChannel,
@@ -33,8 +29,6 @@ class PublishJobBuilder implements JobBuilder {
     required this.workingDirectory,
     required this.buildRunner,
     required this.buildRunnerArgs,
-    required this.publishExclude,
-    required this.pubDevCredentials,
     required this.prePublish,
     required this.extraArtifacts,
   });
@@ -45,9 +39,8 @@ class PublishJobBuilder implements JobBuilder {
   @override
   Job build() => Job(
         name: 'Publish to pub.dev',
-        // needs: {releaseUpdate.id},
-        // ifExpression: publish &
-        //     releaseUpdate.expression.eq(const Expression.literal('true')),
+        ifExpression: const Expression('github.ref.startsWith')
+            .call([const Expression.literal('refs/tags/') + tagPrefix]),
         permissions: const {
           'id-token': 'write',
         },
@@ -68,8 +61,6 @@ class PublishJobBuilder implements JobBuilder {
             workingDirectory: workingDirectory,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
-            publishExclude: publishExclude,
-            pubDevCredentials: pubDevCredentials,
             prePublish: prePublish,
             extraArtifacts: extraArtifacts,
           ).build(),

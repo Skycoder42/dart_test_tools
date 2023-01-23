@@ -1,0 +1,13 @@
+name: CD - Create Release
+
+on:
+  repository_dispatch:
+    types:
+      - de.skycoder42.dart_test_tools.create-release
+
+jobs:
+  release:
+    name: Release
+    uses: Skycoder42/dart_test_tools/.github/workflows/create-release.yml@main
+    with:
+      clientPayload: ${{ toJson(github.event.client_payload) }}

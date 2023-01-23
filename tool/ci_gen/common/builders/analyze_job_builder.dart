@@ -13,7 +13,6 @@ abstract class AnalyzeJobBuilder extends SdkJobBuilder {
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression analyzeImage;
-  final Expression publishExclude;
   final Expression extendedAnalyzerArgs;
 
   const AnalyzeJobBuilder({
@@ -22,7 +21,6 @@ abstract class AnalyzeJobBuilder extends SdkJobBuilder {
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.analyzeImage,
-    required this.publishExclude,
     required this.extendedAnalyzerArgs,
   });
 
@@ -41,7 +39,6 @@ abstract class AnalyzeJobBuilder extends SdkJobBuilder {
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
             analyzeImage: analyzeImage,
-            publishExclude: publishExclude,
             extendedAnalyzerArgs: extendedAnalyzerArgs,
             baseTool: baseTool,
             pubTool: pubTool,

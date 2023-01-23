@@ -39,13 +39,3 @@ jobs:
     needs:
       - ci
     uses: Skycoder42/dart_test_tools/.github/workflows/publish.yml@main
-    with:
-      buildRunner: true
-      publishExclude: >-
-        [
-          "lib/src/.gitignore",
-          "lib/src/analysis_options.yaml",
-          "tool/.gitignore"
-        ]
-    secrets:
-      PUB_DEV_CREDENTIALS: ${{ secrets.PUB_DEV_CREDENTIALS }}

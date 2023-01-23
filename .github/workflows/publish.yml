@@ -25,77 +25,10 @@ on:
         required: false
         default: v
         description: The prefix of git tags. The tag is the prefix, followed by the package version.
-      flutter:
-        type: boolean
-        required: false
-        default: false
-        description: Specifies, whether the package is a dart or a flutter package.
-      flutterSdkChannel:
-        type: string
-        required: false
-        default: stable
-        description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action".
-      javaJdkVersion:
-        type: number
-        required: false
-        default: 11
-        description: The Java-SDK version (mayor only). Passed as "java-version" to "actions/setup-java".
-      buildRunner:
-        type: boolean
-        required: false
-        default: false
-        description: Specify whether build_runner is used in the project (defaults to false).
-      buildRunnerArgs:
-        type: string
-        required: false
-        description: Optional additional arguments to be passed to the build runner.
-      publish:
-        type: boolean
-        required: false
-        default: true
-        description: Publish to pub.dev, if a new release was created. Enabled by default. Requires the PUB_DEV_CREDENTIALS secret to be set.
-      publishExclude:
-        type: string
-        required: false
-        default: '[]'
-        description: |
-          Specify a JSON array of paths to be excluded from publishing.
-          Example: '["secrets.txt","debug.log"]'
-      prePublish:
-        type: string
-        required: false
-        description: A command to be run before publishing the package
-      extraArtifacts:
-        type: string
-        required: false
-        description: |
-          A JSON-Matrix a artifact download configuration, if needed. Can be used to
-          download artifacts before publishing the package. Can be combined with
-          `prePublish` to process the downloaded artifacts.
-
-          Example:
-          {
-            "name": "test-artifact",
-            "path": "path/to/artifact-dir"
-          }
-    outputs:
-      releaseCreated:
-        value: ${{ jobs.release.outputs.update }}
-        description: Holds a boolean value string ("true" or "false"), indicating whether a release was created or not.
-      releaseVersion:
-        value: ${{ jobs.release.outputs.version }}
-        description: Holds the version number of the created release, if the releaseCreated output is true. Otherwise, it is not set.
-    secrets:
-      PUB_DEV_CREDENTIALS:
-        required: false
-        description: The JSON-encoded credentials to log into pub.dev.
 jobs:
   release:
     name: Create release if needed
     if: github.ref == inputs.releaseRef
-    outputs:
-      update: ${{ steps.version.outputs.update }}
-      version: ${{ steps.version.outputs.version }}
     runs-on: ubuntu-latest
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
@@ -126,7 +59,6 @@ jobs:
           else
             echo Version does not exists on pub.dev - creating release
             echo "update=true" >> $GITHUB_OUTPUT
-            echo "version=$package_version" >> $GITHUB_OUTPUT
           fi
         working-directory: ${{ inputs.workingDirectory }}
       - name: Activate cider
@@ -151,94 +83,13 @@ jobs:
           dart pub global run cider describe "$package_version" >> $version_changelog_file
           echo "" >> $version_changelog_file
           echo "The package and it's documentation are available at [pub.dev](https://pub.dev/packages/$package_name/versions/$package_version)." >> $version_changelog_file
-          echo "body_path=$version_changelog_file" >> $GITHUB_OUTPUT
+          echo "body_content<<EOF" >> $GITHUB_OUTPUT
+          cat $version_changelog_file >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Create Release
+      - name: Dispatch release event
         if: steps.version.outputs.update == 'true'
-        uses: softprops/action-gh-release@v1
+        uses: peter-evans/repository-dispatch@v2
         with:
-          tag_name: ${{ steps.release_content.outputs.tag_name }}
-          name: ${{ steps.release_content.outputs.release_name }}
-          body_path: ${{ steps.release_content.outputs.body_path }}
-  publish:
-    name: Publish to pub.dev
-    needs:
-      - release
-    if: inputs.publish && needs.release.outputs.update == 'true'
-    permissions:
-      id-token: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        if: '!inputs.flutter'
-        uses: dart-lang/setup-dart@v1
-        with:
-          sdk: ${{ inputs.dartSdkVersion }}
-      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
-        if: inputs.flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: ${{ inputs.flutterSdkChannel }}
-          cache: true
-      - name: Download flutter binary artifacts
-        if: inputs.flutter
-        run: flutter precache --universal
-      - id: tools
-        name: Prepare build tools
-        run: |
-          if ${{ inputs.flutter }}; then
-            echo "pub=flutter pub" >> $GITHUB_OUTPUT
-            echo "pubRun=flutter pub run" >> $GITHUB_OUTPUT
-          else
-            echo "pub=dart pub" >> $GITHUB_OUTPUT
-            echo "pubRun=dart run" >> $GITHUB_OUTPUT
-          fi
-      - name: Checkout repository ${{ inputs.repository }}
-        uses: actions/checkout@v3
-        with:
-          repository: ${{ inputs.repository }}
-      - name: Remove pubspec_overrides.yaml
-        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
-      - name: Restore dart packages
-        run: ${{ steps.tools.outputs.pub }} get
-        working-directory: ${{ inputs.workingDirectory }}
-      - name: Create build files
-        if: inputs.buildRunner
-        run: ${{ steps.tools.outputs.pubRun }} build_runner build --release ${{ inputs.buildRunnerArgs }}
-        working-directory: ${{ inputs.workingDirectory }}
-      - name: Download additional artifacts
-        if: inputs.extraArtifacts != ''
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ fromJSON(inputs.extraArtifacts)['name'] }}
-          path: ${{ fromJSON(inputs.extraArtifacts)['path'] }}
-      - name: Run pre publish script
-        if: inputs.prePublish != ''
-        run: ${{ inputs.prePublish }}
-        working-directory: ${{ inputs.workingDirectory }}
-      - name: Prepare pub.dev credentials
-        if: inputs.flutter
-        run: |
-          set -e
-          cache_dir="$XDG_CONFIG_HOME/dart"
-          mkdir -p "$cache_dir"
-          echo '${{ secrets.PUB_DEV_CREDENTIALS }}' > "$cache_dir/pub-credentials.json"
-      - name: Remove files to not be published
-        if: inputs.publishExclude != ''
-        run: |
-          set -e
-          echo '${{ inputs.publishExclude }}' | jq -cr '.[]' | while read exclude; do
-            if [ -e "$exclude" ]; then
-              git rm -rf "$exclude" || rm -rf "$exclude"
-            fi
-          done
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
-      - name: Publish package
-        run: ${{ steps.tools.outputs.pub }} publish --force
-        working-directory: ${{ inputs.workingDirectory }}
-      - name: Clean up credentials
-        if: always() && inputs.flutter
-        run: shred -fzvu "$XDG_CONFIG_HOME/dart/pub-credentials.json"
+          event-type: de.skycoder42.dart_test_tools.create-release
+          client-payload: '${{ toJson({ref: github.ref, tag: steps.release_content.outputs.tag_name, release: steps.release_content.outputs.release_name, body: steps.release_content.outputs.body_content}) }}'

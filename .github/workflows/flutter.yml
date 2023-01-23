@@ -34,13 +34,6 @@ on:
         required: false
         default: ubuntu-latest
         description: The Runner-Image to use for the analyze step. Uses ubuntu-latest by default.
-      publishExclude:
-        type: string
-        required: false
-        default: '[]'
-        description: |
-          Specify a JSON array of paths to be excluded from publishing.
-          Example: '["secrets.txt","debug.log"]'
       extendedAnalyzerArgs:
         type: string
         required: false
@@ -175,17 +168,6 @@ jobs:
           else
             echo "publish=true" >> $GITHUB_OUTPUT
           fi
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
-      - name: Remove files to not be published
-        if: inputs.publishExclude != '' && steps.checkPublish.outputs.publish == 'true'
-        run: |
-          set -e
-          echo '${{ inputs.publishExclude }}' | jq -cr '.[]' | while read exclude; do
-            if [ -e "$exclude" ]; then
-              git rm -rf "$exclude" || rm -rf "$exclude"
-            fi
-          done
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Test publishing configuration

@@ -31,5 +31,5 @@ class CreateReleaseJobBuilder implements JobBuilder {
       );
 
   Expression _eventParam(String name) =>
-      Expression('${clientPayload.value}.$name');
+      Expression('fromJson(${clientPayload.value}).$name');
 }
