@@ -16,12 +16,6 @@ jobs:
     with:
       platforms: '["linux","windows","macos"]'
       buildRunner: true
-      publishExclude: >-
-        [
-          "lib/src/.gitignore",
-          "lib/src/analysis_options.yaml",
-          "tool/.gitignore"
-        ]
       unitTestPaths: ""
       integrationTestPaths: test/integration
       integrationTestSetup: >-
