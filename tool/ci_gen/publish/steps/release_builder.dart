@@ -86,9 +86,19 @@ fi
       'release': ReleaseDataBuilder.releaseContentReleaseName.expression,
       'body': ReleaseDataBuilder.releaseContentBodyContent.expression,
     };
-    final encodedPayload = payload.entries
-        .map((param) => '${param.key}: ${param.value.value}')
-        .join(', ');
-    return Expression('toJson({$encodedPayload})');
+
+    final objectString = [
+      for (var i = 0; i < payload.length; ++i)
+        '"${payload.keys.elementAt(i)}": {$i}',
+    ].join(', ');
+    final parameters = [
+      for (final expression in payload.values)
+        Expression('toJson(${expression.value})'),
+    ];
+
+    return const Expression('format').call([
+      Expression.literal('{{$objectString}}'),
+      ...parameters,
+    ]);
   }
 }
