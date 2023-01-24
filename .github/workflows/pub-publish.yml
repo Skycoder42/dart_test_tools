@@ -64,7 +64,7 @@ on:
 jobs:
   publish:
     name: Publish to pub.dev
-    if: github.ref.startsWith('refs/tags/' + inputs.tagPrefix)
+    if: startsWith(github.ref, 'refs/tags/' + inputs.tagPrefix)
     permissions:
       id-token: write
     runs-on: ubuntu-latest

@@ -1,4 +1,5 @@
 import '../../common/api/job_builder.dart';
+import '../../common/steps/checkout_builder.dart';
 import '../../common/steps/release_entry_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
@@ -17,6 +18,9 @@ class CreateReleaseJobBuilder implements JobBuilder {
         name: 'Create release if needed',
         runsOn: 'ubuntu-latest',
         steps: [
+          ...CheckoutBuilder(
+            gitRef: _eventParam('ref'),
+          ).build(),
           ...ReleaseEntryBuilder(
             ref: _eventParam('ref'),
             tag: _eventParam('tag'),

@@ -92,4 +92,4 @@ jobs:
         uses: peter-evans/repository-dispatch@v2
         with:
           event-type: de.skycoder42.dart_test_tools.create-release
-          client-payload: '${{ format(''{{"ref": {0}, "tag": {1}, "release": {2}, "body": {3}}}'', toJson(github.ref), toJson(steps.release_content.outputs.tag_name), toJson(steps.release_content.outputs.release_name), toJson(steps.release_content.outputs.body_content)) }}'
+          client-payload: '${{ format(''{{"ref": {0}, "tag": {1}, "release": {2}, "body": {3}}}'', toJson(github.sha), toJson(steps.release_content.outputs.tag_name), toJson(steps.release_content.outputs.release_name), toJson(steps.release_content.outputs.body_content)) }}'

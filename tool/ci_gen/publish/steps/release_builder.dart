@@ -81,7 +81,7 @@ fi
 
   Expression _buildClientPayload() {
     final payload = {
-      'ref': const Expression('github.ref'),
+      'ref': const Expression('github.sha'),
       'tag': ReleaseDataBuilder.releaseContentTagName.expression,
       'release': ReleaseDataBuilder.releaseContentReleaseName.expression,
       'body': ReleaseDataBuilder.releaseContentBodyContent.expression,
