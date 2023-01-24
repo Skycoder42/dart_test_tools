@@ -54,4 +54,14 @@ MY_API_KEY=<reference secret here>"
       description: 'The personal access token to log into docker hub with.',
     ),
   );
+
+  static const githubToken = WorkflowSecret(
+    name: 'githubToken',
+    secret: Secret(
+      required: true,
+      description:
+          'The personal access token to create new releases with. Is required, as the default '
+          'github workflow token does not trigger workflows when creating releases.',
+    ),
+  );
 }

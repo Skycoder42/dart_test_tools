@@ -16,6 +16,7 @@ class ReleaseEntryBuilder implements StepBuilder {
   final Expression workingDirectory;
   final Expression tagPrefix;
   final Expression versionUpdate;
+  final Expression? githubToken;
   final String? changelogExtra;
   final String? files;
 
@@ -24,6 +25,7 @@ class ReleaseEntryBuilder implements StepBuilder {
     required this.workingDirectory,
     required this.tagPrefix,
     required this.versionUpdate,
+    this.githubToken,
     this.changelogExtra,
     this.files,
   });
@@ -63,6 +65,7 @@ ${releaseContentBodyPath.bashSetter(r'$version_changelog_file')}
           ifExpression: versionUpdate.eq(const Expression.literal('true')),
           uses: Tools.softpropsActionGhRelease,
           withArgs: <String, dynamic>{
+            if (githubToken != null) 'token': githubToken.toString(),
             'tag_name': releaseContentTagName.expression.toString(),
             'name': releaseContentReleaseName.expression.toString(),
             'body_path': releaseContentBodyPath.expression.toString(),

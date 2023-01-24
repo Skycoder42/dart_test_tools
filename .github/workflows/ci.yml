@@ -32,7 +32,7 @@ jobs:
     name: CD
     needs:
       - ci
-    uses: Skycoder42/dart_test_tools/.github/workflows/publish.yml@main
+    uses: Skycoder42/dart_test_tools/.github/workflows/release.yml@main
     with:
       buildRunner: true
     secrets:

@@ -14,6 +14,7 @@ class ReleaseJobBuilder implements JobBuilder {
   final Expression repository;
   final Expression workingDirectory;
   final Expression tagPrefix;
+  final Expression githubToken;
 
   ReleaseJobBuilder({
     required this.releaseRef,
@@ -21,6 +22,7 @@ class ReleaseJobBuilder implements JobBuilder {
     required this.repository,
     required this.workingDirectory,
     required this.tagPrefix,
+    required this.githubToken,
   });
 
   @override
@@ -41,6 +43,7 @@ class ReleaseJobBuilder implements JobBuilder {
             repository: repository,
             workingDirectory: workingDirectory,
             tagPrefix: tagPrefix,
+            githubToken: githubToken,
           ).build(),
         ],
       );

@@ -15,12 +15,14 @@ class ReleaseBuilder implements StepBuilder {
   final Expression repository;
   final Expression workingDirectory;
   final Expression tagPrefix;
+  final Expression githubToken;
 
   ReleaseBuilder({
     required this.dartSdkVersion,
     required this.repository,
     required this.workingDirectory,
     required this.tagPrefix,
+    required this.githubToken,
   });
 
   @override
@@ -59,6 +61,7 @@ fi
         ),
         ...ReleaseEntryBuilder(
           repository: repository,
+          githubToken: githubToken,
           workingDirectory: workingDirectory,
           tagPrefix: tagPrefix,
           versionUpdate: versionUpdate.expression,

@@ -16,7 +16,6 @@ class PublishBuilder implements StepBuilder {
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
-  final Expression pubDevCredentials;
   final Expression prePublish;
   final Expression extraArtifacts;
 
@@ -26,7 +25,6 @@ class PublishBuilder implements StepBuilder {
     required this.workingDirectory,
     required this.buildRunner,
     required this.buildRunnerArgs,
-    required this.pubDevCredentials,
     required this.prePublish,
     required this.extraArtifacts,
   });
@@ -70,27 +68,12 @@ fi
           run: prePublish.toString(),
           workingDirectory: workingDirectory.toString(),
         ),
-        Step.run(
-          name: 'Prepare pub.dev credentials',
-          ifExpression: flutter,
-          run: '''
-set -e
-cache_dir="\$XDG_CONFIG_HOME/dart"
-mkdir -p "\$cache_dir"
-echo '$pubDevCredentials' > "\$cache_dir/pub-credentials.json"
-''',
-        ),
         ...RunPublishBuilder(
           workingDirectory: workingDirectory,
           pubTool: toolsPub.expression.toString(),
           publishStepName: 'Publish package',
           publishArgs: '--force',
         ).build(),
-        Step.run(
-          name: 'Clean up credentials',
-          ifExpression: const Expression('always()') & flutter,
-          run: r'shred -fzvu "$XDG_CONFIG_HOME/dart/pub-credentials.json"',
-        ),
       ];
 
   String _artifactConfig(String key) => Expression(

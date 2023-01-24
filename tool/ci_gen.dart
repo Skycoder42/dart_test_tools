@@ -9,12 +9,15 @@ import 'ci_gen/dart/dart_workflow.dart';
 import 'ci_gen/docker/docker_workflow.dart';
 import 'ci_gen/flutter/flutter_workflow.dart';
 import 'ci_gen/publish/publish_workflow.dart';
+import 'ci_gen/release/release_workflow.dart';
 import 'ci_gen/types/workflow.dart';
 
 Future<void> main() async {
   exitCode += await _writeWorkflowToFile('dart', DartWorkflow.buildWorkflow());
   exitCode +=
       await _writeWorkflowToFile('flutter', FlutterWorkflow.buildWorkflow());
+  exitCode +=
+      await _writeWorkflowToFile('release', ReleaseWorkflow.buildWorkflow());
   exitCode +=
       await _writeWorkflowToFile('publish', PublishWorkflow.buildWorkflow());
   exitCode +=
