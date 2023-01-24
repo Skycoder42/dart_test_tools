@@ -17,7 +17,6 @@ class PublishJobBuilder implements JobBuilder {
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
-  final Expression publishExclude;
   final Expression pubDevCredentials;
   final Expression prePublish;
   final Expression extraArtifacts;
@@ -33,7 +32,6 @@ class PublishJobBuilder implements JobBuilder {
     required this.workingDirectory,
     required this.buildRunner,
     required this.buildRunnerArgs,
-    required this.publishExclude,
     required this.pubDevCredentials,
     required this.prePublish,
     required this.extraArtifacts,
@@ -68,7 +66,6 @@ class PublishJobBuilder implements JobBuilder {
             workingDirectory: workingDirectory,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
-            publishExclude: publishExclude,
             pubDevCredentials: pubDevCredentials,
             prePublish: prePublish,
             extraArtifacts: extraArtifacts,

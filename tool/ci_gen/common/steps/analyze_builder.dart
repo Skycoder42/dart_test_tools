@@ -15,7 +15,6 @@ class AnalyzeBuilder implements StepBuilder {
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression analyzeImage;
-  final Expression publishExclude;
   final Expression extendedAnalyzerArgs;
   final String baseTool;
   final String pubTool;
@@ -28,7 +27,6 @@ class AnalyzeBuilder implements StepBuilder {
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.analyzeImage,
-    required this.publishExclude,
     required this.extendedAnalyzerArgs,
     required this.baseTool,
     required this.pubTool,
@@ -81,7 +79,6 @@ fi
         ),
         ...RunPublishBuilder(
           workingDirectory: workingDirectory,
-          publishExclude: publishExclude,
           pubTool: pubTool,
           publishStepName: 'Test publishing configuration',
           publishArgs: '--dry-run',

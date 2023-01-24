@@ -34,7 +34,6 @@ abstract class PublishWorkflow {
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       publish: inputContext(WorkflowInputs.publish),
-      publishExclude: inputContext(WorkflowInputs.publishExclude),
       prePublish: inputContext(WorkflowInputs.prePublish),
       extraArtifacts: inputContext(WorkflowInputs.extraArtifacts),
       pubDevCredentials: secretContext(WorkflowSecrets.pubDevCredentials),

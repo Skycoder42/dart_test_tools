@@ -107,18 +107,6 @@ ${defaultPlatforms.map((p) => '- $p').join('\n')}
     ),
   );
 
-  static final publishExclude = WorkflowInput(
-    name: 'publishExclude',
-    input: Input.json(
-      required: false,
-      defaultValue: const <String>[],
-      description: '''
-Specify a JSON array of paths to be excluded from publishing.
-Example: '["secrets.txt","debug.log"]'
-''',
-    ),
-  );
-
   static const extendedAnalyzerArgs = WorkflowInput(
     name: 'extendedAnalyzerArgs',
     input: Input(

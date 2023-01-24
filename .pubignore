@@ -1,0 +1,8 @@
+# Ignore
+## Internal analysis options file
+lib/src/analysis_options.yaml
+
+# Unignore
+## Generated build files
+!*.freezed.dart
+!*.g.dart

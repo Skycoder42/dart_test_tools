@@ -16,7 +16,6 @@ class PublishBuilder implements StepBuilder {
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
-  final Expression publishExclude;
   final Expression pubDevCredentials;
   final Expression prePublish;
   final Expression extraArtifacts;
@@ -27,7 +26,6 @@ class PublishBuilder implements StepBuilder {
     required this.workingDirectory,
     required this.buildRunner,
     required this.buildRunnerArgs,
-    required this.publishExclude,
     required this.pubDevCredentials,
     required this.prePublish,
     required this.extraArtifacts,
@@ -84,7 +82,6 @@ echo '$pubDevCredentials' > "\$cache_dir/pub-credentials.json"
         ),
         ...RunPublishBuilder(
           workingDirectory: workingDirectory,
-          publishExclude: publishExclude,
           pubTool: toolsPub.expression.toString(),
           publishStepName: 'Publish package',
           publishArgs: '--force',

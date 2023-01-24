@@ -54,13 +54,6 @@ on:
         required: false
         default: true
         description: Publish to pub.dev, if a new release was created. Enabled by default. Requires the PUB_DEV_CREDENTIALS secret to be set.
-      publishExclude:
-        type: string
-        required: false
-        default: '[]'
-        description: |
-          Specify a JSON array of paths to be excluded from publishing.
-          Example: '["secrets.txt","debug.log"]'
       prePublish:
         type: string
         required: false
@@ -225,17 +218,6 @@ jobs:
           cache_dir="$XDG_CONFIG_HOME/dart"
           mkdir -p "$cache_dir"
           echo '${{ secrets.PUB_DEV_CREDENTIALS }}' > "$cache_dir/pub-credentials.json"
-      - name: Remove files to not be published
-        if: inputs.publishExclude != ''
-        run: |
-          set -e
-          echo '${{ inputs.publishExclude }}' | jq -cr '.[]' | while read exclude; do
-            if [ -e "$exclude" ]; then
-              git rm -rf "$exclude" || rm -rf "$exclude"
-            fi
-          done
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Publish package
         run: ${{ steps.tools.outputs.pub }} publish --force
         working-directory: ${{ inputs.workingDirectory }}
