@@ -1,11 +1,31 @@
 name: CD - Create Release
 
 on:
-  repository_dispatch:
-    types:
-      - de.skycoder42.dart_test_tools.create-release
+  workflow_dispatch:
+    inputs:
+      tag:
+        type: string
+        required: true
+        description: "Tag"
+      name:
+        type: string
+        required: true
+        description: "Name"
+      body:
+        type: string
+        required: true
+        description: "Body"
 
 jobs:
-  release:
-    name: Release
-    uses: Skycoder42/dart_test_tools/.github/workflows/create-release.yml@main
+  createRelease:
+    name: Create release if needed
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout repository "
+        uses: actions/checkout@v3
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ inputs.tag }}
+          name: ${{ inputs.name }}
+          body: ${{ inputs.body }}
