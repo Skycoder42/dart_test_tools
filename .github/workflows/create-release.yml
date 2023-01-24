@@ -1,21 +1,14 @@
 on:
   workflow_call:
-    inputs:
-      clientPayload:
-        type: string
-        required: true
-        description: 'The client payload of the repository_dispatch event. Simply set it to: toJson(github.event.client_payload)'
 jobs:
   createRelease:
     name: Create release if needed
     runs-on: ubuntu-latest
     steps:
-      - name: Check client payload access
-        run: echo ${{ toJson(github.event.client_payload) }}
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ fromJson(inputs.clientPayload).tag }}
-          name: ${{ fromJson(inputs.clientPayload).name }}
-          body: ${{ fromJson(inputs.clientPayload).body }}
-          target_commitish: ${{ fromJson(inputs.clientPayload).ref }}
+          tag_name: ${{ github.event.client_payload.tag }}
+          name: ${{ github.event.client_payload.name }}
+          body: ${{ github.event.client_payload.body }}
+          target_commitish: ${{ github.event.client_payload.ref }}

@@ -7,11 +7,7 @@ import '../../types/job.dart';
 class CreateReleaseJobBuilder implements JobBuilder {
   static const jobId = JobId('createRelease');
 
-  final Expression clientPayload;
-
-  CreateReleaseJobBuilder({
-    required this.clientPayload,
-  });
+  CreateReleaseJobBuilder();
 
   @override
   JobId get id => jobId;
@@ -31,5 +27,5 @@ class CreateReleaseJobBuilder implements JobBuilder {
       );
 
   Expression _eventParam(String name) =>
-      Expression('fromJson(${clientPayload.value}).$name');
+      Expression('github.event.client_payload.$name');
 }

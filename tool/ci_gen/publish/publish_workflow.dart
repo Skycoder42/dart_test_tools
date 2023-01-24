@@ -34,17 +34,11 @@ abstract class PublishWorkflow {
   }
 
   static Workflow buildCreateReleaseWorkflow() {
-    final inputContext = WorkflowInputContext();
-
-    final createReleaseJobBuilder = CreateReleaseJobBuilder(
-      clientPayload: inputContext(WorkflowInputs.clientPayload),
-    );
+    final createReleaseJobBuilder = CreateReleaseJobBuilder();
 
     return Workflow(
-      on: On(
-        workflowCall: WorkflowCall(
-          inputs: inputContext.createInputs(),
-        ),
+      on: const On(
+        workflowCall: WorkflowCall(),
       ),
       jobs: {
         createReleaseJobBuilder.id: createReleaseJobBuilder.build(),

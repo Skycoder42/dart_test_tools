@@ -393,15 +393,4 @@ Example:
           'as "tags".',
     ),
   );
-
-  static const clientPayload = WorkflowInput(
-    name: 'clientPayload',
-    input: Input(
-      type: Type.string,
-      required: true,
-      description:
-          'The client payload of the repository_dispatch event. Simply set it '
-          'to: toJson(github.event.client_payload)',
-    ),
-  );
 }
