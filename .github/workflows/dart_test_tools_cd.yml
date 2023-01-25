@@ -1,12 +1,6 @@
 name: CD - Publish to pub.dev
 
 on:
-  workflow_dispatch:
-    inputs:
-      tag:
-        type: string
-        required: true
-        description: Tag to create a version from
   push:
     tags:
       - "v*"
@@ -16,5 +10,4 @@ jobs:
     name: Publish
     uses: Skycoder42/dart_test_tools/.github/workflows/publish.yml@main
     with:
-      ref: refs/tags/v${{ inputs.tag }}
       buildRunner: true

@@ -25,6 +25,11 @@ on:
         type: string
         required: false
         description: The repository to check out. Passed as "repository" to "actions/checkout".
+      tagPrefix:
+        type: string
+        required: false
+        default: v
+        description: The prefix of git tags. The tag is the prefix, followed by the package version.
       workingDirectory:
         type: string
         required: false
@@ -56,19 +61,16 @@ on:
             "name": "test-artifact",
             "path": "path/to/artifact-dir"
           }
-      ref:
-        type: string
-        required: true
-        description: Git Ref
 jobs:
   publish:
     name: Publish to pub.dev
+    if: startsWith(github.ref, 'refs/tags/' + inputs.tagPrefix)
     permissions:
       id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        if: "!inputs.flutter"
+        if: '!inputs.flutter'
         uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
@@ -95,7 +97,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: ${{ inputs.repository }}
-          ref: ${{ inputs.ref }}
       - name: Remove pubspec_overrides.yaml
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}

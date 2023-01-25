@@ -33,6 +33,10 @@ class Expression with _$Expression {
 
   Expression get not => Expression('!$value');
 
+  Expression call(List<Expression> arguments) => Expression(
+        '$value(${arguments.map<dynamic>((e) => e.value).join(', ')})',
+      );
+
   Expression operator <(Expression other) =>
       Expression('$value < ${other.value}');
 
@@ -54,6 +58,9 @@ class Expression with _$Expression {
 
   Expression operator |(Expression? other) =>
       other != null ? Expression('$value || ${other.value}') : this;
+
+  Expression operator +(Expression? other) =>
+      other != null ? Expression('$value + ${other.value}') : this;
 
   @override
   String toString() => maybeWhen(

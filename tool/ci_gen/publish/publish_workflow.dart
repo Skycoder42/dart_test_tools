@@ -3,7 +3,7 @@ import '../common/inputs.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
-import 'builders/publish_job_builder.dart';
+import 'jobs/publish_job_builder.dart';
 
 abstract class PublishWorkflow {
   PublishWorkflow._();
@@ -17,6 +17,7 @@ abstract class PublishWorkflow {
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
       javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
       repository: inputContext(WorkflowInputs.repository),
+      tagPrefix: inputContext(WorkflowInputs.tagPrefix),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
