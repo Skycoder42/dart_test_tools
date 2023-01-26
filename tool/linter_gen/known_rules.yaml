@@ -5,11 +5,11 @@ linter:
     - always_declare_return_types
     - always_put_control_body_on_new_line
     - always_put_required_named_parameters_first
-    - always_require_non_null_named_parameters
     - always_specify_types
     - always_use_package_imports
     - annotate_overrides
     - avoid_annotating_with_dynamic
+    - avoid_as
     - avoid_bool_literals_in_conditional_expressions
     - avoid_catches_without_on_clauses
     - avoid_catching_errors
@@ -34,8 +34,6 @@ linter:
     - avoid_relative_lib_imports
     - avoid_renaming_method_parameters
     - avoid_return_types_on_setters
-    - avoid_returning_null
-    - avoid_returning_null_for_future
     - avoid_returning_null_for_void
     - avoid_returning_this
     - avoid_setters_without_getters
@@ -81,6 +79,7 @@ linter:
     - hash_and_equals
     - implementation_imports
     - implicit_call_tearoffs
+    - invariant_booleans
     - iterable_contains_unrelated_type
     - join_return_with_assignment
     - leading_newlines_in_multiline_strings
@@ -114,6 +113,7 @@ linter:
     - prefer_adjacent_string_concatenation
     - prefer_asserts_in_initializer_lists
     - prefer_asserts_with_message
+    - prefer_bool_in_asserts
     - prefer_collection_literals
     - prefer_conditional_assignment
     - prefer_const_constructors

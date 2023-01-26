@@ -4,7 +4,7 @@ version: 4.8.0
 homepage: https://github.com/Skycoder42/dart_test_tools
 
 environment:
-  sdk: ">=2.18.4 <3.0.0"
+  sdk: ">=2.19.0 <3.0.0"
 
 executables:
   lint: lint
@@ -12,7 +12,7 @@ executables:
   cider: cider
 
 dependencies:
-  analyzer: ">=4.7.0 <6.0.0"
+  analyzer: ^5.4.0
   args: ^2.3.2
   checked_yaml: ^2.0.2
   cider: ^0.1.3
@@ -26,9 +26,9 @@ dependencies:
   path: ^1.8.2
   pub_semver: ^2.1.3
   pubspec_parse: ^1.2.1
-  stack_trace: ^1.10.0
-  stream_channel: ^2.1.0
-  test: ^1.21.4
+  stack_trace: ^1.11.0
+  stream_channel: ^2.1.1
+  test: ^1.22.0
   yaml: ^3.1.1
   yaml_writer: ^1.0.3
 
@@ -46,10 +46,7 @@ dart_pre_commit:
   lib-exports: false
   pull-up-dependencies:
     allowed:
-      - analyzer
       - path
-      - stack_trace
-      - stream_channel
       - test
 
 cider:

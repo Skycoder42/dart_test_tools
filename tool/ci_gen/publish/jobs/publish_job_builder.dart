@@ -39,9 +39,12 @@ class PublishJobBuilder implements JobBuilder {
   @override
   Job build() => Job(
         name: 'Publish to pub.dev',
-        ifExpression: const Expression('startsWith').call([
+        ifExpression: const Expression('startsWith')([
           const Expression('github.ref'),
-          const Expression.literal('refs/tags/') + tagPrefix
+          const Expression('format')([
+            const Expression.literal('refs/tags/{0}'),
+            tagPrefix,
+          ]),
         ]),
         permissions: const {
           'id-token': 'write',

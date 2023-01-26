@@ -59,9 +59,6 @@ class Expression with _$Expression {
   Expression operator |(Expression? other) =>
       other != null ? Expression('$value || ${other.value}') : this;
 
-  Expression operator +(Expression? other) =>
-      other != null ? Expression('$value + ${other.value}') : this;
-
   @override
   String toString() => maybeWhen(
         null,

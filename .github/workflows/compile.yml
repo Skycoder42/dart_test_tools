@@ -106,6 +106,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: ${{ inputs.repository }}
+          persist-credentials: false
       - name: Remove pubspec_overrides.yaml
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
@@ -152,6 +153,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: ${{ inputs.repository }}
+          persist-credentials: false
       - id: version
         name: Check if a release should be created
         run: |
