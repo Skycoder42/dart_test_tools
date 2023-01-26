@@ -11,7 +11,6 @@ class ReleaseJobBuilder implements JobBuilder {
 
   final Expression releaseRef;
   final Expression dartSdkVersion;
-  final Expression repository;
   final Expression workingDirectory;
   final Expression tagPrefix;
   final Expression githubToken;
@@ -19,7 +18,6 @@ class ReleaseJobBuilder implements JobBuilder {
   ReleaseJobBuilder({
     required this.releaseRef,
     required this.dartSdkVersion,
-    required this.repository,
     required this.workingDirectory,
     required this.tagPrefix,
     required this.githubToken,
@@ -40,7 +38,6 @@ class ReleaseJobBuilder implements JobBuilder {
         steps: [
           ...ReleaseBuilder(
             dartSdkVersion: dartSdkVersion,
-            repository: repository,
             workingDirectory: workingDirectory,
             tagPrefix: tagPrefix,
             githubToken: githubToken,

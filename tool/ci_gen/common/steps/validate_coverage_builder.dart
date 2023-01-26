@@ -9,7 +9,6 @@ import 'platforms_builder_mixin.dart';
 class ValidateCoverageBuilder
     with CoverageBuilderMixin, PlatformsBuilderMixin
     implements StepBuilder {
-  final Expression repository;
   final Expression workingDirectory;
   @override
   final Expression minCoverage;
@@ -19,7 +18,6 @@ class ValidateCoverageBuilder
   final List<String> supportedPlatforms;
 
   const ValidateCoverageBuilder({
-    required this.repository,
     required this.workingDirectory,
     required this.minCoverage,
     required this.coverageExclude,
@@ -37,9 +35,7 @@ sudo apt-get -qq update
 sudo apt-get -qq install lcov dos2unix
 ''',
         ),
-        ...CheckoutBuilder(
-          repository: repository,
-        ).build(),
+        ...CheckoutBuilder().build(),
         for (final platform in supportedPlatforms)
           _createCoverageDownloadStep(platform),
         Step.run(

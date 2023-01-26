@@ -10,7 +10,6 @@ class AnalyzeBuilder implements StepBuilder {
   static const checkPublishStepId = StepId('checkPublish');
   static final checkPublish = checkPublishStepId.output('publish');
 
-  final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
@@ -22,7 +21,6 @@ class AnalyzeBuilder implements StepBuilder {
   final StepBuilderFn buildAnalyzeStep;
 
   const AnalyzeBuilder({
-    required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
     required this.buildRunnerArgs,
@@ -42,7 +40,6 @@ class AnalyzeBuilder implements StepBuilder {
               '$pubTool global activate dart_test_tools ^$dartTestToolsVersion',
         ),
         ...ProjectSetupBuilder(
-          repository: repository,
           workingDirectory: workingDirectory,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,

@@ -12,13 +12,11 @@ class ReleaseBuilder implements StepBuilder {
   static final versionUpdate = versionStepId.output('update');
 
   final Expression dartSdkVersion;
-  final Expression repository;
   final Expression workingDirectory;
   final Expression tagPrefix;
 
   const ReleaseBuilder({
     required this.dartSdkVersion,
-    required this.repository,
     required this.workingDirectory,
     required this.tagPrefix,
   });
@@ -28,9 +26,7 @@ class ReleaseBuilder implements StepBuilder {
         ...DartSdkBuilder(
           dartSdkVersion: dartSdkVersion,
         ).build(),
-        ...CheckoutBuilder(
-          repository: repository,
-        ).build(),
+        ...CheckoutBuilder().build(),
         Step.run(
           id: versionStepId,
           name: 'Check if a release should be created',
@@ -71,7 +67,6 @@ done
           workingDirectory: 'artifacts',
         ),
         ...ReleaseEntryBuilder(
-          repository: repository,
           workingDirectory: workingDirectory,
           tagPrefix: tagPrefix,
           versionUpdate: versionUpdate.expression,

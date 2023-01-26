@@ -104,7 +104,6 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression flutterSdkChannel;
   @override
   final Expression javaJdkVersion;
-  final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
@@ -120,7 +119,6 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     required this.analyzeJobId,
     required this.flutterSdkChannel,
     required this.javaJdkVersion,
-    required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
     required this.buildRunnerArgs,
@@ -161,7 +159,6 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
             _matrix.desktop,
           ),
           ...FlutterIntegrationTestBuilder(
-            repository: repository,
             workingDirectory: workingDirectory,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,

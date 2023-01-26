@@ -16,7 +16,6 @@ abstract class PublishWorkflow {
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
       javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
-      repository: inputContext(WorkflowInputs.repository),
       tagPrefix: inputContext(WorkflowInputs.tagPrefix),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),

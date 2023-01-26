@@ -9,7 +9,6 @@ class DartAnalyzeJobBuilder extends AnalyzeJobBuilder
   final Expression dartSdkVersion;
 
   const DartAnalyzeJobBuilder({
-    required super.repository,
     required super.workingDirectory,
     required super.buildRunner,
     required super.buildRunnerArgs,

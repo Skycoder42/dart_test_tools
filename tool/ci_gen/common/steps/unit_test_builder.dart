@@ -10,7 +10,6 @@ abstract class IUnitTextMatrix implements ICoverageCollectorMatrix {
 }
 
 class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
-  final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
@@ -26,7 +25,6 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
   final bool needsFormatting;
 
   const UnitTestBuilder({
-    required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
     required this.buildRunnerArgs,
@@ -44,7 +42,6 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
   @override
   Iterable<Step> build() => [
         ...ProjectSetupBuilder(
-          repository: repository,
           workingDirectory: workingDirectory,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,

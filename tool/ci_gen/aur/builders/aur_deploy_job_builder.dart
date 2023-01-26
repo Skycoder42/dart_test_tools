@@ -10,12 +10,10 @@ import '../steps/push_aur_builder.dart';
 
 class AurDeployJobBuilder implements JobBuilder {
   final Expression createAurUpdate;
-  final Expression repository;
   final Expression aurSshPrivateKey;
 
   const AurDeployJobBuilder({
     required this.createAurUpdate,
-    required this.repository,
     required this.aurSshPrivateKey,
   });
 
@@ -31,7 +29,6 @@ class AurDeployJobBuilder implements JobBuilder {
         steps: [
           ...const PrepareArchBuilder().build(),
           ...CheckoutBuilder(
-            repository: repository,
             path: 'src',
           ).build(),
           ...CloneAurBuilder(

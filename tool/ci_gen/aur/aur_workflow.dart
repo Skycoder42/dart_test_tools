@@ -16,7 +16,6 @@ abstract class AurWorkflow {
 
     final aurDeployJobBuilder = AurDeployJobBuilder(
       createAurUpdate: inputContext(WorkflowInputs.createAurUpdate),
-      repository: inputContext(WorkflowInputs.repository),
       aurSshPrivateKey: secretContext(WorkflowSecrets.aurSshPrivateKey),
     );
 

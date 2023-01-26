@@ -73,7 +73,6 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
   final JobId analyzeJobId;
   @override
   final Expression dartSdkVersion;
-  final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
@@ -86,7 +85,6 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
   DartIntegrationTestJobBuilder({
     required this.analyzeJobId,
     required this.dartSdkVersion,
-    required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
     required this.buildRunnerArgs,
@@ -123,7 +121,6 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
             ),
           ),
           ...DartIntegrationTestBuilder(
-            repository: repository,
             workingDirectory: workingDirectory,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,

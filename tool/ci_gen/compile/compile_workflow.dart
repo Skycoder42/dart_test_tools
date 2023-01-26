@@ -15,7 +15,6 @@ abstract class CompileWorkflow {
 
     final compileJobBuilder = CompileJobBuilder(
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-      repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
@@ -27,7 +26,6 @@ abstract class CompileWorkflow {
       compileJobId: compileJobBuilder.id,
       releaseRef: inputContext(WorkflowInputs.releaseRef),
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-      repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       tagPrefix: inputContext(WorkflowInputs.tagPrefix),
     );

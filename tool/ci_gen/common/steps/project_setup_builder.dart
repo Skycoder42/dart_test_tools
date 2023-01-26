@@ -5,7 +5,6 @@ import 'checkout_builder.dart';
 import 'project_prepare_builder.dart';
 
 class ProjectSetupBuilder implements StepBuilder {
-  final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
@@ -16,7 +15,6 @@ class ProjectSetupBuilder implements StepBuilder {
   final bool skipYqInstall;
 
   const ProjectSetupBuilder({
-    required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
     required this.buildRunnerArgs,
@@ -47,7 +45,6 @@ echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
           ),
         ],
         ...CheckoutBuilder(
-          repository: repository,
           ifExpression: ifExpression,
         ).build(),
         ...ProjectPrepareBuilder(

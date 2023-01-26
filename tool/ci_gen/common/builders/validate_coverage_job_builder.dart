@@ -10,7 +10,6 @@ class ValidateCoverageJobBuilder implements JobBuilder {
   static const _supportedPlatforms = ['linux', 'windows', 'macos', 'web'];
 
   final JobId unitTestJobId;
-  final Expression repository;
   final Expression workingDirectory;
   final Expression unitTestPaths;
   final Expression minCoverage;
@@ -19,7 +18,6 @@ class ValidateCoverageJobBuilder implements JobBuilder {
 
   ValidateCoverageJobBuilder({
     required this.unitTestJobId,
-    required this.repository,
     required this.workingDirectory,
     required this.unitTestPaths,
     required this.minCoverage,
@@ -41,7 +39,6 @@ class ValidateCoverageJobBuilder implements JobBuilder {
         runsOn: 'ubuntu-latest',
         steps: [
           ...ValidateCoverageBuilder(
-            repository: repository,
             workingDirectory: workingDirectory,
             minCoverage: minCoverage,
             coverageExclude: coverageExclude,

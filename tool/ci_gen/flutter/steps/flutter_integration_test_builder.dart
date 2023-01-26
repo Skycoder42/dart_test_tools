@@ -19,7 +19,6 @@ class FlutterIntegrationTestBuilder
     implements StepBuilder {
   static const testSetupCacheStepId = StepId('test-setup-cache');
 
-  final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
@@ -37,7 +36,6 @@ class FlutterIntegrationTestBuilder
   final IFlutterIntegrationTestMatrix matrix;
 
   const FlutterIntegrationTestBuilder({
-    required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
     required this.buildRunnerArgs,
@@ -89,7 +87,6 @@ sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
           run: '$baseTool doctor -v',
         ),
         ...ProjectSetupBuilder(
-          repository: repository,
           workingDirectory: workingDirectory,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,

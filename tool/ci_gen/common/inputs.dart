@@ -9,16 +9,6 @@ abstract class WorkflowInputs {
         for (final input in inputs) input.name: input.input,
       };
 
-  static const repository = WorkflowInput(
-    name: 'repository',
-    input: Input(
-      type: Type.string,
-      required: false,
-      description: 'The repository to check out. Passed as "repository" to '
-          '"actions/checkout".',
-    ),
-  );
-
   static const workingDirectory = WorkflowInput(
     name: 'workingDirectory',
     input: Input(
@@ -231,17 +221,6 @@ Example:
       defaultValue: false,
       description:
           'Specifies, whether the package is a dart or a flutter package.',
-    ),
-  );
-
-  static const publish = WorkflowInput(
-    name: 'publish',
-    input: Input(
-      type: Type.boolean,
-      required: false,
-      defaultValue: true,
-      description: 'Publish to pub.dev, if a new release was created. Enabled '
-          'by default. Requires the PUB_DEV_CREDENTIALS secret to be set.',
     ),
   );
 

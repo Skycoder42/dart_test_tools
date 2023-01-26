@@ -5,10 +5,6 @@ on:
         type: boolean
         required: true
         description: A boolean indicating whether the AUR-Deploy step should run.
-      repository:
-        type: string
-        required: false
-        description: The repository to check out. Passed as "repository" to "actions/checkout".
     secrets:
       AUR_SSH_PRIVATE_KEY:
         required: true
@@ -29,10 +25,9 @@ jobs:
           set -eo pipefail
           useradd -m build
           echo 'build ALL=(ALL:ALL) NOPASSWD: ALL' >> /etc/sudoers
-      - name: Checkout repository ${{ inputs.repository }}
+      - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          repository: ${{ inputs.repository }}
           persist-credentials: false
           path: src
       - name: Setup git author

@@ -12,7 +12,6 @@ class ReleaseEntryBuilder implements StepBuilder {
   static final releaseContentBodyPath =
       releaseContentStepId.output('body_path');
 
-  final Expression repository;
   final Expression workingDirectory;
   final Expression tagPrefix;
   final Expression versionUpdate;
@@ -21,7 +20,6 @@ class ReleaseEntryBuilder implements StepBuilder {
   final String? files;
 
   const ReleaseEntryBuilder({
-    required this.repository,
     required this.workingDirectory,
     required this.tagPrefix,
     required this.versionUpdate,

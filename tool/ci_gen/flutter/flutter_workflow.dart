@@ -17,7 +17,6 @@ abstract class FlutterWorkflow {
     final analyzeJobBuilder = FlutterAnalyzeJobBuilder(
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
       javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
-      repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
@@ -28,7 +27,6 @@ abstract class FlutterWorkflow {
       analyzeJobId: analyzeJobBuilder.id,
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
       javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
-      repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
@@ -38,7 +36,6 @@ abstract class FlutterWorkflow {
     );
     final validateCoverageBuilder = ValidateCoverageJobBuilder(
       unitTestJobId: unitTestBuilder.id,
-      repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
       minCoverage: inputContext(WorkflowInputs.minCoverage),
@@ -49,7 +46,6 @@ abstract class FlutterWorkflow {
       analyzeJobId: analyzeJobBuilder.id,
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
       javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
-      repository: inputContext(WorkflowInputs.repository),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),

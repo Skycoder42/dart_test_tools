@@ -11,10 +11,6 @@ on:
         required: false
         default: 11
         description: The Java-SDK version (mayor only). Passed as "java-version" to "actions/setup-java".
-      repository:
-        type: string
-        required: false
-        description: The repository to check out. Passed as "repository" to "actions/checkout".
       workingDirectory:
         type: string
         required: false
@@ -134,10 +130,9 @@ jobs:
         run: |
           brew install yq coreutils
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
-      - name: Checkout repository ${{ inputs.repository }}
+      - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          repository: ${{ inputs.repository }}
           persist-credentials: false
       - name: Remove pubspec_overrides.yaml
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
@@ -221,11 +216,10 @@ jobs:
         run: |
           brew install yq coreutils
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
-      - name: Checkout repository ${{ inputs.repository }}
+      - name: Checkout repository
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/checkout@v3
         with:
-          repository: ${{ inputs.repository }}
           persist-credentials: false
       - name: Remove pubspec_overrides.yaml
         if: contains(fromJSON(inputs.platforms), matrix.platform)
@@ -267,10 +261,9 @@ jobs:
           set -e
           sudo apt-get -qq update
           sudo apt-get -qq install lcov dos2unix
-      - name: Checkout repository ${{ inputs.repository }}
+      - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          repository: ${{ inputs.repository }}
           persist-credentials: false
       - name: Download linux coverage data
         if: contains(fromJSON(inputs.platforms), 'linux')
@@ -409,11 +402,10 @@ jobs:
         run: |
           brew install yq coreutils
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
-      - name: Checkout repository ${{ inputs.repository }}
+      - name: Checkout repository
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/checkout@v3
         with:
-          repository: ${{ inputs.repository }}
           persist-credentials: false
       - name: Remove pubspec_overrides.yaml
         if: contains(fromJSON(inputs.platforms), matrix.platform)

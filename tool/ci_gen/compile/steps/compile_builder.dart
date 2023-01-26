@@ -12,7 +12,6 @@ abstract class ICompileMatrix {
 }
 
 class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
-  final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
@@ -24,7 +23,6 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
   final String runTool;
 
   CompileBuilder({
-    required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
     required this.buildRunnerArgs,
@@ -38,7 +36,6 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
   @override
   Iterable<Step> build() => [
         ...ProjectSetupBuilder(
-          repository: repository,
           workingDirectory: workingDirectory,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,

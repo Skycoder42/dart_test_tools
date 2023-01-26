@@ -12,7 +12,6 @@ class PublishBuilder implements StepBuilder {
   static final toolsPubRun = toolsStepId.output('pubRun');
 
   final Expression flutter;
-  final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
@@ -21,7 +20,6 @@ class PublishBuilder implements StepBuilder {
 
   PublishBuilder({
     required this.flutter,
-    required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
     required this.buildRunnerArgs,
@@ -45,7 +43,6 @@ fi
 ''',
         ),
         ...ProjectSetupBuilder(
-          repository: repository,
           workingDirectory: workingDirectory,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,

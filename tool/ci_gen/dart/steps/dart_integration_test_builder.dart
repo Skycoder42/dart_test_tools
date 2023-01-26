@@ -16,7 +16,6 @@ class DartIntegrationTestBuilder
     implements StepBuilder {
   static const testSetupCacheStepId = StepId('test-setup-cache');
 
-  final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
@@ -32,7 +31,6 @@ class DartIntegrationTestBuilder
   final IDartIntegrationTestMatrix matrix;
 
   const DartIntegrationTestBuilder({
-    required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
     required this.buildRunnerArgs,
@@ -50,7 +48,6 @@ class DartIntegrationTestBuilder
   @override
   Iterable<Step> build() => [
         ...ProjectSetupBuilder(
-          repository: repository,
           workingDirectory: workingDirectory,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,

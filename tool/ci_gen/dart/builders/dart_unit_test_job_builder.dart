@@ -9,7 +9,6 @@ class DartUnitTestJobBuilder extends UnitTestJobBuilder
 
   DartUnitTestJobBuilder({
     required super.analyzeJobId,
-    required super.repository,
     required super.workingDirectory,
     required super.buildRunner,
     required super.buildRunnerArgs,

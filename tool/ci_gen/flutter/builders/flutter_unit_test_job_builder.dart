@@ -13,7 +13,6 @@ class FlutterUnitTestJobBuilder extends UnitTestJobBuilder
     required super.analyzeJobId,
     required this.flutterSdkChannel,
     required this.javaJdkVersion,
-    required super.repository,
     required super.workingDirectory,
     required super.buildRunner,
     required super.buildRunnerArgs,

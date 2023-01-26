@@ -79,7 +79,6 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
   ];
 
   final JobId analyzeJobId;
-  final Expression repository;
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
@@ -89,7 +88,6 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
 
   UnitTestJobBuilder({
     required this.analyzeJobId,
-    required this.repository,
     required this.workingDirectory,
     required this.buildRunner,
     required this.buildRunnerArgs,
@@ -130,7 +128,6 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
             ),
           ),
           ...UnitTestBuilder(
-            repository: repository,
             workingDirectory: workingDirectory,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,

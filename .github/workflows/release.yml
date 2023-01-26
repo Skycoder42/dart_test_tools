@@ -6,10 +6,6 @@ on:
         required: false
         default: stable
         description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
-      repository:
-        type: string
-        required: false
-        description: The repository to check out. Passed as "repository" to "actions/checkout".
       workingDirectory:
         type: string
         required: false
@@ -49,10 +45,9 @@ jobs:
         uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
-      - name: Checkout repository ${{ inputs.repository }}
+      - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          repository: ${{ inputs.repository }}
           persist-credentials: false
       - id: version
         name: Check if package should be published
