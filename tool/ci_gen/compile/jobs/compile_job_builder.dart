@@ -81,7 +81,7 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
     _PlatformInclude(
       platform: 'web',
       binaryType: _BinaryType.js,
-      compileArgs: r'-m -o "bin/$target.js"',
+      compileArgs: r'-O2 --server-mode -o "bin/$target.js"',
       os: 'ubuntu-latest',
     ),
   ];

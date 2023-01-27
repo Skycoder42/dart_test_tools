@@ -83,7 +83,7 @@ jobs:
             os: macos-latest
           - platform: web
             binaryType: js
-            compileArgs: -m -o "bin/$target.js"
+            compileArgs: -O2 --server-mode -o "bin/$target.js"
             os: ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
@@ -179,6 +179,7 @@ jobs:
           set -eo pipefail
           for artifact in $(find . -type d -name "binaries-*"); do
             zip -9 "$artifact.zip" "$artifact"/*.exe "$artifact"/*.js
+            zip -9 "$artifact-debug-symbols.zip" "$artifact"/*.exe.sym "$artifact"/*.js.map  "$artifact"/*.js.deps
           done
         working-directory: artifacts
       - name: Activate cider
