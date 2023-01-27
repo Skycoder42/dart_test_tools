@@ -4,8 +4,8 @@ import '../types/on.dart';
 import '../types/output.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
-import 'builders/compile_job_builder.dart';
-import 'builders/release_job_builder.dart';
+import 'jobs/compile_job_builder.dart';
+import 'jobs/release_job_builder.dart';
 
 abstract class CompileWorkflow {
   CompileWorkflow._();
@@ -39,6 +39,12 @@ abstract class CompileWorkflow {
               value: ReleaseJobBuilder.updateOutput,
               description: 'Holds a boolean value string ("true" or "false"), '
                   'indicating whether a release was created or not.',
+            ),
+            'releaseVersion': Output(
+              value: ReleaseJobBuilder.versionOutput,
+              description:
+                  'Holds the version number of the created release, if the '
+                  'releaseCreated output is true. Otherwise, it is not set.',
             ),
           },
         ),

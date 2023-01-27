@@ -7,6 +7,7 @@ import '../steps/release_builder.dart';
 class ReleaseJobBuilder implements JobBuilder {
   static const jobId = JobId('release');
   static final updateOutput = jobId.output('update');
+  static final versionOutput = jobId.output('version');
 
   final JobId compileJobId;
   final Expression releaseRef;
@@ -31,7 +32,8 @@ class ReleaseJobBuilder implements JobBuilder {
         needs: {compileJobId},
         ifExpression: const Expression('github.ref').eq(releaseRef),
         outputs: {
-          updateOutput: ReleaseBuilder.versionUpdate,
+          updateOutput: ReleaseBuilder.updateOutput,
+          versionOutput: ReleaseBuilder.versionOutput,
         },
         runsOn: 'ubuntu-latest',
         steps: [

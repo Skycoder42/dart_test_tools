@@ -9,7 +9,8 @@ import '../../types/step.dart';
 
 class ReleaseBuilder implements StepBuilder {
   static const versionStepId = StepId('version');
-  static final versionUpdate = versionStepId.output('update');
+  static final updateOutput = versionStepId.output('update');
+  static final versionOutput = versionStepId.output('version');
 
   final Expression dartSdkVersion;
   final Expression workingDirectory;
@@ -38,17 +39,18 @@ tag_exists=\$(git tag -l "$tagPrefix\$package_version")
 
 if [[ -z "\$tag_exists" ]]; then
   echo Release does not exist yet - creating release
-  ${versionUpdate.bashSetter('true')}
+  ${updateOutput.bashSetter('true')}
+  ${versionOutput.bashSetter(r'$package_version')}
 else
   echo Release already exists - skipping creation
-  ${versionUpdate.bashSetter('false')}
+  ${updateOutput.bashSetter('false')}
 fi
 ''',
         ),
         Step.uses(
           name: 'Download all binary artifacts',
           ifExpression:
-              versionUpdate.expression.eq(const Expression.literal('true')),
+              updateOutput.expression.eq(const Expression.literal('true')),
           uses: Tools.actionsDownloadArtifact,
           withArgs: <String, dynamic>{
             'path': 'artifacts',
@@ -57,7 +59,7 @@ fi
         Step.run(
           name: 'Create asset archives',
           ifExpression:
-              versionUpdate.expression.eq(const Expression.literal('true')),
+              updateOutput.expression.eq(const Expression.literal('true')),
           run: r'''
 set -eo pipefail
 for artifact in $(find . -type d -name "binaries-*"); do
@@ -69,7 +71,7 @@ done
         ...ReleaseEntryBuilder(
           workingDirectory: workingDirectory,
           tagPrefix: tagPrefix,
-          versionUpdate: versionUpdate.expression,
+          versionUpdate: updateOutput.expression,
           files: 'artifacts/*.zip',
         ).build(),
       ];
