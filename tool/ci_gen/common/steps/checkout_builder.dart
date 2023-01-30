@@ -7,13 +7,13 @@ class CheckoutBuilder implements StepBuilder {
   final Expression? ifExpression;
   final Expression? gitRef;
   final String? path;
-  final bool persistCredentials;
+  final Expression? persistCredentials;
 
   const CheckoutBuilder({
     this.ifExpression,
     this.gitRef,
     this.path,
-    this.persistCredentials = false,
+    this.persistCredentials,
   });
 
   @override
@@ -23,7 +23,7 @@ class CheckoutBuilder implements StepBuilder {
           ifExpression: ifExpression,
           uses: Tools.actionsCheckout,
           withArgs: <String, dynamic>{
-            'persist-credentials': persistCredentials,
+            'persist-credentials': persistCredentials?.toString() ?? false,
             if (path != null) 'path': path,
             if (gitRef != null) 'ref': gitRef.toString(),
           },

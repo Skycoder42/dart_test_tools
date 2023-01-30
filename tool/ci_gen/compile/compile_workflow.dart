@@ -28,6 +28,7 @@ abstract class CompileWorkflow {
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       tagPrefix: inputContext(WorkflowInputs.tagPrefix),
+      persistCredentials: inputContext(WorkflowInputs.persistCredentials),
     );
 
     return Workflow(

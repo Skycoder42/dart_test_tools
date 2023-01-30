@@ -15,11 +15,13 @@ class ReleaseBuilder implements StepBuilder {
   final Expression dartSdkVersion;
   final Expression workingDirectory;
   final Expression tagPrefix;
+  final Expression persistCredentials;
 
   const ReleaseBuilder({
     required this.dartSdkVersion,
     required this.workingDirectory,
     required this.tagPrefix,
+    required this.persistCredentials,
   });
 
   @override
@@ -27,7 +29,9 @@ class ReleaseBuilder implements StepBuilder {
         ...DartSdkBuilder(
           dartSdkVersion: dartSdkVersion,
         ).build(),
-        ...CheckoutBuilder().build(),
+        ...CheckoutBuilder(
+          persistCredentials: persistCredentials,
+        ).build(),
         Step.run(
           id: versionStepId,
           name: 'Check if a release should be created',

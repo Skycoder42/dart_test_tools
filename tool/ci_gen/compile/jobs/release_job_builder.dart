@@ -14,6 +14,7 @@ class ReleaseJobBuilder implements JobBuilder {
   final Expression dartSdkVersion;
   final Expression workingDirectory;
   final Expression tagPrefix;
+  final Expression persistCredentials;
 
   const ReleaseJobBuilder({
     required this.compileJobId,
@@ -21,6 +22,7 @@ class ReleaseJobBuilder implements JobBuilder {
     required this.dartSdkVersion,
     required this.workingDirectory,
     required this.tagPrefix,
+    required this.persistCredentials,
   });
 
   @override
@@ -41,6 +43,7 @@ class ReleaseJobBuilder implements JobBuilder {
             dartSdkVersion: dartSdkVersion,
             workingDirectory: workingDirectory,
             tagPrefix: tagPrefix,
+            persistCredentials: persistCredentials,
           ).build(),
         ],
       );

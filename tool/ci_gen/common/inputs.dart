@@ -360,4 +360,17 @@ Example:
           'as "tags".',
     ),
   );
+
+  static const persistCredentials = WorkflowInput(
+    name: 'persistCredentials',
+    input: Input(
+      type: Type.boolean,
+      required: false,
+      defaultValue: false,
+      description:
+          'Specifies, whether git credentials should be persisted for the run. '
+          'Might be needed in case the repository is a private repository to '
+          'figure out whether a new release is required or not.',
+    ),
+  );
 }
