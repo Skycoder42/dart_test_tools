@@ -12,10 +12,10 @@ executables:
   cider: cider
 
 dependencies:
-  analyzer: ^5.4.0
-  args: ^2.3.2
+  analyzer: ^5.7.1
+  args: ^2.4.0
   checked_yaml: ^2.0.2
-  cider: ^0.1.3
+  cider: ^0.1.4
   dotenv: ^4.1.0
   freezed_annotation: ^2.2.0
   json_annotation: ^4.8.0
@@ -25,7 +25,7 @@ dependencies:
   mocktail: ^0.3.0
   path: ^1.8.2
   pub_semver: ^2.1.3
-  pubspec_parse: ^1.2.1
+  pubspec_parse: ^1.2.2
   stack_trace: ^1.11.0
   stream_channel: ^2.1.1
   test: ^1.22.0
@@ -36,16 +36,17 @@ dev_dependencies:
   build_runner: ^2.3.3
   flutter_lints: ^2.0.1
   freezed: ^2.3.2
-  html: ^0.15.1
+  html: ^0.15.2
   http: ^0.13.5
-  json_serializable: ^6.6.0
+  json_serializable: ^6.6.1
   lints: ^2.0.1
-  yaml_edit: ^2.0.3
+  yaml_edit: ^2.1.0
 
 dart_pre_commit:
   lib-exports: false
   pull-up-dependencies:
     allowed:
+      - meta
       - path
       - test
 

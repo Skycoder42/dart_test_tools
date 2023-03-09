@@ -15,6 +15,7 @@ class AnalyzeBuilder implements StepBuilder {
   final Expression buildRunnerArgs;
   final Expression analyzeImage;
   final Expression extendedAnalyzerArgs;
+  final Expression panaScoreThreshold;
   final String baseTool;
   final String pubTool;
   final String runTool;
@@ -26,6 +27,7 @@ class AnalyzeBuilder implements StepBuilder {
     required this.buildRunnerArgs,
     required this.analyzeImage,
     required this.extendedAnalyzerArgs,
+    required this.panaScoreThreshold,
     required this.baseTool,
     required this.pubTool,
     required this.runTool,
@@ -38,6 +40,10 @@ class AnalyzeBuilder implements StepBuilder {
           name: 'Install dart_test_tools',
           run:
               '$pubTool global activate dart_test_tools ^$dartTestToolsVersion',
+        ),
+        Step.run(
+          name: 'Install pana',
+          run: '$pubTool global activate pana',
         ),
         ...ProjectSetupBuilder(
           workingDirectory: workingDirectory,
@@ -73,6 +79,14 @@ fi
 ''',
           workingDirectory: workingDirectory.toString(),
           shell: 'bash',
+        ),
+        Step.run(
+          name: 'validate pana score',
+          ifExpression:
+              checkPublish.expression.eq(const Expression.literal('true')),
+          run: '$pubTool global run pana '
+              '--exit-code-threshold $panaScoreThreshold .',
+          workingDirectory: workingDirectory.toString(),
         ),
         ...RunPublishBuilder(
           workingDirectory: workingDirectory,

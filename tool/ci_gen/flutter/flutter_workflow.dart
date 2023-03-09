@@ -22,6 +22,7 @@ abstract class FlutterWorkflow {
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       analyzeImage: inputContext(WorkflowInputs.analyzeImage),
       extendedAnalyzerArgs: inputContext(WorkflowInputs.extendedAnalyzerArgs),
+      panaScoreThreshold: inputContext(WorkflowInputs.panaScoreThreshold),
     );
     final unitTestBuilder = FlutterUnitTestJobBuilder(
       analyzeJobId: analyzeJobBuilder.id,

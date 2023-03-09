@@ -18,6 +18,7 @@ class FlutterAnalyzeJobBuilder extends AnalyzeJobBuilder
     required super.buildRunnerArgs,
     required super.analyzeImage,
     required super.extendedAnalyzerArgs,
+    required super.panaScoreThreshold,
   });
 
   @override

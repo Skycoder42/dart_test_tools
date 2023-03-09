@@ -37,11 +37,16 @@ on:
           Additional arguments to pass to the dart_test_tools:lint tool when running the
           extended linters step. Can for example be used to enable or disable specific
           linters.
+      panaScoreThreshold:
+        type: number
+        required: false
+        default: 0
+        description: The threshold that the pana score is allowed to be below the maximum value.
       unitTestPaths:
         type: string
         required: false
         default: test
-        description: Specifiy directories or paths of unit tests to run. By default, all test in the test directory are run.
+        description: Specify directories or paths of unit tests to run. By default, all test in the test directory are run.
       minCoverage:
         type: number
         required: false
@@ -81,7 +86,7 @@ on:
       integrationTestPaths:
         type: string
         required: false
-        description: Specifiy directories or paths of integration tests to run. By default, no integration test are run.
+        description: Specify directories or paths of integration tests to run. By default, no integration test are run.
       integrationTestProject:
         type: string
         required: false
@@ -122,6 +127,8 @@ jobs:
         run: flutter precache --universal
       - name: Install dart_test_tools
         run: flutter pub global activate dart_test_tools ^4.5.0
+      - name: Install pana
+        run: flutter pub global activate pana
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
         run: choco install yq
@@ -166,6 +173,10 @@ jobs:
           fi
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
+      - name: validate pana score
+        if: steps.checkPublish.outputs.publish == 'true'
+        run: flutter pub global run pana --exit-code-threshold ${{ inputs.panaScoreThreshold }} .
+        working-directory: ${{ inputs.workingDirectory }}
       - name: Test publishing configuration
         if: steps.checkPublish.outputs.publish == 'true'
         run: flutter pub publish --dry-run

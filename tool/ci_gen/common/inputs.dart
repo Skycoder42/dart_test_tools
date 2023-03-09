@@ -110,13 +110,24 @@ linters.
     ),
   );
 
+  static const panaScoreThreshold = WorkflowInput(
+    name: 'panaScoreThreshold',
+    input: Input(
+      type: Type.number,
+      required: false,
+      defaultValue: 0,
+      description: 'The threshold that the pana score is allowed '
+          'to be below the maximum value.',
+    ),
+  );
+
   static const unitTestPaths = WorkflowInput(
     name: 'unitTestPaths',
     input: Input(
       type: Type.string,
       required: false,
       defaultValue: 'test',
-      description: 'Specifiy directories or paths of unit tests to run. '
+      description: 'Specify directories or paths of unit tests to run. '
           'By default, all test in the test directory are run.',
     ),
   );
@@ -126,7 +137,7 @@ linters.
     input: Input(
       type: Type.string,
       required: false,
-      description: 'Specifiy directories or paths of integration tests to run. '
+      description: 'Specify directories or paths of integration tests to run. '
           'By default, no integration test are run.',
     ),
   );
