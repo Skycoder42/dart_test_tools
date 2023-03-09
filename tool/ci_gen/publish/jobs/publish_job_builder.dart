@@ -4,6 +4,7 @@ import '../../flutter/steps/flutter_sdk_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
+import '../steps/flutter_auth_builder.dart';
 import '../steps/publish_builder.dart';
 
 class PublishJobBuilder implements JobBuilder {
@@ -56,6 +57,9 @@ class PublishJobBuilder implements JobBuilder {
           ...FlutterSdkBuilder(
             flutterSdkChannel: flutterSdkChannel,
             javaJdkVersion: javaJdkVersion,
+            ifExpression: flutter,
+          ).build(),
+          ...FlutterAuthBuilder(
             ifExpression: flutter,
           ).build(),
           ...PublishBuilder(

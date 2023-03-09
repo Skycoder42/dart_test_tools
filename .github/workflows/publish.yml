@@ -79,6 +79,14 @@ jobs:
       - name: Download flutter binary artifacts
         if: inputs.flutter
         run: flutter precache --universal
+      - name: Create publishing token (flutter)
+        if: inputs.flutter
+        run: |
+          set -eo pipefail
+          PUB_TOKEN=$(curl --retry 5 --retry-connrefused -sLS "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=https://pub.dev" -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" | jq -r '.value')
+          echo "PUB_TOKEN=${PUB_TOKEN}" >> $GITHUB_ENV
+          export PUB_TOKEN
+          flutter pub token add https://pub.dev --env-var PUB_TOKEN
       - id: tools
         name: Prepare build tools
         run: |
