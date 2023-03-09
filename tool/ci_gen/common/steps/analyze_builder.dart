@@ -80,14 +80,6 @@ fi
           workingDirectory: workingDirectory.toString(),
           shell: 'bash',
         ),
-        Step.run(
-          name: 'validate pana score',
-          ifExpression:
-              checkPublish.expression.eq(const Expression.literal('true')),
-          run: '$pubTool global run pana '
-              '--exit-code-threshold $panaScoreThreshold .',
-          workingDirectory: workingDirectory.toString(),
-        ),
         ...RunPublishBuilder(
           workingDirectory: workingDirectory,
           pubTool: pubTool,
@@ -96,5 +88,13 @@ fi
           ifExpression:
               checkPublish.expression.eq(const Expression.literal('true')),
         ).build(),
+        Step.run(
+          name: 'Validate pana score',
+          ifExpression:
+              checkPublish.expression.eq(const Expression.literal('true')),
+          run: '$pubTool global run pana '
+              '--exit-code-threshold $panaScoreThreshold .',
+          workingDirectory: workingDirectory.toString(),
+        ),
       ];
 }

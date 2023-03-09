@@ -173,13 +173,13 @@ jobs:
           fi
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
-      - name: validate pana score
-        if: steps.checkPublish.outputs.publish == 'true'
-        run: flutter pub global run pana --exit-code-threshold ${{ inputs.panaScoreThreshold }} .
-        working-directory: ${{ inputs.workingDirectory }}
       - name: Test publishing configuration
         if: steps.checkPublish.outputs.publish == 'true'
         run: flutter pub publish --dry-run
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Validate pana score
+        if: steps.checkPublish.outputs.publish == 'true'
+        run: flutter pub global run pana --exit-code-threshold ${{ inputs.panaScoreThreshold }} .
         working-directory: ${{ inputs.workingDirectory }}
   unit_tests:
     name: Unit tests
