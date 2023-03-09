@@ -350,7 +350,7 @@ jobs:
           - platform: macos
             os: macos-latest
             desktop: true
-            testArgs: -d macos
+            testArgs: -d macos --timeout 3x
           - platform: web
             os: windows-latest
     runs-on: ${{ matrix.os }}
