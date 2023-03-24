@@ -22,11 +22,11 @@ set -eo pipefail
 
 echo "Starting new integration test run for commit ${Expression('github.sha')}"
 build_slug=\$(
-  curl -sSLf \
-    -X POST \
-    -H "Authorization: $bitrisePat" \
-    -H "Content-Type: application/json" \
-    https://api.bitrise.io/v0.1/apps/$bitriseAppSlug/builds \
+  curl -sSLf \\
+    -X POST \\
+    -H "Authorization: $bitrisePat" \\
+    -H "Content-Type: application/json" \\
+    https://api.bitrise.io/v0.1/apps/$bitriseAppSlug/builds \\
     -d @- << EOF | jq -r '.build_slug'
 {
   "build_params": {
@@ -47,8 +47,8 @@ while (( \$build_status == 0 )); do
   sleep 10
   echo -n "Checking build status - "
   build_data=\$(
-    curl -sSLf \
-      -H "Authorization: $bitrisePat" \
+    curl -sSLf \\
+      -H "Authorization: $bitrisePat" \\
       "https://api.bitrise.io/v0.1/apps/$bitriseAppSlug/builds/\$build_slug"
   )
   build_status=\$(echo "\$build_data" | jq '.data.status')

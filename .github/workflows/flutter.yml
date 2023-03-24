@@ -495,4 +495,50 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run Bitrise Workflow
-        run: "set -eo pipefail\n\necho \"Starting new integration test run for commit ${{ github.sha }}\"\nbuild_slug=$(\n  curl -sSLf \n    -X POST \n    -H \"Authorization: ${{ secrets.bitrisePat }}\" \n    -H \"Content-Type: application/json\" \n    https://api.bitrise.io/v0.1/apps/${{ inputs.bitriseAppSlug }}/builds \n    -d @- << EOF | jq -r '.build_slug'\n{\n  \"build_params\": {\n    \"commit_hash\": \"${{ github.sha }}\",\n    \"workflow_id\": \"${{ inputs.bitriseWorkflowId }}\"\n  },\n  \"hook_info\": {\n    \"type\": \"bitrise\"\n  }\n}\nEOF\n)\n\necho \"::group::Waiting for run to complete...\"\nbuild_data=\nbuild_status=0\nwhile (( $build_status == 0 )); do\n  sleep 10\n  echo -n \"Checking build status - \"\n  build_data=$(\n    curl -sSLf \n      -H \"Authorization: ${{ secrets.bitrisePat }}\" \n      \"https://api.bitrise.io/v0.1/apps/${{ inputs.bitriseAppSlug }}/builds/$build_slug\"\n  )\n  build_status=$(echo \"$build_data\" | jq '.data.status')\n  echo \"$build_data\" | jq -r '.data.status_text'\ndone\necho \"::endgroup::\"\n\nif (( $build_status == 1 )); then\n  echo \"Integration tests finished successfully\"\n  echo \"Visit https://app.bitrise.io/build/$build_slug for more details\"\nelse\n  echo \"::error::Integration Tests not successful. Finished with status: $(echo \"$build_data\" | jq '.data.status_text')\"\n  echo \"Visit https://app.bitrise.io/build/$build_slug for more details\"\n  exit 1\nfi\n"
+        run: |
+          set -eo pipefail
+
+          echo "Starting new integration test run for commit ${{ github.sha }}"
+          build_slug=$(
+            curl -sSLf \
+              -X POST \
+              -H "Authorization: ${{ secrets.bitrisePat }}" \
+              -H "Content-Type: application/json" \
+              https://api.bitrise.io/v0.1/apps/${{ inputs.bitriseAppSlug }}/builds \
+              -d @- << EOF | jq -r '.build_slug'
+          {
+            "build_params": {
+              "commit_hash": "${{ github.sha }}",
+              "workflow_id": "${{ inputs.bitriseWorkflowId }}"
+            },
+            "hook_info": {
+              "type": "bitrise"
+            }
+          }
+          EOF
+          )
+
+          echo "::group::Waiting for run to complete..."
+          build_data=
+          build_status=0
+          while (( $build_status == 0 )); do
+            sleep 10
+            echo -n "Checking build status - "
+            build_data=$(
+              curl -sSLf \
+                -H "Authorization: ${{ secrets.bitrisePat }}" \
+                "https://api.bitrise.io/v0.1/apps/${{ inputs.bitriseAppSlug }}/builds/$build_slug"
+            )
+            build_status=$(echo "$build_data" | jq '.data.status')
+            echo "$build_data" | jq -r '.data.status_text'
+          done
+          echo "::endgroup::"
+
+          if (( $build_status == 1 )); then
+            echo "Integration tests finished successfully"
+            echo "Visit https://app.bitrise.io/build/$build_slug for more details"
+          else
+            echo "::error::Integration Tests not successful. Finished with status: $(echo "$build_data" | jq '.data.status_text')"
+            echo "Visit https://app.bitrise.io/build/$build_slug for more details"
+            exit 1
+          fi
