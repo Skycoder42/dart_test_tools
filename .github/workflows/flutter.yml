@@ -172,7 +172,7 @@ jobs:
         run: flutter pub global run dart_test_tools:lint -lALL --actions-printer ${{ inputs.extendedAnalyzerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Validate correct formatting
-        run: flutter format -onone --set-exit-if-changed $(git ls-files '*.dart')
+        run: dart format -onone --set-exit-if-changed $(git ls-files '*.dart')
         working-directory: ${{ inputs.workingDirectory }}
       - id: checkPublish
         name: Check if package is publishable

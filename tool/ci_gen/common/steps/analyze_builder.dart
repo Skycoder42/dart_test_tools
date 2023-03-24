@@ -61,7 +61,7 @@ class AnalyzeBuilder implements StepBuilder {
         ),
         Step.run(
           name: 'Validate correct formatting',
-          run: '$baseTool format -onone --set-exit-if-changed '
+          run: 'dart format -onone --set-exit-if-changed '
               r"$(git ls-files '*.dart')",
           workingDirectory: workingDirectory.toString(),
         ),
