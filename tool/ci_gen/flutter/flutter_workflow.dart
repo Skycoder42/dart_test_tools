@@ -1,10 +1,13 @@
 import '../common/api/workflow_input.dart';
+import '../common/api/workflow_secret.dart';
 import '../common/builders/validate_coverage_job_builder.dart';
 import '../common/inputs.dart';
+import '../common/secrets.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'builders/flutter_analyze_job_builder.dart';
+import 'builders/flutter_bitrise_job_builder.dart';
 import 'builders/flutter_integration_test_job_builder.dart';
 import 'builders/flutter_unit_test_job_builder.dart';
 
@@ -13,6 +16,7 @@ abstract class FlutterWorkflow {
 
   static Workflow buildWorkflow() {
     final inputContext = WorkflowInputContext();
+    final secretContext = WorkflowSecretContext();
 
     final analyzeJobBuilder = FlutterAnalyzeJobBuilder(
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
@@ -60,11 +64,18 @@ abstract class FlutterWorkflow {
       androidAVDDevice: inputContext(WorkflowInputs.androidAVDDevice),
       platforms: inputContext.builder(WorkflowInputs.platforms),
     );
+    final bitriseIntegrationTestBuilder = FlutterBitriseJobBuilder(
+      analyzeJobId: analyzeJobBuilder.id,
+      bitriseAppSlug: inputContext(WorkflowInputs.bitriseAppSlug),
+      bitriseWorkflowId: inputContext(WorkflowInputs.bitriseWorkflowId),
+      bitrisePat: secretContext(WorkflowSecrets.bitrisePat),
+    );
 
     return Workflow(
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
+          secrets: secretContext.createSecrets(),
         ),
       ),
       jobs: {
@@ -72,6 +83,7 @@ abstract class FlutterWorkflow {
         unitTestBuilder.id: unitTestBuilder.build(),
         validateCoverageBuilder.id: validateCoverageBuilder.build(),
         integrationTestBuilder.id: integrationTestBuilder.build(),
+        bitriseIntegrationTestBuilder.id: bitriseIntegrationTestBuilder.build(),
       },
     );
   }

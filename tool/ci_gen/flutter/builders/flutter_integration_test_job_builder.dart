@@ -87,12 +87,12 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
       os: 'windows-latest',
       testArgs: '-d windows',
     ),
-    _PlatformInclude(
-      platform: 'macos',
-      desktop: true,
-      os: 'macos-latest',
-      testArgs: '-d macos',
-    ),
+    // _PlatformInclude(
+    //   platform: 'macos',
+    //   desktop: true,
+    //   os: 'macos-latest',
+    //   testArgs: '-d macos',
+    // ),
     _PlatformInclude(
       platform: 'web',
       os: 'windows-latest',

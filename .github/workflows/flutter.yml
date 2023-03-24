@@ -55,7 +55,7 @@ on:
       platforms:
         type: string
         required: false
-        default: '["android","ios","linux","windows","macos","web"]'
+        default: '["android","ios","linux","windows","web"]'
         description: |
           A JSON-Formatted list of platforms that unit and integration tests should be run on.
           By default, all platforms are active. The available platforms are:
@@ -63,7 +63,6 @@ on:
           - ios
           - linux
           - windows
-          - macos
           - web
       coverageExclude:
         type: string
@@ -113,6 +112,20 @@ on:
         required: false
         default: pixel_4
         description: The AVD device template to be used for android integration testing
+      bitriseAppSlug:
+        type: string
+        required: false
+        default: ""
+        description: The app-slug of the bitrise app to run a bitrise workflow for. Typically needed for macOs integration tests, as github actions currently does not support running macos apps.
+      bitriseWorkflowId:
+        type: string
+        required: false
+        default: macos_integration_test
+        description: Used in combination with the bitriseAppSlug to select the workflow to be executed.
+    secrets:
+      bitrisePat:
+        required: false
+        description: The personal access token to access the bitrise.io API.
 jobs:
   analyze:
     name: Analyze
@@ -340,7 +353,6 @@ jobs:
           - ios
           - linux
           - windows
-          - macos
           - web
         include:
           - platform: android
@@ -358,10 +370,6 @@ jobs:
             os: windows-latest
             desktop: true
             testArgs: -d windows
-          - platform: macos
-            os: macos-latest
-            desktop: true
-            testArgs: -d macos --verbose
           - platform: web
             os: windows-latest
     runs-on: ${{ matrix.os }}
@@ -479,3 +487,12 @@ jobs:
         run: $ChromeWebDriver/chromedriver --port=4444 & flutter drive --driver test_driver/integration_test.dart --target ${{ inputs.integrationTestPaths }} --release -d chrome --browser-name chrome
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
         shell: bash
+  bitrise_integration_tests:
+    name: Bitrise integration tests
+    needs:
+      - analyze
+    if: inputs.bitriseAppSlug != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Bitrise Workflow
+        run: "set -eo pipefail\n\necho \"Starting new integration test run for commit ${{ github.sha }}\"\nbuild_slug=$(\n  curl -sSLf \n    -X POST \n    -H \"Authorization: ${{ secrets.bitrisePat }}\" \n    -H \"Content-Type: application/json\" \n    https://api.bitrise.io/v0.1/apps/${{ inputs.bitriseAppSlug }}/builds \n    -d @- << EOF | jq -r '.build_slug'\n{\n  \"build_params\": {\n    \"commit_hash\": \"${{ github.sha }}\",\n    \"workflow_id\": \"${{ inputs.bitriseWorkflowId }}\"\n  },\n  \"hook_info\": {\n    \"type\": \"bitrise\"\n  }\n}\nEOF\n)\n\necho \"::group::Waiting for run to complete...\"\nbuild_data=\nbuild_status=0\nwhile (( $build_status == 0 )); do\n  sleep 10\n  echo -n \"Checking build status - \"\n  build_data=$(\n    curl -sSLf \n      -H \"Authorization: ${{ secrets.bitrisePat }}\" \n      \"https://api.bitrise.io/v0.1/apps/${{ inputs.bitriseAppSlug }}/builds/$build_slug\"\n  )\n  build_status=$(echo \"$build_data\" | jq '.data.status')\n  echo \"$build_data\" | jq -r '.data.status_text'\ndone\necho \"::endgroup::\"\n\nif (( $build_status == 1 )); then\n  echo \"Integration tests finished successfully\"\n  echo \"Visit https://app.bitrise.io/build/$build_slug for more details\"\nelse\n  echo \"::error::Integration Tests not successful. Finished with status: $(echo \"$build_data\" | jq '.data.status_text')\"\n  echo \"Visit https://app.bitrise.io/build/$build_slug for more details\"\n  exit 1\nfi\n"
