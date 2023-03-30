@@ -63,26 +63,28 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
     _PlatformInclude(
       platform: 'linux',
       binaryType: _BinaryType.exe,
-      compileArgs: r'-S "bin/$executableName.sym" -o "bin/$executableName"',
+      compileArgs:
+          r'-S "build/bin/$executableName.sym" -o "build/bin/$executableName"',
       os: 'ubuntu-latest',
     ),
     _PlatformInclude(
       platform: 'windows',
       binaryType: _BinaryType.exe,
       compileArgs:
-          r'-S "bin/$executableName.exe.sym" -o "bin/$executableName.exe"',
+          r'-S "build/bin/$executableName.sym" -o "build/bin/$executableName.exe"',
       os: 'windows-latest',
     ),
     _PlatformInclude(
       platform: 'macos',
       binaryType: _BinaryType.exe,
-      compileArgs: r'-S "bin/$executableName.sym" -o "bin/$executableName"',
+      compileArgs:
+          r'-S "build/bin/$executableName.sym" -o "build/bin/$executableName"',
       os: 'macos-latest',
     ),
     _PlatformInclude(
       platform: 'web',
       binaryType: _BinaryType.js,
-      compileArgs: r'-O2 --server-mode -o "bin/$executableName.js"',
+      compileArgs: r'-O2 --server-mode -o "build/bin/$executableName.js"',
       os: 'ubuntu-latest',
     ),
   ];

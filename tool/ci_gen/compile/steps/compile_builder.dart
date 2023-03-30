@@ -47,6 +47,7 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
           ifExpression: _shouldRun,
           run: '''
 set -eo pipefail
+mkdir -p build/bin
 yq ".executables.[] | key" pubspec.yaml | while read executableName; do
   dartScript=\$(yq ".executables.[\\"\$executableName\\"] // \\"\$executableName\\"" pubspec.yaml)
   dart compile ${matrix.binaryType} ${matrix.compileArgs} "bin/\$dartScript.dart"
@@ -61,7 +62,7 @@ done
           uses: Tools.actionsUploadArtifact,
           withArgs: <String, dynamic>{
             'name': 'binaries-${matrix.platform}',
-            'path': '$workingDirectory/bin/*.${matrix.binaryType}*',
+            'path': '$workingDirectory/build/bin/*',
             'retention-days': 3,
           },
         ),

@@ -8,11 +8,11 @@ environment:
 
 executables:
   lint:
-  generate-pkgbuild: generate_pkgbuild
-  cider: cider
+  generate_pkgbuild:
+  cider:
 
 dependencies:
-  analyzer: ^5.7.1
+  analyzer: ^5.10.0
   args: ^2.4.0
   checked_yaml: ^2.0.2
   cider: ^0.1.4

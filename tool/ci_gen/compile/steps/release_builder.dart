@@ -67,8 +67,8 @@ fi
           run: r'''
 set -eo pipefail
 for artifact in $(find . -type d -name "binaries-*"); do
-  zip -9 "$artifact.zip" "$artifact"/*.exe "$artifact"/*.js
-  zip -9 "$artifact-debug-symbols.zip" "$artifact"/*.exe.sym "$artifact"/*.js.map  "$artifact"/*.js.deps
+  zip -9 "$artifact.zip" "$artifact" "$artifact"/*.exe "$artifact"/*.js
+  zip -9 "$artifact-debug-symbols.zip" "$artifact"/*.sym "$artifact"/*.js.map  "$artifact"/*.js.deps
 done
 ''',
           workingDirectory: 'artifacts',
