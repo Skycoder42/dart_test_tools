@@ -67,19 +67,19 @@ jobs:
         include:
           - platform: linux
             binaryType: exe
-            compileArgs: -S "bin/$executableName.sym" -o "bin/$executableName"
+            compileArgs: -S "build/bin/$executableName.sym" -o "build/bin/$executableName"
             os: ubuntu-latest
           - platform: windows
             binaryType: exe
-            compileArgs: -S "bin/$executableName.exe.sym" -o "bin/$executableName.exe"
+            compileArgs: -S "build/bin/$executableName.sym" -o "build/bin/$executableName.exe"
             os: windows-latest
           - platform: macos
             binaryType: exe
-            compileArgs: -S "bin/$executableName.sym" -o "bin/$executableName"
+            compileArgs: -S "build/bin/$executableName.sym" -o "build/bin/$executableName"
             os: macos-latest
           - platform: web
             binaryType: js
-            compileArgs: -O2 --server-mode -o "bin/$executableName.js"
+            compileArgs: -O2 --server-mode -o "build/bin/$executableName.js"
             os: ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
@@ -118,6 +118,7 @@ jobs:
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: |
           set -eo pipefail
+          mkdir -p build/bin
           yq ".executables.[] | key" pubspec.yaml | while read executableName; do
             dartScript=$(yq ".executables.[\"$executableName\"] // \"$executableName\"" pubspec.yaml)
             dart compile ${{ matrix.binaryType }} ${{ matrix.compileArgs }} "bin/$dartScript.dart"
@@ -129,7 +130,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: binaries-${{ matrix.platform }}
-          path: ${{ inputs.workingDirectory }}/bin/*.${{ matrix.binaryType }}*
+          path: ${{ inputs.workingDirectory }}/build/bin/*
           retention-days: 3
   release:
     name: Create release if needed
@@ -175,8 +176,8 @@ jobs:
         run: |
           set -eo pipefail
           for artifact in $(find . -type d -name "binaries-*"); do
-            zip -9 "$artifact.zip" "$artifact"/*.exe "$artifact"/*.js
-            zip -9 "$artifact-debug-symbols.zip" "$artifact"/*.exe.sym "$artifact"/*.js.map  "$artifact"/*.js.deps
+            zip -9 "$artifact.zip" "$artifact" "$artifact"/*.exe "$artifact"/*.js
+            zip -9 "$artifact-debug-symbols.zip" "$artifact"/*.sym "$artifact"/*.js.map  "$artifact"/*.js.deps
           done
         working-directory: artifacts
       - name: Activate cider
