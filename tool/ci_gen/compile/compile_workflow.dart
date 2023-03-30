@@ -19,7 +19,6 @@ abstract class CompileWorkflow {
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       platforms: inputContext.builder(WorkflowInputs.platforms),
-      targets: inputContext(WorkflowInputs.targets),
     );
 
     final releaseJobBuilder = ReleaseJobBuilder(

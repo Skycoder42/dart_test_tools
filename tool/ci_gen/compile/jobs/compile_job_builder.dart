@@ -63,25 +63,26 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
     _PlatformInclude(
       platform: 'linux',
       binaryType: _BinaryType.exe,
-      compileArgs: r'-S "bin/$target.exe.sym"',
+      compileArgs: r'-S "bin/$executableName.sym" -o "bin/$executableName"',
       os: 'ubuntu-latest',
     ),
     _PlatformInclude(
       platform: 'windows',
       binaryType: _BinaryType.exe,
-      compileArgs: r'-S "bin/$target.exe.sym"',
+      compileArgs:
+          r'-S "bin/$executableName.exe.sym" -o "bin/$executableName.exe"',
       os: 'windows-latest',
     ),
     _PlatformInclude(
       platform: 'macos',
       binaryType: _BinaryType.exe,
-      compileArgs: r'-S "bin/$target.exe.sym"',
+      compileArgs: r'-S "bin/$executableName.sym" -o "bin/$executableName"',
       os: 'macos-latest',
     ),
     _PlatformInclude(
       platform: 'web',
       binaryType: _BinaryType.js,
-      compileArgs: r'-O2 --server-mode -o "bin/$target.js"',
+      compileArgs: r'-O2 --server-mode -o "bin/$executableName.js"',
       os: 'ubuntu-latest',
     ),
   ];
@@ -90,7 +91,6 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
   JobId get id => const JobId('compile');
 
   final Expression platforms;
-  final Expression targets;
   @override
   final Expression dartSdkVersion;
   final Expression workingDirectory;
@@ -98,7 +98,6 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
   final Expression buildRunnerArgs;
 
   CompileJobBuilder({
-    required this.targets,
     required this.dartSdkVersion,
     required this.workingDirectory,
     required this.buildRunner,
@@ -130,7 +129,6 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
             workingDirectory: workingDirectory,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
-            targets: targets,
             platforms: platforms,
             matrix: _matrix,
             pubTool: pubTool,

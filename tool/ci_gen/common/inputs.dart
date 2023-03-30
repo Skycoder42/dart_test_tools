@@ -235,21 +235,6 @@ Example:
     ),
   );
 
-  static const targets = WorkflowInput(
-    name: 'targets',
-    input: Input(
-      type: Type.string,
-      required: true,
-      description: '''
-The names of the targets to be compiled. Must be JSON array of strings, each
-string beeing the name of a file in the bin/ folder, without the dart extension.
-
-Example:
-["my-app"]
-''',
-    ),
-  );
-
   static const integrationTestProject = WorkflowInput(
     name: 'integrationTestProject',
     input: Input(

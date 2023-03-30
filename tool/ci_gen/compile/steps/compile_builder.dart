@@ -15,7 +15,6 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
-  final Expression targets;
   @override
   final Expression platforms;
   final ICompileMatrix matrix;
@@ -26,7 +25,6 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
     required this.workingDirectory,
     required this.buildRunner,
     required this.buildRunnerArgs,
-    required this.targets,
     required this.platforms,
     required this.matrix,
     required this.pubTool,
@@ -48,9 +46,10 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
           name: 'Compile executables',
           ifExpression: _shouldRun,
           run: '''
-set -e
-echo '$targets' | jq -cr '.[]' | sed 's/\\r\$//' | while read target; do
-  dart compile ${matrix.binaryType} ${matrix.compileArgs} "bin/\$target.dart"
+set -eo pipefail
+yq ".executables.[] | key" pubspec.yaml | while read executableName; do
+  dartScript=\$(yq ".executables.[\\"\$executableName\\"] // \\"\$executableName\\"" pubspec.yaml)
+  dart compile ${matrix.binaryType} ${matrix.compileArgs} "bin/\$dartScript.dart"
 done
 ''',
           workingDirectory: workingDirectory.toString(),

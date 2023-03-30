@@ -20,15 +20,6 @@ on:
         type: string
         required: false
         description: Optional additional arguments to be passed to the build runner.
-      targets:
-        type: string
-        required: true
-        description: |
-          The names of the targets to be compiled. Must be JSON array of strings, each
-          string beeing the name of a file in the bin/ folder, without the dart extension.
-
-          Example:
-          ["my-app"]
       platforms:
         type: string
         required: false
@@ -76,19 +67,19 @@ jobs:
         include:
           - platform: linux
             binaryType: exe
-            compileArgs: -S "bin/$target.exe.sym"
+            compileArgs: -S "bin/$executableName.sym" -o "bin/$executableName"
             os: ubuntu-latest
           - platform: windows
             binaryType: exe
-            compileArgs: -S "bin/$target.exe.sym"
+            compileArgs: -S "bin/$executableName.exe.sym" -o "bin/$executableName.exe"
             os: windows-latest
           - platform: macos
             binaryType: exe
-            compileArgs: -S "bin/$target.exe.sym"
+            compileArgs: -S "bin/$executableName.sym" -o "bin/$executableName"
             os: macos-latest
           - platform: web
             binaryType: js
-            compileArgs: -O2 --server-mode -o "bin/$target.js"
+            compileArgs: -O2 --server-mode -o "bin/$executableName.js"
             os: ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
@@ -126,9 +117,10 @@ jobs:
       - name: Compile executables
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         run: |
-          set -e
-          echo '${{ inputs.targets }}' | jq -cr '.[]' | sed 's/\r$//' | while read target; do
-            dart compile ${{ matrix.binaryType }} ${{ matrix.compileArgs }} "bin/$target.dart"
+          set -eo pipefail
+          yq ".executables.[] | key" pubspec.yaml | while read executableName; do
+            dartScript=$(yq ".executables.[\"$executableName\"] // \"$executableName\"" pubspec.yaml)
+            dart compile ${{ matrix.binaryType }} ${{ matrix.compileArgs }} "bin/$dartScript.dart"
           done
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
