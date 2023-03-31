@@ -132,6 +132,7 @@ jobs:
           name: binaries-${{ matrix.platform }}
           path: ${{ inputs.workingDirectory }}/build/bin/*
           retention-days: 3
+          if-no-files-found: error
   release:
     name: Create release if needed
     needs:

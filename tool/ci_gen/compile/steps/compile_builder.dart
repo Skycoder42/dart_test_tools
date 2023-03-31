@@ -64,6 +64,7 @@ done
             'name': 'binaries-${matrix.platform}',
             'path': '$workingDirectory/build/bin/*',
             'retention-days': 3,
+            'if-no-files-found': 'error',
           },
         ),
       ];

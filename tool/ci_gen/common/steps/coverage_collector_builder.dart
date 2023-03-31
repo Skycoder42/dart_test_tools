@@ -54,6 +54,7 @@ class CoverageCollectorBuilder
             'name': 'coverage-info-${matrix.platform}',
             'path': '$workingDirectory/coverage/lcov.info',
             'retention-days': 1,
+            'if-no-files-found': 'error',
           },
         ),
       ];

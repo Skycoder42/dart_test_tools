@@ -273,6 +273,7 @@ jobs:
           name: coverage-info-${{ matrix.platform }}
           path: ${{ inputs.workingDirectory }}/coverage/lcov.info
           retention-days: 1
+          if-no-files-found: error
   coverage:
     name: Validate coverage
     needs:
@@ -335,6 +336,7 @@ jobs:
           name: coverage-html
           path: ${{ inputs.workingDirectory }}/coverage/html
           retention-days: 14
+          if-no-files-found: error
       - name: Validate coverage is at least ${{ inputs.minCoverage }}%
         uses: VeryGoodOpenSource/very_good_coverage@v2
         with:

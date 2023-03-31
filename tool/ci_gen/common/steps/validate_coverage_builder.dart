@@ -71,6 +71,7 @@ lcov $LCOV_ARGS --output-file coverage/combined.info
             'name': 'coverage-html',
             'path': '$workingDirectory/coverage/html',
             'retention-days': 14,
+            'if-no-files-found': 'error',
           },
         ),
         Step.uses(
