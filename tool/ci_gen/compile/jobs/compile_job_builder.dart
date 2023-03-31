@@ -21,12 +21,15 @@ class _CompileJobMatrix implements ICompileMatrix {
   final Expression binaryType;
   @override
   final Expression compileArgs;
+  @override
+  final Expression archiveType;
   final Expression os;
 
   const _CompileJobMatrix({
     required this.platform,
     required this.binaryType,
     required this.compileArgs,
+    required this.archiveType,
     required this.os,
   });
 }
@@ -43,6 +46,7 @@ class _PlatformInclude with _$_PlatformInclude {
     required _BinaryType binaryType,
     // ignore: invalid_annotation_target
     @JsonKey(includeIfNull: false) String? compileArgs,
+    required ArchiveType archiveType,
     required String os,
   }) = __PlatformInclude;
 
@@ -56,6 +60,7 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
     platform: Expression('matrix.platform'),
     binaryType: Expression('matrix.binaryType'),
     compileArgs: Expression('matrix.compileArgs'),
+    archiveType: Expression('matrix.archiveType'),
     os: Expression('matrix.os'),
   );
 
@@ -65,6 +70,7 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
       binaryType: _BinaryType.exe,
       compileArgs:
           r'-S "build/bin/$executableName.sym" -o "build/bin/$executableName"',
+      archiveType: ArchiveType.tar,
       os: 'ubuntu-latest',
     ),
     _PlatformInclude(
@@ -72,6 +78,7 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
       binaryType: _BinaryType.exe,
       compileArgs:
           r'-S "build/bin/$executableName.sym" -o "build/bin/$executableName.exe"',
+      archiveType: ArchiveType.zip,
       os: 'windows-latest',
     ),
     _PlatformInclude(
@@ -79,12 +86,14 @@ class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
       binaryType: _BinaryType.exe,
       compileArgs:
           r'-S "build/bin/$executableName.sym" -o "build/bin/$executableName"',
+      archiveType: ArchiveType.tar,
       os: 'macos-latest',
     ),
     _PlatformInclude(
       platform: 'web',
       binaryType: _BinaryType.js,
       compileArgs: r'-O2 --server-mode -o "build/bin/$executableName.js"',
+      archiveType: ArchiveType.zip,
       os: 'ubuntu-latest',
     ),
   ];

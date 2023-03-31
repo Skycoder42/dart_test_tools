@@ -68,18 +68,22 @@ jobs:
           - platform: linux
             binaryType: exe
             compileArgs: -S "build/bin/$executableName.sym" -o "build/bin/$executableName"
+            archiveType: tar
             os: ubuntu-latest
           - platform: windows
             binaryType: exe
             compileArgs: -S "build/bin/$executableName.sym" -o "build/bin/$executableName.exe"
+            archiveType: zip
             os: windows-latest
           - platform: macos
             binaryType: exe
             compileArgs: -S "build/bin/$executableName.sym" -o "build/bin/$executableName"
+            archiveType: tar
             os: macos-latest
           - platform: web
             binaryType: js
             compileArgs: -O2 --server-mode -o "build/bin/$executableName.js"
+            archiveType: zip
             os: ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
@@ -125,12 +129,32 @@ jobs:
           done
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
+      - name: Create release archives (tar)
+        if: matrix.archiveType == 'tar' && contains(fromJSON(inputs.platforms), matrix.platform)
+        run: |
+          set -eo pipefail
+          shopt -s extglob
+          mkdir -p ../artifacts
+          tar -cavf '../artifacts/binaries-${{ matrix.platform }}.tar.xz' !(*.*)
+          tar -cavf '../artifacts/binaries-${{ matrix.platform }}-debug-symbols.tar.xz' *.sym
+        working-directory: ${{ inputs.workingDirectory }}/build/bin
+        shell: bash
+      - name: Create release archives (zip)
+        if: matrix.archiveType == 'zip' && contains(fromJSON(inputs.platforms), matrix.platform)
+        run: |
+          set -eo pipefail
+          shopt -s nullglob
+          mkdir -p ../artifacts
+          7z a -y '../artifacts/binaries-${{ matrix.platform }}.zip' *.exe *.js
+          7z a -y '../artifacts/binaries-${{ matrix.platform }}-debug-symbols.zip' *.sym *.js.*
+        working-directory: ${{ inputs.workingDirectory }}/build/bin
+        shell: bash
       - name: Upload compiled binaries artifact
         if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/upload-artifact@v3
         with:
           name: binaries-${{ matrix.platform }}
-          path: ${{ inputs.workingDirectory }}/build/bin/*
+          path: ${{ inputs.workingDirectory }}/build/artifacts/*
           retention-days: 3
           if-no-files-found: error
   release:
@@ -172,17 +196,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           path: artifacts
-      - name: Create asset archives
-        if: steps.version.outputs.update == 'true'
-        run: |
-          set -eo pipefail
-          shopt -s extglob nullglob
-
-          for artifact in $(find . -type d -name "binaries-*"); do
-            zip -9 "$artifact.zip" "$artifact"/!(*.*) "$artifact"/*.exe "$artifact"/*.js
-            zip -9 "$artifact-debug-symbols.zip" "$artifact"/*.sym "$artifact"/*.js.map  "$artifact"/*.js.deps
-          done
-        working-directory: artifacts
       - name: Activate cider
         if: steps.version.outputs.update == 'true'
         run: dart pub global activate cider
@@ -213,4 +226,4 @@ jobs:
           tag_name: ${{ steps.release_content.outputs.tag_name }}
           name: ${{ steps.release_content.outputs.release_name }}
           body_path: ${{ steps.release_content.outputs.body_path }}
-          files: artifacts/*.zip
+          files: artifacts/binaries-*/binaries-*

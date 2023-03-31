@@ -5,10 +5,18 @@ import '../../common/tools.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
+enum ArchiveType {
+  tar,
+  zip;
+
+  Expression get expression => Expression.literal(name);
+}
+
 abstract class ICompileMatrix {
   Expression get platform;
   Expression get binaryType;
   Expression get compileArgs;
+  Expression get archiveType;
 }
 
 class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
@@ -56,13 +64,41 @@ done
           workingDirectory: workingDirectory.toString(),
           shell: 'bash',
         ),
+        Step.run(
+          name: 'Create release archives (${ArchiveType.tar.name})',
+          ifExpression:
+              matrix.archiveType.eq(ArchiveType.tar.expression) & _shouldRun,
+          run: '''
+set -eo pipefail
+shopt -s extglob
+mkdir -p ../artifacts
+tar -cavf '../artifacts/binaries-${matrix.platform}.tar.xz' !(*.*)
+tar -cavf '../artifacts/binaries-${matrix.platform}-debug-symbols.tar.xz' *.sym
+''',
+          workingDirectory: '$workingDirectory/build/bin',
+          shell: 'bash',
+        ),
+        Step.run(
+          name: 'Create release archives (${ArchiveType.zip.name})',
+          ifExpression:
+              matrix.archiveType.eq(ArchiveType.zip.expression) & _shouldRun,
+          run: '''
+set -eo pipefail
+shopt -s nullglob
+mkdir -p ../artifacts
+7z a -y '../artifacts/binaries-${matrix.platform}.zip' *.exe *.js
+7z a -y '../artifacts/binaries-${matrix.platform}-debug-symbols.zip' *.sym *.js.*
+''',
+          workingDirectory: '$workingDirectory/build/bin',
+          shell: 'bash',
+        ),
         Step.uses(
           name: 'Upload compiled binaries artifact',
           ifExpression: _shouldRun,
           uses: Tools.actionsUploadArtifact,
           withArgs: <String, dynamic>{
             'name': 'binaries-${matrix.platform}',
-            'path': '$workingDirectory/build/bin/*',
+            'path': '$workingDirectory/build/artifacts/*',
             'retention-days': 3,
             'if-no-files-found': 'error',
           },

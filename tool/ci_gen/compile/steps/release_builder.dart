@@ -60,26 +60,11 @@ fi
             'path': 'artifacts',
           },
         ),
-        Step.run(
-          name: 'Create asset archives',
-          ifExpression:
-              updateOutput.expression.eq(const Expression.literal('true')),
-          run: r'''
-set -eo pipefail
-shopt -s extglob nullglob
-
-for artifact in $(find . -type d -name "binaries-*"); do
-  zip -9 "$artifact.zip" "$artifact"/!(*.*) "$artifact"/*.exe "$artifact"/*.js
-  zip -9 "$artifact-debug-symbols.zip" "$artifact"/*.sym "$artifact"/*.js.map  "$artifact"/*.js.deps
-done
-''',
-          workingDirectory: 'artifacts',
-        ),
         ...ReleaseEntryBuilder(
           workingDirectory: workingDirectory,
           tagPrefix: tagPrefix,
           versionUpdate: updateOutput.expression,
-          files: 'artifacts/*.zip',
+          files: 'artifacts/binaries-*/binaries-*',
         ).build(),
       ];
 }
