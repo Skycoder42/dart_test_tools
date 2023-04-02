@@ -14,7 +14,6 @@ class DartUnitTestJobBuilder extends UnitTestJobBuilder
     required super.buildRunnerArgs,
     required super.unitTestPaths,
     required super.minCoverage,
-    required super.platforms,
     required this.dartSdkVersion,
   });
 

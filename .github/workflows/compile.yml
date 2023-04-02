@@ -20,17 +20,6 @@ on:
         type: string
         required: false
         description: Optional additional arguments to be passed to the build runner.
-      platforms:
-        type: string
-        required: false
-        default: '["linux","windows","macos","web"]'
-        description: |
-          A JSON-Formatted list of platforms that unit and integration tests should be run on.
-          By default, all platforms are active. The available platforms are:
-          - linux
-          - windows
-          - macos
-          - web
       releaseRef:
         type: string
         required: false
@@ -88,38 +77,44 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install yq (Windows)
-        if: runner.os == 'Windows' && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: runner.os == 'Windows'
         run: choco install yq
       - name: Install yq and coreutils (macOS)
-        if: runner.os == 'macOS' && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: runner.os == 'macOS'
         run: |
           brew install yq coreutils
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
       - name: Checkout repository
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/checkout@v3
         with:
           persist-credentials: false
+      - id: platform-check
+        name: Check if platform ${{ matrix.platform }} is supported
+        run: |
+          set -eo pipefail
+          isPlatformAllowed=$(yq 'has("platforms") | not or .platforms | has("${{ matrix.platform }}")' pubspec.yaml)
+          echo "should-run=$isPlatformAllowed" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Remove pubspec_overrides.yaml
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        if: steps.platform-check.outputs.should-run
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        if: steps.platform-check.outputs.should-run
         run: dart pub get
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
-        if: inputs.buildRunner && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: inputs.buildRunner && steps.platform-check.outputs.should-run
         run: dart run build_runner build --release ${{ inputs.buildRunnerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Compile executables
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        if: steps.platform-check.outputs.should-run
         run: |
           set -eo pipefail
           mkdir -p build/bin
@@ -130,7 +125,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Create release archives (tar)
-        if: matrix.archiveType == 'tar' && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: matrix.archiveType == 'tar' && steps.platform-check.outputs.should-run
         run: |
           set -eo pipefail
           shopt -s extglob
@@ -140,7 +135,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}/build/bin
         shell: bash
       - name: Create release archives (zip)
-        if: matrix.archiveType == 'zip' && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: matrix.archiveType == 'zip' && steps.platform-check.outputs.should-run
         run: |
           set -eo pipefail
           shopt -s nullglob
@@ -150,7 +145,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}/build/bin
         shell: bash
       - name: Upload compiled binaries artifact
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        if: steps.platform-check.outputs.should-run
         uses: actions/upload-artifact@v3
         with:
           name: binaries-${{ matrix.platform }}

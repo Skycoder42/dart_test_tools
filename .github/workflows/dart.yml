@@ -47,17 +47,6 @@ on:
         required: false
         default: 95
         description: Minimal coverage (in percent) required for the CI to succeed. Passed as "min_coverage" to "VeryGoodOpenSource/very_good_coverage".
-      platforms:
-        type: string
-        required: false
-        default: '["linux","windows","macos","web"]'
-        description: |
-          A JSON-Formatted list of platforms that unit and integration tests should be run on.
-          By default, all platforms are active. The available platforms are:
-          - linux
-          - windows
-          - macos
-          - web
       coverageExclude:
         type: string
         required: false
@@ -199,50 +188,56 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install yq (Windows)
-        if: runner.os == 'Windows' && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: runner.os == 'Windows'
         run: choco install yq
       - name: Install yq and coreutils (macOS)
-        if: runner.os == 'macOS' && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: runner.os == 'macOS'
         run: |
           brew install yq coreutils
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
       - name: Checkout repository
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/checkout@v3
         with:
           persist-credentials: false
+      - id: platform-check
+        name: Check if platform ${{ matrix.platform }} is supported
+        run: |
+          set -eo pipefail
+          isPlatformAllowed=$(yq 'has("platforms") | not or .platforms | has("${{ matrix.platform }}")' pubspec.yaml)
+          echo "should-run=$isPlatformAllowed" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Remove pubspec_overrides.yaml
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        if: steps.platform-check.outputs.should-run
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        if: steps.platform-check.outputs.should-run
         run: dart pub get
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
-        if: inputs.buildRunner && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: inputs.buildRunner && steps.platform-check.outputs.should-run
         run: dart run build_runner build ${{ inputs.buildRunnerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run unit tests
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        if: steps.platform-check.outputs.should-run
         run: dart test ${{ matrix.dartTestArgs }} --coverage=coverage --reporter github ${{ inputs.unitTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Convert coverage data to lcov format
-        if: inputs.minCoverage > 0 && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: inputs.minCoverage > 0 && steps.platform-check.outputs.should-run
         run: dart run coverage:format_coverage --lcov --check-ignore --in=coverage --out=coverage/lcov.info --report-on=lib
         working-directory: ${{ inputs.workingDirectory }}
       - name: Normalize coverage paths
-        if: inputs.minCoverage > 0 && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: inputs.minCoverage > 0 && steps.platform-check.outputs.should-run
         run: ${{ matrix.lcovCleanCommand }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload coverage data
-        if: inputs.minCoverage > 0 && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: inputs.minCoverage > 0 && steps.platform-check.outputs.should-run
         uses: actions/upload-artifact@v3
         with:
           name: coverage-info-${{ matrix.platform }}
@@ -265,37 +260,17 @@ jobs:
         uses: actions/checkout@v3
         with:
           persist-credentials: false
-      - name: Download linux coverage data
-        if: contains(fromJSON(inputs.platforms), 'linux')
+      - name: Download coverage data
         uses: actions/download-artifact@v3
         with:
-          name: coverage-info-linux
-          path: ${{ inputs.workingDirectory }}/coverage/linux
-      - name: Download windows coverage data
-        if: contains(fromJSON(inputs.platforms), 'windows')
-        uses: actions/download-artifact@v3
-        with:
-          name: coverage-info-windows
-          path: ${{ inputs.workingDirectory }}/coverage/windows
-      - name: Download macos coverage data
-        if: contains(fromJSON(inputs.platforms), 'macos')
-        uses: actions/download-artifact@v3
-        with:
-          name: coverage-info-macos
-          path: ${{ inputs.workingDirectory }}/coverage/macos
-      - name: Download web coverage data
-        if: contains(fromJSON(inputs.platforms), 'web')
-        uses: actions/download-artifact@v3
-        with:
-          name: coverage-info-web
-          path: ${{ inputs.workingDirectory }}/coverage/web
+          path: ${{ inputs.workingDirectory }}/coverage
       - name: Merge coverage data
         run: |
           set -e
           LCOV_ARGS=""
-          for dir in $(ls coverage); do
-            dos2unix coverage/$dir/lcov.info
-            LCOV_ARGS="$LCOV_ARGS --add-tracefile coverage/$dir/lcov.info"
+          for dir in coverage/coverage-info-*; do
+            dos2unix $dir/lcov.info
+            LCOV_ARGS="$LCOV_ARGS --add-tracefile $dir/lcov.info"
           done
           lcov $LCOV_ARGS --output-file coverage/combined.info
         working-directory: ${{ inputs.workingDirectory }}
@@ -343,39 +318,45 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install yq (Windows)
-        if: runner.os == 'Windows' && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: runner.os == 'Windows'
         run: choco install yq
       - name: Install yq and coreutils (macOS)
-        if: runner.os == 'macOS' && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: runner.os == 'macOS'
         run: |
           brew install yq coreutils
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
       - name: Checkout repository
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
         uses: actions/checkout@v3
         with:
           persist-credentials: false
+      - id: platform-check
+        name: Check if platform ${{ matrix.platform }} is supported
+        run: |
+          set -eo pipefail
+          isPlatformAllowed=$(yq 'has("platforms") | not or .platforms | has("${{ matrix.platform }}")' pubspec.yaml)
+          echo "should-run=$isPlatformAllowed" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Remove pubspec_overrides.yaml
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        if: steps.platform-check.outputs.should-run
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        if: steps.platform-check.outputs.should-run
         run: dart pub get
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
-        if: inputs.buildRunner && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: inputs.buildRunner && steps.platform-check.outputs.should-run
         run: dart run build_runner build ${{ inputs.buildRunnerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
       - id: test-setup-cache
         name: Restore integration test cache
-        if: inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && steps.platform-check.outputs.should-run
         uses: actions/cache@v3
         with:
           key: ${{ matrix.platform }}-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
@@ -383,21 +364,21 @@ jobs:
           restore-keys: ${{ fromJSON(inputs.integrationTestCacheConfig)['restore-keys'] }}
           upload-chunk-size: ${{ fromJSON(inputs.integrationTestCacheConfig)['upload-chunk-size'] }}
       - name: Create .env file from secrets
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        if: steps.platform-check.outputs.should-run
         run: echo '${{ secrets.integrationTestEnvVars }}' > .env
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Run platform test setup
-        if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && steps.platform-check.outputs.should-run
         env:
           CACHE_HIT: ${{ steps.test-setup-cache.outputs.cache-hit }}
         run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run integration tests
-        if: contains(fromJSON(inputs.platforms), matrix.platform)
+        if: steps.platform-check.outputs.should-run
         run: dart test ${{ matrix.dartTestArgs }} --reporter github ${{ inputs.integrationTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Shred .env file
-        if: always() && contains(fromJSON(inputs.platforms), matrix.platform)
+        if: always() && steps.platform-check.outputs.should-run
         run: shred -fzvu .env
         working-directory: ${{ inputs.workingDirectory }}

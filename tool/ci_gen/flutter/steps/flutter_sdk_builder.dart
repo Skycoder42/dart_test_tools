@@ -27,7 +27,8 @@ class FlutterSdkBuilder implements StepBuilder {
           Step.uses(
             name: 'Install JDK Version $javaJdkVersion',
             ifExpression:
-                buildPlatform!.eq(const Expression.literal('android')),
+                buildPlatform!.eq(const Expression.literal('android')) &
+                    ifExpression,
             uses: Tools.actionsSetupJava,
             withArgs: <String, dynamic>{
               'distribution': 'temurin',

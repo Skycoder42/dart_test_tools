@@ -1,8 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../common/api/expression_builder.dart';
 import '../../common/builders/sdk_job_builder.dart';
-import '../../common/steps/platforms_builder_mixin.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
@@ -80,7 +78,6 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression integrationTestPaths;
   final Expression integrationTestEnvVars;
   final Expression integrationTestCacheConfig;
-  final Expression platforms;
 
   DartIntegrationTestJobBuilder({
     required this.analyzeJobId,
@@ -92,8 +89,7 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
     required this.integrationTestPaths,
     required this.integrationTestEnvVars,
     required this.integrationTestCacheConfig,
-    required ExpressionBuilderFn<List<String>> platforms,
-  }) : platforms = platforms(_platformIncludes.map((i) => i.platform).toList());
+  });
 
   @override
   JobId get id => const JobId('integration_tests');
@@ -114,12 +110,7 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
         ),
         runsOn: _matrix.os.toString(),
         steps: [
-          ...buildSetupSdkSteps(
-            PlatformsBuilderMixin.createShouldRunExpression(
-              platforms,
-              _matrix.platform,
-            ),
-          ),
+          ...buildSetupSdkSteps(),
           ...DartIntegrationTestBuilder(
             workingDirectory: workingDirectory,
             buildRunner: buildRunner,
@@ -128,7 +119,6 @@ class DartIntegrationTestJobBuilder extends SdkJobBuilder
             integrationTestPaths: integrationTestPaths,
             integrationTestEnvVars: integrationTestEnvVars,
             integrationTestCacheConfig: integrationTestCacheConfig,
-            platforms: platforms,
             baseTool: baseTool,
             pubTool: pubTool,
             runTool: runTool,

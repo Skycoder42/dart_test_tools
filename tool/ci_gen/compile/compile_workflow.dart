@@ -18,7 +18,6 @@ abstract class CompileWorkflow {
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-      platforms: inputContext.builder(WorkflowInputs.platforms),
     );
 
     final releaseJobBuilder = ReleaseJobBuilder(

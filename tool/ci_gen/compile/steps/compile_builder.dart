@@ -23,8 +23,6 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
-  @override
-  final Expression platforms;
   final ICompileMatrix matrix;
   final String pubTool;
   final String runTool;
@@ -33,7 +31,6 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
     required this.workingDirectory,
     required this.buildRunner,
     required this.buildRunnerArgs,
-    required this.platforms,
     required this.matrix,
     required this.pubTool,
     required this.runTool,
@@ -48,11 +45,11 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
           releaseMode: true,
           pubTool: pubTool,
           runTool: runTool,
-          ifExpression: _shouldRun,
+          withPlatform: matrix.platform,
         ).build(),
         Step.run(
           name: 'Compile executables',
-          ifExpression: _shouldRun,
+          ifExpression: shouldRunExpression,
           run: '''
 set -eo pipefail
 mkdir -p build/bin
@@ -66,8 +63,8 @@ done
         ),
         Step.run(
           name: 'Create release archives (${ArchiveType.tar.name})',
-          ifExpression:
-              matrix.archiveType.eq(ArchiveType.tar.expression) & _shouldRun,
+          ifExpression: matrix.archiveType.eq(ArchiveType.tar.expression) &
+              shouldRunExpression,
           run: '''
 set -eo pipefail
 shopt -s extglob
@@ -80,8 +77,8 @@ tar -cavf '../artifacts/binaries-${matrix.platform}-debug-symbols.tar.xz' *.sym
         ),
         Step.run(
           name: 'Create release archives (${ArchiveType.zip.name})',
-          ifExpression:
-              matrix.archiveType.eq(ArchiveType.zip.expression) & _shouldRun,
+          ifExpression: matrix.archiveType.eq(ArchiveType.zip.expression) &
+              shouldRunExpression,
           run: '''
 set -eo pipefail
 shopt -s nullglob
@@ -94,7 +91,7 @@ mkdir -p ../artifacts
         ),
         Step.uses(
           name: 'Upload compiled binaries artifact',
-          ifExpression: _shouldRun,
+          ifExpression: shouldRunExpression,
           uses: Tools.actionsUploadArtifact,
           withArgs: <String, dynamic>{
             'name': 'binaries-${matrix.platform}',
@@ -104,6 +101,4 @@ mkdir -p ../artifacts
           },
         ),
       ];
-
-  Expression get _shouldRun => shouldRunExpression(matrix.platform);
 }

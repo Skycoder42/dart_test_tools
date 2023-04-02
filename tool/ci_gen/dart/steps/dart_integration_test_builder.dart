@@ -23,8 +23,6 @@ class DartIntegrationTestBuilder
   final Expression integrationTestPaths;
   final Expression integrationTestEnvVars;
   final Expression integrationTestCacheConfig;
-  @override
-  final Expression platforms;
   final String baseTool;
   final String pubTool;
   final String runTool;
@@ -38,7 +36,6 @@ class DartIntegrationTestBuilder
     required this.integrationTestPaths,
     required this.integrationTestEnvVars,
     required this.integrationTestCacheConfig,
-    required this.platforms,
     required this.baseTool,
     required this.pubTool,
     required this.runTool,
@@ -53,38 +50,40 @@ class DartIntegrationTestBuilder
           buildRunnerArgs: buildRunnerArgs,
           pubTool: pubTool,
           runTool: runTool,
-          ifExpression: _shouldRun,
+          withPlatform: matrix.platform,
         ).build(),
         ...CacheBuilder(
           cacheStepId: testSetupCacheStepId,
           platform: matrix.platform,
           cacheConfig: integrationTestCacheConfig,
-          ifExpression: _platformTestSetup.ne(Expression.empty) & _shouldRun,
+          ifExpression:
+              _platformTestSetup.ne(Expression.empty) & shouldRunExpression,
         ).build(),
         Step.run(
           name: 'Create .env file from secrets',
-          ifExpression: _shouldRun,
+          ifExpression: shouldRunExpression,
           run: "echo '$integrationTestEnvVars' > .env",
           workingDirectory: workingDirectory.toString(),
           shell: 'bash',
         ),
         Step.run(
           name: 'Run platform test setup',
-          ifExpression: _platformTestSetup.ne(Expression.empty) & _shouldRun,
+          ifExpression:
+              _platformTestSetup.ne(Expression.empty) & shouldRunExpression,
           run: _platformTestSetup.toString(),
           workingDirectory: workingDirectory.toString(),
           env: CacheBuilder.createEnv(testSetupCacheStepId),
         ),
         Step.run(
           name: 'Run integration tests',
-          ifExpression: _shouldRun,
+          ifExpression: shouldRunExpression,
           run: '$baseTool test ${matrix.dartTestArgs} '
               '--reporter github $integrationTestPaths',
           workingDirectory: workingDirectory.toString(),
         ),
         Step.run(
           name: 'Shred .env file',
-          ifExpression: const Expression('always()') & _shouldRun,
+          ifExpression: const Expression('always()') & shouldRunExpression,
           run: 'shred -fzvu .env',
           workingDirectory: workingDirectory.toString(),
         ),
@@ -93,6 +92,4 @@ class DartIntegrationTestBuilder
   Expression get _platformTestSetup => Expression(
         'fromJSON(${integrationTestSetup.value})[${matrix.platform.value}]',
       );
-
-  Expression get _shouldRun => shouldRunExpression(matrix.platform);
 }

@@ -34,7 +34,6 @@ abstract class DartWorkflow {
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
       minCoverage: inputContext(WorkflowInputs.minCoverage),
-      platforms: inputContext.builder(WorkflowInputs.platforms),
     );
     final validateCoverageBuilder = ValidateCoverageJobBuilder(
       unitTestJobId: unitTestBuilder.id,
@@ -42,7 +41,6 @@ abstract class DartWorkflow {
       unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
       minCoverage: inputContext(WorkflowInputs.minCoverage),
       coverageExclude: inputContext(WorkflowInputs.coverageExclude),
-      platforms: inputContext.builder(WorkflowInputs.platforms),
     );
     final integrationTestBuilder = DartIntegrationTestJobBuilder(
       analyzeJobId: analyzeJobBuilder.id,
@@ -56,7 +54,6 @@ abstract class DartWorkflow {
           secretContext(WorkflowSecrets.integrationTestEnvVars),
       integrationTestCacheConfig:
           inputContext(WorkflowInputs.integrationTestCacheConfig),
-      platforms: inputContext.builder(WorkflowInputs.platforms),
     );
 
     return Workflow(

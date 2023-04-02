@@ -12,7 +12,6 @@ mixin FlutterSdkJobBuilderMixin on SdkJobBuilder {
 
   @override
   Iterable<Step> buildSetupSdkSteps([
-    Expression? ifExpression,
     Expression? buildPlatform,
     Expression? enableDesktopCondition,
   ]) =>
@@ -20,7 +19,6 @@ mixin FlutterSdkJobBuilderMixin on SdkJobBuilder {
         ...FlutterSdkBuilder(
           flutterSdkChannel: flutterSdkChannel,
           javaJdkVersion: javaJdkVersion,
-          ifExpression: ifExpression,
           buildPlatform: buildPlatform,
           enableDesktopCondition: enableDesktopCondition,
         ).build(),

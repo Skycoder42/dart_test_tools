@@ -15,8 +15,6 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
   final Expression buildRunnerArgs;
   final Expression unitTestPaths;
   final Expression minCoverage;
-  @override
-  final Expression platforms;
   final String baseTool;
   final String pubTool;
   final String runTool;
@@ -30,7 +28,6 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
     required this.buildRunnerArgs,
     required this.unitTestPaths,
     required this.minCoverage,
-    required this.platforms,
     required this.baseTool,
     required this.pubTool,
     required this.runTool,
@@ -47,11 +44,11 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
           buildRunnerArgs: buildRunnerArgs,
           pubTool: pubTool,
           runTool: runTool,
-          ifExpression: shouldRunExpression(matrix.platform),
+          withPlatform: matrix.platform,
         ).build(),
         Step.run(
           name: 'Run unit tests',
-          ifExpression: shouldRunExpression(matrix.platform),
+          ifExpression: shouldRunExpression,
           run: '$baseTool test ${matrix.dartTestArgs} '
               '$coverageArgs --reporter github $unitTestPaths',
           workingDirectory: workingDirectory.toString(),
@@ -62,7 +59,7 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
           runTool: runTool,
           matrix: matrix,
           needsFormatting: needsFormatting,
-          ifExpression: shouldRunExpression(matrix.platform),
+          ifExpression: shouldRunExpression,
         ).build(),
       ];
 }

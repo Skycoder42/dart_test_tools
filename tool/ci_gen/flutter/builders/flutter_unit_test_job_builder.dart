@@ -18,7 +18,6 @@ class FlutterUnitTestJobBuilder extends UnitTestJobBuilder
     required super.buildRunnerArgs,
     required super.unitTestPaths,
     required super.minCoverage,
-    required super.platforms,
   });
 
   @override

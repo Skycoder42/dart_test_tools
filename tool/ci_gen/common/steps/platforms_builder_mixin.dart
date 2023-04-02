@@ -1,17 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../types/expression.dart';
+import 'project_setup_builder.dart';
 
 mixin PlatformsBuilderMixin {
-  Expression get platforms;
-
   @protected
-  Expression shouldRunExpression(Expression platform) =>
-      createShouldRunExpression(platforms, platform);
-
-  static Expression createShouldRunExpression(
-    Expression platforms,
-    Expression platform,
-  ) =>
-      Expression('contains(fromJSON(${platforms.value}), ${platform.value})');
+  Expression get shouldRunExpression =>
+      ProjectSetupBuilder.shouldRunOutput.expression;
 }

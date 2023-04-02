@@ -1,18 +1,23 @@
 import '../../types/expression.dart';
+import '../../types/id.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
 import 'checkout_builder.dart';
 import 'project_prepare_builder.dart';
 
 class ProjectSetupBuilder implements StepBuilder {
+  static const platformCheckStepId = StepId('platform-check');
+  static const shouldRunOutput =
+      StepIdOutput(platformCheckStepId, 'should-run');
+
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final bool releaseMode;
   final String pubTool;
   final String runTool;
-  final Expression? ifExpression;
   final bool skipYqInstall;
+  final Expression? withPlatform;
 
   const ProjectSetupBuilder({
     required this.workingDirectory,
@@ -21,8 +26,8 @@ class ProjectSetupBuilder implements StepBuilder {
     this.releaseMode = false,
     required this.pubTool,
     required this.runTool,
-    this.ifExpression,
     this.skipYqInstall = false,
+    this.withPlatform,
   });
 
   @override
@@ -30,23 +35,31 @@ class ProjectSetupBuilder implements StepBuilder {
         if (!skipYqInstall) ...[
           Step.run(
             name: 'Install yq (Windows)',
-            ifExpression:
-                const Expression("runner.os == 'Windows'") & ifExpression,
+            ifExpression: const Expression("runner.os == 'Windows'"),
             run: 'choco install yq',
           ),
           Step.run(
             name: 'Install yq and coreutils (macOS)',
-            ifExpression:
-                const Expression("runner.os == 'macOS'") & ifExpression,
+            ifExpression: const Expression("runner.os == 'macOS'"),
             run: r'''
 brew install yq coreutils
 echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
 ''',
           ),
         ],
-        ...CheckoutBuilder(
-          ifExpression: ifExpression,
-        ).build(),
+        ...CheckoutBuilder().build(),
+        if (withPlatform != null)
+          Step.run(
+            id: platformCheckStepId,
+            name: 'Check if platform $withPlatform is supported',
+            run: '''
+set -eo pipefail
+isPlatformAllowed=\$(yq 'has("platforms") | not or .platforms | has("$withPlatform")' pubspec.yaml)
+${shouldRunOutput.bashSetter('\$isPlatformAllowed')}
+''',
+            workingDirectory: workingDirectory.toString(),
+            shell: 'bash',
+          ),
         ...ProjectPrepareBuilder(
           workingDirectory: workingDirectory,
           buildRunner: buildRunner,
@@ -54,7 +67,8 @@ echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
           releaseMode: releaseMode,
           pubTool: pubTool,
           runTool: runTool,
-          ifExpression: ifExpression,
+          ifExpression:
+              withPlatform != null ? shouldRunOutput.expression : null,
         ).build(),
       ];
 }

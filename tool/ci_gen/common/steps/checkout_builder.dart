@@ -4,13 +4,11 @@ import '../api/step_builder.dart';
 import '../tools.dart';
 
 class CheckoutBuilder implements StepBuilder {
-  final Expression? ifExpression;
   final Expression? gitRef;
   final String? path;
   final Expression? persistCredentials;
 
   const CheckoutBuilder({
-    this.ifExpression,
     this.gitRef,
     this.path,
     this.persistCredentials,
@@ -20,7 +18,6 @@ class CheckoutBuilder implements StepBuilder {
   Iterable<Step> build() => [
         Step.uses(
           name: 'Checkout repository',
-          ifExpression: ifExpression,
           uses: Tools.actionsCheckout,
           withArgs: <String, dynamic>{
             'persist-credentials': persistCredentials?.toString() ?? false,

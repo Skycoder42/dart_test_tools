@@ -73,19 +73,6 @@ abstract class WorkflowInputs {
     ),
   );
 
-  static final platforms = WorkflowInputBuilder<List<String>>(
-    name: 'platforms',
-    builder: (defaultPlatforms) => Input.json(
-      required: false,
-      defaultValue: defaultPlatforms,
-      description: '''
-A JSON-Formatted list of platforms that unit and integration tests should be run on.
-By default, all platforms are active. The available platforms are:
-${defaultPlatforms.map((p) => '- $p').join('\n')}
-''',
-    ),
-  );
-
   static const analyzeImage = WorkflowInput(
     name: 'analyzeImage',
     input: Input(

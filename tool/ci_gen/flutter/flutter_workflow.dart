@@ -37,7 +37,6 @@ abstract class FlutterWorkflow {
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
       minCoverage: inputContext(WorkflowInputs.minCoverage),
-      platforms: inputContext.builder(WorkflowInputs.platforms),
     );
     final validateCoverageBuilder = ValidateCoverageJobBuilder(
       unitTestJobId: unitTestBuilder.id,
@@ -45,7 +44,6 @@ abstract class FlutterWorkflow {
       unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
       minCoverage: inputContext(WorkflowInputs.minCoverage),
       coverageExclude: inputContext(WorkflowInputs.coverageExclude),
-      platforms: inputContext.builder(WorkflowInputs.platforms),
     );
     final integrationTestBuilder = FlutterIntegrationTestJobBuilder(
       analyzeJobId: analyzeJobBuilder.id,
@@ -62,7 +60,6 @@ abstract class FlutterWorkflow {
           inputContext(WorkflowInputs.integrationTestCacheConfig),
       androidAVDImage: inputContext(WorkflowInputs.androidAVDImage),
       androidAVDDevice: inputContext(WorkflowInputs.androidAVDDevice),
-      platforms: inputContext.builder(WorkflowInputs.platforms),
     );
     final bitriseIntegrationTestBuilder = FlutterBitriseJobBuilder(
       analyzeJobId: analyzeJobBuilder.id,

@@ -5,8 +5,6 @@ import '../../types/id.dart';
 import '../../types/job.dart';
 import '../../types/matrix.dart';
 import '../../types/strategy.dart';
-import '../api/expression_builder.dart';
-import '../steps/platforms_builder_mixin.dart';
 import '../steps/unit_test_builder.dart';
 import 'sdk_job_builder.dart';
 
@@ -84,7 +82,6 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
   final Expression buildRunnerArgs;
   final Expression unitTestPaths;
   final Expression minCoverage;
-  final Expression platforms;
 
   UnitTestJobBuilder({
     required this.analyzeJobId,
@@ -93,8 +90,7 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
     required this.buildRunnerArgs,
     required this.unitTestPaths,
     required this.minCoverage,
-    required ExpressionBuilderFn<List<String>> platforms,
-  }) : platforms = platforms(_platformIncludes.map((i) => i.platform).toList());
+  });
 
   @override
   JobId get id => const JobId('unit_tests');
@@ -121,19 +117,13 @@ abstract class UnitTestJobBuilder extends SdkJobBuilder {
         ),
         runsOn: _matrix.os.toString(),
         steps: [
-          ...buildSetupSdkSteps(
-            PlatformsBuilderMixin.createShouldRunExpression(
-              platforms,
-              _matrix.platform,
-            ),
-          ),
+          ...buildSetupSdkSteps(),
           ...UnitTestBuilder(
             workingDirectory: workingDirectory,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
             unitTestPaths: unitTestPaths,
             minCoverage: minCoverage,
-            platforms: platforms,
             baseTool: baseTool,
             pubTool: pubTool,
             runTool: runTool,

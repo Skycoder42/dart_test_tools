@@ -1,8 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../common/api/expression_builder.dart';
 import '../../common/builders/sdk_job_builder.dart';
-import '../../common/steps/platforms_builder_mixin.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
@@ -113,7 +111,6 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression integrationTestCacheConfig;
   final Expression androidAVDImage;
   final Expression androidAVDDevice;
-  final Expression platforms;
 
   FlutterIntegrationTestJobBuilder({
     required this.analyzeJobId,
@@ -128,8 +125,7 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     required this.integrationTestCacheConfig,
     required this.androidAVDImage,
     required this.androidAVDDevice,
-    required ExpressionBuilderFn<List<String>> platforms,
-  }) : platforms = platforms(_platformIncludes.map((i) => i.platform).toList());
+  });
 
   @override
   JobId get id => const JobId('integration_tests');
@@ -151,10 +147,6 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
         runsOn: _matrix.os.toString(),
         steps: [
           ...buildSetupSdkSteps(
-            PlatformsBuilderMixin.createShouldRunExpression(
-              platforms,
-              _matrix.platform,
-            ),
             _matrix.platform,
             _matrix.desktop,
           ),
@@ -162,7 +154,6 @@ class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
             workingDirectory: workingDirectory,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
-            platforms: platforms,
             integrationTestSetup: integrationTestSetup,
             integrationTestPaths: integrationTestPaths,
             integrationTestProject: integrationTestProject,
