@@ -240,28 +240,28 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Remove pubspec_overrides.yaml
-        if: steps.platform-check.outputs.should-run
+        if: steps.platform-check.outputs.should-run == 'true'
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
-        if: steps.platform-check.outputs.should-run
+        if: steps.platform-check.outputs.should-run == 'true'
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
-        if: inputs.buildRunner && steps.platform-check.outputs.should-run
+        if: inputs.buildRunner && steps.platform-check.outputs.should-run == 'true'
         run: flutter pub run build_runner build ${{ inputs.buildRunnerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run unit tests
-        if: steps.platform-check.outputs.should-run
+        if: steps.platform-check.outputs.should-run == 'true'
         run: flutter test ${{ matrix.dartTestArgs }} --coverage --reporter github ${{ inputs.unitTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Normalize coverage paths
-        if: inputs.minCoverage > 0 && steps.platform-check.outputs.should-run
+        if: inputs.minCoverage > 0 && steps.platform-check.outputs.should-run == 'true'
         run: ${{ matrix.lcovCleanCommand }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload coverage data
-        if: inputs.minCoverage > 0 && steps.platform-check.outputs.should-run
+        if: inputs.minCoverage > 0 && steps.platform-check.outputs.should-run == 'true'
         uses: actions/upload-artifact@v3
         with:
           name: coverage-info-${{ matrix.platform }}
@@ -388,20 +388,20 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Remove pubspec_overrides.yaml
-        if: steps.platform-check.outputs.should-run
+        if: steps.platform-check.outputs.should-run == 'true'
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
-        if: steps.platform-check.outputs.should-run
+        if: steps.platform-check.outputs.should-run == 'true'
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
-        if: inputs.buildRunner && steps.platform-check.outputs.should-run
+        if: inputs.buildRunner && steps.platform-check.outputs.should-run == 'true'
         run: flutter pub run build_runner build ${{ inputs.buildRunnerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Install test dependencies (android)
-        if: matrix.platform == 'android' && steps.platform-check.outputs.should-run
+        if: matrix.platform == 'android' && steps.platform-check.outputs.should-run == 'true'
         run: |
           set -ex
           export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
@@ -413,26 +413,26 @@ jobs:
             --package '${{ inputs.androidAVDImage }}' \
             --device '${{ inputs.androidAVDDevice }}'
       - name: Install test dependencies (linux)
-        if: matrix.platform == 'linux' && steps.platform-check.outputs.should-run
+        if: matrix.platform == 'linux' && steps.platform-check.outputs.should-run == 'true'
         run: |
           set -e
           sudo apt-get -qq update
           sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
       - name: Validate flutter setup
-        if: steps.platform-check.outputs.should-run
+        if: steps.platform-check.outputs.should-run == 'true'
         run: flutter doctor -v
       - name: Remove pubspec_overrides.yaml (Integration test project)
-        if: inputs.integrationTestProject != '' && steps.platform-check.outputs.should-run
+        if: inputs.integrationTestProject != '' && steps.platform-check.outputs.should-run == 'true'
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
         shell: bash
       - name: Restore dart packages (Integration test project)
-        if: inputs.integrationTestProject != '' && steps.platform-check.outputs.should-run
+        if: inputs.integrationTestProject != '' && steps.platform-check.outputs.should-run == 'true'
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
       - id: test-setup-cache
         name: Restore integration test cache
-        if: inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && steps.platform-check.outputs.should-run
+        if: inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && steps.platform-check.outputs.should-run == 'true'
         uses: actions/cache@v3
         with:
           key: ${{ matrix.platform }}-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
@@ -440,13 +440,13 @@ jobs:
           restore-keys: ${{ fromJSON(inputs.integrationTestCacheConfig)['restore-keys'] }}
           upload-chunk-size: ${{ fromJSON(inputs.integrationTestCacheConfig)['upload-chunk-size'] }}
       - name: Run platform test setup
-        if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && steps.platform-check.outputs.should-run
+        if: fromJSON(inputs.integrationTestSetup)[matrix.platform] != '' && steps.platform-check.outputs.should-run == 'true'
         env:
           CACHE_HIT: ${{ steps.test-setup-cache.outputs.cache-hit }}
         run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Start Android-Emulator
-        if: matrix.platform == 'android' && steps.platform-check.outputs.should-run
+        if: matrix.platform == 'android' && steps.platform-check.outputs.should-run == 'true'
         run: |
           set -ex
           nohup $ANDROID_HOME/emulator/emulator -no-window @default &
@@ -454,18 +454,18 @@ jobs:
           flutter devices
         working-directory: ${{ inputs.workingDirectory }}
       - name: Start iOS-Simulator
-        if: matrix.platform == 'ios' && steps.platform-check.outputs.should-run
+        if: matrix.platform == 'ios' && steps.platform-check.outputs.should-run == 'true'
         run: |
           set -e
           open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
           flutter devices
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run integration tests (dart-vm)
-        if: matrix.platform != 'web' && steps.platform-check.outputs.should-run
+        if: matrix.platform != 'web' && steps.platform-check.outputs.should-run == 'true'
         run: ${{ matrix.runPrefix }} flutter test ${{ matrix.testArgs }} --reporter expanded ${{ inputs.integrationTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
       - name: Run integration tests (web)
-        if: matrix.platform == 'web' && steps.platform-check.outputs.should-run
+        if: matrix.platform == 'web' && steps.platform-check.outputs.should-run == 'true'
         run: $ChromeWebDriver/chromedriver --port=4444 & flutter drive --driver test_driver/integration_test.dart --target ${{ inputs.integrationTestPaths }} --release -d chrome --browser-name chrome
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
         shell: bash

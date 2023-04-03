@@ -102,20 +102,20 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Remove pubspec_overrides.yaml
-        if: steps.platform-check.outputs.should-run
+        if: steps.platform-check.outputs.should-run == 'true'
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
-        if: steps.platform-check.outputs.should-run
+        if: steps.platform-check.outputs.should-run == 'true'
         run: dart pub get
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
-        if: inputs.buildRunner && steps.platform-check.outputs.should-run
+        if: inputs.buildRunner && steps.platform-check.outputs.should-run == 'true'
         run: dart run build_runner build --release ${{ inputs.buildRunnerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Compile executables
-        if: steps.platform-check.outputs.should-run
+        if: steps.platform-check.outputs.should-run == 'true'
         run: |
           set -eo pipefail
           mkdir -p build/bin
@@ -126,7 +126,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Create release archives (tar)
-        if: matrix.archiveType == 'tar' && steps.platform-check.outputs.should-run
+        if: matrix.archiveType == 'tar' && steps.platform-check.outputs.should-run == 'true'
         run: |
           set -eo pipefail
           shopt -s extglob
@@ -136,7 +136,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}/build/bin
         shell: bash
       - name: Create release archives (zip)
-        if: matrix.archiveType == 'zip' && steps.platform-check.outputs.should-run
+        if: matrix.archiveType == 'zip' && steps.platform-check.outputs.should-run == 'true'
         run: |
           set -eo pipefail
           shopt -s nullglob
@@ -146,7 +146,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}/build/bin
         shell: bash
       - name: Upload compiled binaries artifact
-        if: steps.platform-check.outputs.should-run
+        if: steps.platform-check.outputs.should-run == 'true'
         uses: actions/upload-artifact@v3
         with:
           name: binaries-${{ matrix.platform }}

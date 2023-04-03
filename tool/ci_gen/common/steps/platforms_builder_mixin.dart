@@ -6,5 +6,6 @@ import 'project_setup_builder.dart';
 mixin PlatformsBuilderMixin {
   @protected
   Expression get shouldRunExpression =>
-      ProjectSetupBuilder.shouldRunOutput.expression;
+      ProjectSetupBuilder.shouldRunOutput.expression
+          .eq(Expression.literal("true"));
 }

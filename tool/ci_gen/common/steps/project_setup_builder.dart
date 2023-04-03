@@ -68,8 +68,9 @@ ${shouldRunOutput.bashSetter('\$isPlatformAllowed')}
           releaseMode: releaseMode,
           pubTool: pubTool,
           runTool: runTool,
-          ifExpression:
-              withPlatform != null ? shouldRunOutput.expression : null,
+          ifExpression: withPlatform != null
+              ? shouldRunOutput.expression.eq(Expression.literal("true"))
+              : null,
         ).build(),
       ];
 }
