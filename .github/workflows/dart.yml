@@ -208,6 +208,7 @@ jobs:
         run: |
           set -eo pipefail
           isPlatformAllowed=$(yq 'has("platforms") | not or .platforms | has("${{ matrix.platform }}")' pubspec.yaml)
+          echo "Platform enabled: $isPlatformAllowed"
           echo "should-run=$isPlatformAllowed" >> $GITHUB_OUTPUT
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
@@ -338,6 +339,7 @@ jobs:
         run: |
           set -eo pipefail
           isPlatformAllowed=$(yq 'has("platforms") | not or .platforms | has("${{ matrix.platform }}")' pubspec.yaml)
+          echo "Platform enabled: $isPlatformAllowed"
           echo "should-run=$isPlatformAllowed" >> $GITHUB_OUTPUT
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash

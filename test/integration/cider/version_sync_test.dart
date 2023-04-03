@@ -1,7 +1,11 @@
+@TestOn('dart-vm')
+library version_sync_test;
+
 import 'dart:io';
 
 import 'package:cider/cider.dart';
-import 'package:dart_test_tools/src/cider/version_sync_plugin.dart';
+// ignore: test_library_import
+import 'package:dart_test_tools/cider.dart';
 import 'package:test/test.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 

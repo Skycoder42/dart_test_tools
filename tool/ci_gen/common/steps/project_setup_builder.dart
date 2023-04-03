@@ -55,6 +55,7 @@ echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
             run: '''
 set -eo pipefail
 isPlatformAllowed=\$(yq 'has("platforms") | not or .platforms | has("$withPlatform")' pubspec.yaml)
+echo "Platform enabled: \$isPlatformAllowed"
 ${shouldRunOutput.bashSetter('\$isPlatformAllowed')}
 ''',
             workingDirectory: workingDirectory.toString(),

@@ -1,6 +1,10 @@
+@TestOn('dart-vm')
+library pkgbuild_generator_test;
+
 import 'dart:io';
 
-import 'package:dart_test_tools/src/aur/pkgbuild_generator.dart';
+// ignore: test_library_import
+import 'package:dart_test_tools/aur.dart';
 import 'package:path/path.dart';
 import 'package:test/test.dart';
 import 'package:yaml_writer/yaml_writer.dart';

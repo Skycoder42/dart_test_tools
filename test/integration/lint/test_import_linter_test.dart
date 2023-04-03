@@ -1,4 +1,8 @@
-import 'package:dart_test_tools/src/lint/test_import_linter.dart';
+@TestOn('dart-vm')
+library test_import_linter_test;
+
+// ignore: test_library_import
+import 'package:dart_test_tools/lint.dart';
 import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 

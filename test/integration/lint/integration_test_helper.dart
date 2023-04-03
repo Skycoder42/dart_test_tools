@@ -5,9 +5,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
-import 'package:dart_test_tools/src/lint/common/file_linter.dart';
-import 'package:dart_test_tools/src/lint/common/file_result.dart';
-import 'package:dart_test_tools/src/lint/common/linter.dart';
+// ignore: test_library_import
+import 'package:dart_test_tools/lint.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
