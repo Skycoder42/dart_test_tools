@@ -14,7 +14,6 @@ jobs:
     name: CI
     uses: Skycoder42/dart_test_tools/.github/workflows/dart.yml@main
     with:
-      platforms: '["linux","windows","macos"]'
       buildRunner: true
       unitTestPaths: ""
       integrationTestPaths: test/integration
