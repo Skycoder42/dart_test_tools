@@ -380,4 +380,13 @@ Example:
           'select the workflow to be executed.',
     ),
   );
+
+  static const releaseTag = WorkflowInput(
+    name: 'releaseTag',
+    input: Input(
+      type: Type.string,
+      required: true,
+      description: 'The tag name of the release to attach additional files to.',
+    ),
+  );
 }

@@ -40,6 +40,7 @@ dev_dependencies:
   http: ^0.13.5
   json_serializable: ^6.6.1
   lints: ^2.0.1
+  pubspec_generator: ^3.0.1
   yaml_edit: ^2.1.0
 
 dart_pre_commit:

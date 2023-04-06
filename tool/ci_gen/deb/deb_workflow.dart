@@ -12,8 +12,7 @@ abstract class DebWorkflow {
     final inputContext = WorkflowInputContext();
 
     final debDeployJobBuilder = DebDeployJobBuilder(
-      // TODO correct input
-      createDebPackage: inputContext(WorkflowInputs.createAurUpdate),
+      releaseTag: inputContext(WorkflowInputs.releaseTag),
     );
 
     return Workflow(

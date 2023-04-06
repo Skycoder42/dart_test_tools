@@ -1,4 +1,5 @@
 import '../../common/api/step_builder.dart';
+import '../../common/globals.dart';
 import '../../types/env.dart';
 import '../../types/step.dart';
 
@@ -17,6 +18,11 @@ sudo apt-get update
         Step.run(
           name: 'Install dart',
           run: 'sudo apt-get install -y dart',
+        ),
+        const Step.run(
+          name: 'Install dart_test_tools',
+          run:
+              'dart pub global activate dart_test_tools ^$dartTestToolsVersion',
         ),
         Step.run(
           name: 'Install makedeb',
