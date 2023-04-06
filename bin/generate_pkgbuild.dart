@@ -27,6 +27,14 @@ Future<void> main(List<String> rawArgs) async {
           'additional information.',
     )
     ..addFlag(
+      'makedeb',
+      abbr: 'd',
+      negatable: false,
+      defaultsTo: false,
+      help: 'Use makedeb instead of makepkg to generate a debian package '
+          'instead of an arch linux package.',
+    )
+    ..addFlag(
       'help',
       abbr: 'h',
       negatable: false,
@@ -45,6 +53,7 @@ Future<void> main(List<String> rawArgs) async {
     await generator.generatePkgbuild(
       sourceDirectory: Directory(args['input'] as String),
       aurDirectory: Directory(args['output'] as String),
+      makedebMode: args['makedeb'] as bool,
     );
   } on FormatException catch (e) {
     stderr

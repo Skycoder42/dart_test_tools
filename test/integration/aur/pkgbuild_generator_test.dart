@@ -74,7 +74,22 @@ void main() {
               'permissions': 600,
             },
           ],
-        if (!minimal) 'backup': ['etc/config.json'],
+        if (!minimal) 'backup': const ['etc/config.json'],
+        if (!minimal)
+          'makedeb': {
+            'depends': const [
+              'dependency-x',
+              'dependency-y',
+              'dependency-z',
+            ],
+            'files': const [
+              {
+                'source': 'config/deb.json',
+                'target': '/etc/config.json',
+              },
+            ],
+            'backup': const ['/etc/config.json'],
+          },
       },
     });
 
@@ -91,56 +106,122 @@ void main() {
     }
   }
 
-  test('generates minimal PKGBUILD file', () async {
-    await createSources(true);
+  group('aur', () {
+    test('generates minimal PKGBUILD file', () async {
+      await createSources(true);
 
-    await expectLater(
-      () => sut.generatePkgbuild(sourceDirectory: srcDir, aurDirectory: aurDir),
-      prints('PKGBUILD\n'),
-    );
+      await expectLater(
+        () =>
+            sut.generatePkgbuild(sourceDirectory: srcDir, aurDirectory: aurDir),
+        prints('PKGBUILD\n'),
+      );
 
-    final aurFiles = aurDir.listSync();
-    expect(aurFiles, hasLength(1));
-    expect(aurFiles, contains(hasBaseName('PKGBUILD')));
+      final aurFiles = aurDir.listSync();
+      expect(aurFiles, hasLength(1));
+      expect(aurFiles, contains(hasBaseName('PKGBUILD')));
 
-    final pkgBuildContent = await File.fromUri(
-      aurDir.uri.resolve('PKGBUILD'),
-    ).readAsString();
+      final pkgBuildContent = await File.fromUri(
+        aurDir.uri.resolve('PKGBUILD'),
+      ).readAsString();
 
-    expect(pkgBuildContent, _minimalPkgbuild);
+      expect(pkgBuildContent, _minimalPkgbuild);
+    });
+
+    test('generates full PKGBUILD file', () async {
+      await createSources(false);
+
+      await expectLater(
+        () =>
+            sut.generatePkgbuild(sourceDirectory: srcDir, aurDirectory: aurDir),
+        prints('PKGBUILD\ncustom_package.install\nCHANGELOG.md\n'),
+      );
+
+      final aurFiles = aurDir.listSync();
+      expect(aurFiles, hasLength(3));
+      expect(aurFiles, contains(hasBaseName('PKGBUILD')));
+      expect(aurFiles, contains(hasBaseName('CHANGELOG.md')));
+      expect(aurFiles, contains(hasBaseName('custom_package.install')));
+
+      final pkgBuildContent = await File.fromUri(
+        aurDir.uri.resolve('PKGBUILD'),
+      ).readAsString();
+
+      expect(pkgBuildContent, _fullPkgbuild);
+
+      final changelogContent = await File.fromUri(
+        aurDir.uri.resolve('CHANGELOG.md'),
+      ).readAsString();
+
+      expect(changelogContent, '# The Changelog');
+
+      final installContent = await File.fromUri(
+        aurDir.uri.resolve('custom_package.install'),
+      ).readAsString();
+
+      expect(installContent, 'install');
+    });
   });
 
-  test('generates full PKGBUILD file', () async {
-    await createSources(false);
+  group('deb', () {
+    test('generates minimal PKGBUILD file', () async {
+      await createSources(true);
 
-    await expectLater(
-      () => sut.generatePkgbuild(sourceDirectory: srcDir, aurDirectory: aurDir),
-      prints('PKGBUILD\ncustom_package.install\nCHANGELOG.md\n'),
-    );
+      await expectLater(
+        () => sut.generatePkgbuild(
+          sourceDirectory: srcDir,
+          aurDirectory: aurDir,
+          makedebMode: true,
+        ),
+        prints('PKGBUILD\n'),
+      );
 
-    final aurFiles = aurDir.listSync();
-    expect(aurFiles, hasLength(3));
-    expect(aurFiles, contains(hasBaseName('PKGBUILD')));
-    expect(aurFiles, contains(hasBaseName('CHANGELOG.md')));
-    expect(aurFiles, contains(hasBaseName('custom_package.install')));
+      final aurFiles = aurDir.listSync();
+      expect(aurFiles, hasLength(1));
+      expect(aurFiles, contains(hasBaseName('PKGBUILD')));
 
-    final pkgBuildContent = await File.fromUri(
-      aurDir.uri.resolve('PKGBUILD'),
-    ).readAsString();
+      final pkgBuildContent = await File.fromUri(
+        aurDir.uri.resolve('PKGBUILD'),
+      ).readAsString();
 
-    expect(pkgBuildContent, _fullPkgbuild);
+      expect(pkgBuildContent, _minimalDebPkgbuild);
+    });
 
-    final changelogContent = await File.fromUri(
-      aurDir.uri.resolve('CHANGELOG.md'),
-    ).readAsString();
+    test('generates full PKGBUILD file', () async {
+      await createSources(false);
 
-    expect(changelogContent, '# The Changelog');
+      await expectLater(
+        () => sut.generatePkgbuild(
+          sourceDirectory: srcDir,
+          aurDirectory: aurDir,
+          makedebMode: true,
+        ),
+        prints('PKGBUILD\ncustom_package.install\nCHANGELOG.md\n'),
+      );
 
-    final installContent = await File.fromUri(
-      aurDir.uri.resolve('custom_package.install'),
-    ).readAsString();
+      final aurFiles = aurDir.listSync();
+      expect(aurFiles, hasLength(3));
+      expect(aurFiles, contains(hasBaseName('PKGBUILD')));
+      expect(aurFiles, contains(hasBaseName('CHANGELOG.md')));
+      expect(aurFiles, contains(hasBaseName('custom_package.install')));
 
-    expect(installContent, 'install');
+      final pkgBuildContent = await File.fromUri(
+        aurDir.uri.resolve('PKGBUILD'),
+      ).readAsString();
+
+      expect(pkgBuildContent, _fullDebPkgbuild);
+
+      final changelogContent = await File.fromUri(
+        aurDir.uri.resolve('CHANGELOG.md'),
+      ).readAsString();
+
+      expect(changelogContent, '# The Changelog');
+
+      final installContent = await File.fromUri(
+        aurDir.uri.resolve('custom_package.install'),
+      ).readAsString();
+
+      expect(installContent, 'install');
+    });
   });
 }
 
@@ -229,6 +310,92 @@ package() {
   install -D -m755 'bin/exe-two' "$pkgdir/usr/bin/"'exe-two'
   install -D -m644 'config/config.json' "$pkgdir/etc/config.json"
   install -D -m600 'data/database.db' "$pkgdir/usr/share/$pkgname/core.db"
+  install -D -m644 'LICENSE.txt' "$pkgdir/usr/share/licenses/$pkgname/"'LICENSE.txt'
+}
+
+''';
+
+const _minimalDebPkgbuild = r'''
+# Maintainer: Maintainer <maintainer@maintain.org>
+pkgname='test_package'
+pkgver='1.2.3_dev+5'
+pkgrel=1
+arch=('amd64')
+url='https://example.com/home'
+license=('custom')
+depends=()
+makedepends=('dart')
+_pkgdir='test_package-1.2.3-dev+5'
+source=("$_pkgdir.tar.gz::https://example.com/home/archive/refs/tags/v1.2.3-dev+5.tar.gz")
+b2sums=('PLACEHOLDER')
+options=('!strip')
+
+prepare() {
+  cd "$_pkgdir"
+  dart pub get
+}
+
+build() {
+  cd "$_pkgdir"
+  dart compile exe -o 'bin/exe_1' -S 'bin/exe_1.symbols' 'bin/exe_1.dart'
+}
+
+check() {
+  cd "$_pkgdir"
+  dart analyze --no-fatal-warnings
+  dart test
+}
+
+package() {
+  cd "$_pkgdir"
+  install -D -m755 'bin/exe_1' "$pkgdir/usr/bin/"'exe_1'
+}
+
+''';
+
+const _fullDebPkgbuild = r'''
+# Maintainer: Maintainer <maintainer@maintain.org>
+pkgname='custom_package'
+pkgdesc='This is a test package.'
+pkgver='1.2.3_dev+5'
+pkgrel=3
+epoch=1
+arch=('amd64')
+url='https://example.com/home'
+license=('MIT')
+depends=('dependency-x' 'dependency-y' 'dependency-z')
+makedepends=('dart>=2.17.0' 'dart<3.0.0')
+_pkgdir='test_package-1.2.3-dev+5'
+source=("$_pkgdir.tar.gz::https://example.com/home/git/archive/refs/tags/v1.2.3-dev+5.tar.gz")
+b2sums=('PLACEHOLDER')
+install='custom_package.install'
+changelog='CHANGELOG.md'
+backup=('/etc/config.json')
+options=('!strip')
+
+prepare() {
+  cd "$_pkgdir"
+  dart pub get
+}
+
+build() {
+  cd "$_pkgdir"
+  dart run build_runner build --delete-conflicting-outputs --release
+  dart compile exe -o 'bin/exe_1' -S 'bin/exe_1.symbols' 'bin/exe_1.dart'
+  dart compile exe -o 'bin/exe-two' -S 'bin/exe-two.symbols' 'bin/exe_2.dart'
+}
+
+check() {
+  cd "$_pkgdir"
+  dart analyze --no-fatal-warnings
+  dart test --reporter=expanded -P arch
+}
+
+package() {
+  cd "$_pkgdir"
+  install -D -m755 'bin/exe_1' "$pkgdir/usr/bin/"'exe_1'
+  install -D -m755 'bin/exe-two' "$pkgdir/usr/bin/"'exe-two'
+  install -D -m644 'config/deb.json' "$pkgdir/etc/config.json"
   install -D -m644 'LICENSE.txt' "$pkgdir/usr/share/licenses/$pkgname/"'LICENSE.txt'
 }
 

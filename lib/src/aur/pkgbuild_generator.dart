@@ -9,6 +9,7 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 
 class PkgBuildGenerator {
   static const _supportedArchs = ['x86_64', 'i686', 'armv7h', 'aarch64'];
+  static const _supportedDebArchs = ['amd64'];
 
   final AurOptionsLoader aurOptionsLoader;
 
@@ -19,6 +20,7 @@ class PkgBuildGenerator {
   Future<void> generatePkgbuild({
     required Directory sourceDirectory,
     required Directory aurDirectory,
+    bool makedebMode = false,
   }) async {
     final aurOptions = await aurOptionsLoader.loadAurOptions(sourceDirectory);
     final changelogFile = await aurOptionsLoader.findChangelog(sourceDirectory);
@@ -36,6 +38,7 @@ class PkgBuildGenerator {
       licenseFileName: _fileName(licenseFile),
       installFileName: _fileName(installFile),
       changelogFileName: _fileName(changelogFile),
+      makedebMode: makedebMode,
     ));
     _printFileName(pkgBuildFile);
 
@@ -64,6 +67,7 @@ class PkgBuildGenerator {
     required String? licenseFileName,
     required String? installFileName,
     required String? changelogFileName,
+    required bool makedebMode,
   }) {
     final version = options.pubspec.version;
     if (version == null) {
@@ -72,6 +76,11 @@ class PkgBuildGenerator {
 
     final url =
         options.pubspec.homepage ?? options.pubspec.repository?.toString();
+    final depends =
+        (makedebMode ? options.aurOptions.makedeb?.depends : null) ??
+            options.aurOptions.depends;
+    final backup = (makedebMode ? options.aurOptions.makedeb?.backup : null) ??
+        options.aurOptions.backup;
 
     final pkgBuild = Pkgbuild(
       maintainer: options.aurOptions.maintainer,
@@ -83,11 +92,14 @@ class PkgBuildGenerator {
         'pkgver': PkgProperty(version.toString().replaceAll('-', '_')),
         'pkgrel': PkgProperty(options.aurOptions.pkgrel),
         'epoch': PkgProperty(options.aurOptions.epoch),
-        'arch': PkgProperty.literalList(_supportedArchs),
+        if (makedebMode)
+          'arch': PkgProperty.literalList(_supportedDebArchs)
+        else
+          'arch': PkgProperty.literalList(_supportedArchs),
         'url': PkgProperty(url),
         'license': PkgProperty.literalList([options.aurOptions.license]),
         'depends': PkgProperty.literalList(
-          options.aurOptions.depends,
+          depends,
           skipEmpty: false,
         ),
         'makedepends': _getDartDependency(options.pubspec),
@@ -96,7 +108,7 @@ class PkgBuildGenerator {
         'b2sums': PkgProperty.literalList(const ['PLACEHOLDER']),
         'install': PkgProperty(installFileName),
         'changelog': PkgProperty(changelogFileName),
-        'backup': PkgProperty.literalList(options.aurOptions.backup),
+        'backup': PkgProperty.literalList(backup),
         'options': PkgProperty.literalList(const ['!strip']),
       },
       functions: {
@@ -111,7 +123,7 @@ class PkgBuildGenerator {
               : 'dart test ${options.aurOptions.testArgs}',
         ]),
         'package': PkgFunction(
-          _getInstallSteps(options, licenseFileName).toList(),
+          _getInstallSteps(options, licenseFileName, makedebMode).toList(),
         ),
       },
     );
@@ -190,6 +202,7 @@ class PkgBuildGenerator {
   Iterable<String> _getInstallSteps(
     PubspecWithAur options,
     String? licenseFileName,
+    bool makedebMode,
   ) sync* {
     if (options.executables.isEmpty) {
       throw Exception('Must define at least one executable!');
@@ -201,7 +214,11 @@ class PkgBuildGenerator {
           "\"\$pkgdir/usr/bin/\"'${entry.key}'",
     );
 
-    for (final install in options.aurOptions.files) {
+    final installFiles =
+        (makedebMode ? options.aurOptions.makedeb?.files : null) ??
+            options.aurOptions.files;
+
+    for (final install in installFiles) {
       yield "install -D -m${install.permissions} '${install.source}' "
           '"\$pkgdir${install.target}"';
     }

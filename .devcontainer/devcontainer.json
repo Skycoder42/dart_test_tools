@@ -25,8 +25,7 @@
 		"ghcr.io/devcontainers-contrib/features/zsh-plugins:0": {
 			"plugins": "git colorize vscode",
 			"omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions"
-		},
-		"ghcr.io/stuartleeks/dev-container-features/shell-history:0": {}
+		}
 	},
 	"postCreateCommand": "dart --disable-analytics"
 }

@@ -54,6 +54,7 @@ class AurOptions with _$AurOptions {
     String? install,
     @Default(<InstallTarget>[]) List<InstallTarget> files,
     @Default(<String>[]) List<String> backup,
+    MakedebOptions? makedeb,
   }) = _AurOptions;
 
   factory AurOptions.fromJson(Map<String, dynamic> json) =>
@@ -76,4 +77,22 @@ class InstallTarget with _$InstallTarget {
 
   factory InstallTarget.fromJson(Map<String, dynamic> json) =>
       _$InstallTargetFromJson(json);
+}
+
+@internal
+@freezed
+class MakedebOptions with _$MakedebOptions {
+  @JsonSerializable(
+    anyMap: true,
+    checked: true,
+    disallowUnrecognizedKeys: true,
+  )
+  const factory MakedebOptions({
+    List<String>? depends,
+    List<InstallTarget>? files,
+    List<String>? backup,
+  }) = _MakedebOptions;
+
+  factory MakedebOptions.fromJson(Map<String, dynamic> json) =>
+      _$MakedebOptionsFromJson(json);
 }
