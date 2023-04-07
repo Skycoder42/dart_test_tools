@@ -1,10 +1,5 @@
 on:
   workflow_call:
-    inputs:
-      createAurUpdate:
-        type: boolean
-        required: true
-        description: A boolean indicating whether the AUR-Deploy step should run.
     secrets:
       AUR_SSH_PRIVATE_KEY:
         required: true
@@ -12,7 +7,6 @@ on:
 jobs:
   aur_deploy:
     name: Deploy to AUR
-    if: inputs.createAurUpdate
     runs-on: ubuntu-latest
     container: archlinux:base-devel
     steps:

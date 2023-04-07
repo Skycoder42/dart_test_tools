@@ -283,16 +283,6 @@ Example:
     ),
   );
 
-  static const createAurUpdate = WorkflowInput(
-    name: 'createAurUpdate',
-    input: Input(
-      type: Type.boolean,
-      required: true,
-      description:
-          'A boolean indicating whether the AUR-Deploy step should run.',
-    ),
-  );
-
   static const dockerPlatforms = WorkflowInput(
     name: 'dockerPlatforms',
     input: Input(

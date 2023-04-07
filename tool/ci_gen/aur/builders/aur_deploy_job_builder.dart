@@ -9,11 +9,9 @@ import '../steps/prepare_arch_builder.dart';
 import '../steps/push_aur_builder.dart';
 
 class AurDeployJobBuilder implements JobBuilder {
-  final Expression createAurUpdate;
   final Expression aurSshPrivateKey;
 
   const AurDeployJobBuilder({
-    required this.createAurUpdate,
     required this.aurSshPrivateKey,
   });
 
@@ -23,7 +21,6 @@ class AurDeployJobBuilder implements JobBuilder {
   @override
   Job build() => Job(
         name: 'Deploy to AUR',
-        ifExpression: createAurUpdate,
         runsOn: 'ubuntu-latest',
         container: 'archlinux:base-devel',
         steps: [
