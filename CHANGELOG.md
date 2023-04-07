@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog\](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to Semantic Versioning\](https://semver.org/spec/v2.0.0.html).
 
+## [4.9.0] - 2023-04-07
+### Added
+- Add makedeb support to pkgbuild generator
+
 ## [4.8.0] - 2023-01-19
 ### Added
 - create docker workflow
@@ -175,6 +179,7 @@ have been added:
 ### Added
 - Initial release
 
+[4.9.0]: https://github.com/Skycoder42/dart_test_tools/compare/v4.8.0...v4.9.0
 [4.8.0]: https://github.com/Skycoder42/dart_test_tools/compare/v4.7.0...v4.8.0
 [4.7.0]: https://github.com/Skycoder42/dart_test_tools/compare/v4.6.0...v4.7.0
 [4.6.0]: https://github.com/Skycoder42/dart_test_tools/compare/v4.5.3+1...v4.6.0
