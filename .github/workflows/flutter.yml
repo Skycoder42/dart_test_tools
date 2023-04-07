@@ -127,7 +127,7 @@ jobs:
       - name: Download flutter binary artifacts
         run: flutter precache --universal
       - name: Install dart_test_tools
-        run: flutter pub global activate dart_test_tools ^4.8.0
+        run: flutter pub global activate dart_test_tools ^4.9.0
       - name: Install pana
         run: flutter pub global activate pana
       - name: Install yq (Windows)

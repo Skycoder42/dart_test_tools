@@ -103,7 +103,7 @@ jobs:
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^4.8.0
+        run: dart pub global activate dart_test_tools ^4.9.0
       - name: Install pana
         run: dart pub global activate pana
       - name: Install yq (Windows)

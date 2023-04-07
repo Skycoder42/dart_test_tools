@@ -30,7 +30,7 @@ jobs:
       - name: Install needed packages
         run: sudo apt-get install -y dart makedeb
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^4.8.0
+        run: dart pub global activate dart_test_tools ^4.9.0
       - name: Disable stripping
         run: |
           set -eo pipefail
