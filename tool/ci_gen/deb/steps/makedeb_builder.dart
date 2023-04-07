@@ -15,7 +15,7 @@ class MakedebBuilder implements StepBuilder {
         ),
         Step.run(
           name: 'Update source checksums',
-          run: 'makedeb --gen-integ',
+          run: 'makedeb --gen-integ >> PKGBUILD',
           workingDirectory: 'deb',
         ),
         Step.run(

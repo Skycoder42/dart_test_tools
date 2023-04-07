@@ -51,7 +51,7 @@ jobs:
       - name: Generate PKGBUILD from dart package
         run: dart pub global run dart_test_tools:generate_pkgbuild --input src --output deb --makedeb
       - name: Update source checksums
-        run: makedeb --gen-integ
+        run: makedeb --gen-integ >> PKGBUILD
         working-directory: deb
       - name: Lint PKGBUILD
         run: makedeb --lint
