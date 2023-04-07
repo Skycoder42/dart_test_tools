@@ -40,7 +40,7 @@ echo 'deb [signed-by=/usr/share/keyrings/makedeb-archive-keyring.gpg arch=all] h
 set -eo pipefail
 strip_path=$(which strip)
 sudo rm -f "$strip_path"
-cat << EOF | sudo tee "$strip_path" > /dev/null
+cat << 'EOF' | sudo tee "$strip_path" > /dev/null
 #!/bin/bash
 echo "DISABLED: strip $@"
 EOF
