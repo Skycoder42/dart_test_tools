@@ -12,7 +12,8 @@ abstract class DebWorkflow {
     final inputContext = WorkflowInputContext();
 
     final debDeployJobBuilder = DebDeployJobBuilder(
-      releaseTag: inputContext(WorkflowInputs.releaseTag),
+      tagPrefix: inputContext(WorkflowInputs.tagPrefix),
+      version: inputContext(WorkflowInputs.version),
     );
 
     return Workflow(

@@ -381,12 +381,12 @@ Example:
     ),
   );
 
-  static const releaseTag = WorkflowInput(
-    name: 'releaseTag',
+  static const version = WorkflowInput(
+    name: 'version',
     input: Input(
       type: Type.string,
       required: true,
-      description: 'The tag name of the release to attach additional files to.',
+      description: 'The released version to upload additional files to.',
     ),
   );
 }

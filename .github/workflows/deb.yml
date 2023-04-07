@@ -1,10 +1,15 @@
 on:
   workflow_call:
     inputs:
-      releaseTag:
+      tagPrefix:
+        type: string
+        required: false
+        default: v
+        description: The prefix of git tags. The tag is the prefix, followed by the package version.
+      version:
         type: string
         required: true
-        description: The tag name of the release to attach additional files to.
+        description: The released version to upload additional files to.
 jobs:
   deb_deploy:
     name: Build deb package
@@ -43,11 +48,17 @@ jobs:
         run: mkdir deb
       - name: Generate PKGBUILD from dart package
         run: dart pub global run dart_test_tools:generate_pkgbuild --input src --output deb --makedeb
+      - name: Update source checksums
+        run: makedeb --gen-integ
+        working-directory: deb
+      - name: Lint PKGBUILD
+        run: makedeb --lint
+        working-directory: deb
       - name: Build debian package
-        run: makepkg -sfC --check --noconfirm
+        run: makedeb -s --no-confirm
         working-directory: deb
       - name: Upload debian package to release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ inputs.releaseTag }}
+          tag_name: ${{ inputs.tagPrefix }}${{ inputs.version }}
           files: deb/*.deb

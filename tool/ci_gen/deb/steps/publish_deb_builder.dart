@@ -4,10 +4,12 @@ import '../../types/expression.dart';
 import '../../types/step.dart';
 
 class PublishDebBuilder implements StepBuilder {
-  final Expression releaseTag;
+  final Expression tagPrefix;
+  final Expression version;
 
   const PublishDebBuilder({
-    required this.releaseTag,
+    required this.tagPrefix,
+    required this.version,
   });
 
   @override
@@ -16,7 +18,7 @@ class PublishDebBuilder implements StepBuilder {
           name: 'Upload debian package to release',
           uses: Tools.softpropsActionGhRelease,
           withArgs: <String, dynamic>{
-            'tag_name': releaseTag.toString(),
+            'tag_name': '$tagPrefix$version',
             'files': 'deb/*.deb',
           },
         ),

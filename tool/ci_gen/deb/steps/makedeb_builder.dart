@@ -14,8 +14,18 @@ class MakedebBuilder implements StepBuilder {
               '--input src --output deb --makedeb',
         ),
         Step.run(
+          name: 'Update source checksums',
+          run: 'makedeb --gen-integ',
+          workingDirectory: 'deb',
+        ),
+        Step.run(
+          name: 'Lint PKGBUILD',
+          run: 'makedeb --lint',
+          workingDirectory: 'deb',
+        ),
+        Step.run(
           name: 'Build debian package',
-          run: 'makepkg -sfC --check --noconfirm',
+          run: 'makedeb -s --no-confirm',
           workingDirectory: 'deb',
         ),
       ];

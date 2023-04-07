@@ -8,10 +8,12 @@ import '../steps/prepare_deb_builder.dart';
 import '../steps/publish_deb_builder.dart';
 
 class DebDeployJobBuilder implements JobBuilder {
-  final Expression releaseTag;
+  final Expression tagPrefix;
+  final Expression version;
 
   const DebDeployJobBuilder({
-    required this.releaseTag,
+    required this.tagPrefix,
+    required this.version,
   });
 
   @override
@@ -28,7 +30,8 @@ class DebDeployJobBuilder implements JobBuilder {
           ).build(),
           ...MakedebBuilder().build(),
           ...PublishDebBuilder(
-            releaseTag: releaseTag,
+            tagPrefix: tagPrefix,
+            version: version,
           ).build(),
         ],
       );
