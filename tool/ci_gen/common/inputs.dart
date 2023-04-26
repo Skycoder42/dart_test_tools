@@ -347,30 +347,6 @@ Example:
     ),
   );
 
-  static const bitriseAppSlug = WorkflowInput(
-    name: 'bitriseAppSlug',
-    input: Input(
-      type: Type.string,
-      required: false,
-      defaultValue: '',
-      description:
-          'The app-slug of the bitrise app to run a bitrise workflow for. '
-          'Typically needed for macOs integration tests, as github actions '
-          'currently does not support running macos apps.',
-    ),
-  );
-
-  static const bitriseWorkflowId = WorkflowInput(
-    name: 'bitriseWorkflowId',
-    input: Input(
-      type: Type.string,
-      required: false,
-      defaultValue: 'macos_integration_test',
-      description: 'Used in combination with the bitriseAppSlug to '
-          'select the workflow to be executed.',
-    ),
-  );
-
   static const version = WorkflowInput(
     name: 'version',
     input: Input(

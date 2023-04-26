@@ -56,12 +56,4 @@ MY_API_KEY=<reference secret here>"
           'github workflow token does not trigger workflows when creating releases.',
     ),
   );
-
-  static const bitrisePat = WorkflowSecret(
-    name: 'bitrisePat',
-    secret: Secret(
-      required: false,
-      description: 'The personal access token to access the bitrise.io API.',
-    ),
-  );
 }
