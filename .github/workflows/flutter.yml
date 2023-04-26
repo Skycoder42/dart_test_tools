@@ -329,6 +329,7 @@ jobs:
           - ios
           - linux
           - windows
+          - macos
           - web
         include:
           - platform: android
@@ -346,6 +347,10 @@ jobs:
             os: windows-latest
             desktop: true
             testArgs: -d windows
+          - platform: macos
+            os: macos-13
+            desktop: true
+            testArgs: -d macos
           - platform: web
             os: windows-latest
     runs-on: ${{ matrix.os }}
