@@ -14,7 +14,6 @@ abstract class FlutterWorkflow {
 
   static Workflow buildWorkflow() {
     final inputContext = WorkflowInputContext();
-    final secretContext = WorkflowSecretContext();
 
     final analyzeJobBuilder = FlutterAnalyzeJobBuilder(
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
@@ -64,7 +63,6 @@ abstract class FlutterWorkflow {
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
-          secrets: secretContext.createSecrets(),
         ),
       ),
       jobs: {
