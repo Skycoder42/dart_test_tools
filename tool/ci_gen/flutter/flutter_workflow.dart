@@ -1,5 +1,4 @@
 import '../common/api/workflow_input.dart';
-import '../common/api/workflow_secret.dart';
 import '../common/builders/validate_coverage_job_builder.dart';
 import '../common/inputs.dart';
 import '../types/on.dart';

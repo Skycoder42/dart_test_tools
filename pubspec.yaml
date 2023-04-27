@@ -12,7 +12,7 @@ executables:
   cider:
 
 dependencies:
-  analyzer: ^5.10.0
+  analyzer: ^5.11.1
   args: ^2.4.0
   checked_yaml: ^2.0.2
   cider: ^0.1.5
