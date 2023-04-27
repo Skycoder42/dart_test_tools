@@ -12,10 +12,11 @@ executables:
   cider:
 
 dependencies:
-  analyzer: ^5.11.1
+  analyzer: ^5.10.0
   args: ^2.4.0
   checked_yaml: ^2.0.2
   cider: ^0.1.5
+  custom_lint_builder: ^0.3.4
   dotenv: ^4.1.0
   freezed_annotation: ^2.2.0
   json_annotation: ^4.8.0
