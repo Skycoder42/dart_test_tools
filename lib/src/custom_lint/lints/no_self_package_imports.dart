@@ -8,8 +8,6 @@ import 'package:dart_test_tools/src/custom_lint/lints/fixes/remove_directive.dar
 import 'package:dart_test_tools/src/lint/common/context_root_extensions.dart';
 
 class NoSelfPackageImports extends DartLintRule {
-  static const _contextRootKey = 'no_self_package_imports:contextRoot';
-
   static const _code = LintCode(
     name: 'no_self_package_imports',
     problemMessage: 'Libraries in lib/src, test or tool should not '
@@ -28,29 +26,18 @@ class NoSelfPackageImports extends DartLintRule {
       ];
 
   @override
-  Future<void> startUp(
-    CustomLintResolver resolver,
-    CustomLintContext context,
-  ) async {
-    if (!context.sharedState.containsKey(_contextRootKey)) {
-      final resolvedUnitResult = await resolver.getResolvedUnitResult();
-      final contextRoot =
-          resolvedUnitResult.session.analysisContext.contextRoot;
-      context.sharedState[_contextRootKey] = contextRoot;
-    }
-
-    return super.startUp(resolver, context);
-  }
-
-  @override
   void run(
     CustomLintResolver resolver,
     ErrorReporter reporter,
     CustomLintContext context,
   ) {
-    final contextRoot = context.sharedState[_contextRootKey] as ContextRoot;
-
     context.registry.addNamespaceDirective((node) {
+      final contextRoot = node.element?.session?.analysisContext.contextRoot;
+      if (contextRoot == null) {
+        print('WARNING: Unable to resolve context root for ${resolver.path}');
+        return;
+      }
+
       if (!_directiveIsValid(contextRoot, node)) {
         reporter.reportErrorForNode(_code, node.uri);
       }

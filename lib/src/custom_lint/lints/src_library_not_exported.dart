@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
@@ -6,6 +8,9 @@ import 'package:analyzer/error/error.dart';
 import 'package:analyzer/error/listener.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
 import 'package:dart_test_tools/src/lint/common/context_root_extensions.dart';
+import 'package:synchronized/synchronized.dart';
+
+import 'package:path/path.dart' as path;
 
 class SrcLibraryNotExported extends DartLintRule {
   static const _packageExportsKey = 'src_library_not_exported:packageExports';
@@ -19,7 +24,15 @@ class SrcLibraryNotExported extends DartLintRule {
     errorSeverity: ErrorSeverity.INFO,
   );
 
+  static final _sessionLocks = Expando<Lock>();
+  static final _sessionExports = Expando<Set<String>>();
+
   const SrcLibraryNotExported() : super(code: _code);
+
+  @override
+  List<String> get filesToAnalyze => [
+        'lib/**.dart',
+      ];
 
   @override
   Future<void> startUp(
@@ -28,9 +41,12 @@ class SrcLibraryNotExported extends DartLintRule {
   ) async {
     if (!context.sharedState.containsKey(_packageExportsKey)) {
       final resolvedUnitResult = await resolver.getResolvedUnitResult();
-      final packageExports =
-          await _loadPackageExports(resolvedUnitResult.session.analysisContext)
-              .toList();
+      final session = resolvedUnitResult.session;
+      final lock = _sessionLocks[session] ??= Lock();
+      final packageExports = await lock.synchronized(
+        () async => _sessionExports[session] ??=
+            await _loadExportedFilesSet(session.analysisContext),
+      );
       context.sharedState[_packageExportsKey] = packageExports;
     }
 
@@ -43,31 +59,67 @@ class SrcLibraryNotExported extends DartLintRule {
     ErrorReporter reporter,
     CustomLintContext context,
   ) {
-    final exports =
-        context.sharedState[_packageExportsKey] as List<ExportDirective>;
+    print('------------${resolver.path}');
+
+    final exports = context.sharedState[_packageExportsKey] as Set<String>;
 
     final exportedElements = <Element>[];
-    context.registry
-      ..addDeclaration((node) {
-        final Iterable<Element?> elements;
-        if (node is TopLevelVariableDeclaration) {
-          elements = node.variables.variables.map((v) => v.declaredElement);
-        } else {
-          elements = [node.declaredElement];
+    context
+      ..registry.addCompilationUnit((node) {
+        final element = node.declaredElement;
+        if (element == null) {
+          return;
         }
 
-        exportedElements.addAll(
-          elements
-              .whereType<Element>()
-              .where((element) => element.isExportable),
-        );
+        print(node.declarations);
+
+        // if (element.source != element.librarySource) {
+        //   return;
+        // }
+
+        final contextRoot = element.session.analysisContext.contextRoot;
+        if (contextRoot.src.contains(element.librarySource.fullName)) {
+          node.declarations
+              .expand(_declaredElements)
+              .where((element) => element.isExportable)
+              .forEach(exportedElements.add);
+        } else if (contextRoot.lib.contains(element.librarySource.fullName)) {
+          // TODO ???
+        }
+      })
+      ..addPostRunCallback(() {
+        if (exportedElements.isEmpty) {
+          return;
+        }
+
+        if (exports.contains(resolver.path)) {
+          return;
+        }
+
+        for (final element in exportedElements) {
+          reporter.reportErrorForElement(_code, element);
+        }
       });
-    context.addPostRunCallback(() {
-      // TODO evaluate result
-    });
   }
 
-  Stream<ExportDirective> _loadPackageExports(
+  Iterable<Element> _declaredElements(CompilationUnitMember declaration) {
+    final Iterable<Element?> elements;
+    if (declaration is TopLevelVariableDeclaration) {
+      elements = declaration.variables.variables.map((v) => v.declaredElement);
+    } else {
+      elements = [declaration.declaredElement];
+    }
+
+    return elements.whereType<Element>();
+  }
+
+  Future<Set<String>> _loadExportedFilesSet(AnalysisContext context) async {
+    final set = HashSet(equals: path.equals, hashCode: path.hash);
+    await _loadPackageExports(context).forEach(set.add);
+    return set;
+  }
+
+  Stream<String> _loadPackageExports(
     AnalysisContext context,
   ) async* {
     for (final path in context.contextRoot.analyzedFiles()) {
@@ -75,14 +127,19 @@ class SrcLibraryNotExported extends DartLintRule {
         continue;
       }
 
-      if (context.contextRoot.lib.contains(path) &&
-          !context.contextRoot.src.contains(path)) {
-        yield* _scanForExports(context, path);
+      if (!context.contextRoot.lib.contains(path)) {
+        continue;
       }
+
+      if (context.contextRoot.src.contains(path)) {
+        continue;
+      }
+
+      yield* _scanForExports(context, path);
     }
   }
 
-  Stream<ExportDirective> _scanForExports(
+  Stream<String> _scanForExports(
     AnalysisContext context,
     String path,
   ) async* {
@@ -91,9 +148,17 @@ class SrcLibraryNotExported extends DartLintRule {
       return;
     }
 
-    yield* Stream.fromIterable(
-      unit.directives.whereType<ExportDirective>(),
-    );
+    final exportedSources = unit.directives
+        .whereType<ExportDirective>()
+        .expand(
+          (e) => [e.element?.uri].followedBy(
+            e.configurations.map((c) => c.resolvedUri),
+          ),
+        )
+        .whereType<DirectiveUriWithSource>()
+        .map((u) => u.source.fullName);
+
+    yield* Stream.fromIterable(exportedSources);
   }
 
   Future<CompilationUnit?> _loadCompilationUnit(
