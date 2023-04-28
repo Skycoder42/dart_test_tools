@@ -1,14 +1,14 @@
 import 'dart:collection';
 
-import 'package:analyzer/dart/analysis/analysis_context.dart';
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/error/error.dart';
 import 'package:analyzer/error/listener.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
 import 'package:dart_test_tools/src/lint/common/context_root_extensions.dart';
-import 'package:synchronized/synchronized.dart';
+import 'package:synchronized/extension.dart';
 
 import 'package:path/path.dart' as path;
 
@@ -24,14 +24,13 @@ class SrcLibraryNotExported extends DartLintRule {
     errorSeverity: ErrorSeverity.INFO,
   );
 
-  static final _sessionLocks = Expando<Lock>();
   static final _sessionExports = Expando<Set<String>>();
 
   const SrcLibraryNotExported() : super(code: _code);
 
   @override
   List<String> get filesToAnalyze => [
-        'lib/**.dart',
+        'lib/src/**.dart',
       ];
 
   @override
@@ -42,10 +41,9 @@ class SrcLibraryNotExported extends DartLintRule {
     if (!context.sharedState.containsKey(_packageExportsKey)) {
       final resolvedUnitResult = await resolver.getResolvedUnitResult();
       final session = resolvedUnitResult.session;
-      final lock = _sessionLocks[session] ??= Lock();
-      final packageExports = await lock.synchronized(
-        () async => _sessionExports[session] ??=
-            await _loadExportedFilesSet(session.analysisContext),
+      final packageExports = await session.synchronized(
+        () async =>
+            _sessionExports[session] ??= await _loadExportedFilesSet(session),
       );
       context.sharedState[_packageExportsKey] = packageExports;
     }
@@ -59,47 +57,33 @@ class SrcLibraryNotExported extends DartLintRule {
     ErrorReporter reporter,
     CustomLintContext context,
   ) {
-    print('------------${resolver.path}');
+    final exportedLibraries =
+        context.sharedState[_packageExportsKey] as Set<String>;
 
-    final exports = context.sharedState[_packageExportsKey] as Set<String>;
+    context.registry.addCompilationUnit((node) {
+      final element = node.declaredElement;
+      if (element == null) {
+        return;
+      }
 
-    final exportedElements = <Element>[];
-    context
-      ..registry.addCompilationUnit((node) {
-        final element = node.declaredElement;
-        if (element == null) {
-          return;
-        }
+      final exportableElements = node.declarations
+          .expand(_declaredElements)
+          .where((e) => e.isExportable)
+          .toList();
 
-        print(node.declarations);
+      if (exportableElements.isEmpty) {
+        return;
+      }
 
-        // if (element.source != element.librarySource) {
-        //   return;
-        // }
+      final libraryPath = element.librarySource.fullName;
+      if (exportedLibraries.contains(libraryPath)) {
+        return;
+      }
 
-        final contextRoot = element.session.analysisContext.contextRoot;
-        if (contextRoot.src.contains(element.librarySource.fullName)) {
-          node.declarations
-              .expand(_declaredElements)
-              .where((element) => element.isExportable)
-              .forEach(exportedElements.add);
-        } else if (contextRoot.lib.contains(element.librarySource.fullName)) {
-          // TODO ???
-        }
-      })
-      ..addPostRunCallback(() {
-        if (exportedElements.isEmpty) {
-          return;
-        }
-
-        if (exports.contains(resolver.path)) {
-          return;
-        }
-
-        for (final element in exportedElements) {
-          reporter.reportErrorForElement(_code, element);
-        }
-      });
+      for (final element in exportableElements) {
+        reporter.reportErrorForElement(_code, element);
+      }
+    });
   }
 
   Iterable<Element> _declaredElements(CompilationUnitMember declaration) {
@@ -113,48 +97,48 @@ class SrcLibraryNotExported extends DartLintRule {
     return elements.whereType<Element>();
   }
 
-  Future<Set<String>> _loadExportedFilesSet(AnalysisContext context) async {
+  Future<Set<String>> _loadExportedFilesSet(AnalysisSession session) async {
     final set = HashSet(equals: path.equals, hashCode: path.hash);
-    await _loadPackageExports(context).forEach(set.add);
+    await _loadPackageExports(session).forEach(set.add);
     return set;
   }
 
   Stream<String> _loadPackageExports(
-    AnalysisContext context,
+    AnalysisSession session,
   ) async* {
-    for (final path in context.contextRoot.analyzedFiles()) {
+    final contextRoot = session.analysisContext.contextRoot;
+    for (final path in contextRoot.analyzedFiles()) {
       if (!path.endsWith('.dart')) {
         continue;
       }
 
-      if (!context.contextRoot.lib.contains(path)) {
+      if (!contextRoot.lib.contains(path)) {
         continue;
       }
 
-      if (context.contextRoot.src.contains(path)) {
+      if (contextRoot.src.contains(path)) {
         continue;
       }
 
-      yield* _scanForExports(context, path);
+      yield* _scanForExports(session, path);
     }
   }
 
   Stream<String> _scanForExports(
-    AnalysisContext context,
+    AnalysisSession session,
     String path,
   ) async* {
-    final unit = await _loadCompilationUnit(context, path);
+    final unit = await _loadCompilationUnit(session, path);
     if (unit == null) {
       return;
     }
 
     final exportedSources = unit.directives
         .whereType<ExportDirective>()
-        .expand(
-          (e) => [e.element?.uri].followedBy(
-            e.configurations.map((c) => c.resolvedUri),
-          ),
-        )
+        .expand((e) sync* {
+          yield e.element?.uri;
+          yield* e.configurations.map((c) => c.resolvedUri);
+        })
         .whereType<DirectiveUriWithSource>()
         .map((u) => u.source.fullName);
 
@@ -162,19 +146,13 @@ class SrcLibraryNotExported extends DartLintRule {
   }
 
   Future<CompilationUnit?> _loadCompilationUnit(
-    AnalysisContext context,
+    AnalysisSession session,
     String path,
   ) async {
-    final session = context.currentSession;
     final compilationUnitAstResult = await session.getResolvedUnit(path);
     if (compilationUnitAstResult is ResolvedUnitResult) {
       if (!compilationUnitAstResult.exists) {
-        print('$path was resolved, but does not exist');
-        return null;
-      }
-
-      if (compilationUnitAstResult.isPart) {
-        return null;
+        print('WARNING: $path was resolved, but does not exist');
       }
 
       return compilationUnitAstResult.unit;
