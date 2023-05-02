@@ -42,11 +42,32 @@ void customLintTest(
         await _cleanup(dartDir);
       },
       testOn: testOn,
-      timeout: timeout,
+      timeout: timeout ?? const Timeout(Duration(minutes: 2)),
       skip: skip,
       tags: tags,
       onPlatform: onPlatform,
       retry: retry,
+    );
+
+Matcher emitsNoIssues() => emitsInOrder(<dynamic>[
+      'No issues found!',
+      emitsDone,
+    ]);
+
+Matcher customLint(String lint, String location) => matches(
+      RegExp('^\\s*${RegExp.escape(location)} • .* • ${RegExp.escape(lint)}\$'),
+    );
+
+Matcher emitsCustomLint(String lint, List<String> locations) =>
+    emitsCustomLints({lint: locations});
+
+Matcher emitsCustomLints(Map<String, List<String>> lints) => emitsInAnyOrder(
+      <dynamic>[
+        ...lints.entries.expand<Matcher>(
+          (e) => e.value.map((location) => customLint(e.key, location)),
+        ),
+        emitsDone,
+      ],
     );
 
 Future<Directory> _setup() async {
@@ -73,6 +94,18 @@ Future<Directory> _setup() async {
     'dev:custom_lint',
     'dev:dart_test_tools:{"path":"${Directory.current.path}"}',
   ], dartDir);
+
+  final analysisOptionsFile = File.fromUri(
+    dartDir.uri.resolve('analysis_options.yaml'),
+  );
+  await analysisOptionsFile.writeAsString(
+    mode: FileMode.append,
+    '''
+analyzer:
+  plugins:
+    - custom_lint
+''',
+  );
 
   await Directory.fromUri(
     dartDir.uri.resolve('lib'),

@@ -71,7 +71,7 @@ void main() {
     );
 
     fileAnalysisTest(
-      'Rejects files with self libary imports',
+      'Rejects files with self library imports',
       createLinter: TestImportLinter.new,
       fileName: 'test/test.dart',
       fileContent:
