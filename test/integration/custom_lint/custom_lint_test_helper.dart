@@ -87,12 +87,15 @@ Future<Directory> _setup() async {
     testDir.uri.resolve('dart_test_tools_integration_test'),
   );
 
+  final dartTestToolsConfig = {
+    'path': Directory.current.path,
+  };
   await _runDart([
     'pub',
     'add',
     'meta',
     'dev:custom_lint',
-    'dev:dart_test_tools:{"path":"${Directory.current.path}"}',
+    'dev:dart_test_tools:${json.encode(dartTestToolsConfig)}',
   ], dartDir);
 
   final analysisOptionsFile = File.fromUri(

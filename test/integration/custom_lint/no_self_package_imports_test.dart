@@ -1,3 +1,6 @@
+@TestOn('dart-vm')
+library no_self_package_imports_test;
+
 import 'package:test/test.dart';
 
 import 'custom_lint_test_helper.dart';
