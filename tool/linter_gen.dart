@@ -33,7 +33,7 @@ Future<void> _writeNormalOptions(
   AnalysisOptionsWriter writer,
 ) async {
   const normalOptionsRef = AnalysisOptionsRef.local(
-    'lib/analysis_options.yaml',
+    'lib/strict.yaml',
   );
   stdout.writeln('Generating $normalOptionsRef');
   final normalOptions = await generator.generateRules(
@@ -61,12 +61,12 @@ Future<void> _writePackageOptions(
   AnalysisOptionsWriter writer,
 ) async {
   const packageOptionsRef = AnalysisOptionsRef.local(
-    'lib/analysis_options_package.yaml',
+    'lib/package.yaml',
   );
   stdout.writeln('Generating $packageOptionsRef');
   final packageOptions = await generator.generateRules(
     baseOptions: const AnalysisOptionsRef.local(
-      'analysis_options.yaml',
+      'strict.yaml',
     ),
     relativeTo: packageOptionsRef,
     mergeOptions: const [

@@ -1,10 +1,10 @@
-include: analysis_options.yaml
-analyzer: 
-  strong-mode: 
+include: strict.yaml
+analyzer:
+  strong-mode:
     implicit-casts: false
     implicit-dynamic: false
-linter: 
-  rules: 
+linter:
+  rules:
     # rules from package:lint/package.yaml
     package_api_docs: true
     # custom rules

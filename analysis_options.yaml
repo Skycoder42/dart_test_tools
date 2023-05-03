@@ -1,4 +1,4 @@
-include: lib/analysis_options_package.yaml
+include: lib/package.yaml
 
 analyzer:
   exclude:
