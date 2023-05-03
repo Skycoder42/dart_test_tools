@@ -8,10 +8,12 @@ import 'package:analyzer/error/error.dart';
 import 'package:analyzer/error/listener.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
 import 'package:dart_test_tools/src/lint/common/context_root_extensions.dart';
+import 'package:meta/meta.dart';
 import 'package:synchronized/extension.dart';
 
 import 'package:path/path.dart' as path;
 
+@internal
 class SrcLibraryNotExported extends DartLintRule {
   static const _packageExportsKey = 'src_library_not_exported:packageExports';
 

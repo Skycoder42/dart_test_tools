@@ -113,6 +113,9 @@ analyzer:
   await Directory.fromUri(
     dartDir.uri.resolve('test'),
   ).delete(recursive: true);
+  await Directory.fromUri(
+    dartDir.uri.resolve('example'),
+  ).delete(recursive: true);
 
   return dartDir;
 }

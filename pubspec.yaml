@@ -39,11 +39,11 @@ dev_dependencies:
   flutter_lints: ^2.0.1
   freezed: ^2.3.2
   html: ^0.15.2
-  http: ^0.13.5
+  http: ^0.13.6
   json_serializable: ^6.6.1
   lints: ^2.0.1
   pubspec_generator: ^3.0.1
-  yaml_edit: ^2.1.0
+  yaml_edit: ^2.1.1
 
 dart_pre_commit:
   lib-exports: false
