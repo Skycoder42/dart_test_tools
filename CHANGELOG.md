@@ -1,8 +1,25 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-The format is based on Keep a Changelog\](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to Semantic Versioning\](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [5.0.0] - 2023-05-04
+### Added
+- Support for `custom_lint`. The `dart_test_tools:lint` has been refactored into
+a custom\_lint plugin
+- Added support for new experimental linter rules
+- Added support for macos integration tests
+
+### Changed
+- Renamed `analysis_options.yaml` to `strict.yaml`
+- Renamed `analysis_options_package.yaml` to `package.yaml`
+- Updated dependencies
+
+### Removed
+- The `dart_test_tools:lint` as well corresponding library files have been removed
+  - Instead, `custom_lint` should be used
+- Removed Bitrise integration
 
 ## [4.9.0] - 2023-04-07
 ### Added
@@ -179,6 +196,7 @@ have been added:
 ### Added
 - Initial release
 
+[5.0.0]: https://github.com/Skycoder42/dart_test_tools/compare/v4.9.0...v5.0.0
 [4.9.0]: https://github.com/Skycoder42/dart_test_tools/compare/v4.8.0...v4.9.0
 [4.8.0]: https://github.com/Skycoder42/dart_test_tools/compare/v4.7.0...v4.8.0
 [4.7.0]: https://github.com/Skycoder42/dart_test_tools/compare/v4.6.0...v4.7.0
