@@ -46,7 +46,7 @@ class SrcLibraryNotExported extends DartLintRule {
       final session = resolvedUnitResult.session;
       final packageExports = await session.synchronized(
         () async =>
-            _sessionExports[session] ??= await _loadExportedFilesSet(session),
+            _sessionExports[session] ??= await _loadPackageExports(session),
       );
       context.sharedState[_packageExportsKey] = packageExports;
     }
@@ -100,15 +100,11 @@ class SrcLibraryNotExported extends DartLintRule {
     return elements.whereType<Element>();
   }
 
-  Future<Set<String>> _loadExportedFilesSet(AnalysisSession session) async {
-    final set = HashSet(equals: path.equals, hashCode: path.hash);
-    await _loadPackageExports(session).forEach(set.add);
-    return set;
-  }
-
-  Stream<String> _loadPackageExports(
+  Future<Set<String>> _loadPackageExports(
     AnalysisSession session,
-  ) async* {
+  ) async {
+    final exportSet = HashSet(equals: path.equals, hashCode: path.hash);
+
     final contextRoot = session.analysisContext.contextRoot;
     for (final path in contextRoot.analyzedFiles()) {
       if (!path.endsWith('.dart')) {
@@ -123,15 +119,18 @@ class SrcLibraryNotExported extends DartLintRule {
         continue;
       }
 
-      yield* _scanForExports(session, contextRoot, path);
+      await _scanForExports(session, contextRoot, exportSet, path);
     }
+
+    return exportSet;
   }
 
-  Stream<String> _scanForExports(
+  Future<void> _scanForExports(
     AnalysisSession session,
     ContextRoot contextRoot,
+    Set<String> exportSet,
     String path,
-  ) async* {
+  ) async {
     final unit = await _loadCompilationUnit(session, path);
     if (unit == null) {
       return;
@@ -148,9 +147,9 @@ class SrcLibraryNotExported extends DartLintRule {
         .where(contextRoot.src.contains);
 
     for (final source in exportedSources) {
-      yield source;
-      yield* _scanForExports(session, contextRoot, source);
-      // TODO handle infinite recursion
+      if (exportSet.add(source)) {
+        await _scanForExports(session, contextRoot, exportSet, source);
+      }
     }
   }
 

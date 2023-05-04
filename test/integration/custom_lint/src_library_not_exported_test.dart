@@ -144,12 +144,24 @@ class MyClass {}
     );
 
     customLintTest(
-      'can detect deeply nested exports',
+      'can detect deeply nested exports and handles loops correctly',
       files: const {
         'lib/lib.dart': 'export "other/other.dart";',
         'lib/other/other.dart': 'export "../src/top.dart";',
-        'lib/src/top.dart': 'export "sub/impl.dart";',
+        'lib/src/top.dart': 'export "sub/master.dart";',
+        'lib/src/sub/master.dart': '''
+export "impl.dart";
+export "loop/loop1.dart";
+''',
         'lib/src/sub/impl.dart': 'const int meaningOfLife = 42;',
+        'lib/src/sub/loop/loop1.dart': '''
+export "loop2.dart"
+const int loop1 = 2;
+''',
+        'lib/src/sub/loop/loop2.dart': '''
+export "loop1.dart"
+const int loop2 = 1;
+''',
       },
       expectedExitCode: 0,
       expectedOutput: emitsNoIssues(),
