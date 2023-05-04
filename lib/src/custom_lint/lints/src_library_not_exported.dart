@@ -8,7 +8,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/error/error.dart';
 import 'package:analyzer/error/listener.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
-import 'package:dart_test_tools/src/lint/common/context_root_extensions.dart';
+import 'package:dart_test_tools/src/custom_lint/lints/context_root_extensions.dart';
 import 'package:meta/meta.dart';
 import 'package:synchronized/extension.dart';
 
