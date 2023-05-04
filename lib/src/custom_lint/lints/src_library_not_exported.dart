@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:analyzer/dart/analysis/context_root.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/ast/ast.dart';
@@ -122,12 +123,13 @@ class SrcLibraryNotExported extends DartLintRule {
         continue;
       }
 
-      yield* _scanForExports(session, path);
+      yield* _scanForExports(session, contextRoot, path);
     }
   }
 
   Stream<String> _scanForExports(
     AnalysisSession session,
+    ContextRoot contextRoot,
     String path,
   ) async* {
     final unit = await _loadCompilationUnit(session, path);
@@ -142,9 +144,14 @@ class SrcLibraryNotExported extends DartLintRule {
           yield* e.configurations.map((c) => c.resolvedUri);
         })
         .whereType<DirectiveUriWithSource>()
-        .map((u) => u.source.fullName);
+        .map((u) => u.source.fullName)
+        .where(contextRoot.src.contains);
 
-    yield* Stream.fromIterable(exportedSources);
+    for (final source in exportedSources) {
+      yield source;
+      yield* _scanForExports(session, contextRoot, source);
+      // TODO handle infinite recursion
+    }
   }
 
   Future<CompilationUnit?> _loadCompilationUnit(

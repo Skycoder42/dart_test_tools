@@ -171,7 +171,7 @@ const int symbol2 = 2;
           'lib/src/src.dart:2:11',
         ],
       ),
-      skip: Skip('Not implemented yet'),
+      skip: 'Not implemented yet',
     );
 
     customLintTest(
