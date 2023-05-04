@@ -14,7 +14,7 @@ class AnalysisOptionsLoader {
     join(
       Platform.environment['PUB_CACHE'] ??
           '${Platform.environment['HOME']}/.pub-cache',
-      'hosted/pub.dartlang.org',
+      'hosted/pub.dev',
     ),
   );
 

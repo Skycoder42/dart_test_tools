@@ -1,10 +1,12 @@
 include: package:lint/strict.yaml
-analyzer: 
-  strong-mode: 
+analyzer:
+  strong-mode:
     implicit-casts: false
     implicit-dynamic: false
-linter: 
-  rules: 
+  plugins:
+    - custom_lint
+linter:
+  rules:
     # rules from package:lints/recommended.yaml
     avoid_renaming_method_parameters: true
     library_private_types_in_public_api: true
@@ -23,11 +25,16 @@ linter:
     cascade_invocations: true
     close_sinks: true
     combinators_ordering: true
+    deprecated_member_use_from_same_package: true
     diagnostic_describe_all_properties: true
     discarded_futures: true
+    implicit_reopen: true
+    invalid_case_patterns: true
     lines_longer_than_80_chars: true
     literal_only_boolean_expressions: true
+    matching_super_parameters: true
     no_default_cases: true
+    no_literal_bool_comparisons: true
     omit_local_variable_types: true
     only_throw_errors: true
     prefer_expression_function_bodies: true
@@ -35,6 +42,7 @@ linter:
     prefer_mixin: true
     prefer_relative_imports: true
     prefer_single_quotes: true
+    type_literal_in_constant_pattern: true
     unawaited_futures: true
     unnecessary_lambdas: true
     unreachable_from_main: true
@@ -47,5 +55,6 @@ linter:
     enable_null_safety: true
     implicit_call_tearoffs: true
     library_annotations: true
+    unnecessary_breaks: true
     unnecessary_library_directive: true
     # new rules

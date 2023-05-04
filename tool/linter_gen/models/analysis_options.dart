@@ -33,7 +33,9 @@ class AnalysisOptionsAnalyzer with _$AnalysisOptionsAnalyzer {
     checked: true,
   )
   const factory AnalysisOptionsAnalyzer({
-    @JsonKey(name: 'strong-mode') AnalysisOptionsStrongMode? strongMode,
+    @JsonKey(name: 'strong-mode', includeIfNull: false)
+        AnalysisOptionsStrongMode? strongMode,
+    @JsonKey(includeIfNull: false) List<String>? plugins,
   }) = _AnalysisOptionsAnalyzer;
 
   factory AnalysisOptionsAnalyzer.fromJson(Map<String, dynamic> json) =>

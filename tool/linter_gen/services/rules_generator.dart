@@ -53,6 +53,7 @@ class RulesGenerator {
           implicitCasts: false,
           implicitDynamic: false,
         ),
+        plugins: ['custom_lint'],
       ),
       linter: AnalysisOptionsLinter(
         rules: appliedRules,
