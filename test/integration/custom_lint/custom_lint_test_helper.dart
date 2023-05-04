@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:test/test.dart';
+import 'package:path/path.dart' as path;
 
 typedef TypeMatcherCb<T> = TypeMatcher<T> Function(TypeMatcher<T> match);
 
@@ -54,9 +55,14 @@ Matcher emitsNoIssues() => emitsInOrder(<dynamic>[
       emitsDone,
     ]);
 
-Matcher customLint(String lint, String location) => matches(
-      RegExp('^\\s*${RegExp.escape(location)} • .* • ${RegExp.escape(lint)}\$'),
-    );
+Matcher customLint(String lint, String location) {
+  final realLocation = location.replaceAll('/', path.separator);
+  return matches(
+    RegExp(
+      '^\\s*${RegExp.escape(location)} • .* • ${RegExp.escape(realLocation)}\$',
+    ),
+  );
+}
 
 Matcher emitsCustomLint(String lint, List<String> locations) =>
     emitsCustomLints({lint: locations});
