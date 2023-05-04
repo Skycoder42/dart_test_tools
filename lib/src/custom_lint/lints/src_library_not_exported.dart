@@ -104,25 +104,31 @@ class SrcLibraryNotExported extends DartLintRule {
     AnalysisSession session,
   ) async {
     final exportSet = HashSet(equals: path.equals, hashCode: path.hash);
-
     final contextRoot = session.analysisContext.contextRoot;
-    for (final path in contextRoot.analyzedFiles()) {
-      if (!path.endsWith('.dart')) {
-        continue;
-      }
 
-      if (!contextRoot.lib.contains(path)) {
-        continue;
-      }
-
-      if (contextRoot.src.contains(path)) {
-        continue;
-      }
-
-      await _scanForExports(session, contextRoot, exportSet, path);
-    }
+    await Future.wait([
+      for (final path in contextRoot.analyzedFiles())
+        if (_isPackageLibrary(contextRoot, path))
+          _scanForExports(session, contextRoot, exportSet, path),
+    ]);
 
     return exportSet;
+  }
+
+  bool _isPackageLibrary(ContextRoot contextRoot, String path) {
+    if (!path.endsWith('.dart')) {
+      return false;
+    }
+
+    if (!contextRoot.lib.contains(path)) {
+      return false;
+    }
+
+    if (contextRoot.src.contains(path)) {
+      return false;
+    }
+
+    return true;
   }
 
   Future<void> _scanForExports(
@@ -146,11 +152,11 @@ class SrcLibraryNotExported extends DartLintRule {
         .map((u) => u.source.fullName)
         .where(contextRoot.src.contains);
 
-    for (final source in exportedSources) {
-      if (exportSet.add(source)) {
-        await _scanForExports(session, contextRoot, exportSet, source);
-      }
-    }
+    await Future.wait([
+      for (final source in exportedSources)
+        if (exportSet.add(source))
+          _scanForExports(session, contextRoot, exportSet, source)
+    ]);
   }
 
   Future<CompilationUnit?> _loadCompilationUnit(
