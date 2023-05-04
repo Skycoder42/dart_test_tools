@@ -102,8 +102,6 @@ jobs:
         uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
-      - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^4.9.0
       - name: Install pana
         run: dart pub global activate pana
       - name: Install yq (Windows)
@@ -132,8 +130,8 @@ jobs:
       - name: Static analysis
         run: dart analyze --fatal-infos
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Run extended linters
-        run: dart pub global run dart_test_tools:lint -lALL --actions-printer ${{ inputs.extendedAnalyzerArgs }}
+      - name: Run custom_lint
+        run: dart run custom_lint
         working-directory: ${{ inputs.workingDirectory }}
       - name: Validate correct formatting
         run: dart format -onone --set-exit-if-changed $(git ls-files '*.dart')

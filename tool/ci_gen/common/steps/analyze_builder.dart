@@ -2,7 +2,6 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
-import '../globals.dart';
 import 'project_setup_builder.dart';
 import 'run_publish_builder.dart';
 
@@ -37,11 +36,6 @@ class AnalyzeBuilder implements StepBuilder {
   @override
   Iterable<Step> build() => [
         Step.run(
-          name: 'Install dart_test_tools',
-          run:
-              '$pubTool global activate dart_test_tools ^$dartTestToolsVersion',
-        ),
-        Step.run(
           name: 'Install pana',
           run: '$pubTool global activate pana',
         ),
@@ -54,9 +48,8 @@ class AnalyzeBuilder implements StepBuilder {
         ).build(),
         ...buildAnalyzeStep(),
         Step.run(
-          name: 'Run extended linters',
-          run: '$pubTool global run dart_test_tools:lint '
-              '-lALL --actions-printer $extendedAnalyzerArgs',
+          name: 'Run custom_lint',
+          run: '$runTool custom_lint',
           workingDirectory: workingDirectory.toString(),
         ),
         Step.run(
