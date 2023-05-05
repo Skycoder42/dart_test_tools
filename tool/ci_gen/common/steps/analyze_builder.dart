@@ -13,7 +13,6 @@ class AnalyzeBuilder implements StepBuilder {
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression analyzeImage;
-  final Expression extendedAnalyzerArgs;
   final Expression panaScoreThreshold;
   final String baseTool;
   final String pubTool;
@@ -25,7 +24,6 @@ class AnalyzeBuilder implements StepBuilder {
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.analyzeImage,
-    required this.extendedAnalyzerArgs,
     required this.panaScoreThreshold,
     required this.baseTool,
     required this.pubTool,

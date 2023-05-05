@@ -25,13 +25,6 @@ on:
         required: false
         default: ubuntu-latest
         description: The Runner-Image to use for the analyze step. Uses ubuntu-latest by default.
-      extendedAnalyzerArgs:
-        type: string
-        required: false
-        description: |
-          Additional arguments to pass to the dart_test_tools:lint tool when running the
-          extended linters step. Can for example be used to enable or disable specific
-          linters.
       panaScoreThreshold:
         type: number
         required: false

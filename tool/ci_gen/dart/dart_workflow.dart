@@ -23,7 +23,6 @@ abstract class DartWorkflow {
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       analyzeImage: inputContext(WorkflowInputs.analyzeImage),
-      extendedAnalyzerArgs: inputContext(WorkflowInputs.extendedAnalyzerArgs),
       panaScoreThreshold: inputContext(WorkflowInputs.panaScoreThreshold),
     );
     final unitTestBuilder = DartUnitTestJobBuilder(

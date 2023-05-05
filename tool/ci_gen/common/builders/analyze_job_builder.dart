@@ -12,7 +12,6 @@ abstract class AnalyzeJobBuilder extends SdkJobBuilder {
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression analyzeImage;
-  final Expression extendedAnalyzerArgs;
   final Expression panaScoreThreshold;
 
   const AnalyzeJobBuilder({
@@ -20,7 +19,6 @@ abstract class AnalyzeJobBuilder extends SdkJobBuilder {
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.analyzeImage,
-    required this.extendedAnalyzerArgs,
     required this.panaScoreThreshold,
   });
 
@@ -38,7 +36,6 @@ abstract class AnalyzeJobBuilder extends SdkJobBuilder {
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
             analyzeImage: analyzeImage,
-            extendedAnalyzerArgs: extendedAnalyzerArgs,
             panaScoreThreshold: panaScoreThreshold,
             baseTool: baseTool,
             pubTool: pubTool,

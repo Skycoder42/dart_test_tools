@@ -84,19 +84,6 @@ abstract class WorkflowInputs {
     ),
   );
 
-  static const extendedAnalyzerArgs = WorkflowInput(
-    name: 'extendedAnalyzerArgs',
-    input: Input(
-      type: Type.string,
-      required: false,
-      description: '''
-Additional arguments to pass to the dart_test_tools:lint tool when running the
-extended linters step. Can for example be used to enable or disable specific
-linters.
-''',
-    ),
-  );
-
   static const panaScoreThreshold = WorkflowInput(
     name: 'panaScoreThreshold',
     input: Input(
