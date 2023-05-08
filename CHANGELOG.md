@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.1] - 2023-05-08
+### Fixed
+- Remove experimental analyzer rules
+
 ## [5.0.0] - 2023-05-04
 ### Added
 - Support for `custom_lint`. The `dart_test_tools:lint` has been refactored into
@@ -196,6 +200,7 @@ have been added:
 ### Added
 - Initial release
 
+[5.0.1]: https://github.com/Skycoder42/dart_test_tools/compare/v5.0.0...v5.0.1
 [5.0.0]: https://github.com/Skycoder42/dart_test_tools/compare/v4.9.0...v5.0.0
 [4.9.0]: https://github.com/Skycoder42/dart_test_tools/compare/v4.8.0...v4.9.0
 [4.8.0]: https://github.com/Skycoder42/dart_test_tools/compare/v4.7.0...v4.8.0
