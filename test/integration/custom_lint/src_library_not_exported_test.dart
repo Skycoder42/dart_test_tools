@@ -187,6 +187,16 @@ const int symbol2 = 2;
     );
 
     customLintTest(
+      'does not run rule if not published',
+      files: const {
+        'pubspec.yaml': 'publish_to: none',
+        'lib/src/src.dart': 'const int meaningOfLife = 42;',
+      },
+      expectedExitCode: 0,
+      expectedOutput: emitsNoIssues(),
+    );
+
+    customLintTest(
       'Ignores non dart files',
       files: const {
         'lib/src/src.txt': 'const int meaningOfLife = 42;',

@@ -41,7 +41,8 @@ class SrcLibraryNotExported extends DartLintRule {
     CustomLintResolver resolver,
     CustomLintContext context,
   ) async {
-    if (!context.sharedState.containsKey(_packageExportsKey)) {
+    if (_isPublished(context) &&
+        !context.sharedState.containsKey(_packageExportsKey)) {
       final resolvedUnitResult = await resolver.getResolvedUnitResult();
       final session = resolvedUnitResult.session;
       final packageExports = await session.synchronized(
@@ -60,6 +61,10 @@ class SrcLibraryNotExported extends DartLintRule {
     ErrorReporter reporter,
     CustomLintContext context,
   ) {
+    if (!_isPublished(context)) {
+      return;
+    }
+
     final exportedLibraries =
         context.sharedState[_packageExportsKey] as Set<String>;
 
@@ -88,6 +93,9 @@ class SrcLibraryNotExported extends DartLintRule {
       }
     });
   }
+
+  bool _isPublished(CustomLintContext context) =>
+      context.pubspec.publishTo != 'none';
 
   Iterable<Element> _declaredElements(CompilationUnitMember declaration) {
     final Iterable<Element?> elements;
