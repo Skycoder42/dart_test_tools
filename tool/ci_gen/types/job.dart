@@ -54,17 +54,23 @@ class _NeedsConverter implements JsonConverter<Set<JobId>?, List<String>?> {
 class Job with _$Job {
   const factory Job({
     required String name,
-    @JsonKey(includeIfNull: false) @_NeedsConverter() Set<JobId>? needs,
+    @JsonKey(includeIfNull: false)
+    @_NeedsConverter()
+        Set<JobId>? needs,
     @JsonKey(name: 'if', includeIfNull: false)
     @ExpressionConverter()
         Expression? ifExpression,
-    @JsonKey(includeIfNull: false) Map<String, String>? permissions,
-    @JsonKey(includeIfNull: false) Strategy? strategy,
+    @JsonKey(includeIfNull: false)
+        Map<String, String>? permissions,
+    @JsonKey(includeIfNull: false)
+        Strategy? strategy,
     @JsonKey(includeIfNull: false)
     @_StepOutputMapConverter()
         Map<JobIdOutput, StepIdOutput>? outputs,
-    @JsonKey(name: 'runs-on') required String runsOn,
-    @JsonKey(includeIfNull: false) String? container,
+    @JsonKey(name: 'runs-on')
+        required String runsOn,
+    @JsonKey(includeIfNull: false)
+        String? container,
     required Steps steps,
   }) = _Job;
 

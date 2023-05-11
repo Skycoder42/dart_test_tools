@@ -14,27 +14,35 @@ class Step with _$Step {
   const Step._();
 
   const factory Step.run({
-    @JsonKey(includeIfNull: false) @StepIdConverter() StepId? id,
+    @JsonKey(includeIfNull: false)
+    @StepIdConverter()
+        StepId? id,
     required String name,
     @JsonKey(name: 'if', includeIfNull: false)
     @ExpressionConverter()
         Expression? ifExpression,
-    @JsonKey(includeIfNull: false) Env? env,
+    @JsonKey(includeIfNull: false)
+        Env? env,
     required String run,
     @JsonKey(name: 'working-directory', includeIfNull: false)
         String? workingDirectory,
-    @JsonKey(includeIfNull: false) String? shell,
+    @JsonKey(includeIfNull: false)
+        String? shell,
   }) = _RunStep;
 
   const factory Step.uses({
-    @JsonKey(includeIfNull: false) @StepIdConverter() StepId? id,
+    @JsonKey(includeIfNull: false)
+    @StepIdConverter()
+        StepId? id,
     required String name,
     @JsonKey(name: 'if', includeIfNull: false)
     @ExpressionConverter()
         Expression? ifExpression,
-    @JsonKey(includeIfNull: false) Map<String, String>? env,
+    @JsonKey(includeIfNull: false)
+        Map<String, String>? env,
     required String uses,
-    @JsonKey(name: 'with', includeIfNull: false) Map<String, dynamic>? withArgs,
+    @JsonKey(name: 'with', includeIfNull: false)
+        Map<String, dynamic>? withArgs,
   }) = _UsesStep;
 
   factory Step.fromJson(Map<String, dynamic> json) => _$StepFromJson(json);
