@@ -40,7 +40,7 @@ class _PlatformInclude with _$_PlatformInclude {
       _$_PlatformIncludeFromJson(json);
 }
 
-class DartIntegrationTestJobBuilder extends SdkJobBuilder
+final class DartIntegrationTestJobBuilder extends SdkJobBuilder
     with DartSdkJobBuilderMixin {
   static const _matrix = _DartIntegrationTestJobMatrix(
     platform: Expression('matrix.platform'),

@@ -7,7 +7,7 @@ import '../../types/step.dart';
 import '../steps/analyze_builder.dart';
 import 'sdk_job_builder.dart';
 
-abstract class AnalyzeJobBuilder extends SdkJobBuilder {
+abstract base class AnalyzeJobBuilder extends SdkJobBuilder {
   final Expression workingDirectory;
   final Expression buildRunner;
   final Expression buildRunnerArgs;

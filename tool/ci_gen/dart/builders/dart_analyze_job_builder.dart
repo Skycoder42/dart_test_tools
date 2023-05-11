@@ -3,7 +3,7 @@ import '../../types/expression.dart';
 import '../../types/step.dart';
 import 'dart_sdk_job_builder_mixin.dart';
 
-class DartAnalyzeJobBuilder extends AnalyzeJobBuilder
+final class DartAnalyzeJobBuilder extends AnalyzeJobBuilder
     with DartSdkJobBuilderMixin {
   @override
   final Expression dartSdkVersion;

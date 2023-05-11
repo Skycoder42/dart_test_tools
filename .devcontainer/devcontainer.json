@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/alpine
 {
-	"name": "Dart (Stable)",
+	"name": "Flutter (Stable)",
 	"image": "skycoder42/devcontainers-flutter:latest",
 	"customizations": {
 		"vscode": {
@@ -27,5 +27,5 @@
 			"omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions"
 		}
 	},
-	"postCreateCommand": "flutter config --no-analytics && dart --disable-analytics && ./tool/setup-hooks.sh"
+	"postCreateCommand": "./tool/setup-hooks.sh"
 }

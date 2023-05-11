@@ -2,7 +2,7 @@ import '../../common/builders/unit_test_job_builder.dart';
 import '../../types/expression.dart';
 import 'dart_sdk_job_builder_mixin.dart';
 
-class DartUnitTestJobBuilder extends UnitTestJobBuilder
+final class DartUnitTestJobBuilder extends UnitTestJobBuilder
     with DartSdkJobBuilderMixin {
   @override
   final Expression dartSdkVersion;

@@ -2,8 +2,6 @@ import '../../types/step.dart';
 
 typedef StepBuilderFn = Iterable<Step> Function();
 
-abstract class StepBuilder {
-  StepBuilder._();
-
+abstract interface class StepBuilder {
   Iterable<Step> build();
 }

@@ -3,7 +3,7 @@ import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../steps/flutter_sdk_builder.dart';
 
-mixin FlutterSdkJobBuilderMixin on SdkJobBuilder {
+base mixin FlutterSdkJobBuilderMixin on SdkJobBuilder {
   Expression get flutterSdkChannel;
   Expression get javaJdkVersion;
 

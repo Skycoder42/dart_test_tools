@@ -4,7 +4,7 @@ import '../api/step_builder.dart';
 import '../tools.dart';
 import 'coverage_builder_mixin.dart';
 
-abstract class ICoverageCollectorMatrix {
+abstract interface class ICoverageCollectorMatrix {
   Expression get platform;
   Expression get lcovCleanCommand;
 }

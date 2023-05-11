@@ -5,7 +5,7 @@ import 'coverage_collector_builder.dart';
 import 'platforms_builder_mixin.dart';
 import 'project_setup_builder.dart';
 
-abstract class IUnitTextMatrix implements ICoverageCollectorMatrix {
+abstract interface class IUnitTextMatrix implements ICoverageCollectorMatrix {
   Expression get dartTestArgs;
 }
 

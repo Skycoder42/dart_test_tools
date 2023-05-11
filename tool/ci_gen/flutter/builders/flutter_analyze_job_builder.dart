@@ -3,7 +3,7 @@ import '../../types/expression.dart';
 import '../../types/step.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-class FlutterAnalyzeJobBuilder extends AnalyzeJobBuilder
+final class FlutterAnalyzeJobBuilder extends AnalyzeJobBuilder
     with FlutterSdkJobBuilderMixin {
   @override
   final Expression flutterSdkChannel;

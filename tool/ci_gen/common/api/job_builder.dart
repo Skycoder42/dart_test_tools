@@ -1,9 +1,7 @@
 import '../../types/id.dart';
 import '../../types/job.dart';
 
-abstract class JobBuilder {
-  JobBuilder._();
-
+abstract interface class JobBuilder {
   JobId get id;
 
   Job build();

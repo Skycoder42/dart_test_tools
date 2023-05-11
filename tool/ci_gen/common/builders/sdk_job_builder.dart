@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../types/step.dart';
 import '../api/job_builder.dart';
 
-abstract class SdkJobBuilder implements JobBuilder {
+abstract base class SdkJobBuilder implements JobBuilder {
   const SdkJobBuilder();
 
   @protected

@@ -12,7 +12,7 @@ enum ArchiveType {
   Expression get expression => Expression.literal(name);
 }
 
-abstract class ICompileMatrix {
+abstract interface class ICompileMatrix {
   Expression get platform;
   Expression get binaryType;
   Expression get compileArgs;

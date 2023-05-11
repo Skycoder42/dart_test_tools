@@ -7,7 +7,7 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 
-abstract class IFlutterIntegrationTestMatrix {
+abstract interface class IFlutterIntegrationTestMatrix {
   Expression get platform;
   Expression get testArgs;
   Expression get runPrefix;

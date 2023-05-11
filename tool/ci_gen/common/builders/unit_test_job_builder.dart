@@ -43,7 +43,7 @@ class _PlatformInclude with _$_PlatformInclude {
       _$_PlatformIncludeFromJson(json);
 }
 
-abstract class UnitTestJobBuilder extends SdkJobBuilder {
+abstract base class UnitTestJobBuilder extends SdkJobBuilder {
   static const _matrix = _UnitTestJobMatrix(
     platform: Expression('matrix.platform'),
     os: Expression('matrix.os'),

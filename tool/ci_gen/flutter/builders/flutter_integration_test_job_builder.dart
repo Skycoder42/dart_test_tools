@@ -51,7 +51,7 @@ class _PlatformInclude with _$_PlatformInclude {
       _$_PlatformIncludeFromJson(json);
 }
 
-class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
+final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     with FlutterSdkJobBuilderMixin {
   static const _matrix = _FlutterIntegrationTestJobMatrix(
     platform: Expression('matrix.platform'),

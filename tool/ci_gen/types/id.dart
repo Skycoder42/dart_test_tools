@@ -94,7 +94,7 @@ extension JobIdOutputX on JobIdOutput {
   JobId get id => jobId;
 }
 
-abstract class _IdConverter<TStep extends Id>
+abstract base class _IdConverter<TStep extends Id>
     implements JsonConverter<TStep?, String?> {
   const _IdConverter();
 
@@ -102,14 +102,14 @@ abstract class _IdConverter<TStep extends Id>
   String? toJson(TStep? id) => id?.id;
 }
 
-class StepIdConverter extends _IdConverter<StepId> {
+final class StepIdConverter extends _IdConverter<StepId> {
   const StepIdConverter();
 
   @override
   StepId? fromJson(String? json) => json != null ? _StepId(json) : null;
 }
 
-class JobIdConverter extends _IdConverter<JobId> {
+final class JobIdConverter extends _IdConverter<JobId> {
   const JobIdConverter();
 
   @override

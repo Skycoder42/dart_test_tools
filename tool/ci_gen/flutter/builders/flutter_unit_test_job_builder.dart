@@ -2,7 +2,7 @@ import '../../common/builders/unit_test_job_builder.dart';
 import '../../types/expression.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-class FlutterUnitTestJobBuilder extends UnitTestJobBuilder
+final class FlutterUnitTestJobBuilder extends UnitTestJobBuilder
     with FlutterSdkJobBuilderMixin {
   @override
   final Expression flutterSdkChannel;

@@ -53,7 +53,8 @@ class _PlatformInclude with _$_PlatformInclude {
       _$_PlatformIncludeFromJson(json);
 }
 
-class CompileJobBuilder extends SdkJobBuilder with DartSdkJobBuilderMixin {
+final class CompileJobBuilder extends SdkJobBuilder
+    with DartSdkJobBuilderMixin {
   static const _matrix = _CompileJobMatrix(
     platform: Expression('matrix.platform'),
     binaryType: Expression('matrix.binaryType'),

@@ -3,7 +3,7 @@ import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../steps/dart_sdk_builder.dart';
 
-mixin DartSdkJobBuilderMixin on SdkJobBuilder {
+base mixin DartSdkJobBuilderMixin on SdkJobBuilder {
   Expression get dartSdkVersion;
 
   @override

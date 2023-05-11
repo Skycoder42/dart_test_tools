@@ -6,7 +6,7 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 
-abstract class IDartIntegrationTestMatrix {
+abstract interface class IDartIntegrationTestMatrix {
   Expression get platform;
   Expression get dartTestArgs;
 }
