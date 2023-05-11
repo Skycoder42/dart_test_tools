@@ -1,8 +1,5 @@
 include: package:lint/strict.yaml
 analyzer: 
-  strong-mode: 
-    implicit-casts: false
-    implicit-dynamic: false
   plugins: 
     - custom_lint
 linter: 
@@ -50,4 +47,11 @@ linter:
     implicit_call_tearoffs: true
     library_annotations: true
     unnecessary_library_directive: true
+    deprecated_member_use_from_same_package: true
+    implicit_reopen: true
+    invalid_case_patterns: true
+    matching_super_parameters: true
+    no_literal_bool_comparisons: true
+    type_literal_in_constant_pattern: true
+    unnecessary_breaks: true
     # new rules

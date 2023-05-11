@@ -49,10 +49,6 @@ class RulesGenerator {
     return AnalysisOptions(
       include: baseOptions,
       analyzer: const AnalysisOptionsAnalyzer(
-        strongMode: AnalysisOptionsStrongMode(
-          implicitCasts: false,
-          implicitDynamic: false,
-        ),
         plugins: ['custom_lint'],
       ),
       linter: AnalysisOptionsLinter(

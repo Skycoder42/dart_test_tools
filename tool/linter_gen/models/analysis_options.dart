@@ -33,28 +33,11 @@ class AnalysisOptionsAnalyzer with _$AnalysisOptionsAnalyzer {
     checked: true,
   )
   const factory AnalysisOptionsAnalyzer({
-    @JsonKey(name: 'strong-mode', includeIfNull: false)
-        AnalysisOptionsStrongMode? strongMode,
     @JsonKey(includeIfNull: false) List<String>? plugins,
   }) = _AnalysisOptionsAnalyzer;
 
   factory AnalysisOptionsAnalyzer.fromJson(Map<String, dynamic> json) =>
       _$AnalysisOptionsAnalyzerFromJson(json);
-}
-
-@freezed
-class AnalysisOptionsStrongMode with _$AnalysisOptionsStrongMode {
-  @JsonSerializable(
-    anyMap: true,
-    checked: true,
-  )
-  const factory AnalysisOptionsStrongMode({
-    @JsonKey(name: 'implicit-casts') bool? implicitCasts,
-    @JsonKey(name: 'implicit-dynamic') bool? implicitDynamic,
-  }) = _AnalysisOptionsStrongMode;
-
-  factory AnalysisOptionsStrongMode.fromJson(Map<String, dynamic> json) =>
-      _$AnalysisOptionsStrongModeFromJson(json);
 }
 
 @freezed

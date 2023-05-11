@@ -1,8 +1,5 @@
 include: strict.yaml
 analyzer: 
-  strong-mode: 
-    implicit-casts: false
-    implicit-dynamic: false
   plugins: 
     - custom_lint
 linter: 
