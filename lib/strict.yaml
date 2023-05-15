@@ -21,7 +21,6 @@ linter:
     avoid_types_on_closure_parameters: true
     cascade_invocations: true
     close_sinks: true
-    combinators_ordering: true
     diagnostic_describe_all_properties: true
     discarded_futures: true
     lines_longer_than_80_chars: true
@@ -36,22 +35,12 @@ linter:
     prefer_single_quotes: true
     unawaited_futures: true
     unnecessary_lambdas: true
-    unreachable_from_main: true
     use_if_null_to_convert_nulls_to_bools: true
     use_raw_strings: true
-    use_string_in_part_of_directives: true
     use_to_and_as_if_applicable: true
-    collection_methods_unrelated_type: true
-    dangling_library_doc_comments: true
     enable_null_safety: true
-    implicit_call_tearoffs: true
-    library_annotations: true
-    unnecessary_library_directive: true
     deprecated_member_use_from_same_package: true
     implicit_reopen: true
-    invalid_case_patterns: true
     matching_super_parameters: true
     no_literal_bool_comparisons: true
-    type_literal_in_constant_pattern: true
-    unnecessary_breaks: true
     # new rules
