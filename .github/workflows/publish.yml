@@ -21,6 +21,10 @@ on:
         required: false
         default: 11
         description: The Java-SDK version (mayor only). Passed as "java-version" to "actions/setup-java".
+      environment:
+        type: string
+        required: true
+        description: The publishing environment for pub.dev.
       tagPrefix:
         type: string
         required: false
@@ -61,6 +65,7 @@ jobs:
   publish:
     name: Publish to pub.dev
     if: startsWith(github.ref, format('refs/tags/{0}', inputs.tagPrefix))
+    environment: ${{ inputs.environment }}
     permissions:
       id-token: write
     runs-on: ubuntu-latest

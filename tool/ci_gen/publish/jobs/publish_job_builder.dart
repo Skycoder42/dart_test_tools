@@ -12,6 +12,7 @@ class PublishJobBuilder implements JobBuilder {
   final Expression dartSdkVersion;
   final Expression flutterSdkChannel;
   final Expression javaJdkVersion;
+  final Expression environment;
   final Expression tagPrefix;
   final Expression workingDirectory;
   final Expression buildRunner;
@@ -24,6 +25,7 @@ class PublishJobBuilder implements JobBuilder {
     required this.dartSdkVersion,
     required this.flutterSdkChannel,
     required this.javaJdkVersion,
+    required this.environment,
     required this.tagPrefix,
     required this.workingDirectory,
     required this.buildRunner,
@@ -38,6 +40,7 @@ class PublishJobBuilder implements JobBuilder {
   @override
   Job build() => Job(
         name: 'Publish to pub.dev',
+        environment: environment.toString(),
         ifExpression: const Expression('startsWith')([
           const Expression('github.ref'),
           const Expression('format')([

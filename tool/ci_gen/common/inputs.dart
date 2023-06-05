@@ -342,4 +342,13 @@ Example:
       description: 'The released version to upload additional files to.',
     ),
   );
+
+  static const environment = WorkflowInput(
+    name: 'environment',
+    input: Input(
+      type: Type.string,
+      required: true,
+      description: 'The publishing environment for pub.dev.',
+    ),
+  );
 }
