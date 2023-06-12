@@ -14,9 +14,8 @@ class Output with _$Output {
       fromJson: Output._fromJson,
       toJson: Output._toJson,
     )
-        required JobIdOutput value,
-    @JsonKey(includeIfNull: false)
-        String? description,
+    required JobIdOutput value,
+    @JsonKey(includeIfNull: false) String? description,
   }) = _Output;
 
   factory Output.fromJson(Map<String, dynamic> json) => _$OutputFromJson(json);
