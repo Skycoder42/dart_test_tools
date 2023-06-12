@@ -1,37 +1,33 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:args/args.dart';
-import 'package:cider/cider.dart';
+import 'package:cider/src/project.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
-import 'cider_plugin.dart';
+import 'package:cider/src/cli/command/cider_command.dart';
+import 'package:cider/src/cli/find_project_root.dart';
+import 'package:cider/src/cli/channel.dart';
 
-class _VersionSyncCommand extends CiderCommand {
-  _VersionSyncCommand()
-      : super(
-          'version-sync',
-          'Updates the native package versions of flutter plugins '
-              'to match the pubspec.yaml version',
-        );
-}
-
-class VersionSyncPlugin implements CiderPlugin {
-  const VersionSyncPlugin();
+class VersionSyncCommand extends CiderCommand {
+  VersionSyncCommand(super.printer);
 
   @override
-  void call(Cider cider) {
-    cider.addCommand(_VersionSyncCommand(), _versionSyncHandler);
-  }
+  String get name => 'version-sync';
 
-  Future<int> _versionSyncHandler(
-    ArgResults args,
-    V Function<V>([String]) get,
-  ) async {
-    final stdout = get<Stdout>();
-    final stderr = get<Stdout>('stderr');
-    final rootDir = get<Directory>('root');
+  @override
+  String get description =>
+      'Updates the native package versions of flutter plugins '
+      'to match the pubspec.yaml version';
+
+  @override
+  Future<int> exec(Project project) async {
+    final stdout = printer.out;
+    final stderr = printer.err;
+    final rootDir = switch (globalResults!['project-root']) {
+      String path => Directory(path),
+      _ => findProjectRoot(Directory.current)
+    };
 
     final pubspecFile = File.fromUri(rootDir.uri.resolve('pubspec.yaml'));
     final pubspecYaml = await pubspecFile.readAsString();
@@ -62,7 +58,7 @@ class VersionSyncPlugin implements CiderPlugin {
   }
 
   Future<void> _updateAndroid(
-    Stdout stdout,
+    Channel stdout,
     Directory rootDir,
     Pubspec pubspec,
   ) async {
@@ -83,7 +79,7 @@ class VersionSyncPlugin implements CiderPlugin {
   }
 
   Future<void> _updateDarwin(
-    Stdout stdout,
+    Channel stdout,
     Directory rootDir,
     Pubspec pubspec,
     String os,
@@ -105,7 +101,7 @@ class VersionSyncPlugin implements CiderPlugin {
   }
 
   Future<void> _updateConfigured(
-    Stdout stdout,
+    Channel stdout,
     Directory rootDir,
     Pubspec pubspec,
     String pubspecYaml,

@@ -6,14 +6,23 @@ import 'dart:io';
 import 'package:cider/cider.dart';
 // ignore: test_library_import
 import 'package:dart_test_tools/cider.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 import 'package:yaml_edit/yaml_edit.dart';
+
+import 'package:cider/src/cli/channel.dart';
+
+class MockChannel extends Mock implements Channel {}
 
 void main() {
   const testVersion = '1.2.3';
 
+  final mockStdout = MockChannel();
+  final mockStderr = MockChannel();
+  final testConsole = Console(out: mockStdout, err: mockStderr);
+
   late Directory testDir;
-  late Cider cider;
+  late CiderCli cider;
 
   late File buildGradle;
   late File iosPodspec;
@@ -32,10 +41,10 @@ void main() {
         File.fromUri(testDir.uri.resolve('macos/version_sync_test.podspec'));
     dartVersion = File.fromUri(testDir.uri.resolve('lib/src/version.dart'));
 
-    cider = Cider(
-      root: testDir,
-      plugins: [const VersionSyncPlugin()],
-    );
+    reset(mockStdout);
+    reset(mockStderr);
+
+    cider = CiderCli()..addCommand(VersionSyncCommand(testConsole));
   });
 
   tearDown(() async {
@@ -60,7 +69,11 @@ void main() {
         contains("const version = '1.5.8';"),
       );
 
-      final result = await cider.run(const ['version-sync']);
+      final result = await cider.run([
+        '--project-root',
+        testDir.path,
+        'version-sync',
+      ]);
       expect(result, 0);
 
       expect(buildGradle.readAsLinesSync(), contains("version '$testVersion'"));
@@ -88,7 +101,11 @@ void main() {
         ..remove(const ['version']);
       pubspecYaml.writeAsStringSync(pubspecEdit.toString(), flush: true);
 
-      final result = await cider.run(const ['version-sync']);
+      final result = await cider.run([
+        '--project-root',
+        testDir.path,
+        'version-sync',
+      ]);
       expect(result, 1);
 
       expect(buildGradle.readAsLinesSync(), contains("version '1.0-SNAPSHOT'"));
@@ -116,7 +133,11 @@ void main() {
       macosPodspec.deleteSync();
       dartVersion.deleteSync();
 
-      final result = await cider.run(const ['version-sync']);
+      final result = await cider.run([
+        '--project-root',
+        testDir.path,
+        'version-sync',
+      ]);
       expect(result, 0);
 
       expect(buildGradle.existsSync(), isFalse);
