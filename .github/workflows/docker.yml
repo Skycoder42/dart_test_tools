@@ -1,15 +1,23 @@
 on:
   workflow_call:
     inputs:
-      dockerImageName:
+      imageName:
         type: string
         required: true
-        description: The name (e.g. owern/image) of the image to be built and published. The name is combined with dockerImageTags - See below for details.
-      dockerImageTags:
+        description: The name (e.g. owner/image) of the image to be built and published. The name is combined with generated version tags - See version for details.
+      version:
+        type: string
+        required: true
+        description: The released version to upload additional files to or images for.
+      latestOnly:
+        type: boolean
+        required: false
+        default: false
+        description: If true, only the "*-latest" tags are pushed. Otherwise all versions are pushed.
+      extraTags:
         type: string
         required: false
-        default: latest
-        description: A comma or newline separated list of docker tag versions to be built and published. By default, only "latest" is used. These tags are joined with the dockerImageName to generate the full tag values. These are the passed to docker/build-push-action@v4 as "tags".
+        description: A newline separated list of additional docker tags to be published.
       dockerPlatforms:
         type: string
         required: false
@@ -40,9 +48,26 @@ jobs:
         run: |
           set -eo pipefail
 
-          fullTagList=$(echo '${{ inputs.dockerImageTags }}' | awk -vimage='${{ inputs.dockerImageName }}' '{print image ":" $0}')
+          major_version=$(cut -d. -f1 <<< '${{ inputs.version }}')
+          minor_version=$(cut -d. -f1-2 <<< '${{ inputs.version }}')
+          patch_version=$(cut -d. -f1-3 <<< '${{ inputs.version }}')
+
+          image_versions=( latest "v${major_version}-latest" "v${minor_version}-latest" "v${patch_version}-latest" )
+          if [ '${{ inputs.version }}' != "$patch_version"  ]; then
+            image_versions+=( 'v${{ inputs.version }}-latest' )
+          fi
+
+          if [ '${{ inputs.latestOnly }}' != 'true' ]; then
+            image_versions+=( "v${major_version}" "v${minor_version}" "v${patch_version}" )
+            if [ '${{ inputs.version }}' != "$patch_version"  ]; then
+              image_versions+=( 'v${{ inputs.version }}' )
+            fi
+          fi
+
+          image_versions+=( ${{ inputs.extraTags }} )
+
           echo "tags<<EOF" >> $GITHUB_OUTPUT
-          echo "$fullTagList" >> $GITHUB_OUTPUT
+          printf '${{ inputs.imageName }}:%s\n' "${image_versions[@]}" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
       - name: Login to Docker Hub
         uses: docker/login-action@v2

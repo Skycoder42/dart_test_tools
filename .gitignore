@@ -25,3 +25,5 @@ doc/api/
 # Generated build files
 *.freezed.dart
 *.g.dart
+
+*.log

@@ -295,29 +295,35 @@ Example:
     ),
   );
 
-  static const dockerImageName = WorkflowInput(
-    name: 'dockerImageName',
+  static const imageName = WorkflowInput(
+    name: 'imageName',
     input: Input(
       type: Type.string,
       required: true,
       description:
-          'The name (e.g. owern/image) of the image to be built and published. '
-          'The name is combined with dockerImageTags - See below for details.',
+          'The name (e.g. owner/image) of the image to be built and published. '
+          'The name is combined with generated version tags - See version for details.',
     ),
   );
 
-  static const dockerImageTags = WorkflowInput(
-    name: 'dockerImageTags',
+  static const latestOnly = WorkflowInput(
+    name: 'latestOnly',
+    input: Input(
+      type: Type.boolean,
+      required: false,
+      defaultValue: false,
+      description:
+          'If true, only the "*-latest" tags are pushed. Otherwise all versions are pushed.',
+    ),
+  );
+
+  static const extraTags = WorkflowInput(
+    name: 'extraTags',
     input: Input(
       type: Type.string,
       required: false,
-      defaultValue: 'latest',
       description:
-          'A comma or newline separated list of docker tag versions to be '
-          'built and published. By default, only "latest" is used. These tags '
-          'are joined with the dockerImageName to generate the full tag '
-          'values. These are the passed to ${Tools.dockerBuildAndPushAction} '
-          'as "tags".',
+          'A newline separated list of additional docker tags to be published.',
     ),
   );
 
@@ -339,7 +345,8 @@ Example:
     input: Input(
       type: Type.string,
       required: true,
-      description: 'The released version to upload additional files to.',
+      description:
+          'The released version to upload additional files to or images for.',
     ),
   );
 

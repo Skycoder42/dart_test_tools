@@ -11,20 +11,24 @@ class DockerImageBuilder implements StepBuilder {
   static const generateTags = StepId('generate-tags');
   static final generateTagsOutput = generateTags.output('tags');
 
-  final Expression dockerHubUsername;
-  final Expression dockerHubToken;
-  final Expression dockerImageName;
-  final Expression dockerImageTags;
+  final Expression imageName;
+  final Expression version;
+  final Expression latestOnly;
+  final Expression extraTags;
   final Expression dockerPlatforms;
   final Expression dockerBuildArgs;
+  final Expression dockerHubUsername;
+  final Expression dockerHubToken;
 
   DockerImageBuilder({
-    required this.dockerHubUsername,
-    required this.dockerHubToken,
-    required this.dockerImageName,
-    required this.dockerImageTags,
+    required this.imageName,
+    required this.version,
+    required this.latestOnly,
+    required this.extraTags,
     required this.dockerPlatforms,
     required this.dockerBuildArgs,
+    required this.dockerHubUsername,
+    required this.dockerHubToken,
   });
 
   @override
@@ -44,8 +48,25 @@ class DockerImageBuilder implements StepBuilder {
           run: '''
 set -eo pipefail
 
-fullTagList=\$(echo '$dockerImageTags' | awk -vimage='$dockerImageName' '{print image ":" \$0}')
-${generateTagsOutput.bashSetterMultiLine(r'$fullTagList')}
+major_version=\$(cut -d. -f1 <<< '$version')
+minor_version=\$(cut -d. -f1-2 <<< '$version')
+patch_version=\$(cut -d. -f1-3 <<< '$version')
+
+image_versions=( latest "v\${major_version}-latest" "v\${minor_version}-latest" "v\${patch_version}-latest" )
+if [ '$version' != "\$patch_version"  ]; then
+  image_versions+=( 'v$version-latest' )
+fi
+
+if [ '$latestOnly' != 'true' ]; then
+  image_versions+=( "v\${major_version}" "v\${minor_version}" "v\${patch_version}" )
+  if [ '$version' != "\$patch_version"  ]; then
+    image_versions+=( 'v$version' )
+  fi
+fi
+
+image_versions+=( $extraTags )
+
+${generateTagsOutput.bashSetterMultiLine('''printf '$imageName:%s\\n' "\${image_versions[@]}"''', isCommand: true)}
 ''',
         ),
         Step.uses(

@@ -9,7 +9,7 @@ on:
       version:
         type: string
         required: true
-        description: The released version to upload additional files to.
+        description: The released version to upload additional files to or images for.
 jobs:
   deb_deploy:
     name: Build deb package

@@ -15,12 +15,14 @@ abstract class DockerWorkflow {
     final secretContext = WorkflowSecretContext();
 
     final dockerJobBuilder = DockerJobBuilder(
-      dockerHubUsername: secretContext(WorkflowSecrets.dockerHubUsername),
-      dockerHubToken: secretContext(WorkflowSecrets.dockerHubToken),
-      dockerImageName: inputContext(WorkflowInputs.dockerImageName),
-      dockerImageTags: inputContext(WorkflowInputs.dockerImageTags),
+      imageName: inputContext(WorkflowInputs.imageName),
+      version: inputContext(WorkflowInputs.version),
+      latestOnly: inputContext(WorkflowInputs.latestOnly),
+      extraTags: inputContext(WorkflowInputs.extraTags),
       dockerPlatforms: inputContext(WorkflowInputs.dockerPlatforms),
       dockerBuildArgs: inputContext(WorkflowInputs.dockerBuildArgs),
+      dockerHubUsername: secretContext(WorkflowSecrets.dockerHubUsername),
+      dockerHubToken: secretContext(WorkflowSecrets.dockerHubToken),
     );
 
     return Workflow(

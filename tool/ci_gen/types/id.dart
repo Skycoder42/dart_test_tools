@@ -61,10 +61,11 @@ class IdOutput with _$IdOutput {
             throw UnsupportedError('Cannot create a bash setter for $this'),
       );
 
-  String bashSetterMultiLine(String value) => maybeWhen(
+  String bashSetterMultiLine(String value, {bool isCommand = false}) =>
+      maybeWhen(
         step: (id, name) => '''
 echo "$name<<EOF" >> \$GITHUB_OUTPUT
-echo "$value" >> \$GITHUB_OUTPUT
+${isCommand ? value : 'echo "$value"'} >> \$GITHUB_OUTPUT
 echo "EOF" >> \$GITHUB_OUTPUT
 ''',
         orElse: () =>
