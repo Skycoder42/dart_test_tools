@@ -116,6 +116,9 @@ final class CompileJobBuilder extends SdkJobBuilder
   @override
   Job build() => Job(
         name: 'Create compiled artifacts',
+        permissions: const {
+          'contents': 'read',
+        },
         strategy: Strategy(
           failFast: false,
           matrix: Matrix(

@@ -45,6 +45,8 @@ on:
 jobs:
   compile:
     name: Create compiled artifacts
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
