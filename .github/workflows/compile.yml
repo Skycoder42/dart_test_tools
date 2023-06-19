@@ -158,6 +158,8 @@ jobs:
     needs:
       - compile
     if: github.ref == inputs.releaseRef
+    permissions:
+      contents: write
     outputs:
       update: ${{ steps.version.outputs.update }}
       version: ${{ steps.version.outputs.version }}

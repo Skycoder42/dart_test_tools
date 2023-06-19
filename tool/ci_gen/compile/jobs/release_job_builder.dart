@@ -33,6 +33,9 @@ class ReleaseJobBuilder implements JobBuilder {
         name: 'Create release if needed',
         needs: {compileJobId},
         ifExpression: const Expression('github.ref').eq(releaseRef),
+        permissions: const {
+          'contents': 'write',
+        },
         outputs: {
           updateOutput: ReleaseBuilder.updateOutput,
           versionOutput: ReleaseBuilder.versionOutput,
