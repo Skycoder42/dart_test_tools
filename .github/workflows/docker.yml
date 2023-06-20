@@ -9,11 +9,6 @@ on:
         type: string
         required: true
         description: The released version to upload additional files to or images for.
-      latestOnly:
-        type: boolean
-        required: false
-        default: false
-        description: If true, only the "*-latest" tags are pushed. Otherwise all versions are pushed.
       extraTags:
         type: string
         required: false
@@ -52,16 +47,9 @@ jobs:
           minor_version=$(cut -d. -f1-2 <<< '${{ inputs.version }}')
           patch_version=$(cut -d. -f1-3 <<< '${{ inputs.version }}')
 
-          image_versions=( latest "v${major_version}-latest" "v${minor_version}-latest" "v${patch_version}-latest" )
+          image_versions+=( latest "v${major_version}" "v${minor_version}" "v${patch_version}" )
           if [ '${{ inputs.version }}' != "$patch_version"  ]; then
-            image_versions+=( 'v${{ inputs.version }}-latest' )
-          fi
-
-          if [ '${{ inputs.latestOnly }}' != 'true' ]; then
-            image_versions+=( "v${major_version}" "v${minor_version}" "v${patch_version}" )
-            if [ '${{ inputs.version }}' != "$patch_version"  ]; then
-              image_versions+=( 'v${{ inputs.version }}' )
-            fi
+            image_versions+=( 'v${{ inputs.version }}' )
           fi
 
           image_versions+=( ${{ inputs.extraTags }} )

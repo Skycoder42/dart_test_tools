@@ -13,7 +13,6 @@ class DockerImageBuilder implements StepBuilder {
 
   final Expression imageName;
   final Expression version;
-  final Expression latestOnly;
   final Expression extraTags;
   final Expression dockerPlatforms;
   final Expression dockerBuildArgs;
@@ -23,7 +22,6 @@ class DockerImageBuilder implements StepBuilder {
   DockerImageBuilder({
     required this.imageName,
     required this.version,
-    required this.latestOnly,
     required this.extraTags,
     required this.dockerPlatforms,
     required this.dockerBuildArgs,
@@ -52,16 +50,9 @@ major_version=\$(cut -d. -f1 <<< '$version')
 minor_version=\$(cut -d. -f1-2 <<< '$version')
 patch_version=\$(cut -d. -f1-3 <<< '$version')
 
-image_versions=( latest "v\${major_version}-latest" "v\${minor_version}-latest" "v\${patch_version}-latest" )
+image_versions+=( latest "v\${major_version}" "v\${minor_version}" "v\${patch_version}" )
 if [ '$version' != "\$patch_version"  ]; then
-  image_versions+=( 'v$version-latest' )
-fi
-
-if [ '$latestOnly' != 'true' ]; then
-  image_versions+=( "v\${major_version}" "v\${minor_version}" "v\${patch_version}" )
-  if [ '$version' != "\$patch_version"  ]; then
-    image_versions+=( 'v$version' )
-  fi
+  image_versions+=( 'v$version' )
 fi
 
 image_versions+=( $extraTags )

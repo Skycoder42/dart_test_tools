@@ -17,7 +17,6 @@ abstract class DockerWorkflow {
     final dockerJobBuilder = DockerJobBuilder(
       imageName: inputContext(WorkflowInputs.imageName),
       version: inputContext(WorkflowInputs.version),
-      latestOnly: inputContext(WorkflowInputs.latestOnly),
       extraTags: inputContext(WorkflowInputs.extraTags),
       dockerPlatforms: inputContext(WorkflowInputs.dockerPlatforms),
       dockerBuildArgs: inputContext(WorkflowInputs.dockerBuildArgs),

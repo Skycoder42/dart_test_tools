@@ -9,7 +9,6 @@ class DockerJobBuilder implements JobBuilder {
 
   final Expression imageName;
   final Expression version;
-  final Expression latestOnly;
   final Expression extraTags;
   final Expression dockerPlatforms;
   final Expression dockerBuildArgs;
@@ -19,7 +18,6 @@ class DockerJobBuilder implements JobBuilder {
   DockerJobBuilder({
     required this.imageName,
     required this.version,
-    required this.latestOnly,
     required this.extraTags,
     required this.dockerPlatforms,
     required this.dockerBuildArgs,
@@ -38,7 +36,6 @@ class DockerJobBuilder implements JobBuilder {
           ...DockerImageBuilder(
             imageName: imageName,
             version: version,
-            latestOnly: latestOnly,
             extraTags: extraTags,
             dockerPlatforms: dockerPlatforms,
             dockerBuildArgs: dockerBuildArgs,

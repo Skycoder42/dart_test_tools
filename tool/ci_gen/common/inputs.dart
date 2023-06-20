@@ -306,17 +306,6 @@ Example:
     ),
   );
 
-  static const latestOnly = WorkflowInput(
-    name: 'latestOnly',
-    input: Input(
-      type: Type.boolean,
-      required: false,
-      defaultValue: false,
-      description:
-          'If true, only the "*-latest" tags are pushed. Otherwise all versions are pushed.',
-    ),
-  );
-
   static const extraTags = WorkflowInput(
     name: 'extraTags',
     input: Input(
