@@ -62,7 +62,7 @@ Matcher customLint(String lint, String location) {
   final realLocation = location.replaceAll('/', path.separator);
   return matches(
     RegExp(
-      '^\\s*${RegExp.escape(realLocation)} • .* • ${RegExp.escape(lint)}\$',
+      '^\\s*${RegExp.escape(realLocation)} • .* • ${RegExp.escape(lint)} • INFO\\s*\$',
     ),
   );
 }
