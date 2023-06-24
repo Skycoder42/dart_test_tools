@@ -1,10 +1,9 @@
 name: CD - Publish to pub.dev
 
 on:
-  # push:
-  #   tags:
-  #     - "v*"
-  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
 
 jobs:
   publish:
