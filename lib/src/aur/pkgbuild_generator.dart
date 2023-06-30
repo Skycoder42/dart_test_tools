@@ -110,6 +110,10 @@ class PkgBuildGenerator {
         'changelog': PkgProperty(changelogFileName),
         'backup': PkgProperty.literalList(backup),
         'options': PkgProperty.literalList(const ['!strip']),
+        if (makedebMode)
+          // Workaround for https://github.com/makedeb/makedeb/issues/214
+          // See https://github.com/makedeb/makedeb/blob/alpha/src/main.sh#L130
+          'extensions': PkgProperty.literalList(const ['zipman']),
       },
       functions: {
         'prepare': const PkgFunction([

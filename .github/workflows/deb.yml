@@ -30,17 +30,7 @@ jobs:
       - name: Install needed packages
         run: sudo apt-get install -y dart makedeb
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^5.1.2+1
-      - name: Disable stripping
-        run: |
-          set -eo pipefail
-          strip_path=$(which strip)
-          sudo rm -f "$strip_path"
-          cat << 'EOF' | sudo tee "$strip_path" > /dev/null
-          #!/bin/bash
-          echo "DISABLED: strip $@"
-          EOF
-          sudo chmod a+x "$strip_path"
+        run: dart pub global activate dart_test_tools ^5.1.3
       - name: Checkout repository
         uses: actions/checkout@v3
         with:

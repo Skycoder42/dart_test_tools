@@ -34,18 +34,5 @@ echo 'deb [signed-by=/usr/share/keyrings/makedeb-archive-keyring.gpg arch=all] h
           run:
               'dart pub global activate dart_test_tools ^$dartTestToolsVersion',
         ),
-        Step.run(
-          name: 'Disable stripping',
-          run: r'''
-set -eo pipefail
-strip_path=$(which strip)
-sudo rm -f "$strip_path"
-cat << 'EOF' | sudo tee "$strip_path" > /dev/null
-#!/bin/bash
-echo "DISABLED: strip $@"
-EOF
-sudo chmod a+x "$strip_path"
-''',
-        ),
       ];
 }
