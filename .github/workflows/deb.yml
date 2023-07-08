@@ -13,6 +13,8 @@ on:
 jobs:
   deb_deploy:
     name: Build deb package
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Add dart repository

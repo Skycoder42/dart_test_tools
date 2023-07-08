@@ -23,6 +23,9 @@ class DebDeployJobBuilder implements JobBuilder {
   Job build() => Job(
         name: 'Build deb package',
         runsOn: 'ubuntu-latest',
+        permissions: const {
+          'contents': 'write',
+        },
         steps: [
           ...PrepareDebBuilder().build(),
           ...CheckoutBuilder(
