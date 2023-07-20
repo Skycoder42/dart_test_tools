@@ -19,7 +19,7 @@ extension HttpClientX on HttpClient {
   Future<File> download(
     Directory targetDir,
     Uri uri, {
-    bool withSignature = false,
+    bool withSignature = true,
   }) async {
     final request = await getUrl(uri);
     final response = await request.close();
@@ -36,6 +36,7 @@ extension HttpClientX on HttpClient {
       await download(
         targetDir,
         uri.replace(path: "${uri.path}.minisig"),
+        withSignature: false,
       );
     }
 

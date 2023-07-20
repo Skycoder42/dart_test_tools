@@ -1,8 +1,7 @@
-// ignore: test_library_import
 import 'dart:io';
 
-import 'package:dart_test_tools/test.dart';
-import 'package:dart_test_tools/tools.dart';
+import 'package:dart_test_tools/src/test/test_data.dart';
+import 'package:dart_test_tools/src/tools/github.dart';
 import 'package:test/test.dart';
 
 void main() {

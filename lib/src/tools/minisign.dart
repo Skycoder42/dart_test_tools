@@ -17,20 +17,20 @@ abstract base class Minisign {
         return;
       }
 
-      Github.exec('minisign', const ['-v']);
+      await Github.exec('minisign', const ['-v']);
       return;
-    } catch (e) {
+    } on ProcessException catch (e) {
       Github.logDebug(e.toString());
     }
 
     // if not, install it
     if (Platform.isLinux) {
       _forceDocker = true;
-      Github.exec('docker', const ['pull', 'jedisct1/minisign']);
+      await Github.exec('docker', const ['pull', 'jedisct1/minisign']);
     } else if (Platform.isMacOS) {
-      Github.exec('brew', const ['install', 'minisign']);
+      await Github.exec('brew', const ['install', 'minisign']);
     } else if (Platform.isWindows) {
-      Github.exec('brew', const ['choco', 'minisign']);
+      await Github.exec('brew', const ['choco', 'minisign']);
     } else {
       throw Exception('Unsupported platform: ${Platform.operatingSystem}');
     }
