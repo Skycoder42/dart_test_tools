@@ -1,3 +1,6 @@
+@TestOn('dart-vm')
+library github_test;
+
 import 'dart:io';
 
 import 'package:dart_test_tools/src/test/test_data.dart';
@@ -76,7 +79,7 @@ void main() {
       });
     });
 
-    group('exec', () {
+    group('exec', testOn: 'posix', () {
       test('invokes process', () {
         expect(
           () => Github.exec('bash', const ['-c', 'true']),
@@ -134,7 +137,7 @@ void main() {
       });
     });
 
-    group('execLines', () {
+    group('execLines', testOn: 'posix', () {
       test('invokes process', () {
         expect(
           () => Github.execLines('bash', const ['-c', 'true']).drain(),
@@ -210,7 +213,7 @@ void main() {
             const ['-c', r'echo $PWD'],
             workingDirectory: tmpDir,
           ),
-          emits(tmpDir.path),
+          emits(tmpDir.resolveSymbolicLinksSync()),
         );
       });
     });

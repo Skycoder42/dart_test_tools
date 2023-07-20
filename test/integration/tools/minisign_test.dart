@@ -1,3 +1,6 @@
+@TestOn('dart-vm')
+library minisign_test;
+
 import 'dart:io';
 
 import 'package:dart_test_tools/src/tools/io.dart';
@@ -22,7 +25,7 @@ void main() {
       final testFile = tmpDir.subFile('test-file.txt');
       await testFile.writeAsString('This is some test content');
 
-      expect(
+      await expectLater(
         _runMinisign(tmpDir, const [
           '-GW',
           '-p',
@@ -35,8 +38,8 @@ void main() {
 
       await Minisign.sign(testFile, tmpDir.subFile('minisign-key.sec'));
 
-      final pubKey = await tmpDir.subFile('minisign-key.pub').readAsString();
-      await Minisign.verify(testFile, pubKey);
+      final pubKey = await tmpDir.subFile('minisign-key.pub').readAsLines();
+      await Minisign.verify(testFile, pubKey.last.trim());
     });
   });
 }

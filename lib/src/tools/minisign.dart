@@ -30,7 +30,7 @@ abstract base class Minisign {
     } else if (Platform.isMacOS) {
       await Github.exec('brew', const ['install', 'minisign']);
     } else if (Platform.isWindows) {
-      await Github.exec('brew', const ['choco', 'minisign']);
+      await Github.exec('choco', const ['install', 'minisign']);
     } else {
       throw Exception('Unsupported platform: ${Platform.operatingSystem}');
     }

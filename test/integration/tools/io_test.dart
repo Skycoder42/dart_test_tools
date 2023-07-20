@@ -1,3 +1,6 @@
+@TestOn('dart-vm')
+library io_test;
+
 import 'dart:io';
 
 import 'package:dart_test_tools/src/tools/io.dart';
