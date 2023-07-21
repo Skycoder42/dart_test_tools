@@ -109,7 +109,8 @@ jobs:
         run: flutter pub global activate pana
       - name: Install scoop
         if: runner.os == 'Windows'
-        uses: MinoruSekine/setup-scoop@v1
+        run: irm get.scoop.sh | iex
+        shell: pwsh
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
         run: scoop install yq
@@ -200,7 +201,8 @@ jobs:
         run: flutter precache --universal
       - name: Install scoop
         if: runner.os == 'Windows'
-        uses: MinoruSekine/setup-scoop@v1
+        run: irm get.scoop.sh | iex
+        shell: pwsh
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
         run: scoop install yq
@@ -356,7 +358,8 @@ jobs:
         run: flutter precache --universal --${{ matrix.platform }}
       - name: Install scoop
         if: runner.os == 'Windows'
-        uses: MinoruSekine/setup-scoop@v1
+        run: irm get.scoop.sh | iex
+        shell: pwsh
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
         run: scoop install yq

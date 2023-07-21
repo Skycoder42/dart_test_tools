@@ -104,7 +104,8 @@ jobs:
           fi
       - name: Install scoop
         if: runner.os == 'Windows'
-        uses: MinoruSekine/setup-scoop@v1
+        run: irm get.scoop.sh | iex
+        shell: pwsh
       - name: Checkout repository
         uses: actions/checkout@v3
         with:

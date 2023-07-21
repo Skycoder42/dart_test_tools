@@ -2,7 +2,6 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
-import '../tools.dart';
 import 'checkout_builder.dart';
 import 'project_prepare_builder.dart';
 
@@ -33,10 +32,11 @@ class ProjectSetupBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        Step.uses(
+        Step.run(
           name: 'Install scoop',
           ifExpression: const Expression("runner.os == 'Windows'"),
-          uses: Tools.minoruSekineSetupScoop,
+          shell: 'pwsh',
+          run: 'irm get.scoop.sh | iex',
         ),
         if (!skipYqInstall) ...[
           Step.run(

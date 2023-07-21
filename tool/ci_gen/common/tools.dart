@@ -40,7 +40,4 @@ abstract class Tools {
   /// https://github.com/VeryGoodOpenSource/very_good_coverage/releases
   static const veryGoodOpenSourceVeryGoodCoverage =
       'VeryGoodOpenSource/very_good_coverage@v2';
-
-  /// https://github.com/MinoruSekine/setup-scoop/tags
-  static const minoruSekineSetupScoop = 'MinoruSekine/setup-scoop@v1';
 }
