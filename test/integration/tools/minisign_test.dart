@@ -68,6 +68,7 @@ Future<int> _runMinisign(Directory testDir, List<String> arguments) async {
     executable,
     fullArgs,
     workingDirectory: testDir.path,
+    mode: ProcessStartMode.inheritStdio,
   );
   return result.exitCode;
 }
