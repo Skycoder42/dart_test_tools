@@ -111,7 +111,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
-          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH}
+          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
         shell: pwsh
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
@@ -205,7 +205,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
-          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH}
+          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
         shell: pwsh
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
@@ -364,7 +364,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
-          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH}
+          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
         shell: pwsh
       - name: Install yq (Windows)
         if: runner.os == 'Windows'

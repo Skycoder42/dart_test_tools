@@ -38,7 +38,7 @@ class ProjectSetupBuilder implements StepBuilder {
           shell: 'pwsh',
           run: r'''
 iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
-Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH}
+Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
 ''',
         ),
         if (!skipYqInstall) ...[
