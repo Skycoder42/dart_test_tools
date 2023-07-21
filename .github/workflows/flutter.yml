@@ -109,7 +109,9 @@ jobs:
         run: flutter pub global activate pana
       - name: Install scoop
         if: runner.os == 'Windows'
-        run: iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+        run: |
+          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH}
         shell: pwsh
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
@@ -201,7 +203,9 @@ jobs:
         run: flutter precache --universal
       - name: Install scoop
         if: runner.os == 'Windows'
-        run: iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+        run: |
+          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH}
         shell: pwsh
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
@@ -358,7 +362,9 @@ jobs:
         run: flutter precache --universal --${{ matrix.platform }}
       - name: Install scoop
         if: runner.os == 'Windows'
-        run: iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+        run: |
+          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH}
         shell: pwsh
       - name: Install yq (Windows)
         if: runner.os == 'Windows'

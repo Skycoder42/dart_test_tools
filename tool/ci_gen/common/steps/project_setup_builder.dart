@@ -36,7 +36,10 @@ class ProjectSetupBuilder implements StepBuilder {
           name: 'Install scoop',
           ifExpression: const Expression("runner.os == 'Windows'"),
           shell: 'pwsh',
-          run: r'iex "& {$(irm get.scoop.sh)} -RunAsAdmin"',
+          run: r'''
+iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH}
+''',
         ),
         if (!skipYqInstall) ...[
           Step.run(
