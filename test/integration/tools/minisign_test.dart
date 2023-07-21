@@ -10,6 +10,12 @@ import 'package:test/test.dart';
 void main() {
   group('$Minisign', () {
     test('installs minisign', () async {
+      printOnFailure(
+        Platform.environment.entries
+            .map((e) => '${e.key}=${e.value}')
+            .join('\n'),
+      );
+
       await Minisign.ensureInstalled();
 
       expect(
