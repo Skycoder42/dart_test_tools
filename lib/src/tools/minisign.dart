@@ -46,7 +46,7 @@ abstract base class Minisign {
         'run',
         '--rm',
         '-v',
-        '${file.path}:/src:ro',
+        '${file.parent.path}:/src:ro',
         'jedisct1/minisign',
         '-P',
         publicKey,

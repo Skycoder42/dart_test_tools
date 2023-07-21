@@ -1,3 +1,6 @@
+@TestOn('dart-vm')
+library archive_test;
+
 import 'dart:io';
 
 import 'package:dart_test_tools/src/tools/archive.dart';
