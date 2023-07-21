@@ -102,6 +102,9 @@ jobs:
             echo "pub=dart pub" >> $GITHUB_OUTPUT
             echo "pubRun=dart run" >> $GITHUB_OUTPUT
           fi
+      - name: Install scoop
+        if: runner.os == 'Windows'
+        uses: MinoruSekine/setup-scoop@v1
       - name: Checkout repository
         uses: actions/checkout@v3
         with:

@@ -15,7 +15,7 @@ runs:
       if: runner.os	== 'macOS'
       run: brew install minisign
       shell: bash
-    - name: Install minisign from chocolatey
+    - name: Install minisign from scoop
       if: runner.os	== 'Windows'
-      run: choco install minisign
+      run: scoop install minisign
       shell: powershell

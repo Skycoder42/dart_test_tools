@@ -107,9 +107,12 @@ jobs:
         run: flutter precache --universal
       - name: Install pana
         run: flutter pub global activate pana
+      - name: Install scoop
+        if: runner.os == 'Windows'
+        uses: MinoruSekine/setup-scoop@v1
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
-        run: choco install yq
+        run: scoop install yq
       - name: Install yq and coreutils (macOS)
         if: runner.os == 'macOS'
         run: |
@@ -195,9 +198,12 @@ jobs:
           cache: true
       - name: Download flutter binary artifacts
         run: flutter precache --universal
+      - name: Install scoop
+        if: runner.os == 'Windows'
+        uses: MinoruSekine/setup-scoop@v1
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
-        run: choco install yq
+        run: scoop install yq
       - name: Install yq and coreutils (macOS)
         if: runner.os == 'macOS'
         run: |
@@ -348,9 +354,12 @@ jobs:
         run: flutter config --enable-${{ matrix.platform }}-desktop
       - name: Download flutter binary artifacts
         run: flutter precache --universal --${{ matrix.platform }}
+      - name: Install scoop
+        if: runner.os == 'Windows'
+        uses: MinoruSekine/setup-scoop@v1
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
-        run: choco install yq
+        run: scoop install yq
       - name: Install yq and coreutils (macOS)
         if: runner.os == 'macOS'
         run: |

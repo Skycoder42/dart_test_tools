@@ -82,9 +82,12 @@ jobs:
         uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
+      - name: Install scoop
+        if: runner.os == 'Windows'
+        uses: MinoruSekine/setup-scoop@v1
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
-        run: choco install yq
+        run: scoop install yq
       - name: Install yq and coreutils (macOS)
         if: runner.os == 'macOS'
         run: |
