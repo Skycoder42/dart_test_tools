@@ -104,7 +104,7 @@ jobs:
           fi
       - name: Install scoop
         if: runner.os == 'Windows'
-        run: irm get.scoop.sh | iex
+        run: iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
         shell: pwsh
       - name: Checkout repository
         uses: actions/checkout@v3

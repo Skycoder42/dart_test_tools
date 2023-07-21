@@ -99,7 +99,7 @@ jobs:
         run: dart pub global activate pana
       - name: Install scoop
         if: runner.os == 'Windows'
-        run: irm get.scoop.sh | iex
+        run: iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
         shell: pwsh
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
@@ -188,7 +188,7 @@ jobs:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install scoop
         if: runner.os == 'Windows'
-        run: irm get.scoop.sh | iex
+        run: iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
         shell: pwsh
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
@@ -323,7 +323,7 @@ jobs:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install scoop
         if: runner.os == 'Windows'
-        run: irm get.scoop.sh | iex
+        run: iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
         shell: pwsh
       - name: Install yq (Windows)
         if: runner.os == 'Windows'
