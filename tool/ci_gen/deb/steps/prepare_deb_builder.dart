@@ -29,7 +29,7 @@ echo 'deb [signed-by=/usr/share/keyrings/makedeb-archive-keyring.gpg arch=all] h
           name: 'Install needed packages',
           run: 'sudo apt-get install -y dart makedeb',
         ),
-        const Step.run(
+        Step.run(
           name: 'Install dart_test_tools',
           run:
               'dart pub global activate dart_test_tools ^$dartTestToolsVersion',

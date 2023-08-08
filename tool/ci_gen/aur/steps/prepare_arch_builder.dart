@@ -12,7 +12,7 @@ class PrepareArchBuilder implements StepBuilder {
           run: 'pacman -Sy --noconfirm '
               'git openssh go-yq pacman-contrib dart namcap',
         ),
-        const Step.run(
+        Step.run(
           name: 'Install dart_test_tools',
           run:
               'dart pub global activate dart_test_tools ^$dartTestToolsVersion',

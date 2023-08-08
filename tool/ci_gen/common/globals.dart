@@ -1,3 +1,3 @@
-import 'package:dart_test_tools/src/constants/pubspec.yaml.g.dart' as pubspec;
+import 'package:dart_test_tools/src/constants/pubspec.yaml.g.dart';
 
-const dartTestToolsVersion = pubspec.version;
+final dartTestToolsVersion = Pubspec.version.canonical;
