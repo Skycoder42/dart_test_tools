@@ -9,7 +9,7 @@ class PrepareArchBuilder implements StepBuilder {
   Iterable<Step> build() => [
         const Step.run(
           name: 'Install pacman dependencies',
-          run: 'pacman -Sy --noconfirm '
+          run: 'pacman -Syu --noconfirm '
               'git openssh go-yq pacman-contrib dart namcap',
         ),
         Step.run(
