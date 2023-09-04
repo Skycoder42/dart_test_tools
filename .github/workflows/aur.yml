@@ -20,7 +20,7 @@ jobs:
           useradd -m build
           echo 'build ALL=(ALL:ALL) NOPASSWD: ALL' >> /etc/sudoers
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
           path: src

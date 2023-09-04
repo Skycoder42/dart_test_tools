@@ -122,7 +122,7 @@ jobs:
           brew install yq coreutils
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
       - name: Remove pubspec_overrides.yaml
@@ -216,7 +216,7 @@ jobs:
           brew install yq coreutils
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
       - id: platform-check
@@ -270,7 +270,7 @@ jobs:
           sudo apt-get -qq update
           sudo apt-get -qq install lcov dos2unix
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
       - name: Download coverage data
@@ -375,7 +375,7 @@ jobs:
           brew install yq coreutils
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
       - id: platform-check
