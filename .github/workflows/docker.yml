@@ -58,7 +58,7 @@ jobs:
           printf '${{ inputs.imageName }}:%s\n' "${image_versions[@]}" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
       - name: Login to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.dockerHubUsername }}
           password: ${{ secrets.dockerHubToken }}
