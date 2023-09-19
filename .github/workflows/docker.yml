@@ -37,7 +37,7 @@ jobs:
         uses: docker/setup-qemu-action@v2
       - id: setup-docker-buildx
         name: Setup docker buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       - id: generate-tags
         name: Generate docker image tags
         run: |
