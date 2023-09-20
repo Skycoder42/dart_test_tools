@@ -9,14 +9,45 @@ import 'package:test/test.dart';
 
 void main() {
   group('$Github', () {
-    testData<(Directory Function(), String)>('env is reported correctly', [
-      (() => Github.env.githubWorkspace, 'GITHUB_WORKSPACE'),
-      (() => Github.env.runnerTemp, 'RUNNER_TEMP'),
-    ], (fixture) {
-      expect(
-        fixture.$1().path,
-        Platform.environment[fixture.$2],
-      );
+    group('env', () {
+      testData<(Directory Function(), String)>(
+          'variables are reported correctly', [
+        (() => Github.env.githubWorkspace, 'GITHUB_WORKSPACE'),
+        (() => Github.env.runnerTemp, 'RUNNER_TEMP'),
+      ], (fixture) {
+        expect(
+          fixture.$1().path,
+          Platform.environment[fixture.$2],
+        );
+      });
+
+      group('setOutput', () {
+        test('sets single line env var', () async {
+          var testName = 'testName';
+          var testValue = 'testValue';
+
+          await Github.env.setOutput(testName, testValue);
+
+          final lines =
+              await File(Platform.environment['GITHUB_OUTPUT']!).readAsLines();
+          expect(lines.last, '$testName=$testValue');
+        });
+
+        test('sets multi line env var', () async {
+          var testName = 'testName';
+          var testValue = 'test\nValue';
+
+          await Github.env.setOutput(testName, testValue, multiline: true);
+
+          final lines =
+              await File(Platform.environment['GITHUB_OUTPUT']!).readAsLines();
+          expect(lines.skip(lines.length - 4), [
+            '$testName<<EOF',
+            ...testValue.split('\n'),
+            'EOF',
+          ]);
+        });
+      });
     });
 
     group('log', () {

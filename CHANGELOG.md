@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.4.0] - 2023-09-20
+### Added
+- Added `Github.env.setOutput` to set output variables
+- Added `HttpClient.getHeader` to get a HTTP header value
+
+### Changed
+- Updated dependencies
+- Update min required dart sdk to 3.1.0
+
 ## [5.3.0] - 2023-08-08
 ### Added
 - Added isRecord test matcher
@@ -237,6 +246,7 @@ have been added:
 ### Added
 - Initial release
 
+[5.4.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.3.0...v5.4.0
 [5.3.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.2.0...v5.3.0
 [5.2.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.1.3...v5.2.0
 [5.1.3]: https://github.com/Skycoder42/dart_test_tools/compare/v5.1.2+1...v5.1.3

@@ -73,5 +73,56 @@ void main() {
       expect(path.equals(sigFile.parent.path, tmpDir.path), isTrue);
       expect(sigFile.readAsString(), completion('$uri.minisig'));
     });
+
+    group('getHeader', () {
+      test('returns header value if present', () async {
+        const headerName = "Test-Header";
+        const headerValue = "test-header-value";
+
+        final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+        addTearDown(server.close);
+
+        server.listen((request) {
+          request.response.statusCode = request.method == "HEAD"
+              ? HttpStatus.ok
+              : HttpStatus.methodNotAllowed;
+          request.response.headers.add(headerName, headerValue);
+          request.response.close();
+        });
+
+        final uri = Uri.http('${server.address.address}:${server.port}', '/');
+
+        final client = HttpClient();
+        addTearDown(client.close);
+
+        final result = await client.getHeader(uri, headerName);
+
+        expect(result, headerValue);
+      });
+
+      test('throws if header is not present', () async {
+        const headerName = "Test-Header";
+
+        final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+        addTearDown(server.close);
+
+        server.listen((request) {
+          request.response.statusCode = request.method == "HEAD"
+              ? HttpStatus.ok
+              : HttpStatus.methodNotAllowed;
+          request.response.close();
+        });
+
+        final uri = Uri.http('${server.address.address}:${server.port}', '/');
+
+        final client = HttpClient();
+        addTearDown(client.close);
+
+        expect(
+          () => client.getHeader(uri, headerName),
+          throwsException,
+        );
+      });
+    });
   });
 }

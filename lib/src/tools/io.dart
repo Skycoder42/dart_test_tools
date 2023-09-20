@@ -42,4 +42,24 @@ extension HttpClientX on HttpClient {
 
     return outFile;
   }
+
+  Future<String> getHeader(Uri url, String headerName) async {
+    final request = await headUrl(url);
+    final response = await request.close();
+    response.drain<void>().ignore();
+    if (response.statusCode >= 300) {
+      throw Exception(
+        'Request failed with status code: ${response.statusCode}',
+      );
+    }
+
+    final header = response.headers[headerName];
+    if (header == null || header.isEmpty) {
+      throw Exception(
+        'Unable to get header $header from $url: Header is not set',
+      );
+    }
+
+    return header.first;
+  }
 }
