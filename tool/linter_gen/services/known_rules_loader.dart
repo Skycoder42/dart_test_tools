@@ -14,8 +14,8 @@ class KnownRulesLoader {
   final AnalysisOptionsWriter analysisOptionsWriter;
 
   final _rulesPageUri = Uri.https(
-    'dart-lang.github.io',
-    '/linter/lints/options/options.html',
+    'dart.dev',
+    '/tools/linter-rules/all',
   );
 
   KnownRulesLoader({
@@ -56,7 +56,7 @@ class KnownRulesLoader {
       rulesPageResponse.body,
       sourceUrl: _rulesPageUri.toString(),
     );
-    final sourceCode = rulesDom.getElementsByTagName('code').single.text;
+    final sourceCode = rulesDom.querySelectorAll('code.yaml').single.text;
     return checkedYamlDecode(
       sourceCode,
       AnalysisOptions.fromYaml,
