@@ -54,6 +54,8 @@ void customLintTest(
     );
 
 Matcher emitsNoIssues() => emitsInOrder(<dynamic>[
+      'Analyzing...',
+      '',
       'No issues found!',
       emitsDone,
     ]);
@@ -70,14 +72,21 @@ Matcher customLint(String lint, String location) {
 Matcher emitsCustomLint(String lint, List<String> locations) =>
     emitsCustomLints({lint: locations});
 
-Matcher emitsCustomLints(Map<String, List<String>> lints) => emitsInAnyOrder(
-      <dynamic>[
-        ...lints.entries.expand<Matcher>(
-          (e) => e.value.map((location) => customLint(e.key, location)),
-        ),
-        emitsDone,
-      ],
-    );
+Matcher emitsCustomLints(Map<String, List<String>> lints) {
+  var issuesCount = lints.values.fold(0, (p, l) => p + l.length);
+  return emitsInAnyOrder(
+    <dynamic>[
+      'Analyzing...',
+      '',
+      ...lints.entries.expand<Matcher>(
+        (e) => e.value.map((location) => customLint(e.key, location)),
+      ),
+      '',
+      issuesCount == 1 ? '1 issue found.' : '${issuesCount} issues found.',
+      emitsDone,
+    ],
+  );
+}
 
 Future<Directory> _setup() async {
   final testDir = await Directory.systemTemp.createTemp();
