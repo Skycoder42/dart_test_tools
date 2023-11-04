@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.5.0] - 2023-11-04
+### Added
+- added new linter rules to `strict.yaml`
+  - [no\_self\_assignments](https://dart.dev/tools/linter-rules/no_self_assignments)
+  - [no\_wildcard\_variable\_uses](https://dart.dev/tools/linter-rules/no_wildcard_variable_uses)
+
+### Changed
+- Updated dependencies
+
 ## [5.4.0] - 2023-09-20
 ### Added
 - Added `Github.env.setOutput` to set output variables
@@ -246,6 +255,7 @@ have been added:
 ### Added
 - Initial release
 
+[5.5.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.4.0...v5.5.0
 [5.4.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.3.0...v5.4.0
 [5.3.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.2.0...v5.3.0
 [5.2.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.1.3...v5.2.0
