@@ -14,15 +14,15 @@ dependencies:
   analyzer: ">=5.12.0 <7.0.0"
   args: ^2.4.2
   checked_yaml: ^2.0.3
-  cider: ^0.2.3
+  cider: ^0.2.4
   custom_lint_builder: ^0.5.0
-  dotenv: ^4.1.0
+  dotenv: ^4.2.0
   freezed_annotation: ^2.4.1
   json_annotation: ^4.8.1
   lint: ^2.1.2
   logging: ^1.2.0
   meta: ^1.9.1
-  mocktail: ^1.0.0
+  mocktail: ^1.0.1
   path: ^1.8.3
   pub_semver: ^2.1.4
   pubspec_parse: ^1.2.3
@@ -35,12 +35,12 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^2.4.6
-  flutter_lints: ^2.0.3
-  freezed: ^2.4.2
+  flutter_lints: ^3.0.1
+  freezed: ^2.4.5
   html: ^0.15.4
   http: ^1.1.0
   json_serializable: ^6.7.1
-  lints: ^2.1.1
+  lints: ^3.0.0
   pubspec_generator: ^4.0.0
   yaml_edit: ^2.1.1
 

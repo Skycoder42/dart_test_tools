@@ -29,7 +29,7 @@ class _UnitTestJobMatrix implements IUnitTextMatrix {
 }
 
 @freezed
-class _PlatformInclude with _$_PlatformInclude {
+class _PlatformInclude with _$PlatformInclude {
   const factory _PlatformInclude({
     required String platform,
     required String os,
@@ -40,7 +40,7 @@ class _PlatformInclude with _$_PlatformInclude {
 
   // ignore: unused_element
   factory _PlatformInclude.fromJson(Map<String, dynamic> json) =>
-      _$_PlatformIncludeFromJson(json);
+      _$PlatformIncludeFromJson(json);
 }
 
 abstract base class UnitTestJobBuilder extends SdkJobBuilder {
