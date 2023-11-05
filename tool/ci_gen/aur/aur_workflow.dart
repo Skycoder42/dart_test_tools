@@ -3,7 +3,7 @@ import '../common/secrets.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
-import 'builders/aur_deploy_job_builder.dart';
+import 'jobs/aur_deploy_job_builder.dart';
 
 abstract class AurWorkflow {
   AurWorkflow._();

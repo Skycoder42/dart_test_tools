@@ -1,4 +1,4 @@
-import '../../common/builders/analyze_job_builder.dart';
+import '../../common/jobs/analyze_job_builder.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 import 'flutter_sdk_job_builder_mixin.dart';

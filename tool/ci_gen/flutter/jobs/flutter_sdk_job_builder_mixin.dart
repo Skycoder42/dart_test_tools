@@ -1,4 +1,4 @@
-import '../../common/builders/sdk_job_builder.dart';
+import '../../common/jobs/sdk_job_builder.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../steps/flutter_sdk_builder.dart';

@@ -1,4 +1,4 @@
-import '../../common/builders/unit_test_job_builder.dart';
+import '../../common/jobs/unit_test_job_builder.dart';
 import '../../types/expression.dart';
 import 'dart_sdk_job_builder_mixin.dart';
 

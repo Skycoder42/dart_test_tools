@@ -1,12 +1,12 @@
 import '../common/api/workflow_input.dart';
-import '../common/builders/validate_coverage_job_builder.dart';
+import '../common/jobs/validate_coverage_job_builder.dart';
 import '../common/inputs.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
-import 'builders/flutter_analyze_job_builder.dart';
-import 'builders/flutter_integration_test_job_builder.dart';
-import 'builders/flutter_unit_test_job_builder.dart';
+import 'jobs/flutter_analyze_job_builder.dart';
+import 'jobs/flutter_integration_test_job_builder.dart';
+import 'jobs/flutter_unit_test_job_builder.dart';
 
 abstract class FlutterWorkflow {
   FlutterWorkflow._();

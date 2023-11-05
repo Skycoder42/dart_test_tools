@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../common/builders/sdk_job_builder.dart';
-import '../../dart/builders/dart_sdk_job_builder_mixin.dart';
+import '../../common/jobs/sdk_job_builder.dart';
+import '../../dart/jobs/dart_sdk_job_builder_mixin.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
