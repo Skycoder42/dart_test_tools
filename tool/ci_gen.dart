@@ -9,6 +9,7 @@ import 'ci_gen/compile/compile_workflow.dart';
 import 'ci_gen/dart/dart_workflow.dart';
 import 'ci_gen/docker/docker_workflow.dart';
 import 'ci_gen/flutter/flutter_workflow.dart';
+import 'ci_gen/package/package_workflow.dart';
 import 'ci_gen/publish/publish_workflow.dart';
 import 'ci_gen/release/release_workflow.dart';
 import 'ci_gen/types/workflow.dart';
@@ -27,6 +28,8 @@ Future<void> main() async {
   exitCode += await _writeWorkflowToFile('deb', DebWorkflow.buildWorkflow());
   exitCode +=
       await _writeWorkflowToFile('docker', DockerWorkflow.buildWorkflow());
+  exitCode +=
+      await _writeWorkflowToFile('package', PackageWorkflow.buildWorkflow());
 }
 
 Future<int> _writeWorkflowToFile(String name, Workflow workflow) async {

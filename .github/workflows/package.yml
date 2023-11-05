@@ -1,0 +1,71 @@
+on:
+  workflow_call:
+    inputs:
+      dartSdkVersion:
+        type: string
+        required: false
+        default: stable
+        description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
+      workingDirectory:
+        type: string
+        required: false
+        default: .
+        description: The root directory of the dart package to build and test.
+      buildRunner:
+        type: boolean
+        required: false
+        default: false
+        description: Specify whether build_runner is used in the project (defaults to false).
+      buildRunnerArgs:
+        type: string
+        required: false
+        description: Optional additional arguments to be passed to the build runner.
+jobs:
+  package:
+    name: Create dart package artifact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ inputs.dartSdkVersion }}
+      - name: Install scoop
+        if: runner.os == 'Windows'
+        run: |
+          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
+        shell: pwsh
+      - name: Install yq (Windows)
+        if: runner.os == 'Windows'
+        run: scoop install yq
+      - name: Install yq and coreutils (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install yq coreutils
+          echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Remove pubspec_overrides.yaml
+        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Restore dart packages
+        run: dart pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Create build files
+        if: inputs.buildRunner
+        run: dart run build_runner build ${{ inputs.buildRunnerArgs }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - id: get-package-name
+        name: Get package name for artifact upload
+        run: echo "package-name=$(yq .name pubspec.yaml)" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Upload compiled binaries artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: package-${{ steps.get-package-name.outputs.package-name }}
+          path: ${{ inputs.workingDirectory }}
+          retention-days: 7
+          if-no-files-found: error
