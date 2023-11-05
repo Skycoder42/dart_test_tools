@@ -20,6 +20,7 @@ class FlutterIntegrationTestBuilder
   static const testSetupCacheStepId = StepId('test-setup-cache');
 
   final Expression workingDirectory;
+  final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression integrationTestSetup;
@@ -35,6 +36,7 @@ class FlutterIntegrationTestBuilder
 
   const FlutterIntegrationTestBuilder({
     required this.workingDirectory,
+    required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.integrationTestSetup,
@@ -53,6 +55,7 @@ class FlutterIntegrationTestBuilder
   Iterable<Step> build() => [
         ...ProjectSetupBuilder(
           workingDirectory: workingDirectory,
+          artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
           pubTool: pubTool,

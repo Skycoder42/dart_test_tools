@@ -21,6 +21,7 @@ class CompileWorkflow implements WorkflowBuilder {
     final compileJobBuilder = CompileJobBuilder(
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
     );

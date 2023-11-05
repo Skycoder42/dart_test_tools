@@ -10,6 +10,7 @@ final class DartAnalyzeJobBuilder extends AnalyzeJobBuilder
 
   const DartAnalyzeJobBuilder({
     required super.workingDirectory,
+    required super.artifactDependencies,
     required super.buildRunner,
     required super.buildRunnerArgs,
     required super.analyzeImage,

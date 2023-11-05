@@ -72,6 +72,7 @@ final class DartIntegrationTestJobBuilder extends SdkJobBuilder
   @override
   final Expression dartSdkVersion;
   final Expression workingDirectory;
+  final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression integrationTestSetup;
@@ -83,6 +84,7 @@ final class DartIntegrationTestJobBuilder extends SdkJobBuilder
     required this.analyzeJobId,
     required this.dartSdkVersion,
     required this.workingDirectory,
+    required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.integrationTestSetup,
@@ -113,6 +115,7 @@ final class DartIntegrationTestJobBuilder extends SdkJobBuilder
           ...buildSetupSdkSteps(),
           ...DartIntegrationTestBuilder(
             workingDirectory: workingDirectory,
+            artifactDependencies: artifactDependencies,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
             integrationTestSetup: integrationTestSetup,

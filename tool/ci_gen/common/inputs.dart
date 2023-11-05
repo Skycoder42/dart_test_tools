@@ -347,4 +347,15 @@ Example:
       description: 'The publishing environment for pub.dev.',
     ),
   );
+
+  static const artifactDependencies = WorkflowInput(
+    name: 'artifactDependencies',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: '',
+      description: 'A list of package names that should be downloaded from the '
+          'artifacts and overwritten for the workflow.',
+    ),
+  );
 }

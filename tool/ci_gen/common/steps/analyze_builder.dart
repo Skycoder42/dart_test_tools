@@ -10,6 +10,7 @@ class AnalyzeBuilder implements StepBuilder {
   static final checkPublish = checkPublishStepId.output('publish');
 
   final Expression workingDirectory;
+  final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression analyzeImage;
@@ -21,6 +22,7 @@ class AnalyzeBuilder implements StepBuilder {
 
   const AnalyzeBuilder({
     required this.workingDirectory,
+    required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.analyzeImage,
@@ -39,6 +41,7 @@ class AnalyzeBuilder implements StepBuilder {
         ),
         ...ProjectSetupBuilder(
           workingDirectory: workingDirectory,
+          artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
           pubTool: pubTool,

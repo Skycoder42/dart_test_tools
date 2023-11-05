@@ -14,6 +14,7 @@ final class FlutterAnalyzeJobBuilder extends AnalyzeJobBuilder
     required this.flutterSdkChannel,
     required this.javaJdkVersion,
     required super.workingDirectory,
+    required super.artifactDependencies,
     required super.buildRunner,
     required super.buildRunnerArgs,
     required super.analyzeImage,

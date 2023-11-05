@@ -13,12 +13,14 @@ final class PackageJobBuilder extends SdkJobBuilder
   @override
   final Expression dartSdkVersion;
   final Expression workingDirectory;
+  final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
 
   PackageJobBuilder({
     required this.dartSdkVersion,
     required this.workingDirectory,
+    required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
   });
@@ -31,6 +33,7 @@ final class PackageJobBuilder extends SdkJobBuilder
           ...buildSetupSdkSteps(),
           ...PackageBuilder(
             workingDirectory: workingDirectory,
+            artifactDependencies: artifactDependencies,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
             pubTool: pubTool,

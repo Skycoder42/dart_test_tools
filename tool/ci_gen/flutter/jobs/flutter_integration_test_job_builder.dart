@@ -103,6 +103,7 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   @override
   final Expression javaJdkVersion;
   final Expression workingDirectory;
+  final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression integrationTestSetup;
@@ -117,6 +118,7 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     required this.flutterSdkChannel,
     required this.javaJdkVersion,
     required this.workingDirectory,
+    required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.integrationTestSetup,
@@ -152,6 +154,7 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
           ),
           ...FlutterIntegrationTestBuilder(
             workingDirectory: workingDirectory,
+            artifactDependencies: artifactDependencies,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
             integrationTestSetup: integrationTestSetup,

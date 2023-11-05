@@ -9,6 +9,7 @@ import 'sdk_job_builder.dart';
 
 abstract base class AnalyzeJobBuilder extends SdkJobBuilder {
   final Expression workingDirectory;
+  final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression analyzeImage;
@@ -16,6 +17,7 @@ abstract base class AnalyzeJobBuilder extends SdkJobBuilder {
 
   const AnalyzeJobBuilder({
     required this.workingDirectory,
+    required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.analyzeImage,
@@ -33,6 +35,7 @@ abstract base class AnalyzeJobBuilder extends SdkJobBuilder {
           ...buildSetupSdkSteps(),
           ...AnalyzeBuilder(
             workingDirectory: workingDirectory,
+            artifactDependencies: artifactDependencies,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
             analyzeImage: analyzeImage,

@@ -11,6 +11,11 @@ on:
         required: false
         default: .
         description: The root directory of the dart package to build and test.
+      artifactDependencies:
+        type: string
+        required: false
+        default: ""
+        description: A list of package names that should be downloaded from the artifacts and overwritten for the workflow.
       buildRunner:
         type: boolean
         required: false
@@ -51,6 +56,23 @@ jobs:
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
+      - name: Download artifacts
+        if: inputs.artifactDependencies != ''
+        uses: actions/download-artifact@v3
+        with:
+          path: ${{ runner.temp }}/.artifacts
+      - name: Create pubspec_overrides.yaml for required packages
+        if: inputs.artifactDependencies != ''
+        run: |
+          set -eo pipefail
+          touch pubspec_overrides.yaml
+          for package in ${{ inputs.artifactDependencies }}; do
+            yq -i \
+              ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" \
+              pubspec_overrides.yaml
+          done
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Restore dart packages
         run: dart pub get
         working-directory: ${{ inputs.workingDirectory }}
@@ -66,6 +88,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: package-${{ steps.get-package-name.outputs.package-name }}
-          path: ${{ inputs.workingDirectory }}
+          path: |
+            ${{ inputs.workingDirectory }}
+            !${{ inputs.workingDirectory }}/.*
+            !${{ inputs.workingDirectory }}/**/.*
           retention-days: 7
           if-no-files-found: error

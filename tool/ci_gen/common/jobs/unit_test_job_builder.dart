@@ -78,6 +78,7 @@ abstract base class UnitTestJobBuilder extends SdkJobBuilder {
 
   final JobId analyzeJobId;
   final Expression workingDirectory;
+  final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression unitTestPaths;
@@ -86,6 +87,7 @@ abstract base class UnitTestJobBuilder extends SdkJobBuilder {
   UnitTestJobBuilder({
     required this.analyzeJobId,
     required this.workingDirectory,
+    required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.unitTestPaths,
@@ -120,6 +122,7 @@ abstract base class UnitTestJobBuilder extends SdkJobBuilder {
           ...buildSetupSdkSteps(),
           ...UnitTestBuilder(
             workingDirectory: workingDirectory,
+            artifactDependencies: artifactDependencies,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
             unitTestPaths: unitTestPaths,

@@ -25,6 +25,7 @@ class DartWorkflow implements WorkflowBuilder {
     final analyzeJobBuilder = DartAnalyzeJobBuilder(
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       analyzeImage: inputContext(WorkflowInputs.analyzeImage),
@@ -34,6 +35,7 @@ class DartWorkflow implements WorkflowBuilder {
       analyzeJobId: analyzeJobBuilder.id,
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
@@ -50,6 +52,7 @@ class DartWorkflow implements WorkflowBuilder {
       analyzeJobId: analyzeJobBuilder.id,
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),

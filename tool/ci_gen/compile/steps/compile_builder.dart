@@ -21,6 +21,7 @@ abstract interface class ICompileMatrix {
 
 class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
   final Expression workingDirectory;
+  final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final ICompileMatrix matrix;
@@ -29,6 +30,7 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
 
   CompileBuilder({
     required this.workingDirectory,
+    required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.matrix,
@@ -40,6 +42,7 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
   Iterable<Step> build() => [
         ...ProjectSetupBuilder(
           workingDirectory: workingDirectory,
+          artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
           releaseMode: true,

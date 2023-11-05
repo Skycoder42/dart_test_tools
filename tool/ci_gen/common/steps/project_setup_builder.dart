@@ -11,6 +11,7 @@ class ProjectSetupBuilder implements StepBuilder {
       StepIdOutput(platformCheckStepId, 'should-run');
 
   final Expression workingDirectory;
+  final Expression? artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final bool releaseMode;
@@ -21,6 +22,7 @@ class ProjectSetupBuilder implements StepBuilder {
 
   const ProjectSetupBuilder({
     required this.workingDirectory,
+    this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
     this.releaseMode = false,
@@ -72,6 +74,7 @@ ${shouldRunOutput.bashSetter('\$isPlatformAllowed')}
           ),
         ...ProjectPrepareBuilder(
           workingDirectory: workingDirectory,
+          artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
           releaseMode: releaseMode,

@@ -11,6 +11,7 @@ class PackageBuilder implements StepBuilder {
       StepIdOutput(_getPackageNameStepId, 'package-name');
 
   final Expression workingDirectory;
+  final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final String pubTool;
@@ -18,6 +19,7 @@ class PackageBuilder implements StepBuilder {
 
   PackageBuilder({
     required this.workingDirectory,
+    required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.pubTool,
@@ -28,6 +30,7 @@ class PackageBuilder implements StepBuilder {
   Iterable<Step> build() => [
         ...ProjectSetupBuilder(
           workingDirectory: workingDirectory,
+          artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
           pubTool: pubTool,
@@ -44,7 +47,11 @@ class PackageBuilder implements StepBuilder {
           uses: Tools.actionsUploadArtifact,
           withArgs: <String, dynamic>{
             'name': 'package-${_packageNameOutput.expression}',
-            'path': workingDirectory.toString(),
+            'path': '''
+$workingDirectory
+!$workingDirectory/.*
+!$workingDirectory/**/.*
+''',
             'retention-days': 7,
             'if-no-files-found': 'error',
           },

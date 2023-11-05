@@ -11,6 +11,7 @@ abstract interface class IUnitTextMatrix implements ICoverageCollectorMatrix {
 
 class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
   final Expression workingDirectory;
+  final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression unitTestPaths;
@@ -24,6 +25,7 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
 
   const UnitTestBuilder({
     required this.workingDirectory,
+    required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.unitTestPaths,
@@ -40,6 +42,7 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
   Iterable<Step> build() => [
         ...ProjectSetupBuilder(
           workingDirectory: workingDirectory,
+          artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
           pubTool: pubTool,
