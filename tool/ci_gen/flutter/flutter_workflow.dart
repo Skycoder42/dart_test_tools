@@ -1,3 +1,4 @@
+import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
 import '../common/jobs/validate_coverage_job_builder.dart';
 import '../common/inputs.dart';
@@ -8,10 +9,14 @@ import 'jobs/flutter_analyze_job_builder.dart';
 import 'jobs/flutter_integration_test_job_builder.dart';
 import 'jobs/flutter_unit_test_job_builder.dart';
 
-abstract class FlutterWorkflow {
-  FlutterWorkflow._();
+class FlutterWorkflow implements WorkflowBuilder {
+  const FlutterWorkflow();
 
-  static Workflow buildWorkflow() {
+  @override
+  String get name => 'flutter';
+
+  @override
+  Workflow build() {
     final inputContext = WorkflowInputContext();
 
     final analyzeJobBuilder = FlutterAnalyzeJobBuilder(

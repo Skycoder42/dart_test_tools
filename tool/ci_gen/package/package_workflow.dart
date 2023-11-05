@@ -1,3 +1,4 @@
+import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
 import '../common/inputs.dart';
 import '../types/on.dart';
@@ -5,10 +6,14 @@ import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'jobs/package_job_builder.dart';
 
-abstract base class PackageWorkflow {
-  PackageWorkflow._();
+class PackageWorkflow implements WorkflowBuilder {
+  const PackageWorkflow();
 
-  static Workflow buildWorkflow() {
+  @override
+  String get name => 'package';
+
+  @override
+  Workflow build() {
     final inputContext = WorkflowInputContext();
 
     final packageJobBuilder = PackageJobBuilder(

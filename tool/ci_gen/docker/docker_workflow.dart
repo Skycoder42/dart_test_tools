@@ -1,3 +1,4 @@
+import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
 import '../common/api/workflow_secret.dart';
 import '../common/inputs.dart';
@@ -7,10 +8,14 @@ import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'jobs/docker_job_builder.dart';
 
-abstract class DockerWorkflow {
-  DockerWorkflow._();
+class DockerWorkflow implements WorkflowBuilder {
+  const DockerWorkflow();
 
-  static Workflow buildWorkflow() {
+  @override
+  String get name => 'docker';
+
+  @override
+  Workflow build() {
     final inputContext = WorkflowInputContext();
     final secretContext = WorkflowSecretContext();
 

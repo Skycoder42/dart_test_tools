@@ -1,3 +1,4 @@
+import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_secret.dart';
 import '../common/secrets.dart';
 import '../types/on.dart';
@@ -5,10 +6,14 @@ import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'jobs/aur_deploy_job_builder.dart';
 
-abstract class AurWorkflow {
-  AurWorkflow._();
+class AurWorkflow implements WorkflowBuilder {
+  const AurWorkflow();
 
-  static Workflow buildWorkflow() {
+  @override
+  String get name => 'aur';
+
+  @override
+  Workflow build() {
     final secretContext = WorkflowSecretContext();
 
     final aurDeployJobBuilder = AurDeployJobBuilder(

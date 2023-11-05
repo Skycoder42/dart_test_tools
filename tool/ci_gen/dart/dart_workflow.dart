@@ -1,3 +1,4 @@
+import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
 import '../common/api/workflow_secret.dart';
 import '../common/jobs/validate_coverage_job_builder.dart';
@@ -10,10 +11,14 @@ import 'jobs/dart_analyze_job_builder.dart';
 import 'jobs/dart_integration_test_job_builder.dart';
 import 'jobs/dart_unit_test_job_builder.dart';
 
-abstract class DartWorkflow {
-  DartWorkflow._();
+class DartWorkflow implements WorkflowBuilder {
+  const DartWorkflow();
 
-  static Workflow buildWorkflow() {
+  @override
+  String get name => 'dart';
+
+  @override
+  Workflow build() {
     final inputContext = WorkflowInputContext();
     final secretContext = WorkflowSecretContext();
 
