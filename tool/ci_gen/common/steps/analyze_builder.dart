@@ -13,6 +13,7 @@ class AnalyzeBuilder implements StepBuilder {
   final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
+  final Expression removePubspecOverrides;
   final Expression analyzeImage;
   final Expression panaScoreThreshold;
   final String baseTool;
@@ -25,6 +26,7 @@ class AnalyzeBuilder implements StepBuilder {
     required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
+    required this.removePubspecOverrides,
     required this.analyzeImage,
     required this.panaScoreThreshold,
     required this.baseTool,
@@ -44,6 +46,7 @@ class AnalyzeBuilder implements StepBuilder {
           artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
+          removePubspecOverrides: removePubspecOverrides,
           pubTool: pubTool,
           runTool: runTool,
         ).build(),

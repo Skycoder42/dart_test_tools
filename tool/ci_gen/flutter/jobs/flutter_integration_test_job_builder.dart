@@ -106,6 +106,7 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
+  final Expression removePubspecOverrides;
   final Expression integrationTestSetup;
   final Expression integrationTestPaths;
   final Expression integrationTestProject;
@@ -121,6 +122,7 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
+    required this.removePubspecOverrides,
     required this.integrationTestSetup,
     required this.integrationTestPaths,
     required this.integrationTestProject,
@@ -157,6 +159,7 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
             artifactDependencies: artifactDependencies,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
+            removePubspecOverrides: removePubspecOverrides,
             integrationTestSetup: integrationTestSetup,
             integrationTestPaths: integrationTestPaths,
             integrationTestProject: integrationTestProject,

@@ -14,6 +14,7 @@ class ProjectSetupBuilder implements StepBuilder {
   final Expression? artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
+  final Expression? removePubspecOverrides;
   final bool releaseMode;
   final String pubTool;
   final String runTool;
@@ -25,6 +26,7 @@ class ProjectSetupBuilder implements StepBuilder {
     this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
+    this.removePubspecOverrides,
     this.releaseMode = false,
     required this.pubTool,
     required this.runTool,
@@ -77,6 +79,7 @@ ${shouldRunOutput.bashSetter('\$isPlatformAllowed')}
           artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
+          removePubspecOverrides: removePubspecOverrides,
           releaseMode: releaseMode,
           pubTool: pubTool,
           runTool: runTool,

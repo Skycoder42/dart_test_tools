@@ -14,6 +14,7 @@ class PackageBuilder implements StepBuilder {
   final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
+  final Expression removePubspecOverrides;
   final String pubTool;
   final String runTool;
 
@@ -22,6 +23,7 @@ class PackageBuilder implements StepBuilder {
     required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
+    required this.removePubspecOverrides,
     required this.pubTool,
     required this.runTool,
   });
@@ -33,6 +35,7 @@ class PackageBuilder implements StepBuilder {
           artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
+          removePubspecOverrides: removePubspecOverrides,
           pubTool: pubTool,
           runTool: runTool,
         ).build(),

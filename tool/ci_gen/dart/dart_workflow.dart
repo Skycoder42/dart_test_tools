@@ -28,6 +28,8 @@ class DartWorkflow implements WorkflowBuilder {
       artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+      removePubspecOverrides:
+          inputContext(WorkflowInputs.removePubspecOverrides),
       analyzeImage: inputContext(WorkflowInputs.analyzeImage),
       panaScoreThreshold: inputContext(WorkflowInputs.panaScoreThreshold),
     );
@@ -38,6 +40,8 @@ class DartWorkflow implements WorkflowBuilder {
       artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+      removePubspecOverrides:
+          inputContext(WorkflowInputs.removePubspecOverrides),
       unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
       minCoverage: inputContext(WorkflowInputs.minCoverage),
     );
@@ -55,6 +59,8 @@ class DartWorkflow implements WorkflowBuilder {
       artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+      removePubspecOverrides:
+          inputContext(WorkflowInputs.removePubspecOverrides),
       integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
       integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
       integrationTestEnvVars:

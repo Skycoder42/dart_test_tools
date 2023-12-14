@@ -25,6 +25,11 @@ on:
         type: string
         required: false
         description: Optional additional arguments to be passed to the build runner.
+      removePubspecOverrides:
+        type: boolean
+        required: false
+        default: true
+        description: Disables pubspec_overrides.yaml cleanup if set to false.
 jobs:
   package:
     name: Create dart package artifact
@@ -53,6 +58,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Remove pubspec_overrides.yaml
+        if: inputs.removePubspecOverrides
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash

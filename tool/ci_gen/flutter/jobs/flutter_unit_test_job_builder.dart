@@ -17,6 +17,7 @@ final class FlutterUnitTestJobBuilder extends UnitTestJobBuilder
     required super.artifactDependencies,
     required super.buildRunner,
     required super.buildRunnerArgs,
+    required super.removePubspecOverrides,
     required super.unitTestPaths,
     required super.minCoverage,
   });

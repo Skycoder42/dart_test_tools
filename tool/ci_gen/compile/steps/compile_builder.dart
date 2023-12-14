@@ -24,6 +24,7 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
   final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
+  final Expression removePubspecOverrides;
   final ICompileMatrix matrix;
   final String pubTool;
   final String runTool;
@@ -33,6 +34,7 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
     required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
+    required this.removePubspecOverrides,
     required this.matrix,
     required this.pubTool,
     required this.runTool,
@@ -45,6 +47,7 @@ class CompileBuilder with PlatformsBuilderMixin implements StepBuilder {
           artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
+          removePubspecOverrides: removePubspecOverrides,
           releaseMode: true,
           pubTool: pubTool,
           runTool: runTool,

@@ -358,4 +358,14 @@ Example:
           'artifacts and overwritten for the workflow.',
     ),
   );
+
+  static const removePubspecOverrides = WorkflowInput(
+    name: 'removePubspecOverrides',
+    input: Input(
+      type: Type.boolean,
+      required: false,
+      defaultValue: true,
+      description: 'Disables pubspec_overrides.yaml cleanup if set to false.',
+    ),
+  );
 }

@@ -16,6 +16,7 @@ final class PackageJobBuilder extends SdkJobBuilder
   final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
+  final Expression removePubspecOverrides;
 
   PackageJobBuilder({
     required this.dartSdkVersion,
@@ -23,6 +24,7 @@ final class PackageJobBuilder extends SdkJobBuilder
     required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
+    required this.removePubspecOverrides,
   });
 
   @override
@@ -36,6 +38,7 @@ final class PackageJobBuilder extends SdkJobBuilder
             artifactDependencies: artifactDependencies,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
+            removePubspecOverrides: removePubspecOverrides,
             pubTool: pubTool,
             runTool: runTool,
           ).build(),

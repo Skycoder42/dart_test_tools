@@ -25,6 +25,11 @@ on:
         type: string
         required: false
         description: Optional additional arguments to be passed to the build runner.
+      removePubspecOverrides:
+        type: boolean
+        required: false
+        default: true
+        description: Disables pubspec_overrides.yaml cleanup if set to false.
       releaseRef:
         type: string
         required: false
@@ -115,17 +120,17 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Remove pubspec_overrides.yaml
-        if: steps.platform-check.outputs.should-run == 'true'
+        if: inputs.removePubspecOverrides && steps.platform-check.outputs.should-run == 'true'
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Download artifacts
-        if: inputs.artifactDependencies != ''
+        if: inputs.artifactDependencies != '' && steps.platform-check.outputs.should-run == 'true'
         uses: actions/download-artifact@v3
         with:
           path: ${{ runner.temp }}/.artifacts
       - name: Create pubspec_overrides.yaml for required packages
-        if: inputs.artifactDependencies != ''
+        if: inputs.artifactDependencies != '' && steps.platform-check.outputs.should-run == 'true'
         run: |
           set -eo pipefail
           touch pubspec_overrides.yaml

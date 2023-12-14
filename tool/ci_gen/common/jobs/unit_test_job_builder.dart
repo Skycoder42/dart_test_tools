@@ -81,6 +81,7 @@ abstract base class UnitTestJobBuilder extends SdkJobBuilder {
   final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
+  final Expression removePubspecOverrides;
   final Expression unitTestPaths;
   final Expression minCoverage;
 
@@ -90,6 +91,7 @@ abstract base class UnitTestJobBuilder extends SdkJobBuilder {
     required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
+    required this.removePubspecOverrides,
     required this.unitTestPaths,
     required this.minCoverage,
   });
@@ -125,6 +127,7 @@ abstract base class UnitTestJobBuilder extends SdkJobBuilder {
             artifactDependencies: artifactDependencies,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
+            removePubspecOverrides: removePubspecOverrides,
             unitTestPaths: unitTestPaths,
             minCoverage: minCoverage,
             baseTool: baseTool,

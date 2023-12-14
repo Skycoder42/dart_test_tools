@@ -24,6 +24,8 @@ class CompileWorkflow implements WorkflowBuilder {
       artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+      removePubspecOverrides:
+          inputContext(WorkflowInputs.removePubspecOverrides),
     );
 
     final releaseJobBuilder = ReleaseJobBuilder(

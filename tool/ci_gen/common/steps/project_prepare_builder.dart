@@ -11,6 +11,7 @@ class ProjectPrepareBuilder implements StepBuilder {
   final Expression? artifactDependencies;
   final Expression? buildRunner;
   final Expression? buildRunnerArgs;
+  final Expression? removePubspecOverrides;
   final bool releaseMode;
   final String pubTool;
   final String runTool;
@@ -22,6 +23,7 @@ class ProjectPrepareBuilder implements StepBuilder {
     this.artifactDependencies,
     this.buildRunner,
     this.buildRunnerArgs,
+    this.removePubspecOverrides,
     this.releaseMode = false,
     required this.pubTool,
     required this.runTool,
@@ -32,7 +34,9 @@ class ProjectPrepareBuilder implements StepBuilder {
   Iterable<Step> build() => [
         Step.run(
           name: 'Remove pubspec_overrides.yaml$_titleSuffix',
-          ifExpression: ifExpression,
+          ifExpression: removePubspecOverrides != null
+              ? (removePubspecOverrides! & ifExpression)
+              : ifExpression,
           run: 'find . -type f -name "pubspec_overrides.yaml" '
               r'-exec git rm -f {} \;',
           workingDirectory: workingDirectory.toString(),
@@ -41,7 +45,8 @@ class ProjectPrepareBuilder implements StepBuilder {
         if (artifactDependencies != null) ...[
           Step.uses(
             name: 'Download artifacts',
-            ifExpression: artifactDependencies!.ne(Expression.empty),
+            ifExpression:
+                artifactDependencies!.ne(Expression.empty) & ifExpression,
             uses: Tools.actionsDownloadArtifact,
             withArgs: {
               'path': '$_runnerTemp/.artifacts',
@@ -49,7 +54,8 @@ class ProjectPrepareBuilder implements StepBuilder {
           ),
           Step.run(
             name: 'Create pubspec_overrides.yaml for required packages',
-            ifExpression: artifactDependencies!.ne(Expression.empty),
+            ifExpression:
+                artifactDependencies!.ne(Expression.empty) & ifExpression,
             shell: 'bash',
             run: '''
 set -eo pipefail

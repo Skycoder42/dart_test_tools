@@ -12,6 +12,7 @@ abstract base class AnalyzeJobBuilder extends SdkJobBuilder {
   final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
+  final Expression removePubspecOverrides;
   final Expression analyzeImage;
   final Expression panaScoreThreshold;
 
@@ -20,6 +21,7 @@ abstract base class AnalyzeJobBuilder extends SdkJobBuilder {
     required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
+    required this.removePubspecOverrides,
     required this.analyzeImage,
     required this.panaScoreThreshold,
   });
@@ -38,6 +40,7 @@ abstract base class AnalyzeJobBuilder extends SdkJobBuilder {
             artifactDependencies: artifactDependencies,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
+            removePubspecOverrides: removePubspecOverrides,
             analyzeImage: analyzeImage,
             panaScoreThreshold: panaScoreThreshold,
             baseTool: baseTool,

@@ -20,6 +20,7 @@ class DartIntegrationTestBuilder
   final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
+  final Expression removePubspecOverrides;
   final Expression integrationTestSetup;
   final Expression integrationTestPaths;
   final Expression integrationTestEnvVars;
@@ -34,6 +35,7 @@ class DartIntegrationTestBuilder
     required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
+    required this.removePubspecOverrides,
     required this.integrationTestSetup,
     required this.integrationTestPaths,
     required this.integrationTestEnvVars,
@@ -51,6 +53,7 @@ class DartIntegrationTestBuilder
           artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
+          removePubspecOverrides: removePubspecOverrides,
           pubTool: pubTool,
           runTool: runTool,
           withPlatform: matrix.platform,

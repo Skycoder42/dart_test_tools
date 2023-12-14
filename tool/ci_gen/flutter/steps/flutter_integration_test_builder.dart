@@ -23,6 +23,7 @@ class FlutterIntegrationTestBuilder
   final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
+  final Expression removePubspecOverrides;
   final Expression integrationTestSetup;
   final Expression integrationTestPaths;
   final Expression integrationTestProject;
@@ -39,6 +40,7 @@ class FlutterIntegrationTestBuilder
     required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
+    required this.removePubspecOverrides,
     required this.integrationTestSetup,
     required this.integrationTestPaths,
     required this.integrationTestProject,
@@ -58,6 +60,7 @@ class FlutterIntegrationTestBuilder
           artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
+          removePubspecOverrides: removePubspecOverrides,
           pubTool: pubTool,
           runTool: runTool,
           withPlatform: matrix.platform,
@@ -98,6 +101,7 @@ sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
           titleSuffix: '(Integration test project)',
           workingDirectory:
               Expression.fake('$workingDirectory/$integrationTestProject'),
+          removePubspecOverrides: removePubspecOverrides,
           pubTool: pubTool,
           runTool: runTool,
           ifExpression:

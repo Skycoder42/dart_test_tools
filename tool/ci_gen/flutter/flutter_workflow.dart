@@ -26,6 +26,8 @@ class FlutterWorkflow implements WorkflowBuilder {
       artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+      removePubspecOverrides:
+          inputContext(WorkflowInputs.removePubspecOverrides),
       analyzeImage: inputContext(WorkflowInputs.analyzeImage),
       panaScoreThreshold: inputContext(WorkflowInputs.panaScoreThreshold),
     );
@@ -37,6 +39,8 @@ class FlutterWorkflow implements WorkflowBuilder {
       artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+      removePubspecOverrides:
+          inputContext(WorkflowInputs.removePubspecOverrides),
       unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
       minCoverage: inputContext(WorkflowInputs.minCoverage),
     );
@@ -55,6 +59,8 @@ class FlutterWorkflow implements WorkflowBuilder {
       artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+      removePubspecOverrides:
+          inputContext(WorkflowInputs.removePubspecOverrides),
       integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
       integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
       integrationTestProject:

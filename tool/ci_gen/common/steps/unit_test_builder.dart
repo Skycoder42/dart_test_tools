@@ -14,6 +14,7 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
   final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
+  final Expression removePubspecOverrides;
   final Expression unitTestPaths;
   final Expression minCoverage;
   final String baseTool;
@@ -28,6 +29,7 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
     required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
+    required this.removePubspecOverrides,
     required this.unitTestPaths,
     required this.minCoverage,
     required this.baseTool,
@@ -45,6 +47,7 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
           artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
+          removePubspecOverrides: removePubspecOverrides,
           pubTool: pubTool,
           runTool: runTool,
           withPlatform: matrix.platform,

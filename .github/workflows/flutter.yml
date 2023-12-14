@@ -30,6 +30,11 @@ on:
         type: string
         required: false
         description: Optional additional arguments to be passed to the build runner.
+      removePubspecOverrides:
+        type: boolean
+        required: false
+        default: true
+        description: Disables pubspec_overrides.yaml cleanup if set to false.
       analyzeImage:
         type: string
         required: false
@@ -131,6 +136,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Remove pubspec_overrides.yaml
+        if: inputs.removePubspecOverrides
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
@@ -251,17 +257,17 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Remove pubspec_overrides.yaml
-        if: steps.platform-check.outputs.should-run == 'true'
+        if: inputs.removePubspecOverrides && steps.platform-check.outputs.should-run == 'true'
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Download artifacts
-        if: inputs.artifactDependencies != ''
+        if: inputs.artifactDependencies != '' && steps.platform-check.outputs.should-run == 'true'
         uses: actions/download-artifact@v3
         with:
           path: ${{ runner.temp }}/.artifacts
       - name: Create pubspec_overrides.yaml for required packages
-        if: inputs.artifactDependencies != ''
+        if: inputs.artifactDependencies != '' && steps.platform-check.outputs.should-run == 'true'
         run: |
           set -eo pipefail
           touch pubspec_overrides.yaml
@@ -427,17 +433,17 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Remove pubspec_overrides.yaml
-        if: steps.platform-check.outputs.should-run == 'true'
+        if: inputs.removePubspecOverrides && steps.platform-check.outputs.should-run == 'true'
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Download artifacts
-        if: inputs.artifactDependencies != ''
+        if: inputs.artifactDependencies != '' && steps.platform-check.outputs.should-run == 'true'
         uses: actions/download-artifact@v3
         with:
           path: ${{ runner.temp }}/.artifacts
       - name: Create pubspec_overrides.yaml for required packages
-        if: inputs.artifactDependencies != ''
+        if: inputs.artifactDependencies != '' && steps.platform-check.outputs.should-run == 'true'
         run: |
           set -eo pipefail
           touch pubspec_overrides.yaml
@@ -478,7 +484,7 @@ jobs:
         if: steps.platform-check.outputs.should-run == 'true'
         run: flutter doctor -v
       - name: Remove pubspec_overrides.yaml (Integration test project)
-        if: inputs.integrationTestProject != '' && steps.platform-check.outputs.should-run == 'true'
+        if: inputs.removePubspecOverrides && inputs.integrationTestProject != '' && steps.platform-check.outputs.should-run == 'true'
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
         shell: bash

@@ -13,6 +13,7 @@ final class DartAnalyzeJobBuilder extends AnalyzeJobBuilder
     required super.artifactDependencies,
     required super.buildRunner,
     required super.buildRunnerArgs,
+    required super.removePubspecOverrides,
     required super.analyzeImage,
     required super.panaScoreThreshold,
     required this.dartSdkVersion,
