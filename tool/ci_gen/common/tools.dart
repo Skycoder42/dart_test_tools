@@ -14,7 +14,7 @@ abstract class Tools {
   static const actionsCache = 'actions/cache@v3';
 
   /// https://github.com/actions/setup-java/releases
-  static const actionsSetupJava = 'actions/setup-java@v3';
+  static const actionsSetupJava = 'actions/setup-java@v4';
 
   /// https://github.com/dart-lang/setup-dart/releases
   static const dartLangSetupDart = 'dart-lang/setup-dart@v1';

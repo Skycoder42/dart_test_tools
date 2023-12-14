@@ -43,6 +43,4 @@ linter:
     implicit_reopen: true
     matching_super_parameters: true
     no_literal_bool_comparisons: true
-    no_self_assignments: true
-    no_wildcard_variable_uses: true
     # new rules
