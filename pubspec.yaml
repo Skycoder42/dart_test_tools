@@ -1,5 +1,5 @@
 name: dart_test_tools
-description: Additional tools and helpers for writing dart unit tests.
+description: Additional tools and helpers for writing dart unit tests and GitHub Actions Workflows.
 version: 5.5.0
 homepage: https://github.com/Skycoder42/dart_test_tools
 
@@ -22,7 +22,7 @@ dependencies:
   lint: ^2.2.0
   logging: ^1.2.0
   meta: ^1.10.0
-  mocktail: ^1.0.1
+  mocktail: ^1.0.2
   path: ^1.8.3
   pub_semver: ^2.1.4
   pubspec_parse: ^1.2.3
@@ -55,3 +55,4 @@ dart_pre_commit:
       - analyzer
       - meta
       - path
+      - test
