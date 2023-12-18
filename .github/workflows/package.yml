@@ -91,7 +91,7 @@ jobs:
         run: echo "package-name=$(yq .name pubspec.yaml)" >> $GITHUB_OUTPUT
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload compiled binaries artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: package-${{ steps.get-package-name.outputs.package-name }}
           path: |
