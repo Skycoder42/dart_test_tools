@@ -126,7 +126,7 @@ jobs:
         shell: bash
       - name: Download artifacts
         if: inputs.artifactDependencies != '' && steps.platform-check.outputs.should-run == 'true'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: ${{ runner.temp }}/.artifacts
       - name: Create pubspec_overrides.yaml for required packages
@@ -226,7 +226,7 @@ jobs:
           fi
       - name: Download all binary artifacts
         if: steps.version.outputs.update == 'true'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: artifacts
       - name: Activate cider
