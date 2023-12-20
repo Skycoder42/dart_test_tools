@@ -182,7 +182,7 @@ jobs:
         shell: bash
       - name: Upload compiled binaries artifact
         if: steps.platform-check.outputs.should-run == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: binaries-${{ matrix.platform }}
           path: ${{ inputs.workingDirectory }}/build/artifacts/*
