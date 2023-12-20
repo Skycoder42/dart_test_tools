@@ -142,7 +142,7 @@ jobs:
         shell: bash
       - name: Download artifacts
         if: inputs.artifactDependencies != ''
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: ${{ runner.temp }}/.artifacts
       - name: Create pubspec_overrides.yaml for required packages
@@ -263,7 +263,7 @@ jobs:
         shell: bash
       - name: Download artifacts
         if: inputs.artifactDependencies != '' && steps.platform-check.outputs.should-run == 'true'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: ${{ runner.temp }}/.artifacts
       - name: Create pubspec_overrides.yaml for required packages
@@ -319,7 +319,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Download coverage data
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: ${{ inputs.workingDirectory }}/coverage
       - name: Merge coverage data
@@ -439,7 +439,7 @@ jobs:
         shell: bash
       - name: Download artifacts
         if: inputs.artifactDependencies != '' && steps.platform-check.outputs.should-run == 'true'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: ${{ runner.temp }}/.artifacts
       - name: Create pubspec_overrides.yaml for required packages
