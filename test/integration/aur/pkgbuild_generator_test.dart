@@ -31,7 +31,7 @@ void main() {
 
   // ignore: avoid_positional_boolean_parameters
   Future<void> createSources(bool minimal) async {
-    final writer = YAMLWriter();
+    final writer = YamlWriter();
     final pubspecYaml = writer.write({
       'name': 'test_package',
       if (!minimal) 'description': 'This is a test package.',

@@ -22,8 +22,6 @@ class VersionSyncCommand extends CiderCommand {
 
   @override
   Future<int> exec(Project project) async {
-    final stdout = printer.out;
-    final stderr = printer.err;
     final rootDir = switch (globalResults!['project-root']) {
       String path => Directory(path),
       _ => findProjectRoot(Directory.current)
@@ -38,16 +36,16 @@ class VersionSyncCommand extends CiderCommand {
 
     final version = pubspec.version;
     if (version == null) {
-      stderr.writeln('pubspec.yaml has no version set!');
+      console.err.writeln('pubspec.yaml has no version set!');
       return 1;
     }
-    stdout.writeln('Syncing version $version to native packages...');
+    console.out.writeln('Syncing version $version to native packages...');
 
-    await _updateAndroid(stdout, rootDir, pubspec);
-    await _updateDarwin(stdout, rootDir, pubspec, 'ios');
-    await _updateDarwin(stdout, rootDir, pubspec, 'macos');
+    await _updateAndroid(console.out, rootDir, pubspec);
+    await _updateDarwin(console.out, rootDir, pubspec, 'ios');
+    await _updateDarwin(console.out, rootDir, pubspec, 'macos');
     await _updateConfigured(
-      stdout,
+      console.out,
       rootDir,
       pubspec,
       pubspecYaml,

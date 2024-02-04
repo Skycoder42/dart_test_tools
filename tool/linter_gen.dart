@@ -12,7 +12,7 @@ import 'linter_gen/services/rules_generator.dart';
 Future<void> main() async {
   final loader = AnalysisOptionsLoader();
   final writer = AnalysisOptionsWriter(
-    yamlWriter: YAMLWriter(),
+    yamlWriter: YamlWriter(),
   );
   final generator = RulesGenerator(
     knownRulesLoader: KnownRulesLoader(

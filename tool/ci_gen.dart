@@ -55,12 +55,13 @@ Future<int> _writeWorkflowToFile(WorkflowBuilder workflowBuilder) async {
   return yqProc.exitCode;
 }
 
-YAMLWriter _createYamlWriter() => YAMLWriter()
-  ..toEncodable = (dynamic data) {
-    // ignore: avoid_dynamic_calls
-    final dynamic jsonData = data.toJson != null ? data.toJson() : data;
-    if (jsonData is Map) {
-      return <dynamic, dynamic>{...jsonData}..remove('runtimeType');
-    }
-    return jsonData;
-  };
+YamlWriter _createYamlWriter() => YamlWriter(
+      toEncodable: (dynamic data) {
+        // ignore: avoid_dynamic_calls
+        final dynamic jsonData = data.toJson != null ? data.toJson() : data;
+        if (jsonData is Map) {
+          return <dynamic, dynamic>{...jsonData}..remove('runtimeType');
+        }
+        return jsonData;
+      },
+    );

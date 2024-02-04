@@ -5,13 +5,13 @@ abstract class Tools {
   static const actionsCheckout = 'actions/checkout@v4';
 
   /// https://github.com/actions/upload-artifact/releases
-  static const actionsUploadArtifact = 'actions/upload-artifact@v3';
+  static const actionsUploadArtifact = 'actions/upload-artifact@v4';
 
   /// https://github.com/actions/download-artifact/releases
-  static const actionsDownloadArtifact = 'actions/download-artifact@v3';
+  static const actionsDownloadArtifact = 'actions/download-artifact@v4';
 
   /// https://github.com/actions/cache/releases
-  static const actionsCache = 'actions/cache@v3';
+  static const actionsCache = 'actions/cache@v4';
 
   /// https://github.com/actions/setup-java/releases
   static const actionsSetupJava = 'actions/setup-java@v4';

@@ -6,7 +6,7 @@ import '../models/analysis_options.dart';
 import '../models/analysis_options_ref.dart';
 
 class AnalysisOptionsWriter {
-  final YAMLWriter yamlWriter;
+  final YamlWriter yamlWriter;
 
   AnalysisOptionsWriter({
     required this.yamlWriter,
