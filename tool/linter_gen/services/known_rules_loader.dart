@@ -56,7 +56,7 @@ class KnownRulesLoader {
       rulesPageResponse.body,
       sourceUrl: _rulesPageUri.toString(),
     );
-    final sourceCode = rulesDom.querySelectorAll('code.yaml').single.text;
+    final sourceCode = rulesDom.querySelectorAll('pre.shiki').single.text;
     return checkedYamlDecode(
       sourceCode,
       AnalysisOptions.fromYaml,
