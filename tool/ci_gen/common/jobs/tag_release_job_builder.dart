@@ -1,10 +1,10 @@
-import '../../common/api/job_builder.dart';
+import '../api/job_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
-import '../steps/release_builder.dart';
+import '../steps/tag_release_builder.dart';
 
-class ReleaseJobBuilder implements JobBuilder {
+class TagReleaseJobBuilder implements JobBuilder {
   static const jobId = JobId('release');
   static final updateOutput = jobId.output('update');
   static final versionOutput = jobId.output('version');
@@ -16,7 +16,7 @@ class ReleaseJobBuilder implements JobBuilder {
   final Expression tagPrefix;
   final Expression persistCredentials;
 
-  const ReleaseJobBuilder({
+  const TagReleaseJobBuilder({
     required this.compileJobId,
     required this.releaseRef,
     required this.dartSdkVersion,
@@ -37,16 +37,17 @@ class ReleaseJobBuilder implements JobBuilder {
           'contents': 'write',
         },
         outputs: {
-          updateOutput: ReleaseBuilder.updateOutput,
-          versionOutput: ReleaseBuilder.versionOutput,
+          updateOutput: TagReleaseBuilder.updateOutput,
+          versionOutput: TagReleaseBuilder.versionOutput,
         },
         runsOn: 'ubuntu-latest',
         steps: [
-          ...ReleaseBuilder(
+          ...TagReleaseBuilder(
             dartSdkVersion: dartSdkVersion,
             workingDirectory: workingDirectory,
             tagPrefix: tagPrefix,
             persistCredentials: persistCredentials,
+            binaryArtifactsPattern: 'binaries-*',
           ).build(),
         ],
       );

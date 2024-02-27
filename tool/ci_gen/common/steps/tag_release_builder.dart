@@ -1,13 +1,13 @@
-import '../../common/api/step_builder.dart';
-import '../../common/steps/checkout_builder.dart';
-import '../../common/steps/release_entry_builder.dart';
-import '../../common/tools.dart';
+import '../api/step_builder.dart';
+import 'checkout_builder.dart';
+import 'release_entry_builder.dart';
+import '../tools.dart';
 import '../../dart/steps/dart_sdk_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 
-class ReleaseBuilder implements StepBuilder {
+class TagReleaseBuilder implements StepBuilder {
   static const versionStepId = StepId('version');
   static final updateOutput = versionStepId.output('update');
   static final versionOutput = versionStepId.output('version');
@@ -16,12 +16,14 @@ class ReleaseBuilder implements StepBuilder {
   final Expression workingDirectory;
   final Expression tagPrefix;
   final Expression persistCredentials;
+  final String? binaryArtifactsPattern;
 
-  const ReleaseBuilder({
+  const TagReleaseBuilder({
     required this.dartSdkVersion,
     required this.workingDirectory,
     required this.tagPrefix,
     required this.persistCredentials,
+    required this.binaryArtifactsPattern,
   });
 
   @override
@@ -52,20 +54,24 @@ fi
 ''',
           workingDirectory: workingDirectory.toString(),
         ),
-        Step.uses(
-          name: 'Download all binary artifacts',
-          ifExpression:
-              updateOutput.expression.eq(const Expression.literal('true')),
-          uses: Tools.actionsDownloadArtifact,
-          withArgs: <String, dynamic>{
-            'path': 'artifacts',
-          },
-        ),
+        if (binaryArtifactsPattern != null)
+          Step.uses(
+            name: 'Download all binary artifacts',
+            ifExpression:
+                updateOutput.expression.eq(const Expression.literal('true')),
+            uses: Tools.actionsDownloadArtifact,
+            withArgs: <String, dynamic>{
+              'path': 'artifacts',
+              'pattern': binaryArtifactsPattern,
+            },
+          ),
         ...ReleaseEntryBuilder(
           workingDirectory: workingDirectory,
           tagPrefix: tagPrefix,
           versionUpdate: updateOutput.expression,
-          files: 'artifacts/binaries-*/binaries-*',
+          files: binaryArtifactsPattern != null
+              ? 'artifacts/$binaryArtifactsPattern/*'
+              : null,
         ).build(),
       ];
 }

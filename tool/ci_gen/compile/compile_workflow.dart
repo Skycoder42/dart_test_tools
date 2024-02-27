@@ -6,7 +6,7 @@ import '../types/output.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'jobs/compile_job_builder.dart';
-import 'jobs/release_job_builder.dart';
+import '../common/jobs/tag_release_job_builder.dart';
 
 class CompileWorkflow implements WorkflowBuilder {
   const CompileWorkflow();
@@ -28,7 +28,7 @@ class CompileWorkflow implements WorkflowBuilder {
           inputContext(WorkflowInputs.removePubspecOverrides),
     );
 
-    final releaseJobBuilder = ReleaseJobBuilder(
+    final releaseJobBuilder = TagReleaseJobBuilder(
       compileJobId: compileJobBuilder.id,
       releaseRef: inputContext(WorkflowInputs.releaseRef),
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
@@ -43,12 +43,12 @@ class CompileWorkflow implements WorkflowBuilder {
           inputs: inputContext.createInputs(),
           outputs: {
             'releaseCreated': Output(
-              value: ReleaseJobBuilder.updateOutput,
+              value: TagReleaseJobBuilder.updateOutput,
               description: 'Holds a boolean value string ("true" or "false"), '
                   'indicating whether a release was created or not.',
             ),
             'releaseVersion': Output(
-              value: ReleaseJobBuilder.versionOutput,
+              value: TagReleaseJobBuilder.versionOutput,
               description:
                   'Holds the version number of the created release, if the '
                   'releaseCreated output is true. Otherwise, it is not set.',
