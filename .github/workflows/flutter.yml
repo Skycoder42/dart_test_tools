@@ -9,7 +9,7 @@ on:
       javaJdkVersion:
         type: number
         required: false
-        default: 11
+        default: 17
         description: The Java-SDK version (mayor only). Passed as "java-version" to "actions/setup-java".
       workingDirectory:
         type: string

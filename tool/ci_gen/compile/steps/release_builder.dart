@@ -50,6 +50,7 @@ else
   ${updateOutput.bashSetter('false')}
 fi
 ''',
+          workingDirectory: workingDirectory.toString(),
         ),
         Step.uses(
           name: 'Download all binary artifacts',

@@ -224,6 +224,7 @@ jobs:
             echo Release already exists - skipping creation
             echo "update=false" >> $GITHUB_OUTPUT
           fi
+        working-directory: ${{ inputs.workingDirectory }}
       - name: Download all binary artifacts
         if: steps.version.outputs.update == 'true'
         uses: actions/download-artifact@v4

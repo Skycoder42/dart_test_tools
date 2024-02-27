@@ -67,7 +67,7 @@ abstract class WorkflowInputs {
     input: Input(
       type: Type.number,
       required: false,
-      defaultValue: 11,
+      defaultValue: 17,
       description: 'The Java-SDK version (mayor only). '
           'Passed as "java-version" to "actions/setup-java".',
     ),
