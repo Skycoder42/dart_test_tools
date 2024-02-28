@@ -27,12 +27,17 @@ abstract base class AnalyzeJobBuilder extends SdkJobBuilder {
   });
 
   @override
-  JobId get id => const JobId('analyze');
+  JobId get id => JobId('analyze');
+
+  JobIdOutput get platformsOutput => id.output('platforms');
 
   @override
   Job build() => Job(
         name: 'Analyze',
         runsOn: analyzeImage.toString(),
+        outputs: {
+          platformsOutput: AnalyzeBuilder.platformsOutput,
+        },
         steps: [
           ...buildSetupSdkSteps(),
           ...AnalyzeBuilder(

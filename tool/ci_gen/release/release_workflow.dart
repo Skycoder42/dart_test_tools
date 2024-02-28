@@ -1,10 +1,11 @@
 import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
+import '../common/api/workflow_output.dart';
 import '../common/api/workflow_secret.dart';
 import '../common/inputs.dart';
+import '../common/outputs.dart';
 import '../common/secrets.dart';
 import '../types/on.dart';
-import '../types/output.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'jobs/release_job_builder.dart';
@@ -19,6 +20,7 @@ class ReleaseWorkflow implements WorkflowBuilder {
   Workflow build() {
     final inputContext = WorkflowInputContext();
     final secretContext = WorkflowSecretContext();
+    final outputContext = WorkflowOutputContext();
 
     final releaseJobBuilder = ReleaseJobBuilder(
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
@@ -27,25 +29,16 @@ class ReleaseWorkflow implements WorkflowBuilder {
       tagPrefix: inputContext(WorkflowInputs.tagPrefix),
       githubToken: secretContext(WorkflowSecrets.githubToken),
     );
+    outputContext
+      ..add(WorkflowOutputs.releaseCreated, releaseJobBuilder.updateOutput)
+      ..add(WorkflowOutputs.releaseVersion, releaseJobBuilder.versionOutput);
 
     return Workflow(
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
           secrets: secretContext.createSecrets(),
-          outputs: {
-            'releaseCreated': Output(
-              value: ReleaseJobBuilder.updateOutput,
-              description: 'Holds a boolean value string ("true" or "false"), '
-                  'indicating whether a release was created or not.',
-            ),
-            'releaseVersion': Output(
-              value: ReleaseJobBuilder.versionOutput,
-              description:
-                  'Holds the version number of the created release, if the '
-                  'releaseCreated output is true. Otherwise, it is not set.',
-            ),
-          },
+          outputs: outputContext.createOutputs(),
         ),
       ),
       jobs: {

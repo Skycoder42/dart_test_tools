@@ -1,4 +1,5 @@
 import '../../common/jobs/unit_test_job_builder.dart';
+import '../../dart/dart_platform.dart';
 import '../../types/expression.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
@@ -11,6 +12,7 @@ final class FlutterUnitTestJobBuilder extends UnitTestJobBuilder
 
   FlutterUnitTestJobBuilder({
     required super.analyzeJobId,
+    required super.enabledPlatforms,
     required this.flutterSdkChannel,
     required this.javaJdkVersion,
     required super.workingDirectory,
@@ -20,7 +22,7 @@ final class FlutterUnitTestJobBuilder extends UnitTestJobBuilder
     required super.removePubspecOverrides,
     required super.unitTestPaths,
     required super.minCoverage,
-  });
+  }) : super(platformSelectors: DartPlatform.values);
 
   @override
   String get coverageArgs => '--coverage';

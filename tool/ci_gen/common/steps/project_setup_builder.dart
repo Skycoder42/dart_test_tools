@@ -1,15 +1,10 @@
 import '../../types/expression.dart';
-import '../../types/id.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
 import 'checkout_builder.dart';
 import 'project_prepare_builder.dart';
 
 class ProjectSetupBuilder implements StepBuilder {
-  static const platformCheckStepId = StepId('platform-check');
-  static const shouldRunOutput =
-      StepIdOutput(platformCheckStepId, 'should-run');
-
   final Expression workingDirectory;
   final Expression? artifactDependencies;
   final Expression buildRunner;
@@ -19,7 +14,6 @@ class ProjectSetupBuilder implements StepBuilder {
   final String pubTool;
   final String runTool;
   final bool skipYqInstall;
-  final Expression? withPlatform;
 
   const ProjectSetupBuilder({
     required this.workingDirectory,
@@ -31,7 +25,6 @@ class ProjectSetupBuilder implements StepBuilder {
     required this.pubTool,
     required this.runTool,
     this.skipYqInstall = false,
-    this.withPlatform,
   });
 
   @override
@@ -60,20 +53,7 @@ echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
 ''',
           ),
         ],
-        ...CheckoutBuilder().build(),
-        if (withPlatform != null)
-          Step.run(
-            id: platformCheckStepId,
-            name: 'Check if platform $withPlatform is supported',
-            run: '''
-set -eo pipefail
-isPlatformAllowed=\$(yq 'has("platforms") | not or .platforms | has("$withPlatform")' pubspec.yaml)
-echo "Platform enabled: \$isPlatformAllowed"
-${shouldRunOutput.bashSetter('\$isPlatformAllowed')}
-''',
-            workingDirectory: workingDirectory.toString(),
-            shell: 'bash',
-          ),
+        ...const CheckoutBuilder().build(),
         ...ProjectPrepareBuilder(
           workingDirectory: workingDirectory,
           artifactDependencies: artifactDependencies,
@@ -83,9 +63,6 @@ ${shouldRunOutput.bashSetter('\$isPlatformAllowed')}
           releaseMode: releaseMode,
           pubTool: pubTool,
           runTool: runTool,
-          ifExpression: withPlatform != null
-              ? shouldRunOutput.expression.eq(Expression.literal("true"))
-              : null,
         ).build(),
       ];
 }

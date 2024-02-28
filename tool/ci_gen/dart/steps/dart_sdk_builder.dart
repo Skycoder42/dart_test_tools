@@ -15,8 +15,7 @@ class DartSdkBuilder implements StepBuilder {
   @override
   Iterable<Step> build() => [
         Step.uses(
-          name: 'Install Dart-SDK '
-              '($dartSdkVersion)',
+          name: 'Install Dart-SDK ($dartSdkVersion)',
           ifExpression: ifExpression,
           uses: Tools.dartLangSetupDart,
           withArgs: <String, dynamic>{

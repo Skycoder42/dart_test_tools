@@ -5,16 +5,13 @@ import '../../types/job.dart';
 import '../steps/tag_release_builder.dart';
 
 class TagReleaseJobBuilder implements JobBuilder {
-  static const jobId = JobId('release');
-  static final updateOutput = jobId.output('update');
-  static final versionOutput = jobId.output('version');
-
   final JobId compileJobId;
   final Expression releaseRef;
   final Expression dartSdkVersion;
   final Expression workingDirectory;
   final Expression tagPrefix;
   final Expression persistCredentials;
+  final String? binaryArtifactsPattern;
 
   const TagReleaseJobBuilder({
     required this.compileJobId,
@@ -23,10 +20,15 @@ class TagReleaseJobBuilder implements JobBuilder {
     required this.workingDirectory,
     required this.tagPrefix,
     required this.persistCredentials,
+    required this.binaryArtifactsPattern,
   });
 
   @override
-  JobId get id => jobId;
+  JobId get id => JobId('release');
+
+  JobIdOutput get updateOutput => id.output('update');
+
+  JobIdOutput get versionOutput => id.output('version');
 
   @override
   Job build() => Job(
@@ -47,7 +49,7 @@ class TagReleaseJobBuilder implements JobBuilder {
             workingDirectory: workingDirectory,
             tagPrefix: tagPrefix,
             persistCredentials: persistCredentials,
-            binaryArtifactsPattern: 'binaries-*',
+            binaryArtifactsPattern: binaryArtifactsPattern,
           ).build(),
         ],
       );

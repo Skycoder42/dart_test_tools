@@ -1,22 +1,44 @@
+import '../../common/api/matrix_job_builder_mixin.dart';
+import '../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/steps/cache_builder.dart';
-import '../../common/steps/platforms_builder_mixin.dart';
 import '../../common/steps/project_prepare_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
+import '../flutter_platform.dart';
 
-abstract interface class IFlutterIntegrationTestMatrix {
-  Expression get platform;
-  Expression get testArgs;
-  Expression get runPrefix;
-  Expression get desktop;
+final class TestArgsMatrixProperty extends IMatrixProperty<FlutterPlatform> {
+  const TestArgsMatrixProperty();
+
+  @override
+  String get name => 'testArgs';
+
+  @override
+  Object? valueFor(FlutterPlatform selector) => switch (selector) {
+        FlutterPlatform.android || FlutterPlatform.ios => '--timeout 3x',
+        FlutterPlatform.linux => '-d linux',
+        FlutterPlatform.macos => '-d macos',
+        FlutterPlatform.windows => '-d windows',
+        _ => null,
+      };
 }
 
-class FlutterIntegrationTestBuilder
-    with PlatformsBuilderMixin
-    implements StepBuilder {
+final class RunPrefixMatrixProperty extends IMatrixProperty<FlutterPlatform> {
+  const RunPrefixMatrixProperty();
+
+  @override
+  String get name => 'runPrefix';
+
+  @override
+  Object? valueFor(FlutterPlatform selector) => switch (selector) {
+        FlutterPlatform.linux => 'xvfb-run --auto-servernum',
+        _ => null,
+      };
+}
+
+class FlutterIntegrationTestBuilder implements StepBuilder {
   static const testSetupCacheStepId = StepId('test-setup-cache');
 
   final Expression workingDirectory;
@@ -30,10 +52,12 @@ class FlutterIntegrationTestBuilder
   final Expression integrationTestCacheConfig;
   final Expression androidAVDImage;
   final Expression androidAVDDevice;
+  final PlatformMatrixProperty platform;
+  final TestArgsMatrixProperty testArgs;
+  final RunPrefixMatrixProperty runPrefix;
   final String baseTool;
   final String pubTool;
   final String runTool;
-  final IFlutterIntegrationTestMatrix matrix;
 
   const FlutterIntegrationTestBuilder({
     required this.workingDirectory,
@@ -47,10 +71,12 @@ class FlutterIntegrationTestBuilder
     required this.integrationTestCacheConfig,
     required this.androidAVDImage,
     required this.androidAVDDevice,
+    required this.platform,
+    required this.testArgs,
+    required this.runPrefix,
     required this.baseTool,
     required this.pubTool,
     required this.runTool,
-    required this.matrix,
   });
 
   @override
@@ -63,13 +89,11 @@ class FlutterIntegrationTestBuilder
           removePubspecOverrides: removePubspecOverrides,
           pubTool: pubTool,
           runTool: runTool,
-          withPlatform: matrix.platform,
         ).build(),
         Step.run(
           name: 'Install test dependencies (android)',
           ifExpression:
-              matrix.platform.eq(const Expression.literal('android')) &
-                  shouldRunExpression,
+              platform.expression.eq(const Expression.literal('android')),
           run: '''
 set -ex
 export PATH="\$ANDROID_HOME/cmdline-tools/latest/bin:\$PATH"
@@ -84,8 +108,8 @@ avdmanager create avd \\
         ),
         Step.run(
           name: 'Install test dependencies (linux)',
-          ifExpression: matrix.platform.eq(const Expression.literal('linux')) &
-              shouldRunExpression,
+          ifExpression:
+              platform.expression.eq(const Expression.literal('linux')),
           run: '''
 set -e
 sudo apt-get -qq update
@@ -94,7 +118,6 @@ sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
         ),
         Step.run(
           name: 'Validate flutter setup',
-          ifExpression: shouldRunExpression,
           run: '$baseTool doctor -v',
         ),
         ...ProjectPrepareBuilder(
@@ -104,20 +127,17 @@ sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
           removePubspecOverrides: removePubspecOverrides,
           pubTool: pubTool,
           runTool: runTool,
-          ifExpression:
-              integrationTestProject.ne(Expression.empty) & shouldRunExpression,
+          ifExpression: integrationTestProject.ne(Expression.empty),
         ).build(),
         ...CacheBuilder(
           cacheStepId: testSetupCacheStepId,
-          platform: matrix.platform,
+          platform: platform.expression,
           cacheConfig: integrationTestCacheConfig,
-          ifExpression:
-              _platformTestSetup.ne(Expression.empty) & shouldRunExpression,
+          ifExpression: _platformTestSetup.ne(Expression.empty),
         ).build(),
         Step.run(
           name: 'Run platform test setup',
-          ifExpression:
-              _platformTestSetup.ne(Expression.empty) & shouldRunExpression,
+          ifExpression: _platformTestSetup.ne(Expression.empty),
           run: _platformTestSetup.toString(),
           workingDirectory: workingDirectory.toString(),
           env: CacheBuilder.createEnv(testSetupCacheStepId),
@@ -125,8 +145,7 @@ sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
         Step.run(
           name: 'Start Android-Emulator',
           ifExpression:
-              matrix.platform.eq(const Expression.literal('android')) &
-                  shouldRunExpression,
+              platform.expression.eq(const Expression.literal('android')),
           run: '''
 set -ex
 nohup \$ANDROID_HOME/emulator/emulator -no-window @default &
@@ -137,8 +156,7 @@ $baseTool devices
         ),
         Step.run(
           name: 'Start iOS-Simulator',
-          ifExpression: matrix.platform.eq(const Expression.literal('ios')) &
-              shouldRunExpression,
+          ifExpression: platform.expression.eq(const Expression.literal('ios')),
           run: '''
 set -e
 open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
@@ -148,17 +166,15 @@ $baseTool devices
         ),
         Step.run(
           name: 'Run integration tests (dart-vm)',
-          ifExpression: matrix.platform.ne(const Expression.literal('web')) &
-              shouldRunExpression,
-          run: '${matrix.runPrefix} '
-              '$baseTool test ${matrix.testArgs} '
+          ifExpression: platform.expression.ne(const Expression.literal('web')),
+          run: '${runPrefix.expression} '
+              '$baseTool test ${testArgs.expression} '
               '--reporter expanded $integrationTestPaths',
           workingDirectory: '$workingDirectory/$integrationTestProject',
         ),
         Step.run(
           name: 'Run integration tests (web)',
-          ifExpression: matrix.platform.eq(const Expression.literal('web')) &
-              shouldRunExpression,
+          ifExpression: platform.expression.eq(const Expression.literal('web')),
           run: r'$ChromeWebDriver/chromedriver --port=4444 & '
               '$baseTool drive '
               '--driver test_driver/integration_test.dart '
@@ -171,6 +187,6 @@ $baseTool devices
       ];
 
   Expression get _platformTestSetup => Expression(
-        'fromJSON(${integrationTestSetup.value})[${matrix.platform.value}]',
+        'fromJSON(${integrationTestSetup.value})[${platform.expression.value}]',
       );
 }

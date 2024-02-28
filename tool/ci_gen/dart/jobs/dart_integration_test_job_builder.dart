@@ -1,74 +1,34 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-
+import '../../common/api/matrix_job_builder_mixin.dart';
+import '../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../common/jobs/sdk_job_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
-import '../../types/matrix.dart';
-import '../../types/strategy.dart';
 import '../steps/dart_integration_test_builder.dart';
+import '../dart_platform.dart';
 import 'dart_sdk_job_builder_mixin.dart';
 
-part 'dart_integration_test_job_builder.freezed.dart';
-part 'dart_integration_test_job_builder.g.dart';
+final class _DartIntegrationTestMatrix extends PlatformMatrix {
+  const _DartIntegrationTestMatrix() : super(DartPlatform.values);
 
-class _DartIntegrationTestJobMatrix implements IDartIntegrationTestMatrix {
+  DartTestArgsMatrixProperty get dartTestArgs => DartTestArgsMatrixProperty();
+
   @override
-  final Expression platform;
-  @override
-  final Expression dartTestArgs;
-  final Expression os;
-
-  const _DartIntegrationTestJobMatrix({
-    required this.platform,
-    required this.dartTestArgs,
-    required this.os,
-  });
-}
-
-@freezed
-class _PlatformInclude with _$PlatformInclude {
-  const factory _PlatformInclude({
-    required String platform,
-    required String os,
-    // ignore: invalid_annotation_target
-    @JsonKey(includeIfNull: false) String? dartTestArgs,
-  }) = __PlatformInclude;
-
-  // ignore: unused_element
-  factory _PlatformInclude.fromJson(Map<String, dynamic> json) =>
-      _$PlatformIncludeFromJson(json);
+  List<IMatrixProperty<IPlatformMatrixSelector>> get includeProperties => [
+        ...super.includeProperties,
+        dartTestArgs,
+      ];
 }
 
 final class DartIntegrationTestJobBuilder extends SdkJobBuilder
-    with DartSdkJobBuilderMixin {
-  static const _matrix = _DartIntegrationTestJobMatrix(
-    platform: Expression('matrix.platform'),
-    dartTestArgs: Expression('matrix.dartTestArgs'),
-    os: Expression('matrix.os'),
-  );
-
-  static const _platformIncludes = [
-    _PlatformInclude(
-      platform: 'linux',
-      os: 'ubuntu-latest',
-    ),
-    _PlatformInclude(
-      platform: 'windows',
-      os: 'windows-latest',
-    ),
-    _PlatformInclude(
-      platform: 'macos',
-      os: 'macos-latest',
-    ),
-    _PlatformInclude(
-      platform: 'web',
-      os: 'ubuntu-latest',
-      dartTestArgs: '-p chrome',
-    ),
-  ];
-
+    with
+        DartSdkJobBuilderMixin,
+        MatrixJobBuilderMixin<_DartIntegrationTestMatrix,
+            IPlatformMatrixSelector>,
+        PlatformJobBuilderMixin<_DartIntegrationTestMatrix> {
   final JobId analyzeJobId;
+  @override
+  final Expression enabledPlatforms;
   @override
   final Expression dartSdkVersion;
   final Expression workingDirectory;
@@ -81,8 +41,12 @@ final class DartIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression integrationTestEnvVars;
   final Expression integrationTestCacheConfig;
 
-  DartIntegrationTestJobBuilder({
+  @override
+  final _DartIntegrationTestMatrix matrix;
+
+  const DartIntegrationTestJobBuilder({
     required this.analyzeJobId,
+    required this.enabledPlatforms,
     required this.dartSdkVersion,
     required this.workingDirectory,
     required this.artifactDependencies,
@@ -93,26 +57,17 @@ final class DartIntegrationTestJobBuilder extends SdkJobBuilder
     required this.integrationTestPaths,
     required this.integrationTestEnvVars,
     required this.integrationTestCacheConfig,
-  });
+  }) : matrix = const _DartIntegrationTestMatrix();
 
   @override
   JobId get id => const JobId('integration_tests');
 
   @override
-  Job build() => Job(
+  Job buildGeneric(String runsOn) => Job(
         name: 'Integration tests',
         ifExpression: integrationTestPaths.ne(Expression.empty),
         needs: {analyzeJobId},
-        strategy: Strategy(
-          failFast: false,
-          matrix: Matrix(
-            {
-              'platform': _platformIncludes.map((i) => i.platform).toList(),
-            },
-            include: _platformIncludes.map((i) => i.toJson()).toList(),
-          ),
-        ),
-        runsOn: _matrix.os.toString(),
+        runsOn: runsOn,
         steps: [
           ...buildSetupSdkSteps(),
           ...DartIntegrationTestBuilder(
@@ -125,10 +80,11 @@ final class DartIntegrationTestJobBuilder extends SdkJobBuilder
             integrationTestPaths: integrationTestPaths,
             integrationTestEnvVars: integrationTestEnvVars,
             integrationTestCacheConfig: integrationTestCacheConfig,
+            platform: matrix.platform,
+            dartTestArgs: matrix.dartTestArgs,
             baseTool: baseTool,
             pubTool: pubTool,
             runTool: runTool,
-            matrix: _matrix,
           ).build(),
         ],
       );

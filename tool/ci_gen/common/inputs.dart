@@ -2,12 +2,8 @@ import '../types/input.dart';
 import 'api/workflow_input.dart';
 import 'tools.dart';
 
-abstract class WorkflowInputs {
+abstract base class WorkflowInputs {
   WorkflowInputs._();
-
-  static Inputs buildInputs(Iterable<WorkflowInput> inputs) => {
-        for (final input in inputs) input.name: input.input,
-      };
 
   static const workingDirectory = WorkflowInput(
     name: 'workingDirectory',
@@ -366,6 +362,16 @@ Example:
       required: false,
       defaultValue: true,
       description: 'Disables pubspec_overrides.yaml cleanup if set to false.',
+    ),
+  );
+
+  static const enabledPlatforms = WorkflowInput(
+    name: 'enabledPlatforms',
+    input: Input(
+      type: Type.string,
+      required: true,
+      description:
+          'A JSON-encoded list of all platforms that this project can build/run for.',
     ),
   );
 }

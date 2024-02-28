@@ -1,8 +1,10 @@
 import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
+import '../common/api/workflow_output.dart';
 import '../common/api/workflow_secret.dart';
 import '../common/jobs/validate_coverage_job_builder.dart';
 import '../common/inputs.dart';
+import '../common/outputs.dart';
 import '../common/secrets.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
@@ -21,6 +23,7 @@ class DartWorkflow implements WorkflowBuilder {
   Workflow build() {
     final inputContext = WorkflowInputContext();
     final secretContext = WorkflowSecretContext();
+    final outputContext = WorkflowOutputContext();
 
     final analyzeJobBuilder = DartAnalyzeJobBuilder(
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
@@ -33,8 +36,14 @@ class DartWorkflow implements WorkflowBuilder {
       analyzeImage: inputContext(WorkflowInputs.analyzeImage),
       panaScoreThreshold: inputContext(WorkflowInputs.panaScoreThreshold),
     );
+    outputContext.add(
+      WorkflowOutputs.enabledPlatforms,
+      analyzeJobBuilder.platformsOutput,
+    );
+
     final unitTestBuilder = DartUnitTestJobBuilder(
       analyzeJobId: analyzeJobBuilder.id,
+      enabledPlatforms: analyzeJobBuilder.platformsOutput.expression,
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
@@ -45,6 +54,7 @@ class DartWorkflow implements WorkflowBuilder {
       unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
       minCoverage: inputContext(WorkflowInputs.minCoverage),
     );
+
     final validateCoverageBuilder = ValidateCoverageJobBuilder(
       unitTestJobId: unitTestBuilder.id,
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
@@ -52,8 +62,10 @@ class DartWorkflow implements WorkflowBuilder {
       minCoverage: inputContext(WorkflowInputs.minCoverage),
       coverageExclude: inputContext(WorkflowInputs.coverageExclude),
     );
+
     final integrationTestBuilder = DartIntegrationTestJobBuilder(
       analyzeJobId: analyzeJobBuilder.id,
+      enabledPlatforms: analyzeJobBuilder.platformsOutput.expression,
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
@@ -74,6 +86,7 @@ class DartWorkflow implements WorkflowBuilder {
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
           secrets: secretContext.createSecrets(),
+          outputs: outputContext.createOutputs(),
         ),
       ),
       jobs: {

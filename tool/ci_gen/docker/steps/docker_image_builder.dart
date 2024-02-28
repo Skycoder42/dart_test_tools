@@ -5,11 +5,11 @@ import '../../types/id.dart';
 import '../../types/step.dart';
 
 class DockerImageBuilder implements StepBuilder {
-  static const setupBuildxId = StepId('setup-docker-buildx');
-  static final buildxPlatformsOutput = setupBuildxId.output('platforms');
+  static const _setupBuildxId = StepId('setup-docker-buildx');
+  static final _buildxPlatformsOutput = _setupBuildxId.output('platforms');
 
-  static const generateTags = StepId('generate-tags');
-  static final generateTagsOutput = generateTags.output('tags');
+  static const _generateTags = StepId('generate-tags');
+  static final _generateTagsOutput = _generateTags.output('tags');
 
   final Expression imageName;
   final Expression version;
@@ -36,12 +36,12 @@ class DockerImageBuilder implements StepBuilder {
           uses: Tools.dockerSetupQemuAction,
         ),
         const Step.uses(
-          id: setupBuildxId,
+          id: _setupBuildxId,
           name: 'Setup docker buildx',
           uses: Tools.dockerSetupBuildxAction,
         ),
         Step.run(
-          id: generateTags,
+          id: _generateTags,
           name: 'Generate docker image tags',
           run: '''
 set -eo pipefail
@@ -57,7 +57,7 @@ fi
 
 image_versions+=( $extraTags )
 
-${generateTagsOutput.bashSetterMultiLine('''printf '$imageName:%s\\n' "\${image_versions[@]}"''', isCommand: true)}
+${_generateTagsOutput.bashSetterMultiLine('''printf '$imageName:%s\\n' "\${image_versions[@]}"''', isCommand: true)}
 ''',
         ),
         Step.uses(
@@ -74,10 +74,10 @@ ${generateTagsOutput.bashSetterMultiLine('''printf '$imageName:%s\\n' "\${image_
           withArgs: <String, dynamic>{
             'platforms':
                 (dockerPlatforms.ne(Expression.empty) & dockerPlatforms |
-                        buildxPlatformsOutput.expression)
+                        _buildxPlatformsOutput.expression)
                     .toString(),
             'build-args': dockerBuildArgs.toString(),
-            'tags': generateTagsOutput.expression.toString(),
+            'tags': _generateTagsOutput.expression.toString(),
             'pull': true,
             'sbom': true,
             'provenance': true,

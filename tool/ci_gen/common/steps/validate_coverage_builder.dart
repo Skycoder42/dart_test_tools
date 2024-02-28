@@ -4,11 +4,8 @@ import '../api/step_builder.dart';
 import '../tools.dart';
 import 'checkout_builder.dart';
 import 'coverage_builder_mixin.dart';
-import 'platforms_builder_mixin.dart';
 
-class ValidateCoverageBuilder
-    with CoverageBuilderMixin, PlatformsBuilderMixin
-    implements StepBuilder {
+class ValidateCoverageBuilder with CoverageBuilderMixin implements StepBuilder {
   final Expression workingDirectory;
   @override
   final Expression minCoverage;

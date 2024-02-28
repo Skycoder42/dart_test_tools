@@ -36,8 +36,7 @@ class FlutterSdkBuilder implements StepBuilder {
             },
           ),
         Step.uses(
-          name: 'Install Flutter-SDK '
-              '($flutterSdkChannel)',
+          name: 'Install Flutter-SDK ($flutterSdkChannel)',
           ifExpression: ifExpression,
           uses: Tools.subositoFlutterAction,
           withArgs: <String, dynamic>{

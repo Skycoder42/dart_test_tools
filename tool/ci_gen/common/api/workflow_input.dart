@@ -26,7 +26,7 @@ class WorkflowInputContext {
     return Expression('inputs.${input.name}');
   }
 
-  Map<String, Input> createInputs() => {
+  Inputs createInputs() => {
         for (final input in _inputs) input.name: input.input,
       };
 }

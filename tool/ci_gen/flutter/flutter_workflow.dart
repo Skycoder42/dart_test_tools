@@ -1,7 +1,9 @@
 import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
+import '../common/api/workflow_output.dart';
 import '../common/jobs/validate_coverage_job_builder.dart';
 import '../common/inputs.dart';
+import '../common/outputs.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
@@ -18,6 +20,7 @@ class FlutterWorkflow implements WorkflowBuilder {
   @override
   Workflow build() {
     final inputContext = WorkflowInputContext();
+    final outputContext = WorkflowOutputContext();
 
     final analyzeJobBuilder = FlutterAnalyzeJobBuilder(
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
@@ -31,8 +34,14 @@ class FlutterWorkflow implements WorkflowBuilder {
       analyzeImage: inputContext(WorkflowInputs.analyzeImage),
       panaScoreThreshold: inputContext(WorkflowInputs.panaScoreThreshold),
     );
+    outputContext.add(
+      WorkflowOutputs.enabledPlatforms,
+      analyzeJobBuilder.platformsOutput,
+    );
+
     final unitTestBuilder = FlutterUnitTestJobBuilder(
       analyzeJobId: analyzeJobBuilder.id,
+      enabledPlatforms: analyzeJobBuilder.platformsOutput.expression,
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
       javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
@@ -44,6 +53,7 @@ class FlutterWorkflow implements WorkflowBuilder {
       unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
       minCoverage: inputContext(WorkflowInputs.minCoverage),
     );
+
     final validateCoverageBuilder = ValidateCoverageJobBuilder(
       unitTestJobId: unitTestBuilder.id,
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
@@ -51,8 +61,10 @@ class FlutterWorkflow implements WorkflowBuilder {
       minCoverage: inputContext(WorkflowInputs.minCoverage),
       coverageExclude: inputContext(WorkflowInputs.coverageExclude),
     );
+
     final integrationTestBuilder = FlutterIntegrationTestJobBuilder(
       analyzeJobId: analyzeJobBuilder.id,
+      enabledPlatforms: analyzeJobBuilder.platformsOutput.expression,
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
       javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
@@ -75,6 +87,7 @@ class FlutterWorkflow implements WorkflowBuilder {
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
+          outputs: outputContext.createOutputs(),
         ),
       ),
       jobs: {

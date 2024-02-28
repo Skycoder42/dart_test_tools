@@ -1,103 +1,56 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-
+import '../../common/api/matrix_job_builder_mixin.dart';
+import '../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../common/jobs/sdk_job_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
-import '../../types/matrix.dart';
-import '../../types/strategy.dart';
+import '../flutter_platform.dart';
 import '../steps/flutter_integration_test_builder.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-part 'flutter_integration_test_job_builder.freezed.dart';
-part 'flutter_integration_test_job_builder.g.dart';
+final class DesktopMatrixProperty extends IMatrixProperty<FlutterPlatform> {
+  const DesktopMatrixProperty();
 
-class _FlutterIntegrationTestJobMatrix
-    implements IFlutterIntegrationTestMatrix {
   @override
-  final Expression platform;
-  @override
-  final Expression testArgs;
-  @override
-  final Expression runPrefix;
-  @override
-  final Expression desktop;
-  final Expression os;
+  String get name => 'desktop';
 
-  const _FlutterIntegrationTestJobMatrix({
-    required this.platform,
-    required this.testArgs,
-    required this.runPrefix,
-    required this.desktop,
-    required this.os,
-  });
+  @override
+  Object? valueFor(FlutterPlatform selector) => switch (selector) {
+        FlutterPlatform.linux ||
+        FlutterPlatform.macos ||
+        FlutterPlatform.windows =>
+          true,
+        _ => null,
+      };
 }
 
-@freezed
-class _PlatformInclude with _$PlatformInclude {
-  const factory _PlatformInclude({
-    required String platform,
-    required String os,
-    // ignore: invalid_annotation_target
-    @JsonKey(includeIfNull: false) bool? desktop,
-    // ignore: invalid_annotation_target
-    @JsonKey(includeIfNull: false) String? testArgs,
-    // ignore: invalid_annotation_target
-    @JsonKey(includeIfNull: false) String? runPrefix,
-  }) = __PlatformInclude;
+final class _FlutterIntegrationTestMatrix extends PlatformMatrix {
+  const _FlutterIntegrationTestMatrix() : super(FlutterPlatform.values);
 
-  // ignore: unused_element
-  factory _PlatformInclude.fromJson(Map<String, dynamic> json) =>
-      _$PlatformIncludeFromJson(json);
+  TestArgsMatrixProperty get testArgs => const TestArgsMatrixProperty();
+
+  RunPrefixMatrixProperty get runPrefix => const RunPrefixMatrixProperty();
+
+  DesktopMatrixProperty get desktop => const DesktopMatrixProperty();
+
+  @override
+  List<IMatrixProperty<IPlatformMatrixSelector>> get includeProperties => [
+        ...super.includeProperties,
+        testArgs,
+        runPrefix,
+        desktop,
+      ];
 }
 
 final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
-    with FlutterSdkJobBuilderMixin {
-  static const _matrix = _FlutterIntegrationTestJobMatrix(
-    platform: Expression('matrix.platform'),
-    testArgs: Expression('matrix.testArgs'),
-    runPrefix: Expression('matrix.runPrefix'),
-    desktop: Expression('matrix.desktop'),
-    os: Expression('matrix.os'),
-  );
-
-  static const _platformIncludes = [
-    _PlatformInclude(
-      platform: 'android',
-      os: 'macos-latest',
-      testArgs: '--timeout 3x',
-    ),
-    _PlatformInclude(
-      platform: 'ios',
-      os: 'macos-latest',
-      testArgs: '--timeout 3x',
-    ),
-    _PlatformInclude(
-      platform: 'linux',
-      desktop: true,
-      os: 'ubuntu-latest',
-      testArgs: '-d linux',
-      runPrefix: 'xvfb-run --auto-servernum',
-    ),
-    _PlatformInclude(
-      platform: 'windows',
-      desktop: true,
-      os: 'windows-latest',
-      testArgs: '-d windows',
-    ),
-    _PlatformInclude(
-      platform: 'macos',
-      desktop: true,
-      os: 'macos-13', // TODO replace with latest once latest >= 13
-      testArgs: '-d macos',
-    ),
-    _PlatformInclude(
-      platform: 'web',
-      os: 'windows-latest',
-    ),
-  ];
-
+    with
+        FlutterSdkJobBuilderMixin,
+        MatrixJobBuilderMixin<_FlutterIntegrationTestMatrix,
+            IPlatformMatrixSelector>,
+        PlatformJobBuilderMixin<_FlutterIntegrationTestMatrix> {
   final JobId analyzeJobId;
+  @override
+  final Expression enabledPlatforms;
   @override
   final Expression flutterSdkChannel;
   @override
@@ -114,8 +67,9 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression androidAVDImage;
   final Expression androidAVDDevice;
 
-  FlutterIntegrationTestJobBuilder({
+  const FlutterIntegrationTestJobBuilder({
     required this.analyzeJobId,
+    required this.enabledPlatforms,
     required this.flutterSdkChannel,
     required this.javaJdkVersion,
     required this.workingDirectory,
@@ -129,30 +83,24 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     required this.integrationTestCacheConfig,
     required this.androidAVDImage,
     required this.androidAVDDevice,
-  });
+  }) : matrix = const _FlutterIntegrationTestMatrix();
 
   @override
   JobId get id => const JobId('integration_tests');
 
   @override
-  Job build() => Job(
+  final _FlutterIntegrationTestMatrix matrix;
+
+  @override
+  Job buildGeneric(String runsOn) => Job(
         name: 'Integration tests',
         ifExpression: integrationTestPaths.ne(Expression.empty),
         needs: {analyzeJobId},
-        strategy: Strategy(
-          failFast: false,
-          matrix: Matrix(
-            {
-              'platform': _platformIncludes.map((i) => i.platform).toList(),
-            },
-            include: _platformIncludes.map((i) => i.toJson()).toList(),
-          ),
-        ),
-        runsOn: _matrix.os.toString(),
+        runsOn: runsOn,
         steps: [
           ...buildSetupSdkSteps(
-            _matrix.platform,
-            _matrix.desktop,
+            matrix.platform.expression,
+            matrix.desktop.expression,
           ),
           ...FlutterIntegrationTestBuilder(
             workingDirectory: workingDirectory,
@@ -166,10 +114,12 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
             integrationTestCacheConfig: integrationTestCacheConfig,
             androidAVDImage: androidAVDImage,
             androidAVDDevice: androidAVDDevice,
+            platform: matrix.platform,
+            testArgs: matrix.testArgs,
+            runPrefix: matrix.runPrefix,
             baseTool: baseTool,
             pubTool: pubTool,
             runTool: runTool,
-            matrix: _matrix,
           ).build(),
         ],
       );

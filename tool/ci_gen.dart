@@ -8,6 +8,7 @@ import 'ci_gen/common/api/workflow_builder.dart';
 import 'ci_gen/deb/deb_workflow.dart';
 import 'ci_gen/compile/compile_workflow.dart';
 import 'ci_gen/dart/dart_workflow.dart';
+import 'ci_gen/deploy/deploy_workflows.dart';
 import 'ci_gen/docker/docker_workflow.dart';
 import 'ci_gen/flutter/flutter_workflow.dart';
 import 'ci_gen/package/package_workflow.dart';
@@ -25,6 +26,7 @@ Future<void> main() async {
     AurWorkflow(),
     DebWorkflow(),
     DockerWorkflow(),
+    DeployWorkflow(),
   ];
 
   for (final workflow in workflows) {

@@ -5,10 +5,6 @@ import '../../types/job.dart';
 import '../steps/release_builder.dart';
 
 class ReleaseJobBuilder implements JobBuilder {
-  static const jobId = JobId('release');
-  static final updateOutput = jobId.output('update');
-  static final versionOutput = jobId.output('version');
-
   final Expression releaseRef;
   final Expression dartSdkVersion;
   final Expression workingDirectory;
@@ -24,7 +20,11 @@ class ReleaseJobBuilder implements JobBuilder {
   });
 
   @override
-  JobId get id => jobId;
+  JobId get id => const JobId('release');
+
+  JobIdOutput get updateOutput => id.output('update');
+
+  JobIdOutput get versionOutput => id.output('version');
 
   @override
   Job build() => Job(

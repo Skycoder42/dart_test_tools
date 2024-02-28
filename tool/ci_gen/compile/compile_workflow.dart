@@ -1,8 +1,9 @@
 import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
+import '../common/api/workflow_output.dart';
 import '../common/inputs.dart';
+import '../common/outputs.dart';
 import '../types/on.dart';
-import '../types/output.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'jobs/compile_job_builder.dart';
@@ -17,8 +18,10 @@ class CompileWorkflow implements WorkflowBuilder {
   @override
   Workflow build() {
     final inputContext = WorkflowInputContext();
+    final outputContext = WorkflowOutputContext();
 
     final compileJobBuilder = CompileJobBuilder(
+      enabledPlatforms: inputContext(WorkflowInputs.enabledPlatforms),
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
@@ -35,25 +38,17 @@ class CompileWorkflow implements WorkflowBuilder {
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       tagPrefix: inputContext(WorkflowInputs.tagPrefix),
       persistCredentials: inputContext(WorkflowInputs.persistCredentials),
+      binaryArtifactsPattern: 'binaries-*',
     );
+    outputContext
+      ..add(WorkflowOutputs.releaseCreated, releaseJobBuilder.updateOutput)
+      ..add(WorkflowOutputs.releaseVersion, releaseJobBuilder.versionOutput);
 
     return Workflow(
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
-          outputs: {
-            'releaseCreated': Output(
-              value: TagReleaseJobBuilder.updateOutput,
-              description: 'Holds a boolean value string ("true" or "false"), '
-                  'indicating whether a release was created or not.',
-            ),
-            'releaseVersion': Output(
-              value: TagReleaseJobBuilder.versionOutput,
-              description:
-                  'Holds the version number of the created release, if the '
-                  'releaseCreated output is true. Otherwise, it is not set.',
-            ),
-          },
+          outputs: outputContext.createOutputs(),
         ),
       ),
       jobs: {

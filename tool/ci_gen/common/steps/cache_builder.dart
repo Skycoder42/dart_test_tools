@@ -9,7 +9,7 @@ class CacheBuilder implements StepBuilder {
   final StepId cacheStepId;
   final Expression platform;
   final Expression cacheConfig;
-  final Expression? ifExpression;
+  final Expression? ifExpression; // TODO remove?
 
   const CacheBuilder({
     required this.cacheStepId,

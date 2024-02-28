@@ -7,7 +7,10 @@ import 'run_publish_builder.dart';
 
 class AnalyzeBuilder implements StepBuilder {
   static const checkPublishStepId = StepId('checkPublish');
-  static final checkPublish = checkPublishStepId.output('publish');
+  static final checkPublishOutput = checkPublishStepId.output('publish');
+
+  static const checkPlatformsStepId = StepId('checkPlatforms');
+  static final platformsOutput = checkPlatformsStepId.output('platforms');
 
   final Expression workingDirectory;
   final Expression artifactDependencies;
@@ -50,6 +53,19 @@ class AnalyzeBuilder implements StepBuilder {
           pubTool: pubTool,
           runTool: runTool,
         ).build(),
+        Step.run(
+          id: checkPlatformsStepId,
+          name: 'Check supported platforms',
+          run: '''
+set -eo pipefail
+${platformsOutput.bashSetterMultiLine(
+            "yq '.platforms // {} | keys' -o=json pubspec.yaml",
+            isCommand: true,
+          )}
+''',
+          workingDirectory: workingDirectory.toString(),
+          shell: 'bash',
+        ),
         ...buildAnalyzeStep(),
         Step.run(
           name: 'Run custom_lint',
@@ -66,12 +82,12 @@ class AnalyzeBuilder implements StepBuilder {
           id: checkPublishStepId,
           name: 'Check if package is publishable',
           run: '''
-set -e
+set -eo pipefail
 publish_to=\$(cat pubspec.yaml | yq e ".publish_to" -)
 if [[ "\$publish_to" == "none" ]]; then
-  ${checkPublish.bashSetter('false')}
+  ${checkPublishOutput.bashSetter('false')}
 else
-  ${checkPublish.bashSetter('true')}
+  ${checkPublishOutput.bashSetter('true')}
 fi
 ''',
           workingDirectory: workingDirectory.toString(),
@@ -82,13 +98,13 @@ fi
           pubTool: pubTool,
           publishStepName: 'Test publishing configuration',
           publishArgs: '--dry-run',
-          ifExpression:
-              checkPublish.expression.eq(const Expression.literal('true')),
+          ifExpression: checkPublishOutput.expression
+              .eq(const Expression.literal('true')),
         ).build(),
         Step.run(
           name: 'Validate pana score',
-          ifExpression:
-              checkPublish.expression.eq(const Expression.literal('true')),
+          ifExpression: checkPublishOutput.expression
+              .eq(const Expression.literal('true')),
           run: '$pubTool global run pana '
               '--exit-code-threshold $panaScoreThreshold .',
           workingDirectory: workingDirectory.toString(),

@@ -27,7 +27,7 @@ class WorkflowSecretContext {
     return Expression('secrets.${secret.name}');
   }
 
-  Map<String, Secret> createSecrets() => {
+  Secrets createSecrets() => {
         for (final secret in _secrets) secret.name: secret.secret,
       };
 }

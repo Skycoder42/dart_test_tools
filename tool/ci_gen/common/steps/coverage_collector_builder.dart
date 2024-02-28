@@ -1,12 +1,29 @@
 import '../../types/expression.dart';
+import '../../types/runs_on.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
+import '../api/matrix_job_builder_mixin.dart';
+import '../api/platform_matrix_job_builder_mixin.dart';
 import '../tools.dart';
 import 'coverage_builder_mixin.dart';
 
-abstract interface class ICoverageCollectorMatrix {
-  Expression get platform;
-  Expression get lcovCleanCommand;
+final class LcovCleanCommandMatrixProperty
+    extends IMatrixProperty<IPlatformMatrixSelector> {
+  const LcovCleanCommandMatrixProperty();
+
+  @override
+  String get name => 'lcovCleanCommand';
+
+  @override
+  Object? valueFor(IPlatformMatrixSelector selector) => switch (selector) {
+        IPlatformMatrixSelector(os: RunsOn.ubuntuLatest) =>
+          r'sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info',
+        IPlatformMatrixSelector(os: RunsOn.macosLatest) ||
+        IPlatformMatrixSelector(os: RunsOn.macos13) =>
+          r'sed -i "" "s#SF:$PWD/#SF:#g" coverage/lcov.info',
+        IPlatformMatrixSelector(os: RunsOn.windowsLatest) =>
+          r'(Get-Content coverage\lcov.info).replace("SF:$PWD\", "SF:").replace("\", "/") | Set-Content coverage\lcov.info',
+      };
 }
 
 class CoverageCollectorBuilder
@@ -15,18 +32,18 @@ class CoverageCollectorBuilder
   final Expression workingDirectory;
   @override
   final Expression minCoverage;
+  final PlatformMatrixProperty platform;
+  final LcovCleanCommandMatrixProperty lcovCleanCommand;
   final bool needsFormatting;
   final String runTool;
-  final ICoverageCollectorMatrix matrix;
-  final Expression? ifExpression;
 
   const CoverageCollectorBuilder({
     required this.workingDirectory,
     required this.minCoverage,
+    required this.lcovCleanCommand,
     required this.needsFormatting,
+    required this.platform,
     required this.runTool,
-    required this.matrix,
-    this.ifExpression,
   });
 
   @override
@@ -34,7 +51,7 @@ class CoverageCollectorBuilder
         if (needsFormatting)
           Step.run(
             name: 'Convert coverage data to lcov format',
-            ifExpression: _coverageExpression,
+            ifExpression: runCoverageExpression,
             run: '$runTool coverage:format_coverage --lcov --check-ignore '
                 '--in=coverage --out=coverage/lcov.info '
                 '--report-on=lib',
@@ -42,22 +59,20 @@ class CoverageCollectorBuilder
           ),
         Step.run(
           name: 'Normalize coverage paths',
-          ifExpression: _coverageExpression,
-          run: matrix.lcovCleanCommand.toString(),
+          ifExpression: runCoverageExpression,
+          run: lcovCleanCommand.expression.toString(),
           workingDirectory: workingDirectory.toString(),
         ),
         Step.uses(
           name: 'Upload coverage data',
-          ifExpression: _coverageExpression,
+          ifExpression: runCoverageExpression,
           uses: Tools.actionsUploadArtifact,
           withArgs: <String, dynamic>{
-            'name': 'coverage-info-${matrix.platform}',
+            'name': 'coverage-info-${platform.expression}',
             'path': '$workingDirectory/coverage/lcov.info',
             'retention-days': 1,
             'if-no-files-found': 'error',
           },
         ),
       ];
-
-  Expression get _coverageExpression => runCoverageExpression & ifExpression;
 }

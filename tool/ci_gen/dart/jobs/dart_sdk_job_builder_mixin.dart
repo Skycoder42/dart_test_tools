@@ -13,10 +13,7 @@ base mixin DartSdkJobBuilderMixin on SdkJobBuilder {
   String get runTool => '$baseTool run';
 
   @override
-  Iterable<Step> buildSetupSdkSteps([Expression? ifExpression]) => [
-        ...DartSdkBuilder(
-          dartSdkVersion: dartSdkVersion,
-          ifExpression: ifExpression,
-        ).build(),
+  Iterable<Step> buildSetupSdkSteps() => [
+        ...DartSdkBuilder(dartSdkVersion: dartSdkVersion).build(),
       ];
 }

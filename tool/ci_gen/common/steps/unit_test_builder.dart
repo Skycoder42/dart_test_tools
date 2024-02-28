@@ -1,15 +1,26 @@
 import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
+import '../api/matrix_job_builder_mixin.dart';
+import '../api/platform_matrix_job_builder_mixin.dart';
 import 'coverage_collector_builder.dart';
-import 'platforms_builder_mixin.dart';
 import 'project_setup_builder.dart';
 
-abstract interface class IUnitTextMatrix implements ICoverageCollectorMatrix {
-  Expression get dartTestArgs;
+final class DartTestArgsMatrixProperty
+    extends IMatrixProperty<IPlatformMatrixSelector> {
+  const DartTestArgsMatrixProperty();
+
+  @override
+  String get name => 'dartTestArgs';
+
+  @override
+  Object? valueFor(IPlatformMatrixSelector selector) => switch (selector) {
+        IPlatformMatrixSelector(isWeb: true) => '-p chrome',
+        _ => null,
+      };
 }
 
-class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
+class UnitTestBuilder implements StepBuilder {
   final Expression workingDirectory;
   final Expression artifactDependencies;
   final Expression buildRunner;
@@ -17,10 +28,12 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
   final Expression removePubspecOverrides;
   final Expression unitTestPaths;
   final Expression minCoverage;
+  final PlatformMatrixProperty platform;
+  final DartTestArgsMatrixProperty dartTestArgs;
+  final LcovCleanCommandMatrixProperty lcovCleanCommand;
   final String baseTool;
   final String pubTool;
   final String runTool;
-  final IUnitTextMatrix matrix;
   final String coverageArgs;
   final bool needsFormatting;
 
@@ -35,7 +48,9 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
     required this.baseTool,
     required this.pubTool,
     required this.runTool,
-    required this.matrix,
+    required this.dartTestArgs,
+    required this.lcovCleanCommand,
+    required this.platform,
     required this.coverageArgs,
     required this.needsFormatting,
   });
@@ -50,12 +65,10 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
           removePubspecOverrides: removePubspecOverrides,
           pubTool: pubTool,
           runTool: runTool,
-          withPlatform: matrix.platform,
         ).build(),
         Step.run(
           name: 'Run unit tests',
-          ifExpression: shouldRunExpression,
-          run: '$baseTool test ${matrix.dartTestArgs} '
+          run: '$baseTool test ${dartTestArgs.expression} '
               '$coverageArgs --reporter github $unitTestPaths',
           workingDirectory: workingDirectory.toString(),
         ),
@@ -63,9 +76,9 @@ class UnitTestBuilder with PlatformsBuilderMixin implements StepBuilder {
           workingDirectory: workingDirectory,
           minCoverage: minCoverage,
           runTool: runTool,
-          matrix: matrix,
+          platform: platform,
+          lcovCleanCommand: lcovCleanCommand,
           needsFormatting: needsFormatting,
-          ifExpression: shouldRunExpression,
         ).build(),
       ];
 }
