@@ -238,45 +238,45 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         uses: subosito/flutter-action@v2
         with:
           channel: ${{ inputs.flutterSdkChannel }}
           cache: true
       - name: Download flutter binary artifacts
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: flutter precache --universal
       - name: Install scoop
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && runner.os == 'Windows'
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && runner.os == 'Windows'
         run: |
           iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
           Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
         shell: pwsh
       - name: Install yq (Windows)
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && runner.os == 'Windows'
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && runner.os == 'Windows'
         run: scoop install yq
       - name: Install yq and coreutils (macOS)
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && runner.os == 'macOS'
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && runner.os == 'macOS'
         run: |
           brew install yq coreutils
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
       - name: Checkout repository
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         uses: actions/checkout@v4
         with:
           persist-credentials: false
       - name: Remove pubspec_overrides.yaml
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && inputs.removePubspecOverrides
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.removePubspecOverrides
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Download artifacts
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && inputs.artifactDependencies != ''
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.artifactDependencies != ''
         uses: actions/download-artifact@v4
         with:
           path: ${{ runner.temp }}/.artifacts
       - name: Create pubspec_overrides.yaml for required packages
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && inputs.artifactDependencies != ''
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.artifactDependencies != ''
         run: |
           set -eo pipefail
           touch pubspec_overrides.yaml
@@ -288,23 +288,23 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && inputs.buildRunner
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.buildRunner
         run: flutter pub run build_runner build ${{ inputs.buildRunnerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run unit tests
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: flutter test ${{ matrix.dartTestArgs }} --coverage --reporter github ${{ inputs.unitTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Normalize coverage paths
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && inputs.minCoverage > 0
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.minCoverage > 0
         run: ${{ matrix.lcovCleanCommand }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload coverage data
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && inputs.minCoverage > 0
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.minCoverage > 0
         uses: actions/upload-artifact@v4
         with:
           name: coverage-info-${{ matrix.platform }}
@@ -400,54 +400,54 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install JDK Version ${{ inputs.javaJdkVersion }}
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && matrix.platform == 'android'
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.platform == 'android'
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: ${{ inputs.javaJdkVersion }}
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         uses: subosito/flutter-action@v2
         with:
           channel: ${{ inputs.flutterSdkChannel }}
           cache: true
       - name: Enable experimental platforms
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && matrix.desktop
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.desktop
         run: flutter config --enable-${{ matrix.platform }}-desktop
       - name: Download flutter binary artifacts
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: flutter precache --universal --${{ matrix.platform }}
       - name: Install scoop
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && runner.os == 'Windows'
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && runner.os == 'Windows'
         run: |
           iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
           Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
         shell: pwsh
       - name: Install yq (Windows)
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && runner.os == 'Windows'
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && runner.os == 'Windows'
         run: scoop install yq
       - name: Install yq and coreutils (macOS)
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && runner.os == 'macOS'
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && runner.os == 'macOS'
         run: |
           brew install yq coreutils
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
       - name: Checkout repository
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         uses: actions/checkout@v4
         with:
           persist-credentials: false
       - name: Remove pubspec_overrides.yaml
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && inputs.removePubspecOverrides
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.removePubspecOverrides
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Download artifacts
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && inputs.artifactDependencies != ''
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.artifactDependencies != ''
         uses: actions/download-artifact@v4
         with:
           path: ${{ runner.temp }}/.artifacts
       - name: Create pubspec_overrides.yaml for required packages
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && inputs.artifactDependencies != ''
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.artifactDependencies != ''
         run: |
           set -eo pipefail
           touch pubspec_overrides.yaml
@@ -459,15 +459,15 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && inputs.buildRunner
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.buildRunner
         run: flutter pub run build_runner build ${{ inputs.buildRunnerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Install test dependencies (android)
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && matrix.platform == 'android'
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.platform == 'android'
         run: |
           set -ex
           export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
@@ -479,26 +479,26 @@ jobs:
             --package '${{ inputs.androidAVDImage }}' \
             --device '${{ inputs.androidAVDDevice }}'
       - name: Install test dependencies (linux)
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && matrix.platform == 'linux'
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.platform == 'linux'
         run: |
           set -e
           sudo apt-get -qq update
           sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
       - name: Validate flutter setup
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: flutter doctor -v
       - name: Remove pubspec_overrides.yaml (Integration test project)
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && inputs.removePubspecOverrides && inputs.integrationTestProject != ''
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.removePubspecOverrides && inputs.integrationTestProject != ''
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
         shell: bash
       - name: Restore dart packages (Integration test project)
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && inputs.integrationTestProject != ''
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.integrationTestProject != ''
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
       - id: test-setup-cache
         name: Restore integration test cache
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)[matrix.platform] != ''
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)[matrix.platform] != ''
         uses: actions/cache@v4
         with:
           key: ${{ matrix.platform }}-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
@@ -506,13 +506,13 @@ jobs:
           restore-keys: ${{ fromJSON(inputs.integrationTestCacheConfig)['restore-keys'] }}
           upload-chunk-size: ${{ fromJSON(inputs.integrationTestCacheConfig)['upload-chunk-size'] }}
       - name: Run platform test setup
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && fromJSON(inputs.integrationTestSetup)[matrix.platform] != ''
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && fromJSON(inputs.integrationTestSetup)[matrix.platform] != ''
         env:
           CACHE_HIT: ${{ steps.test-setup-cache.outputs.cache-hit }}
         run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Start Android-Emulator
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && matrix.platform == 'android'
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.platform == 'android'
         run: |
           set -ex
           nohup $ANDROID_HOME/emulator/emulator -no-window @default &
@@ -520,18 +520,18 @@ jobs:
           flutter devices
         working-directory: ${{ inputs.workingDirectory }}
       - name: Start iOS-Simulator
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && matrix.platform == 'ios'
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.platform == 'ios'
         run: |
           set -e
           open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
           flutter devices
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run integration tests (dart-vm)
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && matrix.platform != 'web'
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.platform != 'web'
         run: ${{ matrix.runPrefix }} flutter test ${{ matrix.testArgs }} --reporter expanded ${{ inputs.integrationTestPaths }}
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
       - name: Run integration tests (web)
-        if: contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform) && matrix.platform == 'web'
+        if: (fromJSON(needs.analyze.outputs.platforms).length == 0 || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.platform == 'web'
         run: $ChromeWebDriver/chromedriver --port=4444 & flutter drive --driver test_driver/integration_test.dart --target ${{ inputs.integrationTestPaths }} --release -d chrome --browser-name chrome
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
         shell: bash

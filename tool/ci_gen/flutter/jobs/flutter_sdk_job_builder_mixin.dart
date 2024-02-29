@@ -11,16 +11,18 @@ base mixin FlutterSdkJobBuilderMixin on SdkJobBuilder {
   String get baseTool => 'flutter';
 
   @override
-  Iterable<Step> buildSetupSdkSteps([
+  Iterable<Step> buildSetupSdkSteps({
     Expression? buildPlatform,
     Expression? enableDesktopCondition,
-  ]) =>
+    bool enforceJdk = false,
+  }) =>
       [
         ...FlutterSdkBuilder(
           flutterSdkChannel: flutterSdkChannel,
           javaJdkVersion: javaJdkVersion,
           buildPlatform: buildPlatform,
           enableDesktopCondition: enableDesktopCondition,
+          enforceJdk: enforceJdk,
         ).build(),
       ];
 }

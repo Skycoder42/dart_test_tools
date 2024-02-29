@@ -29,6 +29,8 @@ class Expression with _$Expression {
         fake: (fakeValue) => fakeValue,
       );
 
+  Expression property(String name) => Expression('$value.$name');
+
   Expression get parenthesized => Expression('($value)');
 
   Expression get not => Expression('!$value');

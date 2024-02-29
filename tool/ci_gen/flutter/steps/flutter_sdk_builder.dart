@@ -9,6 +9,7 @@ class FlutterSdkBuilder implements StepBuilder {
   final Expression? buildPlatform;
   final Expression? enableDesktopCondition;
   final Expression? ifExpression;
+  final bool enforceJdk;
 
   const FlutterSdkBuilder({
     required this.flutterSdkChannel,
@@ -16,6 +17,7 @@ class FlutterSdkBuilder implements StepBuilder {
     this.buildPlatform,
     this.enableDesktopCondition,
     this.ifExpression,
+    this.enforceJdk = false,
   }) : assert(
           enableDesktopCondition == null || buildPlatform != null,
           'If enableDesktopCondition is set, buildPlatform must be too',
@@ -23,11 +25,12 @@ class FlutterSdkBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        if (buildPlatform != null)
+        if (enforceJdk || buildPlatform != null)
           Step.uses(
             name: 'Install JDK Version $javaJdkVersion',
-            ifExpression:
-                buildPlatform!.eq(const Expression.literal('android')) &
+            ifExpression: enforceJdk
+                ? ifExpression
+                : buildPlatform!.eq(const Expression.literal('android')) &
                     ifExpression,
             uses: Tools.actionsSetupJava,
             withArgs: <String, dynamic>{
