@@ -1,6 +1,10 @@
 on:
   workflow_call:
     inputs:
+      enabledPlatforms:
+        type: string
+        required: true
+        description: A JSON-encoded list of all platforms that this project can build/run for.
       dartSdkVersion:
         type: string
         required: false
@@ -62,75 +66,68 @@ jobs:
       matrix:
         platform:
           - linux
-          - windows
           - macos
+          - windows
           - web
         include:
           - platform: linux
+            os: ubuntu-latest
             binaryType: exe
             compileArgs: -S "build/bin/$executableName.sym" -o "build/bin/$executableName"
             archiveType: tar
-            os: ubuntu-latest
+          - platform: macos
+            os: macos-latest
+            binaryType: exe
+            compileArgs: -S "build/bin/$executableName.sym" -o "build/bin/$executableName"
+            archiveType: tar
           - platform: windows
+            os: windows-latest
             binaryType: exe
             compileArgs: -S "build/bin/$executableName.sym" -o "build/bin/$executableName.exe"
             archiveType: zip
-            os: windows-latest
-          - platform: macos
-            binaryType: exe
-            compileArgs: -S "build/bin/$executableName.sym" -o "build/bin/$executableName"
-            archiveType: tar
-            os: macos-latest
           - platform: web
+            os: ubuntu-latest
             binaryType: js
             compileArgs: -O2 --server-mode -o "build/bin/$executableName.js"
             archiveType: zip
-            os: ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
+        if: contains(fromJSON(inputs.enabledPlatforms), matrix.platform)
         uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install scoop
-        if: runner.os == 'Windows'
+        if: contains(fromJSON(inputs.enabledPlatforms), matrix.platform) && runner.os == 'Windows'
         run: |
           iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
           Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
         shell: pwsh
       - name: Install yq (Windows)
-        if: runner.os == 'Windows'
+        if: contains(fromJSON(inputs.enabledPlatforms), matrix.platform) && runner.os == 'Windows'
         run: scoop install yq
       - name: Install yq and coreutils (macOS)
-        if: runner.os == 'macOS'
+        if: contains(fromJSON(inputs.enabledPlatforms), matrix.platform) && runner.os == 'macOS'
         run: |
           brew install yq coreutils
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
       - name: Checkout repository
+        if: contains(fromJSON(inputs.enabledPlatforms), matrix.platform)
         uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - id: platform-check
-        name: Check if platform ${{ matrix.platform }} is supported
-        run: |
-          set -eo pipefail
-          isPlatformAllowed=$(yq 'has("platforms") | not or .platforms | has("${{ matrix.platform }}")' pubspec.yaml)
-          echo "Platform enabled: $isPlatformAllowed"
-          echo "should-run=$isPlatformAllowed" >> $GITHUB_OUTPUT
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Remove pubspec_overrides.yaml
-        if: inputs.removePubspecOverrides && steps.platform-check.outputs.should-run == 'true'
+        if: contains(fromJSON(inputs.enabledPlatforms), matrix.platform) && inputs.removePubspecOverrides
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Download artifacts
-        if: inputs.artifactDependencies != '' && steps.platform-check.outputs.should-run == 'true'
+        if: contains(fromJSON(inputs.enabledPlatforms), matrix.platform) && inputs.artifactDependencies != ''
         uses: actions/download-artifact@v4
         with:
           path: ${{ runner.temp }}/.artifacts
       - name: Create pubspec_overrides.yaml for required packages
-        if: inputs.artifactDependencies != '' && steps.platform-check.outputs.should-run == 'true'
+        if: contains(fromJSON(inputs.enabledPlatforms), matrix.platform) && inputs.artifactDependencies != ''
         run: |
           set -eo pipefail
           touch pubspec_overrides.yaml
@@ -142,15 +139,15 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
-        if: steps.platform-check.outputs.should-run == 'true'
+        if: contains(fromJSON(inputs.enabledPlatforms), matrix.platform)
         run: dart pub get
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
-        if: inputs.buildRunner && steps.platform-check.outputs.should-run == 'true'
+        if: contains(fromJSON(inputs.enabledPlatforms), matrix.platform) && inputs.buildRunner
         run: dart run build_runner build --release ${{ inputs.buildRunnerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Compile executables
-        if: steps.platform-check.outputs.should-run == 'true'
+        if: contains(fromJSON(inputs.enabledPlatforms), matrix.platform)
         run: |
           set -eo pipefail
           mkdir -p build/bin
@@ -161,7 +158,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Create release archives (tar)
-        if: matrix.archiveType == 'tar' && steps.platform-check.outputs.should-run == 'true'
+        if: contains(fromJSON(inputs.enabledPlatforms), matrix.platform) && matrix.archiveType == 'tar'
         run: |
           set -eo pipefail
           shopt -s extglob
@@ -171,7 +168,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}/build/bin
         shell: bash
       - name: Create release archives (zip)
-        if: matrix.archiveType == 'zip' && steps.platform-check.outputs.should-run == 'true'
+        if: contains(fromJSON(inputs.enabledPlatforms), matrix.platform) && matrix.archiveType == 'zip'
         run: |
           set -eo pipefail
           shopt -s nullglob
@@ -181,7 +178,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}/build/bin
         shell: bash
       - name: Upload compiled binaries artifact
-        if: steps.platform-check.outputs.should-run == 'true'
+        if: contains(fromJSON(inputs.enabledPlatforms), matrix.platform)
         uses: actions/upload-artifact@v4
         with:
           name: binaries-${{ matrix.platform }}

@@ -33,6 +33,7 @@ sudo apt-get -qq install lcov dos2unix
           uses: Tools.actionsDownloadArtifact,
           withArgs: <String, dynamic>{
             'path': '$workingDirectory/coverage',
+            'pattern': 'coverage-info-*',
           },
         ),
         Step.run(
