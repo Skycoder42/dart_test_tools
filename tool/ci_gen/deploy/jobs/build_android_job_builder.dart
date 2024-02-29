@@ -1,5 +1,4 @@
 import '../../common/jobs/sdk_job_builder.dart';
-import '../../flutter/flutter_platform.dart';
 import '../../flutter/jobs/flutter_sdk_job_builder_mixin.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
@@ -7,7 +6,7 @@ import '../../types/job.dart';
 import '../../types/runs_on.dart';
 import '../steps/build_android_app_builder.dart';
 
-final class BuildAppJobBuilder extends SdkJobBuilder
+final class BuildAndroidJobBuilder extends SdkJobBuilder
     with FlutterSdkJobBuilderMixin {
   @override
   final Expression flutterSdkChannel;
@@ -17,7 +16,7 @@ final class BuildAppJobBuilder extends SdkJobBuilder
   final Expression buildRunner;
   final Expression buildRunnerArgs;
 
-  const BuildAppJobBuilder({
+  const BuildAndroidJobBuilder({
     required this.flutterSdkChannel,
     required this.javaJdkVersion,
     required this.workingDirectory,
@@ -34,7 +33,8 @@ final class BuildAppJobBuilder extends SdkJobBuilder
         runsOn: RunsOn.ubuntuLatest.id,
         steps: [
           ...buildSetupSdkSteps(
-            Expression.literal(FlutterPlatform.android.platform),
+            buildPlatform: Expression.fake('android'),
+            enforceJdk: true,
           ),
           ...BuildAndroidAppBuilder(
             workingDirectory: workingDirectory,

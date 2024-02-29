@@ -8,7 +8,7 @@ import '../common/outputs.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
-import 'jobs/build_app_job_builder.dart';
+import 'jobs/build_android_job_builder.dart';
 
 class DeployWorkflow implements WorkflowBuilder {
   const DeployWorkflow();
@@ -22,7 +22,7 @@ class DeployWorkflow implements WorkflowBuilder {
     final secretContext = WorkflowSecretContext();
     final outputContext = WorkflowOutputContext();
 
-    final buildAppJobBuilder = BuildAppJobBuilder(
+    final buildAppJobBuilder = BuildAndroidJobBuilder(
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
       javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
