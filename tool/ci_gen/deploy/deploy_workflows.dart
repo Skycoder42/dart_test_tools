@@ -5,6 +5,7 @@ import '../common/api/workflow_secret.dart';
 import '../common/inputs.dart';
 import '../common/jobs/tag_release_job_builder.dart';
 import '../common/outputs.dart';
+import '../common/secrets.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
@@ -22,16 +23,22 @@ class DeployWorkflow implements WorkflowBuilder {
     final secretContext = WorkflowSecretContext();
     final outputContext = WorkflowOutputContext();
 
-    final buildAppJobBuilder = BuildAndroidJobBuilder(
+    final buildAndroidJobBuilder = BuildAndroidJobBuilder(
+      enabledPlatforms: inputContext(WorkflowInputs.enabledPlatforms),
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
       javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+      buildNumberArgs: inputContext(WorkflowInputs.buildNumberArgs),
+      primaryLocale: inputContext(WorkflowInputs.primaryLocale),
+      dartDefines: secretContext(WorkflowSecrets.dartDefines),
+      keystore: secretContext(WorkflowSecrets.keystore),
+      keystorePassword: secretContext(WorkflowSecrets.keystorePassword),
     );
 
     final releaseJobBuilder = TagReleaseJobBuilder(
-      compileJobId: buildAppJobBuilder.id,
+      compileJobIds: {buildAndroidJobBuilder.id},
       releaseRef: inputContext(WorkflowInputs.releaseRef),
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
@@ -53,7 +60,7 @@ class DeployWorkflow implements WorkflowBuilder {
         ),
       ),
       jobs: {
-        buildAppJobBuilder.id: buildAppJobBuilder.build(),
+        buildAndroidJobBuilder.id: buildAndroidJobBuilder.build(),
         releaseJobBuilder.id: releaseJobBuilder.build(),
       },
     );

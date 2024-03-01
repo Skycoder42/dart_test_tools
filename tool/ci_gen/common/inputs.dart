@@ -374,4 +374,25 @@ Example:
           'A JSON-encoded list of all platforms that this project can build/run for.',
     ),
   );
+
+  static const buildNumberArgs = WorkflowInput(
+    name: 'buildNumberArgs',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: '',
+      description: 'Additional args for the build number generator.',
+    ),
+  );
+
+  static const primaryLocale = WorkflowInput(
+    name: 'primaryLocale',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: 'en-US',
+      description: 'The default locale of the app. '
+          'This is used to set the language of the generated changelogs',
+    ),
+  );
 }

@@ -32,7 +32,7 @@ class CompileWorkflow implements WorkflowBuilder {
     );
 
     final releaseJobBuilder = TagReleaseJobBuilder(
-      compileJobId: compileJobBuilder.id,
+      compileJobIds: {compileJobBuilder.id},
       releaseRef: inputContext(WorkflowInputs.releaseRef),
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),

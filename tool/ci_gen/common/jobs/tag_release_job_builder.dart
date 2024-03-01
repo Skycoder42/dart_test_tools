@@ -5,7 +5,7 @@ import '../../types/job.dart';
 import '../steps/tag_release_builder.dart';
 
 class TagReleaseJobBuilder implements JobBuilder {
-  final JobId compileJobId;
+  final Set<JobId>? compileJobIds;
   final Expression releaseRef;
   final Expression dartSdkVersion;
   final Expression workingDirectory;
@@ -14,7 +14,7 @@ class TagReleaseJobBuilder implements JobBuilder {
   final String? binaryArtifactsPattern;
 
   const TagReleaseJobBuilder({
-    required this.compileJobId,
+    required this.compileJobIds,
     required this.releaseRef,
     required this.dartSdkVersion,
     required this.workingDirectory,
@@ -33,7 +33,7 @@ class TagReleaseJobBuilder implements JobBuilder {
   @override
   Job build() => Job(
         name: 'Create release if needed',
-        needs: {compileJobId},
+        needs: compileJobIds,
         ifExpression: const Expression('github.ref').eq(releaseRef),
         permissions: const {
           'contents': 'write',

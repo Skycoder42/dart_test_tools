@@ -1,5 +1,5 @@
 import '../../common/api/step_builder.dart';
-import '../../common/globals.dart';
+import '../../common/steps/install_dart_test_tools_builder.dart';
 import '../../types/step.dart';
 
 class PrepareArchBuilder implements StepBuilder {
@@ -12,11 +12,7 @@ class PrepareArchBuilder implements StepBuilder {
           run: 'pacman -Syu --noconfirm '
               'git openssh go-yq pacman-contrib dart namcap',
         ),
-        Step.run(
-          name: 'Install dart_test_tools',
-          run:
-              'dart pub global activate dart_test_tools ^$dartTestToolsVersion',
-        ),
+        ...InstallDartTestToolsBuilder().build(),
         const Step.run(
           name: 'Create build user',
           run: '''

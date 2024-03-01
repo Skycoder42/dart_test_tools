@@ -56,4 +56,36 @@ MY_API_KEY=<reference secret here>"
           'github workflow token does not trigger workflows when creating releases.',
     ),
   );
+
+  static const dartDefines = WorkflowSecret(
+    name: 'dartDefines',
+    secret: Secret(
+      required: false,
+      description: '''
+Additional dart-defines that are passed to the build command. In the format of:
+
+VARIABLE1=value1
+VARIABLE2=value2
+''',
+    ),
+  );
+
+  static const keystore = WorkflowSecret(
+    name: 'keystore',
+    secret: Secret(
+      required: true,
+      description:
+          'A base64 encoded java keystore used for signing the android app. '
+          'Use "cat keystore.jks | openssl base64" to encode it.',
+    ),
+  );
+
+  static const keystorePassword = WorkflowSecret(
+    name: 'keystorePassword',
+    secret: Secret(
+      required: true,
+      description: 'The primary password for the signing keystore. '
+          'Must be the password for both, keystore and signing key.',
+    ),
+  );
 }

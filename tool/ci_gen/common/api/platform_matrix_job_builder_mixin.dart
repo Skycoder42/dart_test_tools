@@ -59,16 +59,24 @@ base mixin PlatformJobBuilderMixin<TMatrix extends PlatformMatrix>
 
   @override
   @nonVirtual
-  Expression get matrixCondition => (Expression('fromJSON')([enabledPlatforms])
-              .property('length')
-              .eq(Expression.literal(0)) |
-          Expression('contains')([
-            Expression('fromJSON')([enabledPlatforms]),
-            matrix.platform.expression,
-          ]))
-      .parenthesized;
+  Expression get matrixCondition =>
+      EnabledPlatforms.check(enabledPlatforms, matrix.platform.expression);
 
   @override
   @nonVirtual
   Expression get matrixRunsOn => matrix.os.expression;
+}
+
+abstract base class EnabledPlatforms {
+  EnabledPlatforms._();
+
+  static Expression check(Expression enabledPlatforms, Expression platform) =>
+      (Expression('fromJSON')([enabledPlatforms])
+                  .property('length')
+                  .eq(Expression.literal(0)) |
+              Expression('contains')([
+                Expression('fromJSON')([enabledPlatforms]),
+                platform,
+              ]))
+          .parenthesized;
 }

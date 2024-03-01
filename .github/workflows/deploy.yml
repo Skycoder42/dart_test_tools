@@ -1,0 +1,246 @@
+on:
+  workflow_call:
+    inputs:
+      enabledPlatforms:
+        type: string
+        required: true
+        description: A JSON-encoded list of all platforms that this project can build/run for.
+      flutterSdkChannel:
+        type: string
+        required: false
+        default: stable
+        description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action".
+      javaJdkVersion:
+        type: number
+        required: false
+        default: 17
+        description: The Java-SDK version (mayor only). Passed as "java-version" to "actions/setup-java".
+      workingDirectory:
+        type: string
+        required: false
+        default: .
+        description: The root directory of the dart package to build and test.
+      buildRunner:
+        type: boolean
+        required: false
+        default: false
+        description: Specify whether build_runner is used in the project (defaults to false).
+      buildRunnerArgs:
+        type: string
+        required: false
+        description: Optional additional arguments to be passed to the build runner.
+      buildNumberArgs:
+        type: string
+        required: false
+        default: ""
+        description: Additional args for the build number generator.
+      primaryLocale:
+        type: string
+        required: false
+        default: en-US
+        description: The default locale of the app. This is used to set the language of the generated changelogs
+      releaseRef:
+        type: string
+        required: false
+        default: refs/heads/main
+        description: The git ref that is allowed to publish releases.
+      dartSdkVersion:
+        type: string
+        required: false
+        default: stable
+        description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
+      tagPrefix:
+        type: string
+        required: false
+        default: v
+        description: The prefix of git tags. The tag is the prefix, followed by the package version.
+      persistCredentials:
+        type: boolean
+        required: false
+        default: false
+        description: Specifies, whether git credentials should be persisted for the run. Might be needed in case the repository is a private repository to figure out whether a new release is required or not.
+    outputs:
+      releaseCreated:
+        value: ${{ jobs.release.outputs.update }}
+        description: Holds a boolean value string ("true" or "false"), indicating whether a release was created or not.
+      releaseVersion:
+        value: ${{ jobs.release.outputs.version }}
+        description: Holds the version number of the created release, if the releaseCreated output is true. Otherwise, it is not set.
+    secrets:
+      dartDefines:
+        required: false
+        description: |
+          Additional dart-defines that are passed to the build command. In the format of:
+
+          VARIABLE1=value1
+          VARIABLE2=value2
+      keystore:
+        required: true
+        description: A base64 encoded java keystore used for signing the android app. Use "cat keystore.jks | openssl base64" to encode it.
+      keystorePassword:
+        required: true
+        description: The primary password for the signing keystore. Must be the password for both, keystore and signing key.
+jobs:
+  build_android:
+    name: Build android app bundle
+    if: (fromJSON(inputs.enabledPlatforms).length == 0 || contains(fromJSON(inputs.enabledPlatforms), 'android'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install JDK Version ${{ inputs.javaJdkVersion }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ inputs.javaJdkVersion }}
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
+      - name: Download flutter binary artifacts
+        run: flutter precache --universal --android
+      - name: Install dart_test_tools
+        run: dart pub global activate dart_test_tools ^5.6.2
+      - name: Install scoop
+        if: runner.os == 'Windows'
+        run: |
+          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
+        shell: pwsh
+      - name: Install yq (Windows)
+        if: runner.os == 'Windows'
+        run: scoop install yq
+      - name: Install yq and coreutils (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install yq coreutils
+          echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Remove pubspec_overrides.yaml
+        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Restore dart packages
+        run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Create build files
+        if: inputs.buildRunner
+        run: flutter pub run build_runner build --release ${{ inputs.buildRunnerArgs }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - id: generateBuildNumber
+        name: Generate build number
+        run: dart pub global run dart_test_tools:generate_build_number ${{ inputs.buildNumberArgs }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Generate Changelog
+        run: |
+          set -eo pipefail
+          version=$(yq e '.version' pubspec.yaml)
+          changelogs_dir='build/app/outputs/metadata/${{ inputs.primaryLocale }}/changelogs'
+          mkdir -p "$changelogs_dir"
+          dart run cider describe "$version" > "$changelogs_dir/${{ steps.generateBuildNumber.outputs.buildNumber }}.txt"
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Prepare signing keystore
+        run: |
+          set -eo pipefail
+          keystore_path="$RUNNER_TEMP/app.keystore"
+          echo '${{ secrets.keystore }}' | openssl base64 -d > "$keystore_path"
+          cat << EOF > android/key.properties
+          storeFile=$keystore_path
+          password=${{ secrets.keystorePassword }}
+          EOF
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Prepare dart defines
+        run: echo '${{ secrets.dartDefines }}' > "$RUNNER_TEMP/dart-defines.env"
+        shell: bash
+      - name: Build android appbundle
+        run: flutter build appbundle --release --build-number=${{ steps.generateBuildNumber.outputs.buildNumber }} --obfuscate --split-debug-info=build/app/outputs/debug-info --dart-define-from-file="$RUNNER_TEMP/dart-defines.env"
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Cleanup dart defines
+        if: always()
+        run: rm -f "$RUNNER_TEMP/dart-defines.env"
+        shell: bash
+      - name: Upload app bundle and debug info
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-app
+          path: build/app/outputs
+          retention-days: 1
+          if-no-files-found: error
+      - name: Cleanup keystore and properties
+        if: always()
+        run: |
+          rm -rf android/key.properties
+          rm -rf "$RUNNER_TEMP/app.keystore"
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+  release:
+    name: Create release if needed
+    needs:
+      - build_android
+    if: github.ref == inputs.releaseRef
+    permissions:
+      contents: write
+    outputs:
+      update: ${{ steps.version.outputs.update }}
+      version: ${{ steps.version.outputs.version }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ inputs.dartSdkVersion }}
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: ${{ inputs.persistCredentials }}
+      - id: version
+        name: Check if a release should be created
+        run: |
+          set -eo pipefail
+          package_version=$(cat pubspec.yaml | yq e ".version" -)
+          git fetch --tags > /dev/null
+          tag_exists=$(git tag -l "${{ inputs.tagPrefix }}$package_version")
+
+          if [[ -z "$tag_exists" ]]; then
+            echo Release does not exist yet - creating release
+            echo "update=true" >> $GITHUB_OUTPUT
+            echo "version=$package_version" >> $GITHUB_OUTPUT
+          else
+            echo Release already exists - skipping creation
+            echo "update=false" >> $GITHUB_OUTPUT
+          fi
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Activate cider
+        if: steps.version.outputs.update == 'true'
+        run: dart pub global activate cider
+      - id: release_content
+        name: Generate release content
+        if: steps.version.outputs.update == 'true'
+        run: |
+          set -e
+          package_name=$(cat pubspec.yaml | yq e ".name" -)
+          package_version=$(cat pubspec.yaml | yq e ".version" -)
+
+          tag_name="${{ inputs.tagPrefix }}$package_version"
+          echo "tag_name=$tag_name" >> $GITHUB_OUTPUT
+
+          release_name="Release of package $package_name - Version $package_version"
+          echo "release_name=$release_name" >> $GITHUB_OUTPUT
+
+          version_changelog_file=$(mktemp)
+          echo "# Changelog" > $version_changelog_file
+          dart pub global run cider describe "$package_version" >> $version_changelog_file
+          echo "" >> $version_changelog_file
+          echo "body_path=$version_changelog_file" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Create Release
+        if: steps.version.outputs.update == 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.release_content.outputs.tag_name }}
+          name: ${{ steps.release_content.outputs.release_name }}
+          body_path: ${{ steps.release_content.outputs.body_path }}
