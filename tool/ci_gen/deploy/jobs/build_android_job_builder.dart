@@ -7,6 +7,7 @@ import '../../types/id.dart';
 import '../../types/job.dart';
 import '../../types/runs_on.dart';
 import '../steps/build_android_app_builder.dart';
+import '../steps/generate_build_number_builder.dart';
 
 final class BuildAndroidJobBuilder extends SdkJobBuilder
     with FlutterSdkJobBuilderMixin {
@@ -41,12 +42,18 @@ final class BuildAndroidJobBuilder extends SdkJobBuilder
   @override
   JobId get id => const JobId('build_android');
 
+  JobIdOutput get buildNumber => id.output('buildNumber');
+
   @override
   Job build() => Job(
         name: 'Build android app bundle',
         runsOn: RunsOn.ubuntuLatest.id,
+        environment: 'google-play', // TODO extract
         ifExpression: EnabledPlatforms.check(enabledPlatforms,
             Expression.literal(FlutterPlatform.android.platform)),
+        outputs: {
+          buildNumber: GenerateBuildNumberBuilder.buildNumberOutput,
+        },
         steps: [
           ...buildSetupSdkSteps(
             buildPlatform: Expression.fake('android'),

@@ -395,4 +395,26 @@ Example:
           'This is used to set the language of the generated changelogs',
     ),
   );
+
+  static const googlePlayTrack = WorkflowInput(
+    name: 'googlePlayTrack',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: 'production',
+      description: 'The google play release track to publish the app to '
+          '(Standard tracks are: production, beta, alpha, internal).',
+    ),
+  );
+
+  static const googlePlayReleaseStatus = WorkflowInput(
+    name: 'googlePlayReleaseStatus',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: 'completed',
+      description: 'The google play release status after publishing the app '
+          '(completed, draft, halted, inProgress).',
+    ),
+  );
 }

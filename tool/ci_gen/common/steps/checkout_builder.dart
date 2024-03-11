@@ -7,11 +7,13 @@ class CheckoutBuilder implements StepBuilder {
   final Expression? gitRef;
   final String? path;
   final Expression? persistCredentials;
+  final int? fetchDepth;
 
   const CheckoutBuilder({
     this.gitRef,
     this.path,
     this.persistCredentials,
+    this.fetchDepth,
   });
 
   @override
@@ -23,6 +25,7 @@ class CheckoutBuilder implements StepBuilder {
             'persist-credentials': persistCredentials?.toString() ?? false,
             if (path != null) 'path': path,
             if (gitRef != null) 'ref': gitRef.toString(),
+            if (fetchDepth != null) 'fetch-depth': fetchDepth,
           },
         ),
       ];

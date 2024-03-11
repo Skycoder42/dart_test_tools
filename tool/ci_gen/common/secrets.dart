@@ -88,4 +88,23 @@ VARIABLE2=value2
           'Must be the password for both, keystore and signing key.',
     ),
   );
+
+  static const sentryAuthToken = WorkflowSecret(
+    name: 'sentryAuthToken',
+    secret: Secret(
+      required: false,
+      description: 'A sentry authentication token. '
+          'If specified, debug symbols will be uploaded to sentry. '
+          'If not specified (the default), no debug symbols are uploaded.',
+    ),
+  );
+
+  static const googlePlayKey = WorkflowSecret(
+    name: 'googlePlayKey',
+    secret: Secret(
+      required: true,
+      description: 'The google play api upload JSON key. '
+          'Needed by fastlane to actually publish the app.',
+    ),
+  );
 }

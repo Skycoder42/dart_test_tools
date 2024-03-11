@@ -55,8 +55,10 @@ class IdOutput with _$IdOutput {
         job: (id, name) => Expression('needs.$id.outputs.$name'),
       );
 
-  String bashSetter(String value) => maybeWhen(
-        step: (id, name) => 'echo "$name=$value" >> \$GITHUB_OUTPUT',
+  String bashSetter(String value, {bool isCommand = false}) => maybeWhen(
+        step: (id, name) => isCommand
+            ? 'echo "$name=\$($value)" >> \$GITHUB_OUTPUT'
+            : 'echo "$name=$value" >> \$GITHUB_OUTPUT',
         orElse: () =>
             throw UnsupportedError('Cannot create a bash setter for $this'),
       );

@@ -59,6 +59,16 @@ on:
         required: false
         default: false
         description: Specifies, whether git credentials should be persisted for the run. Might be needed in case the repository is a private repository to figure out whether a new release is required or not.
+      googlePlayTrack:
+        type: string
+        required: false
+        default: production
+        description: 'The google play release track to publish the app to (Standard tracks are: production, beta, alpha, internal).'
+      googlePlayReleaseStatus:
+        type: string
+        required: false
+        default: completed
+        description: The google play release status after publishing the app (completed, draft, halted, inProgress).
     outputs:
       releaseCreated:
         value: ${{ jobs.release.outputs.update }}
@@ -80,10 +90,19 @@ on:
       keystorePassword:
         required: true
         description: The primary password for the signing keystore. Must be the password for both, keystore and signing key.
+      sentryAuthToken:
+        required: false
+        description: A sentry authentication token. If specified, debug symbols will be uploaded to sentry. If not specified (the default), no debug symbols are uploaded.
+      googlePlayKey:
+        required: true
+        description: The google play api upload JSON key. Needed by fastlane to actually publish the app.
 jobs:
   build_android:
     name: Build android app bundle
     if: (fromJSON(inputs.enabledPlatforms).length == 0 || contains(fromJSON(inputs.enabledPlatforms), 'android'))
+    environment: google-play
+    outputs:
+      buildNumber: ${{ steps.generateBuildNumber.outputs.buildNumber }}
     runs-on: ubuntu-latest
     steps:
       - name: Install JDK Version ${{ inputs.javaJdkVersion }}
@@ -163,13 +182,6 @@ jobs:
         if: always()
         run: rm -f "$RUNNER_TEMP/dart-defines.env"
         shell: bash
-      - name: Upload app bundle and debug info
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-app
-          path: build/app/outputs
-          retention-days: 1
-          if-no-files-found: error
       - name: Cleanup keystore and properties
         if: always()
         run: |
@@ -177,6 +189,13 @@ jobs:
           rm -rf "$RUNNER_TEMP/app.keystore"
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
+      - name: Upload app bundle and debug info
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-app
+          path: build/app/outputs
+          retention-days: 1
+          if-no-files-found: error
   release:
     name: Create release if needed
     needs:
@@ -244,3 +263,53 @@ jobs:
           tag_name: ${{ steps.release_content.outputs.tag_name }}
           name: ${{ steps.release_content.outputs.release_name }}
           body_path: ${{ steps.release_content.outputs.body_path }}
+  deploy_android:
+    name: Deploy android app to Google Play
+    needs:
+      - release
+      - build_android
+    if: needs.release.outputs.update == 'true' && (fromJSON(inputs.enabledPlatforms).length == 0 || contains(fromJSON(inputs.enabledPlatforms), 'android'))
+    environment: google-play
+    runs-on: macos-latest
+    steps:
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
+      - name: Download flutter binary artifacts
+        run: flutter precache --universal
+      - name: Install fastlane
+        run: brew install fastlane
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Download android app artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: android-app
+          path: build
+      - id: detectPackageName
+        name: Detect android package name
+        run: echo "packageName=$(cat android/app/build.gradle | grep 'applicationId "' | cut -d '"' -f2)" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Prepare Google Play key
+        run: echo '${{ secrets.googlePlayKey }}' > "$RUNNER_TEMP/fastlane-key-file.json"
+      - name: Deploy to Google Play
+        run: fastlane upload_to_play_store --json_key "$RUNNER_TEMP/fastlane-key-file.json" --package_name '${{ steps.detectPackageName.outputs.packageName }}' --track '${{ inputs.googlePlayTrack }}' --release_status '${{ inputs.googlePlayReleaseStatus }}' --aab build/bundle/release/app-release.aab --mapping build/mapping/release/mapping.txt --metadata_path build/metadata
+      - name: Cleanup Google Play key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/fastlane-key-file.json"
+      - name: Install sentry_dart_plugin
+        if: secrets.sentryAuthToken != ''
+        run: flutter pub global activate sentry_dart_plugin
+      - name: Upload debug symbols
+        if: secrets.sentryAuthToken != ''
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.sentryAuthToken }}
+          SENTRY_DIST: ${{ needs.build_android.outputs.buildNumber }}
+        run: flutter pub global run sentry_dart_plugin
+        working-directory: ${{ inputs.workingDirectory }}
