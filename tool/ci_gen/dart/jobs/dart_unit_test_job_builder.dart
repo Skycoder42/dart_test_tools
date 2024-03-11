@@ -9,8 +9,7 @@ final class DartUnitTestJobBuilder extends UnitTestJobBuilder
   final Expression dartSdkVersion;
 
   DartUnitTestJobBuilder({
-    required super.analyzeJobId,
-    required super.enabledPlatforms,
+    required super.enabledPlatformsOutput,
     required super.workingDirectory,
     required super.artifactDependencies,
     required super.buildRunner,

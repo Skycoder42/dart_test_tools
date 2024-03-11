@@ -72,7 +72,7 @@ class DeployAndroidAppBuilder implements StepBuilder {
         ),
         Step.run(
           name: 'Cleanup Google Play key',
-          ifExpression: Expression('always()'), // TODO extract constant
+          ifExpression: Expression.always,
           run: 'rm -f "\$RUNNER_TEMP/fastlane-key-file.json"',
         ),
         ...UploadSentrySymbolsBuilder(

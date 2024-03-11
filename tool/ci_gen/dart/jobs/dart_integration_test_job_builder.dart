@@ -26,9 +26,7 @@ final class DartIntegrationTestJobBuilder extends SdkJobBuilder
         MatrixJobBuilderMixin<_DartIntegrationTestMatrix,
             IPlatformMatrixSelector>,
         PlatformJobBuilderMixin<_DartIntegrationTestMatrix> {
-  final JobId analyzeJobId;
-  @override
-  final Expression enabledPlatforms;
+  final JobIdOutput enabledPlatformsOutput;
   @override
   final Expression dartSdkVersion;
   final Expression workingDirectory;
@@ -45,8 +43,7 @@ final class DartIntegrationTestJobBuilder extends SdkJobBuilder
   final _DartIntegrationTestMatrix matrix;
 
   const DartIntegrationTestJobBuilder({
-    required this.analyzeJobId,
-    required this.enabledPlatforms,
+    required this.enabledPlatformsOutput,
     required this.dartSdkVersion,
     required this.workingDirectory,
     required this.artifactDependencies,
@@ -63,10 +60,15 @@ final class DartIntegrationTestJobBuilder extends SdkJobBuilder
   JobId get id => const JobId('integration_tests');
 
   @override
+  Expression get enabledPlatforms => enabledPlatformsOutput.expression;
+
+  @override
   Job buildGeneric(String runsOn) => Job(
         name: 'Integration tests',
         ifExpression: integrationTestPaths.ne(Expression.empty),
-        needs: {analyzeJobId},
+        needs: {
+          enabledPlatformsOutput.jobId,
+        },
         runsOn: runsOn,
         steps: [
           ...buildSetupSdkSteps(),

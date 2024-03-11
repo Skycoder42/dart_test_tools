@@ -30,7 +30,9 @@ class ValidateCoverageJobBuilder implements JobBuilder {
               minCoverage,
             ) &
             (unitTestPaths.ne(Expression.empty)),
-        needs: {unitTestJobId},
+        needs: {
+          unitTestJobId,
+        },
         runsOn: 'ubuntu-latest',
         steps: [
           ...ValidateCoverageBuilder(

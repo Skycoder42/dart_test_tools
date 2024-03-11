@@ -8,6 +8,8 @@ part 'expression.freezed.dart';
 class Expression with _$Expression {
   static const empty = Expression.literal('');
 
+  static const always = Expression('always()');
+
   const Expression._();
 
   // ignore: sort_unnamed_constructors_first

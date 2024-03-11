@@ -48,9 +48,7 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
         MatrixJobBuilderMixin<_FlutterIntegrationTestMatrix,
             IPlatformMatrixSelector>,
         PlatformJobBuilderMixin<_FlutterIntegrationTestMatrix> {
-  final JobId analyzeJobId;
-  @override
-  final Expression enabledPlatforms;
+  final JobIdOutput enabledPlatformsOutput;
   @override
   final Expression flutterSdkChannel;
   @override
@@ -68,8 +66,7 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression androidAVDDevice;
 
   const FlutterIntegrationTestJobBuilder({
-    required this.analyzeJobId,
-    required this.enabledPlatforms,
+    required this.enabledPlatformsOutput,
     required this.flutterSdkChannel,
     required this.javaJdkVersion,
     required this.workingDirectory,
@@ -89,13 +86,18 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   JobId get id => const JobId('integration_tests');
 
   @override
+  Expression get enabledPlatforms => enabledPlatformsOutput.expression;
+
+  @override
   final _FlutterIntegrationTestMatrix matrix;
 
   @override
   Job buildGeneric(String runsOn) => Job(
         name: 'Integration tests',
         ifExpression: integrationTestPaths.ne(Expression.empty),
-        needs: {analyzeJobId},
+        needs: {
+          enabledPlatformsOutput.jobId,
+        },
         runsOn: runsOn,
         steps: [
           ...buildSetupSdkSteps(

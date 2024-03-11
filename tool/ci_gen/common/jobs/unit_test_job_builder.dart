@@ -29,9 +29,7 @@ abstract base class UnitTestJobBuilder extends SdkJobBuilder
     with
         MatrixJobBuilderMixin<_UnitTestMatrix, IPlatformMatrixSelector>,
         PlatformJobBuilderMixin<_UnitTestMatrix> {
-  final JobId analyzeJobId;
-  @override
-  final Expression enabledPlatforms;
+  final JobIdOutput enabledPlatformsOutput;
   final Expression workingDirectory;
   final Expression artifactDependencies;
   final Expression buildRunner;
@@ -45,8 +43,7 @@ abstract base class UnitTestJobBuilder extends SdkJobBuilder
 
   UnitTestJobBuilder({
     required List<IPlatformMatrixSelector> platformSelectors,
-    required this.analyzeJobId,
-    required this.enabledPlatforms,
+    required this.enabledPlatformsOutput,
     required this.workingDirectory,
     required this.artifactDependencies,
     required this.buildRunner,
@@ -59,6 +56,9 @@ abstract base class UnitTestJobBuilder extends SdkJobBuilder
   @override
   JobId get id => const JobId('unit_tests');
 
+  @override
+  Expression get enabledPlatforms => enabledPlatformsOutput.expression;
+
   @protected
   String get coverageArgs;
 
@@ -69,7 +69,9 @@ abstract base class UnitTestJobBuilder extends SdkJobBuilder
   Job buildGeneric(String runsOn) => Job(
         name: 'Unit tests',
         ifExpression: unitTestPaths.ne(Expression.empty),
-        needs: {analyzeJobId},
+        needs: {
+          enabledPlatformsOutput.jobId,
+        },
         runsOn: runsOn,
         steps: [
           ...buildSetupSdkSteps(),

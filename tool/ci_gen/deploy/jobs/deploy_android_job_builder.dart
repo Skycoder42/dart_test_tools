@@ -1,4 +1,5 @@
 import '../../common/api/platform_matrix_job_builder_mixin.dart';
+import '../../common/environments.dart';
 import '../../common/jobs/sdk_job_builder.dart';
 import '../../flutter/flutter_platform.dart';
 import '../../flutter/jobs/flutter_sdk_job_builder_mixin.dart';
@@ -11,7 +12,7 @@ import '../steps/deploy_android_app_builder.dart';
 final class DeployAndroidJobBuilder extends SdkJobBuilder
     with FlutterSdkJobBuilderMixin {
   final Expression enabledPlatforms;
-  final JobIdOutput releaseCreated; // TODO do like that everywhere
+  final JobIdOutput releaseCreated;
   @override
   final Expression flutterSdkChannel;
   @override
@@ -47,7 +48,7 @@ final class DeployAndroidJobBuilder extends SdkJobBuilder
           releaseCreated.jobId,
           buildNumber.jobId,
         },
-        environment: 'google-play', // TODO extract
+        environment: Environments.googlePlay,
         ifExpression: releaseCreated.expression.eq(Expression.literal('true')) &
             EnabledPlatforms.check(enabledPlatforms,
                 Expression.literal(FlutterPlatform.android.platform)),

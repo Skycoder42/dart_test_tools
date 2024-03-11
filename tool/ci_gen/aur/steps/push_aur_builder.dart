@@ -29,7 +29,7 @@ git status --short
         ),
         const Step.run(
           name: 'Clean up SSH key',
-          ifExpression: Expression('always()'),
+          ifExpression: Expression.always,
           run: r'shred -fzvu "$RUNNER_TEMP/ssh-key"',
         ),
       ];

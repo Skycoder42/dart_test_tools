@@ -8,7 +8,6 @@ import '../../types/id.dart';
 import '../../types/job.dart';
 import '../steps/compile_builder.dart';
 
-// TODO generic IPlatformMatrixSelector
 final class _CompileMatrix extends PlatformMatrix {
   const _CompileMatrix() : super(DartPlatform.values);
 

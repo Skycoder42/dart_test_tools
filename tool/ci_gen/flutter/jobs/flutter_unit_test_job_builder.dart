@@ -11,8 +11,7 @@ final class FlutterUnitTestJobBuilder extends UnitTestJobBuilder
   final Expression javaJdkVersion;
 
   FlutterUnitTestJobBuilder({
-    required super.analyzeJobId,
-    required super.enabledPlatforms,
+    required super.enabledPlatformsOutput,
     required this.flutterSdkChannel,
     required this.javaJdkVersion,
     required super.workingDirectory,

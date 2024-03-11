@@ -94,7 +94,7 @@ class DartIntegrationTestBuilder implements StepBuilder {
         ),
         Step.run(
           name: 'Shred .env file',
-          ifExpression: const Expression('always()'),
+          ifExpression: Expression.always,
           run: 'shred -fzvu .env',
           workingDirectory: workingDirectory.toString(),
         ),

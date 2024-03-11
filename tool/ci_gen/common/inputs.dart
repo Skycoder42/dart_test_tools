@@ -335,15 +335,6 @@ Example:
     ),
   );
 
-  static const environment = WorkflowInput(
-    name: 'environment',
-    input: Input(
-      type: Type.string,
-      required: true,
-      description: 'The publishing environment for pub.dev.',
-    ),
-  );
-
   static const artifactDependencies = WorkflowInput(
     name: 'artifactDependencies',
     input: Input(

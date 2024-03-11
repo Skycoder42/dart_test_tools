@@ -31,12 +31,11 @@ class BuildAppBuilder implements StepBuilder {
               '--build-number=$buildNumber '
               '--obfuscate --split-debug-info=$debugInfoDir/debug-info '
               '--dart-define-from-file="\$RUNNER_TEMP/dart-defines.env"',
-          // TODO add dart define file
           workingDirectory: workingDirectory.toString(),
         ),
         Step.run(
           name: 'Cleanup dart defines',
-          ifExpression: Expression('always()'),
+          ifExpression: Expression.always,
           run: 'rm -f "\$RUNNER_TEMP/dart-defines.env"',
           shell: 'bash',
         ),

@@ -12,19 +12,19 @@ executables:
   cider:
 
 dependencies:
-  analyzer: ^6.2.0
+  analyzer: ^6.4.1
   args: ^2.4.2
   checked_yaml: ^2.0.3
-  cider: ^0.2.6
+  cider: ^0.2.7
   custom_lint_builder: ^0.6.2
   dotenv: ^4.2.0
   freezed_annotation: ^2.4.1
   json_annotation: ^4.8.1
   lint: ^2.3.0
   logging: ^1.2.0
-  meta: ^1.10.0
+  meta: ^1.11.0
   mocktail: ^1.0.3
-  path: ^1.8.3
+  path: ^1.9.0
   pub_semver: ^2.1.4
   pubspec_parse: ^1.2.3
   stack_trace: ^1.11.1
@@ -53,7 +53,6 @@ cider:
 dart_pre_commit:
   pull-up-dependencies:
     allowed:
-      - analyzer
       - meta
       - path
       - test

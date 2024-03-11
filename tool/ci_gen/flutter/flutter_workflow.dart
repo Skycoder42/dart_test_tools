@@ -40,8 +40,7 @@ class FlutterWorkflow implements WorkflowBuilder {
     );
 
     final unitTestBuilder = FlutterUnitTestJobBuilder(
-      analyzeJobId: analyzeJobBuilder.id,
-      enabledPlatforms: analyzeJobBuilder.platformsOutput.expression,
+      enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
       javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
@@ -63,8 +62,7 @@ class FlutterWorkflow implements WorkflowBuilder {
     );
 
     final integrationTestBuilder = FlutterIntegrationTestJobBuilder(
-      analyzeJobId: analyzeJobBuilder.id,
-      enabledPlatforms: analyzeJobBuilder.platformsOutput.expression,
+      enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
       javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),

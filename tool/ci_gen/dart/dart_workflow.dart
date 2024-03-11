@@ -42,8 +42,7 @@ class DartWorkflow implements WorkflowBuilder {
     );
 
     final unitTestBuilder = DartUnitTestJobBuilder(
-      analyzeJobId: analyzeJobBuilder.id,
-      enabledPlatforms: analyzeJobBuilder.platformsOutput.expression,
+      enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
@@ -64,8 +63,7 @@ class DartWorkflow implements WorkflowBuilder {
     );
 
     final integrationTestBuilder = DartIntegrationTestJobBuilder(
-      analyzeJobId: analyzeJobBuilder.id,
-      enabledPlatforms: analyzeJobBuilder.platformsOutput.expression,
+      enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
