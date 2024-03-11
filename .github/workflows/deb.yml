@@ -52,7 +52,7 @@ jobs:
         run: makedeb -s --no-confirm
         working-directory: deb
       - name: Upload debian package to release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.tagPrefix }}${{ inputs.version }}
           files: deb/*.deb
