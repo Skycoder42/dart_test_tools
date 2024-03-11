@@ -71,9 +71,7 @@ abstract base class EnabledPlatforms {
   EnabledPlatforms._();
 
   static Expression check(Expression enabledPlatforms, Expression platform) =>
-      (Expression('fromJSON')([enabledPlatforms])
-                  .property('length')
-                  .eq(Expression.literal(0)) |
+      (enabledPlatforms.eq(Expression.literal('[]')) |
               Expression('contains')([
                 Expression('fromJSON')([enabledPlatforms]),
                 platform,

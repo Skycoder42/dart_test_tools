@@ -99,7 +99,7 @@ on:
 jobs:
   build_android:
     name: Build android app bundle
-    if: (fromJSON(inputs.enabledPlatforms).length == 0 || contains(fromJSON(inputs.enabledPlatforms), 'android'))
+    if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), 'android'))
     environment: google-play
     outputs:
       buildNumber: ${{ steps.generateBuildNumber.outputs.buildNumber }}
@@ -268,7 +268,7 @@ jobs:
     needs:
       - release
       - build_android
-    if: needs.release.outputs.update == 'true' && (fromJSON(inputs.enabledPlatforms).length == 0 || contains(fromJSON(inputs.enabledPlatforms), 'android'))
+    if: needs.release.outputs.update == 'true' && (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), 'android'))
     environment: google-play
     runs-on: macos-latest
     steps:
