@@ -346,7 +346,7 @@ jobs:
           retention-days: 14
           if-no-files-found: error
       - name: Validate coverage is at least ${{ inputs.minCoverage }}%
-        uses: VeryGoodOpenSource/very_good_coverage@v2
+        uses: VeryGoodOpenSource/very_good_coverage@v3
         with:
           path: ${{ inputs.workingDirectory }}/coverage/cleaned.info
           min_coverage: ${{ inputs.minCoverage }}
