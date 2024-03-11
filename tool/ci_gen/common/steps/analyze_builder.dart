@@ -58,10 +58,9 @@ class AnalyzeBuilder implements StepBuilder {
           name: 'Check supported platforms',
           run: '''
 set -eo pipefail
-${platformsOutput.bashSetterMultiLine(
-            "yq '.platforms // {} | keys' -o=json pubspec.yaml",
-            isCommand: true,
-          )}
+platforms=\$(yq '.platforms // {} | keys' -o=json -I=0 pubspec.yaml)
+echo "Detected supported platforms as: \$platforms"
+${platformsOutput.bashSetter(r'$platforms')}
 ''',
           workingDirectory: workingDirectory.toString(),
           shell: 'bash',

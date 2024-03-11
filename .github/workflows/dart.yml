@@ -164,9 +164,9 @@ jobs:
         name: Check supported platforms
         run: |
           set -eo pipefail
-          echo "platforms<<EOF" >> $GITHUB_OUTPUT
-          yq '.platforms // {} | keys' -o=json pubspec.yaml >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          platforms=$(yq '.platforms // {} | keys' -o=json -I=0 pubspec.yaml)
+          echo "Detected supported platforms as: $platforms"
+          echo "platforms=$platforms" >> $GITHUB_OUTPUT
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Static analysis
