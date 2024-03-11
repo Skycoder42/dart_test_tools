@@ -61,7 +61,7 @@ on:
       integrationTestSetup:
         type: string
         required: false
-        default: '{}'
+        default: "{}"
         description: |
           A JSON-Matrix with extra setup steps for each platform.
           contains key-value pairs for each platform with a command to be invoked.
@@ -168,6 +168,13 @@ jobs:
           echo "Detected supported platforms as: $platforms"
           echo "platforms=$platforms" >> $GITHUB_OUTPUT
         working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: DEBUG VALIDATE
+        run: |
+          echo "raw: ${{ steps.checkPlatforms.outputs.platforms }}"
+          echo "json: ${{ fromJSON(steps.checkPlatforms.outputs.platforms) }}"
+          echo "length: ${{ fromJSON(steps.checkPlatforms.outputs.platforms).length }}"
+          echo "contains: ${{ contains(fromJSON(steps.checkPlatforms.outputs.platforms), 'linux') }}"
         shell: bash
       - name: Static analysis
         run: dart analyze --fatal-infos
