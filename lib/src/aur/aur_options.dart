@@ -51,7 +51,6 @@ class AurOptions with _$AurOptions {
     @Default('custom') String license,
     @Default(<String>[]) List<String> depends,
     String? install,
-    @Default(false) bool multiBin,
     @Default(<InstallTarget>[]) List<InstallTarget> files,
     @Default(<String>[]) List<String> backup,
     MakedebOptions? makedeb,

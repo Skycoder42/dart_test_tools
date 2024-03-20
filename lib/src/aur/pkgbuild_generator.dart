@@ -7,7 +7,7 @@ import 'package:path/path.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
 class PkgBuildGenerator {
-  static const _supportedArchs = ['x86_64', 'i686', 'armv7h', 'aarch64'];
+  static const _supportedArchs = ['x86_64'];
   static const _supportedDebArchs = ['amd64'];
 
   final AurOptionsLoader aurOptionsLoader;
@@ -167,9 +167,9 @@ class PkgBuildGenerator {
     yield* options.executables.entries.map(
       (entry) =>
           'install -D -m755 ' +
-          (options.aurOptions.multiBin
-              ? "../bin/'${entry.key}' "
-              : "../'${entry.key}' ") +
+          (options.executables.length > 1
+              ? "'../bin/${entry.key}' "
+              : "'../${entry.key}' ") +
           "\"\$pkgdir/usr/bin/\"'${entry.key}'",
     );
 
@@ -200,13 +200,13 @@ class PkgBuildGenerator {
     yield* options.executables.entries.map(
       (entry) =>
           'install -D -m644 ' +
-          (options.aurOptions.multiBin
-              ? "../debug/'${entry.key}'.sym "
-              : "../'${entry.key}'.sym ") +
+          (options.executables.length > 1
+              ? "'../debug/${entry.key}.sym' "
+              : "'../${entry.key}.sym' ") +
           "\"\$pkgdir/usr/lib/debug/usr/bin/\"'${entry.key}'.sym",
     );
 
     yield 'find . -exec '
-        'install -D -m644 "{}" "\$pkgdir/usr/src/debug/$pkgBase/{}" \\;';
+        'install -D -m644 "{}" "\$pkgdir/usr/src/debug/\$pkgname/{}" \\;';
   }
 }
