@@ -1,9 +1,15 @@
 import '../../common/api/step_builder.dart';
 import '../../common/steps/install_dart_test_tools_builder.dart';
+import '../../dart/steps/dart_sdk_builder.dart';
+import '../../types/expression.dart';
 import '../../types/step.dart';
 
 class PrepareArchBuilder implements StepBuilder {
-  const PrepareArchBuilder();
+  final Expression dartSdkVersion;
+
+  const PrepareArchBuilder({
+    required this.dartSdkVersion,
+  });
 
   @override
   Iterable<Step> build() => [
@@ -12,6 +18,9 @@ class PrepareArchBuilder implements StepBuilder {
           run: 'pacman -Syu --noconfirm '
               'git openssh go-yq pacman-contrib namcap unzip',
         ),
+        ...DartSdkBuilder(
+          dartSdkVersion: dartSdkVersion,
+        ).build(),
         ...InstallDartTestToolsBuilder().build(),
         const Step.run(
           name: 'Create build user',

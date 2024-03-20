@@ -18,6 +18,10 @@ jobs:
     steps:
       - name: Install pacman dependencies
         run: pacman -Syu --noconfirm git openssh go-yq pacman-contrib namcap unzip
+      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ inputs.dartSdkVersion }}
       - name: Install dart_test_tools
         run: dart pub global activate dart_test_tools ^5.7.0
       - name: Create build user
@@ -25,10 +29,6 @@ jobs:
           set -eo pipefail
           useradd -m build
           echo 'build ALL=(ALL:ALL) NOPASSWD: ALL' >> /etc/sudoers
-      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        uses: dart-lang/setup-dart@v1
-        with:
-          sdk: ${{ inputs.dartSdkVersion }}
       - name: Checkout repository
         uses: actions/checkout@v4
         with:

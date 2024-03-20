@@ -1,6 +1,5 @@
 import '../../common/api/job_builder.dart';
 import '../../common/steps/checkout_builder.dart';
-import '../../dart/steps/dart_sdk_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
@@ -27,8 +26,7 @@ class AurDeployJobBuilder implements JobBuilder {
         runsOn: 'ubuntu-latest',
         container: 'archlinux:base-devel',
         steps: [
-          ...const PrepareArchBuilder().build(),
-          ...DartSdkBuilder(
+          ...PrepareArchBuilder(
             dartSdkVersion: dartSdkVersion,
           ).build(),
           ...CheckoutBuilder(
