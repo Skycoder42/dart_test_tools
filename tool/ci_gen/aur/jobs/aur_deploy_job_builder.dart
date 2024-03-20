@@ -1,5 +1,6 @@
 import '../../common/api/job_builder.dart';
 import '../../common/steps/checkout_builder.dart';
+import '../../dart/steps/dart_sdk_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
@@ -9,9 +10,11 @@ import '../steps/prepare_arch_builder.dart';
 import '../steps/push_aur_builder.dart';
 
 class AurDeployJobBuilder implements JobBuilder {
+  final Expression dartSdkVersion;
   final Expression aurSshPrivateKey;
 
   const AurDeployJobBuilder({
+    required this.dartSdkVersion,
     required this.aurSshPrivateKey,
   });
 
@@ -25,6 +28,9 @@ class AurDeployJobBuilder implements JobBuilder {
         container: 'archlinux:base-devel',
         steps: [
           ...const PrepareArchBuilder().build(),
+          ...DartSdkBuilder(
+            dartSdkVersion: dartSdkVersion,
+          ).build(),
           ...CheckoutBuilder(
             path: 'src',
           ).build(),
