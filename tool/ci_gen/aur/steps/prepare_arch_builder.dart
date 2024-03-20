@@ -10,7 +10,7 @@ class PrepareArchBuilder implements StepBuilder {
         const Step.run(
           name: 'Install pacman dependencies',
           run: 'pacman -Syu --noconfirm '
-              'git openssh go-yq pacman-contrib dart namcap',
+              'git openssh go-yq pacman-contrib namcap',
         ),
         ...InstallDartTestToolsBuilder().build(),
         const Step.run(

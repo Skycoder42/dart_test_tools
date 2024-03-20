@@ -4,7 +4,6 @@ import 'package:dart_test_tools/src/aur/aur_options.dart';
 import 'package:dart_test_tools/src/aur/aur_options_loader.dart';
 import 'package:dart_test_tools/src/aur/pkgbuild.dart';
 import 'package:path/path.dart';
-import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
 class PkgBuildGenerator {
@@ -81,13 +80,13 @@ class PkgBuildGenerator {
             options.aurOptions.depends;
     final backup = (makedebMode ? options.aurOptions.makedeb?.backup : null) ??
         options.aurOptions.backup;
+    final pkgBase = options.aurOptions.pkgname ?? options.pubspec.name;
 
     final pkgBuild = Pkgbuild(
       maintainer: options.aurOptions.maintainer,
       properties: {
-        'pkgname': PkgProperty(
-          options.aurOptions.pkgname ?? options.pubspec.name,
-        ),
+        'pkgbase': PkgProperty(pkgBase),
+        'pkgname': PkgProperty.literalList([pkgBase, '$pkgBase-debug']),
         'pkgdesc': PkgProperty(options.pubspec.description),
         'pkgver': PkgProperty(version.toString().replaceAll('-', '_')),
         'pkgrel': PkgProperty(options.aurOptions.pkgrel),
@@ -102,10 +101,12 @@ class PkgBuildGenerator {
           depends,
           skipEmpty: false,
         ),
-        'makedepends': _getDartDependency(options.pubspec),
         '_pkgdir': PkgProperty('${options.pubspec.name}-$version'),
         'source': _getSourceUrls(options.pubspec),
-        'b2sums': PkgProperty.literalList(const ['PLACEHOLDER']),
+        'b2sums': PkgProperty.literalList(
+          const ['PLACEHOLDER', 'PLACEHOLDER', 'PLACEHOLDER'],
+          multiLine: true,
+        ),
         'install': PkgProperty(installFileName),
         'changelog': PkgProperty(changelogFileName),
         'backup': PkgProperty.literalList(backup),
@@ -116,58 +117,16 @@ class PkgBuildGenerator {
           'extensions': PkgProperty.literalList(const ['zipman']),
       },
       functions: {
-        'prepare': const PkgFunction([
-          'dart pub get',
-        ]),
-        'build': PkgFunction(_getBuildSteps(options).toList()),
-        'check': PkgFunction([
-          'dart analyze --no-fatal-warnings',
-          options.aurOptions.testArgs == null
-              ? 'dart test'
-              : 'dart test ${options.aurOptions.testArgs}',
-        ]),
-        'package': PkgFunction(
+        'package_$pkgBase': PkgFunction(
           _getInstallSteps(options, licenseFileName, makedebMode).toList(),
+        ),
+        'package_$pkgBase-debug': PkgFunction(
+          _getDebugInstallSteps(options, pkgBase).toList(),
         ),
       },
     );
 
     return pkgBuild.encode();
-  }
-
-  PkgProperty _getDartDependency(Pubspec pubspec) {
-    final dependencies = <String>[];
-
-    final dartSdkConstraints = pubspec.environment?['sdk'];
-    if (dartSdkConstraints is VersionRange) {
-      final minVersion = dartSdkConstraints.min;
-      if (minVersion != null) {
-        final strippedMin =
-            minVersion.isPreRelease ? minVersion.nextPatch : minVersion;
-        if (dartSdkConstraints.includeMin) {
-          dependencies.add('dart>=$strippedMin');
-        } else {
-          dependencies.add('dart>$strippedMin');
-        }
-      }
-
-      final maxVersion = dartSdkConstraints.max;
-      if (maxVersion != null) {
-        final strippedMax =
-            maxVersion.isPreRelease ? maxVersion.nextPatch : maxVersion;
-        if (dartSdkConstraints.includeMax) {
-          dependencies.add('dart<=$strippedMax');
-        } else {
-          dependencies.add('dart<$strippedMax');
-        }
-      }
-    }
-
-    if (dependencies.isEmpty) {
-      dependencies.add('dart');
-    }
-
-    return PkgProperty.literalList(dependencies);
   }
 
   PkgProperty _getSourceUrls(Pubspec pubspec) {
@@ -181,26 +140,19 @@ class PkgBuildGenerator {
       baseRepoString.endsWith('/') ? baseRepoString : '$baseRepoString/',
     ).resolveUri(Uri(path: 'archive/refs/tags/v${pubspec.version}.tar.gz'));
 
-    return PkgProperty.list([
+    final binariesBaseUri = Uri.parse(
+      baseRepoString.endsWith('/') ? baseRepoString : '$baseRepoString/',
+    ).resolveUri(Uri(path: 'releases/download/v${pubspec.version}/'));
+
+    return PkgProperty.list(multiLine: true, [
       PkgProperty.interpolate('\$_pkgdir.tar.gz::$repoUri'),
+      PkgProperty.interpolate(
+        'bin.tar.xz::${binariesBaseUri.resolve('binaries-linux.tar.xz')}',
+      ),
+      PkgProperty.interpolate(
+        'debug.tar.xz::${binariesBaseUri.resolve('binaries-linux-debug-symbols.tar.xz')}',
+      ),
     ]);
-  }
-
-  Iterable<String> _getBuildSteps(PubspecWithAur options) sync* {
-    if (options.executables.isEmpty) {
-      throw Exception('Must define at least one executable!');
-    }
-
-    if (options.pubspec.devDependencies.containsKey('build_runner')) {
-      yield 'dart run build_runner build --delete-conflicting-outputs --release';
-    }
-
-    yield* options.executables.entries.map(
-      (entry) => 'dart compile exe '
-          "-o 'bin/${entry.key}' "
-          "-S 'bin/${entry.key}.symbols' "
-          "'bin/${entry.value ?? entry.key}.dart'",
-    );
   }
 
   Iterable<String> _getInstallSteps(
@@ -213,8 +165,11 @@ class PkgBuildGenerator {
     }
 
     yield* options.executables.entries.map(
-      (entry) => 'install -D -m755 '
-          "'bin/${entry.key}' "
+      (entry) =>
+          'install -D -m755 ' +
+          (options.aurOptions.multiBin
+              ? "../bin/'${entry.key}' "
+              : "../'${entry.key}' ") +
           "\"\$pkgdir/usr/bin/\"'${entry.key}'",
     );
 
@@ -232,5 +187,26 @@ class PkgBuildGenerator {
           "'$licenseFileName' "
           "\"\$pkgdir/usr/share/licenses/\$pkgname/\"'$licenseFileName'";
     }
+  }
+
+  Iterable<String> _getDebugInstallSteps(
+    PubspecWithAur options,
+    String pkgBase,
+  ) sync* {
+    if (options.executables.isEmpty) {
+      throw Exception('Must define at least one executable!');
+    }
+
+    yield* options.executables.entries.map(
+      (entry) =>
+          'install -D -m644 ' +
+          (options.aurOptions.multiBin
+              ? "../debug/'${entry.key}'.sym "
+              : "../'${entry.key}'.sym ") +
+          "\"\$pkgdir/usr/lib/debug/usr/bin/\"'${entry.key}'.sym",
+    );
+
+    yield 'find . -exec '
+        'install -D -m644 "{}" "\$pkgdir/usr/src/debug/$pkgBase/{}" \\;';
   }
 }

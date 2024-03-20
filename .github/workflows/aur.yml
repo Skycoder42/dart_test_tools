@@ -11,9 +11,9 @@ jobs:
     container: archlinux:base-devel
     steps:
       - name: Install pacman dependencies
-        run: pacman -Syu --noconfirm git openssh go-yq pacman-contrib dart namcap
+        run: pacman -Syu --noconfirm git openssh go-yq pacman-contrib namcap
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^5.6.2
+        run: dart pub global activate dart_test_tools ^5.7.0
       - name: Create build user
         run: |
           set -eo pipefail

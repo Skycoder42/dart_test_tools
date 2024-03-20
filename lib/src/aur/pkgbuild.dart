@@ -33,23 +33,26 @@ class PkgProperty with _$PkgProperty {
   const factory PkgProperty.list(
     List<PkgProperty> values, {
     @Default(true) bool skipEmpty,
+    @Default(false) bool multiLine,
   }) = _List;
   factory PkgProperty.literalList(
     List<String> values, {
     bool skipEmpty = true,
+    bool multiLine = false,
   }) =>
       PkgProperty.list(
         values.map(PkgProperty.new).toList(),
         skipEmpty: skipEmpty,
+        multiLine: multiLine,
       );
 
   bool get isEmpty => maybeWhen(
         (value) => value == null,
-        list: (values, skipEmpty) => skipEmpty && values.isEmpty,
+        list: (values, skipEmpty, _) => skipEmpty && values.isEmpty,
         orElse: () => false,
       );
 
-  String encode() => when(
+  String encode({int width = 0}) => when(
         (value) {
           if (value == null) {
             return '';
@@ -60,8 +63,9 @@ class PkgProperty with _$PkgProperty {
           }
         },
         interpolate: (value) => '"$value"',
-        list: (values, skipEmpty) =>
-            '(${values.map((v) => v.encode()).join(' ')})',
+        list: (values, skipEmpty, multiline) => multiline
+            ? '(${values.map((v) => v.encode()).join('\n' + ' ' * (width + 1))})'
+            : '(${values.map((v) => v.encode()).join(' ')})',
       );
 }
 
@@ -69,8 +73,9 @@ class PkgProperty with _$PkgProperty {
 extension PkgPropertyMapX on Map<String, PkgProperty> {
   String encode() => entries
       .map(
-        (entry) =>
-            entry.value.isEmpty ? null : '${entry.key}=${entry.value.encode()}',
+        (entry) => entry.value.isEmpty
+            ? null
+            : '${entry.key}=${entry.value.encode(width: entry.key.length + 1)}',
       )
       .whereType<String>()
       .join('\n');
