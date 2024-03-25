@@ -341,8 +341,10 @@ Example:
       type: Type.string,
       required: false,
       defaultValue: '',
-      description: 'A list of package names that should be downloaded from the '
-          'artifacts and overwritten for the workflow.',
+      description: 'A space-separated list of package names that should be '
+          'downloaded from the artifacts and overwritten for the workflow. '
+          'The packages should be space separated and placed in a single line. '
+          'You can use the YAML ">-" for that.',
     ),
   );
 

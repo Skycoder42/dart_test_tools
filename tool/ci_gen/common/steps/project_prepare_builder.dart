@@ -49,6 +49,7 @@ class ProjectPrepareBuilder implements StepBuilder {
                 artifactDependencies!.ne(Expression.empty) & ifExpression,
             uses: Tools.actionsDownloadArtifact,
             withArgs: {
+              'pattern': 'package-*',
               'path': '$_runnerTemp/.artifacts',
             },
           ),
@@ -61,9 +62,7 @@ class ProjectPrepareBuilder implements StepBuilder {
 set -eo pipefail
 touch pubspec_overrides.yaml
 for package in ${artifactDependencies}; do
-  yq -i \\
-    ".dependency_overrides.\$package.path=\\"$_runnerTemp/.artifacts/package-\$package\\"" \\
-    pubspec_overrides.yaml
+  yq -i ".dependency_overrides.\$package.path=\\"$_runnerTemp/.artifacts/package-\$package\\"" pubspec_overrides.yaml
 done
 ''',
             workingDirectory: workingDirectory.toString(),

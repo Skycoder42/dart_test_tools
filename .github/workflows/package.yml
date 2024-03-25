@@ -15,7 +15,7 @@ on:
         type: string
         required: false
         default: ""
-        description: A list of package names that should be downloaded from the artifacts and overwritten for the workflow.
+        description: A space-separated list of package names that should be downloaded from the artifacts and overwritten for the workflow. The packages should be space separated and placed in a single line. You can use the YAML ">-" for that.
       buildRunner:
         type: boolean
         required: false
@@ -66,6 +66,7 @@ jobs:
         if: inputs.artifactDependencies != ''
         uses: actions/download-artifact@v4
         with:
+          pattern: package-*
           path: ${{ runner.temp }}/.artifacts
       - name: Create pubspec_overrides.yaml for required packages
         if: inputs.artifactDependencies != ''
@@ -73,9 +74,7 @@ jobs:
           set -eo pipefail
           touch pubspec_overrides.yaml
           for package in ${{ inputs.artifactDependencies }}; do
-            yq -i \
-              ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" \
-              pubspec_overrides.yaml
+            yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
           done
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
