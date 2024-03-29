@@ -1,4 +1,5 @@
 import '../../common/api/job_builder.dart';
+import '../../common/environments.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
@@ -32,6 +33,7 @@ class DockerJobBuilder implements JobBuilder {
   Job build() => Job(
         name: 'Build and publish Docker images',
         runsOn: 'ubuntu-latest',
+        environment: Environments.dockerHub,
         steps: [
           ...DockerImageBuilder(
             imageName: imageName,
