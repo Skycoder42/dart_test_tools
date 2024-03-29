@@ -40,4 +40,7 @@ abstract class Tools {
   /// https://github.com/VeryGoodOpenSource/very_good_coverage/releases
   static const veryGoodOpenSourceVeryGoodCoverage =
       'VeryGoodOpenSource/very_good_coverage@v3';
+
+  /// https://github.com/lpenz/ghaction-packagecloud/releases
+  static const lpenzGhactionPackagecloud = 'lpenz/ghaction-packagecloud@v0.4';
 }

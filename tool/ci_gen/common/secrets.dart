@@ -107,4 +107,12 @@ VARIABLE2=value2
           'Needed by fastlane to actually publish the app.',
     ),
   );
+
+  static const packagecloudToken = WorkflowSecret(
+    name: 'packagecloudToken',
+    secret: Secret(
+      required: true,
+      description: 'The access token for the packagecloud upload.',
+    ),
+  );
 }

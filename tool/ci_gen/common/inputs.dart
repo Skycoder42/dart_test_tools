@@ -421,4 +421,13 @@ Example:
           'the actual binaries. Will be suffixed with the platform name.',
     ),
   );
+
+  static const packagecloudRepository = WorkflowInput(
+    name: 'packagecloudRepository',
+    input: Input(
+      type: Type.string,
+      required: true,
+      description: 'The packagecloud repository to publish to.',
+    ),
+  );
 }

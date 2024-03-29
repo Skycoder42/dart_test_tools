@@ -1,27 +1,24 @@
 on:
   workflow_call:
     inputs:
-      tagPrefix:
+      workingDirectory:
         type: string
         required: false
-        default: v
-        description: The prefix of git tags. The tag is the prefix, followed by the package version.
-      version:
+        default: .
+        description: The root directory of the dart package to build and test.
+      packagecloudRepository:
         type: string
         required: true
-        description: The released version to upload additional files to or images for.
+        description: The packagecloud repository to publish to.
+    secrets:
+      packagecloudToken:
+        required: true
+        description: The access token for the packagecloud upload.
 jobs:
   deb_deploy:
     name: Build deb package
-    permissions:
-      contents: write
     runs-on: ubuntu-latest
     steps:
-      - name: Add dart repository
-        run: |
-          set -eo pipefail
-          wget -qO- 'https://dl-ssl.google.com/linux/linux_signing_key.pub' | sudo gpg --dearmor -o /usr/share/keyrings/dart.gpg
-          echo 'deb [signed-by=/usr/share/keyrings/dart.gpg arch=amd64] https://storage.googleapis.com/download.dartlang.org/linux/debian stable main' | sudo tee /etc/apt/sources.list.d/dart_stable.list
       - name: Add makedeb repository
         run: |
           set -eo pipefail
@@ -30,7 +27,7 @@ jobs:
       - name: Refresh packages cache
         run: sudo apt-get update
       - name: Install needed packages
-        run: sudo apt-get install -y dart makedeb
+        run: sudo apt-get install -y makedeb
       - name: Install dart_test_tools
         run: dart pub global activate dart_test_tools ^5.7.0
       - name: Checkout repository
@@ -41,7 +38,7 @@ jobs:
       - name: Create deb dir
         run: mkdir deb
       - name: Generate PKGBUILD from dart package
-        run: dart pub global run dart_test_tools:generate_pkgbuild --input src --output deb --makedeb
+        run: dart pub global run dart_test_tools:generate_pkgbuild --input src/${{ inputs.workingDirectory }} --output deb --makedeb
       - name: Update source checksums
         run: makedeb --gen-integ >> PKGBUILD
         working-directory: deb
@@ -51,8 +48,28 @@ jobs:
       - name: Build debian package
         run: makedeb -s --no-confirm
         working-directory: deb
-      - name: Upload debian package to release
-        uses: softprops/action-gh-release@v2
+      - name: Upload debian package to artifacts
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: ${{ inputs.tagPrefix }}${{ inputs.version }}
-          files: deb/*.deb
+          name: debian-package
+          path: deb/*.deb
+          retention-days: 3
+          if-no-files-found: error
+  packagecloud_upload:
+    name: Upload deb package to packagecloud
+    needs:
+      - deb_deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download debian package
+        uses: actions/download-artifact@v4
+        with:
+          name: debian-package
+          path: deb
+      - name: Upload debian package to packagecloud
+        env:
+          PACKAGECLOUD_TOKEN: ${{ secrets.packagecloudToken }}
+        uses: lpenz/ghaction-packagecloud@v0.4
+        with:
+          repository: ${{ inputs.packagecloudRepository }}
+          directory: deb
