@@ -6,15 +6,15 @@ import '../../types/id.dart';
 import '../steps/makedeb_builder.dart';
 import '../steps/prepare_deb_builder.dart';
 
-class DebDeployJobBuilder implements JobBuilder {
+class BuildDebJobBuilder implements JobBuilder {
   final Expression workingDirectory;
 
-  const DebDeployJobBuilder({
+  const BuildDebJobBuilder({
     required this.workingDirectory,
   });
 
   @override
-  JobId get id => const JobId('deb_deploy');
+  JobId get id => const JobId('build_deb');
 
   @override
   Job build() => Job(

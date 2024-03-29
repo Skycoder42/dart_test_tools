@@ -1,22 +1,23 @@
 import '../../common/api/job_builder.dart';
+import '../../common/environments.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
 import '../steps/packagecloud_upload_builder.dart';
 
-class PackagecloudUploadJobBuilder implements JobBuilder {
+class UploadDebJobBuilder implements JobBuilder {
   final JobId packageJobId;
   final Expression repository;
   final Expression packagecloudToken;
 
-  const PackagecloudUploadJobBuilder({
+  const UploadDebJobBuilder({
     required this.packageJobId,
     required this.repository,
     required this.packagecloudToken,
   });
 
   @override
-  JobId get id => const JobId('packagecloud_upload');
+  JobId get id => const JobId('upload_deb');
 
   @override
   Job build() => Job(
@@ -25,6 +26,7 @@ class PackagecloudUploadJobBuilder implements JobBuilder {
         needs: {
           packageJobId,
         },
+        environment: Environments.packagecloud,
         steps: [
           ...PackagecloudUploadBuilder(
             repository: repository,

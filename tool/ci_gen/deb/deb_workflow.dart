@@ -6,8 +6,8 @@ import '../common/secrets.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
-import 'jobs/deb_deploy_job_builder.dart';
-import 'jobs/packagecloud_upload_job_builder.dart';
+import 'jobs/build_deb_job_builder.dart';
+import 'jobs/upload_deb_job_builder.dart';
 
 class DebWorkflow implements WorkflowBuilder {
   const DebWorkflow();
@@ -20,11 +20,11 @@ class DebWorkflow implements WorkflowBuilder {
     final inputContext = WorkflowInputContext();
     final secretContext = WorkflowSecretContext();
 
-    final debDeployJobBuilder = DebDeployJobBuilder(
+    final debDeployJobBuilder = BuildDebJobBuilder(
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
     );
 
-    final packagecloudUploadJobBuilder = PackagecloudUploadJobBuilder(
+    final packagecloudUploadJobBuilder = UploadDebJobBuilder(
       packageJobId: debDeployJobBuilder.id,
       repository: inputContext(WorkflowInputs.packagecloudRepository),
       packagecloudToken: secretContext(WorkflowSecrets.packagecloudToken),

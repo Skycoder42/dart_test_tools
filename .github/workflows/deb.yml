@@ -15,7 +15,7 @@ on:
         required: true
         description: The access token for the packagecloud upload.
 jobs:
-  deb_deploy:
+  build_deb:
     name: Build deb package
     runs-on: ubuntu-latest
     steps:
@@ -55,10 +55,11 @@ jobs:
           path: deb/*.deb
           retention-days: 3
           if-no-files-found: error
-  packagecloud_upload:
+  upload_deb:
     name: Upload deb package to packagecloud
     needs:
-      - deb_deploy
+      - build_deb
+    environment: packagecloud
     runs-on: ubuntu-latest
     steps:
       - name: Download debian package
