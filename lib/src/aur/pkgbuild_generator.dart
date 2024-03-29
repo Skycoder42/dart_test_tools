@@ -4,7 +4,6 @@ import 'package:dart_test_tools/src/aur/aur_options.dart';
 import 'package:dart_test_tools/src/aur/aur_options_loader.dart';
 import 'package:dart_test_tools/src/aur/pkgbuild.dart';
 import 'package:path/path.dart';
-import 'package:pubspec_parse/pubspec_parse.dart';
 
 class PkgBuildGenerator {
   static const _supportedArchs = ['x86_64'];
@@ -102,7 +101,7 @@ class PkgBuildGenerator {
           skipEmpty: false,
         ),
         '_pkgdir': PkgProperty('${options.pubspec.name}-$version'),
-        'source': _getSourceUrls(options.pubspec),
+        'source': _getSourceUrls(options),
         'b2sums': PkgProperty.literalList(
           const ['PLACEHOLDER', 'PLACEHOLDER', 'PLACEHOLDER'],
           multiLine: true,
@@ -129,28 +128,32 @@ class PkgBuildGenerator {
     return pkgBuild.encode();
   }
 
-  PkgProperty _getSourceUrls(Pubspec pubspec) {
-    final baseRepo = pubspec.repository ?? pubspec.homepage;
+  PkgProperty _getSourceUrls(PubspecWithAur options) {
+    final baseRepo = options.pubspec.repository ?? options.pubspec.homepage;
     if (baseRepo == null) {
       throw Exception('Either repository or homepage must be set!');
     }
     final baseRepoString = baseRepo.toString();
+    final tagPrefix = Uri.encodeComponent(options.aurOptions.tagPrefix);
 
     final repoUri = Uri.parse(
       baseRepoString.endsWith('/') ? baseRepoString : '$baseRepoString/',
-    ).resolveUri(Uri(path: 'archive/refs/tags/v${pubspec.version}.tar.gz'));
+    ).resolveUri(Uri(
+      path: 'archive/refs/tags/$tagPrefix${options.pubspec.version}.tar.gz',
+    ));
 
     final binariesBaseUri = Uri.parse(
       baseRepoString.endsWith('/') ? baseRepoString : '$baseRepoString/',
-    ).resolveUri(Uri(path: 'releases/download/v${pubspec.version}/'));
+    ).resolveUri(
+        Uri(path: 'releases/download/$tagPrefix${options.pubspec.version}/'));
 
     return PkgProperty.list(multiLine: true, [
       PkgProperty.interpolate('\$_pkgdir.tar.gz::$repoUri'),
       PkgProperty.interpolate(
-        'bin.tar.xz::${binariesBaseUri.resolve('binaries-linux.tar.xz')}',
+        'bin.tar.xz::${binariesBaseUri.resolve('${options.aurOptions.binariesArchivePrefix}-linux.tar.xz')}',
       ),
       PkgProperty.interpolate(
-        'debug.tar.xz::${binariesBaseUri.resolve('binaries-linux-debug-symbols.tar.xz')}',
+        'debug.tar.xz::${binariesBaseUri.resolve('${options.aurOptions.binariesArchivePrefix}-linux-debug-symbols.tar.xz')}',
       ),
     ]);
   }

@@ -52,6 +52,7 @@ void main() {
         'maintainer': 'Maintainer <maintainer@maintain.org>',
         if (!minimal) 'pkgname': 'custom_package',
         if (!minimal) 'pkgrel': 3,
+        if (!minimal) 'tagPrefix': 'my-app/v',
         if (!minimal) 'epoch': 1,
         if (!minimal) 'license': 'MIT',
         if (!minimal)
@@ -60,6 +61,7 @@ void main() {
             'dependency-b',
             'dependency-c',
           ],
+        if (!minimal) 'binariesArchivePrefix': 'my-app',
         if (!minimal) 'install': 'custom_package.install',
         if (!minimal)
           'files': const [
@@ -272,9 +274,9 @@ url='https://example.com/home'
 license=('MIT')
 depends=('dependency-a' 'dependency-b' 'dependency-c')
 _pkgdir='test_package-1.2.3-dev+5'
-source=("$_pkgdir.tar.gz::https://example.com/home/git/archive/refs/tags/v1.2.3-dev+5.tar.gz"
-        "bin.tar.xz::https://example.com/home/git/releases/download/v1.2.3-dev+5/binaries-linux.tar.xz"
-        "debug.tar.xz::https://example.com/home/git/releases/download/v1.2.3-dev+5/binaries-linux-debug-symbols.tar.xz")
+source=("$_pkgdir.tar.gz::https://example.com/home/git/archive/refs/tags/my-app%2Fv1.2.3-dev+5.tar.gz"
+        "bin.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux.tar.xz"
+        "debug.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux-debug-symbols.tar.xz")
 b2sums=('PLACEHOLDER'
         'PLACEHOLDER'
         'PLACEHOLDER')
@@ -347,9 +349,9 @@ url='https://example.com/home'
 license=('MIT')
 depends=('dependency-x' 'dependency-y' 'dependency-z')
 _pkgdir='test_package-1.2.3-dev+5'
-source=("$_pkgdir.tar.gz::https://example.com/home/git/archive/refs/tags/v1.2.3-dev+5.tar.gz"
-        "bin.tar.xz::https://example.com/home/git/releases/download/v1.2.3-dev+5/binaries-linux.tar.xz"
-        "debug.tar.xz::https://example.com/home/git/releases/download/v1.2.3-dev+5/binaries-linux-debug-symbols.tar.xz")
+source=("$_pkgdir.tar.gz::https://example.com/home/git/archive/refs/tags/my-app%2Fv1.2.3-dev+5.tar.gz"
+        "bin.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux.tar.xz"
+        "debug.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux-debug-symbols.tar.xz")
 b2sums=('PLACEHOLDER'
         'PLACEHOLDER'
         'PLACEHOLDER')
