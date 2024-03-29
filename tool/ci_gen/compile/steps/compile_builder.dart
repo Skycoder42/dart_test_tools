@@ -80,6 +80,7 @@ class CompileBuilder implements StepBuilder {
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression removePubspecOverrides;
+  final Expression archivePrefix;
   final PlatformMatrixProperty platform;
   final BinaryTypeMatrixProperty binaryType;
   final CompileArgsMatrixProperty compileArgs;
@@ -93,6 +94,7 @@ class CompileBuilder implements StepBuilder {
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.removePubspecOverrides,
+    required this.archivePrefix,
     required this.platform,
     required this.binaryType,
     required this.compileArgs,
@@ -133,8 +135,8 @@ done
 set -eo pipefail
 shopt -s extglob
 mkdir -p ../artifacts
-tar -cavf '../artifacts/binaries-${platform.expression}.tar.xz' !(*.*)
-tar -cavf '../artifacts/binaries-${platform.expression}-debug-symbols.tar.xz' *.sym
+tar -cavf '../artifacts/$archivePrefix-${platform.expression}.tar.xz' !(*.*)
+tar -cavf '../artifacts/$archivePrefix-${platform.expression}-debug-symbols.tar.xz' *.sym
 ''',
           workingDirectory: '$workingDirectory/build/bin',
           shell: 'bash',
@@ -146,8 +148,8 @@ tar -cavf '../artifacts/binaries-${platform.expression}-debug-symbols.tar.xz' *.
 set -eo pipefail
 shopt -s nullglob
 mkdir -p ../artifacts
-7z a -y '../artifacts/binaries-${platform.expression}.zip' *.exe *.js
-7z a -y '../artifacts/binaries-${platform.expression}-debug-symbols.zip' *.sym *.js.*
+7z a -y '../artifacts/$archivePrefix-${platform.expression}.zip' *.exe *.js
+7z a -y '../artifacts/$archivePrefix-${platform.expression}-debug-symbols.zip' *.sym *.js.*
 ''',
           workingDirectory: '$workingDirectory/build/bin',
           shell: 'bash',
@@ -156,7 +158,7 @@ mkdir -p ../artifacts
           name: 'Upload compiled binaries artifact',
           uses: Tools.actionsUploadArtifact,
           withArgs: <String, dynamic>{
-            'name': 'binaries-${platform.expression}',
+            'name': '$archivePrefix-${platform.expression}',
             'path': '$workingDirectory/build/artifacts/*',
             'retention-days': 3,
             'if-no-files-found': 'error',

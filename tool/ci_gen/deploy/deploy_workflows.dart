@@ -45,8 +45,7 @@ class DeployWorkflow implements WorkflowBuilder {
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       tagPrefix: inputContext(WorkflowInputs.tagPrefix),
       persistCredentials: inputContext(WorkflowInputs.persistCredentials),
-      // binaryArtifactsPattern: 'apps-*',
-      binaryArtifactsPattern: null,
+      binaryArtifactsPattern: 'apps-*',
     );
     outputContext
       ..add(WorkflowOutputs.releaseCreated, releaseJobBuilder.updateOutput)

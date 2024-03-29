@@ -410,4 +410,15 @@ Example:
           '(completed, draft, halted, inProgress).',
     ),
   );
+
+  static const archivePrefix = WorkflowInput(
+    name: 'archivePrefix',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: 'binaries',
+      description: 'The prefix of the binary archive files that contain '
+          'the actual binaries. Will be suffixed with the platform name.',
+    ),
+  );
 }

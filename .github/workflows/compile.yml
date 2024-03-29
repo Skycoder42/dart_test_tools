@@ -34,6 +34,11 @@ on:
         required: false
         default: true
         description: Disables pubspec_overrides.yaml cleanup if set to false.
+      archivePrefix:
+        type: string
+        required: false
+        default: binaries
+        description: The prefix of the binary archive files that contain the actual binaries. Will be suffixed with the platform name.
       releaseRef:
         type: string
         required: false
@@ -162,8 +167,8 @@ jobs:
           set -eo pipefail
           shopt -s extglob
           mkdir -p ../artifacts
-          tar -cavf '../artifacts/binaries-${{ matrix.platform }}.tar.xz' !(*.*)
-          tar -cavf '../artifacts/binaries-${{ matrix.platform }}-debug-symbols.tar.xz' *.sym
+          tar -cavf '../artifacts/${{ inputs.archivePrefix }}-${{ matrix.platform }}.tar.xz' !(*.*)
+          tar -cavf '../artifacts/${{ inputs.archivePrefix }}-${{ matrix.platform }}-debug-symbols.tar.xz' *.sym
         working-directory: ${{ inputs.workingDirectory }}/build/bin
         shell: bash
       - name: Create release archives (zip)
@@ -172,15 +177,15 @@ jobs:
           set -eo pipefail
           shopt -s nullglob
           mkdir -p ../artifacts
-          7z a -y '../artifacts/binaries-${{ matrix.platform }}.zip' *.exe *.js
-          7z a -y '../artifacts/binaries-${{ matrix.platform }}-debug-symbols.zip' *.sym *.js.*
+          7z a -y '../artifacts/${{ inputs.archivePrefix }}-${{ matrix.platform }}.zip' *.exe *.js
+          7z a -y '../artifacts/${{ inputs.archivePrefix }}-${{ matrix.platform }}-debug-symbols.zip' *.sym *.js.*
         working-directory: ${{ inputs.workingDirectory }}/build/bin
         shell: bash
       - name: Upload compiled binaries artifact
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
         uses: actions/upload-artifact@v4
         with:
-          name: binaries-${{ matrix.platform }}
+          name: ${{ inputs.archivePrefix }}-${{ matrix.platform }}
           path: ${{ inputs.workingDirectory }}/build/artifacts/*
           retention-days: 3
           if-no-files-found: error
@@ -226,7 +231,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-          pattern: binaries-*
+          pattern: ${{ inputs.archivePrefix }}-*
       - name: Activate cider
         if: steps.version.outputs.update == 'true'
         run: dart pub global activate cider
@@ -257,4 +262,4 @@ jobs:
           tag_name: ${{ steps.release_content.outputs.tag_name }}
           name: ${{ steps.release_content.outputs.release_name }}
           body_path: ${{ steps.release_content.outputs.body_path }}
-          files: artifacts/binaries-*/*
+          files: artifacts/${{ inputs.archivePrefix }}-*/*

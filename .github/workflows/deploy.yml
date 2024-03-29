@@ -233,6 +233,12 @@ jobs:
             echo "update=false" >> $GITHUB_OUTPUT
           fi
         working-directory: ${{ inputs.workingDirectory }}
+      - name: Download all binary artifacts
+        if: steps.version.outputs.update == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: apps-*
       - name: Activate cider
         if: steps.version.outputs.update == 'true'
         run: dart pub global activate cider
@@ -263,6 +269,7 @@ jobs:
           tag_name: ${{ steps.release_content.outputs.tag_name }}
           name: ${{ steps.release_content.outputs.release_name }}
           body_path: ${{ steps.release_content.outputs.body_path }}
+          files: artifacts/apps-*/*
   deploy_android:
     name: Deploy android app to Google Play
     needs:

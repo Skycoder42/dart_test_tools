@@ -29,6 +29,7 @@ class CompileWorkflow implements WorkflowBuilder {
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       removePubspecOverrides:
           inputContext(WorkflowInputs.removePubspecOverrides),
+      archivePrefix: inputContext(WorkflowInputs.archivePrefix),
     );
 
     final releaseJobBuilder = TagReleaseJobBuilder(
@@ -38,7 +39,7 @@ class CompileWorkflow implements WorkflowBuilder {
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       tagPrefix: inputContext(WorkflowInputs.tagPrefix),
       persistCredentials: inputContext(WorkflowInputs.persistCredentials),
-      binaryArtifactsPattern: 'binaries-*',
+      binaryArtifactsPattern: '${inputContext(WorkflowInputs.archivePrefix)}-*',
     );
     outputContext
       ..add(WorkflowOutputs.releaseCreated, releaseJobBuilder.updateOutput)

@@ -45,6 +45,7 @@ final class CompileJobBuilder extends SdkJobBuilder
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression removePubspecOverrides;
+  final Expression archivePrefix;
 
   const CompileJobBuilder({
     required this.enabledPlatforms,
@@ -54,6 +55,7 @@ final class CompileJobBuilder extends SdkJobBuilder
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.removePubspecOverrides,
+    required this.archivePrefix,
   }) : matrix = const _CompileMatrix();
 
   @override
@@ -74,6 +76,7 @@ final class CompileJobBuilder extends SdkJobBuilder
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
             removePubspecOverrides: removePubspecOverrides,
+            archivePrefix: archivePrefix,
             platform: matrix.platform,
             binaryType: matrix.binaryType,
             compileArgs: matrix.compileArgs,
