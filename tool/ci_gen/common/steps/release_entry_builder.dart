@@ -67,6 +67,7 @@ ${releaseContentBodyPath.bashSetter(r'$version_changelog_file')}
             'tag_name': releaseContentTagName.expression.toString(),
             'name': releaseContentReleaseName.expression.toString(),
             'body_path': releaseContentBodyPath.expression.toString(),
+            'target_commitish': Expression('github.sha').toString(),
             if (files != null) 'files': files,
           },
         ),
