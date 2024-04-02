@@ -100,7 +100,6 @@ class PkgBuildGenerator {
           depends,
           skipEmpty: false,
         ),
-        '_pkgdir': PkgProperty('${options.pubspec.name}-$version'),
         'source': _getSourceUrls(options),
         'b2sums': PkgProperty.literalList(
           const ['PLACEHOLDER', 'PLACEHOLDER', 'PLACEHOLDER'],
@@ -114,6 +113,10 @@ class PkgBuildGenerator {
           // Workaround for https://github.com/makedeb/makedeb/issues/214
           // See https://github.com/makedeb/makedeb/blob/alpha/src/main.sh#L130
           'extensions': PkgProperty.literalList(const ['zipman']),
+        if (options.aurOptions.sourcesDir case String dir)
+          '_pkgdir': PkgProperty(dir)
+        else
+          '_pkgdir': PkgProperty('${options.pubspec.name}-$version'),
       },
       functions: {
         'package_$pkgBase': PkgFunction(
@@ -148,7 +151,7 @@ class PkgBuildGenerator {
         Uri(path: 'releases/download/$tagPrefix${options.pubspec.version}/'));
 
     return PkgProperty.list(multiLine: true, [
-      PkgProperty.interpolate('\$_pkgdir.tar.gz::$repoUri'),
+      PkgProperty.interpolate('sources.tar.gz::$repoUri'),
       PkgProperty.interpolate(
         'bin.tar.xz::${binariesBaseUri.resolve('${options.aurOptions.binariesArchivePrefix}-linux.tar.xz')}',
       ),
@@ -171,10 +174,12 @@ class PkgBuildGenerator {
       (entry) =>
           'install -D -m755 ' +
           (options.executables.length > 1
-              ? "'../bin/${entry.key}' "
-              : "'../${entry.key}' ") +
+              ? "'bin/${entry.key}' "
+              : "'${entry.key}' ") +
           "\"\$pkgdir/usr/bin/\"'${entry.key}'",
     );
+
+    yield r'cd "$_pkgdir"';
 
     final installFiles =
         (makedebMode ? options.aurOptions.makedeb?.files : null) ??
@@ -204,12 +209,13 @@ class PkgBuildGenerator {
       (entry) =>
           'install -D -m644 ' +
           (options.executables.length > 1
-              ? "'../debug/${entry.key}.sym' "
-              : "'../${entry.key}.sym' ") +
+              ? "'debug/${entry.key}.sym' "
+              : "'${entry.key}.sym' ") +
           "\"\$pkgdir/usr/lib/debug/usr/bin/\"'${entry.key}'.sym",
     );
 
+    yield r'cd "$_pkgdir"';
     yield 'find . -exec '
-        'install -D -m644 "{}" "\$pkgdir/usr/src/debug/\$pkgname/{}" \\;';
+        'install -D -m644 "{}" "\$pkgdir/usr/src/debug/\$pkgbase/{}" \\;';
   }
 }

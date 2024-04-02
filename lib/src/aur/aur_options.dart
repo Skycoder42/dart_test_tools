@@ -51,6 +51,7 @@ class AurOptions with _$AurOptions {
     @Default('v') String tagPrefix,
     @Default('custom') String license,
     @Default(<String>[]) List<String> depends,
+    String? sourcesDir,
     @Default('binaries') String binariesArchivePrefix,
     String? install,
     @Default(<InstallTarget>[]) List<InstallTarget> files,

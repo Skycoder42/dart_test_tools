@@ -86,20 +86,12 @@ extension PkgPropertyMapX on Map<String, PkgProperty> {
 class PkgFunction with _$PkgFunction {
   const PkgFunction._();
 
-  const factory PkgFunction(
-    List<String> commands, {
-    @Default(true) bool autoCd,
-  }) = _PkgFunction;
+  const factory PkgFunction(List<String> commands) = _PkgFunction;
 
   String encode(String name) {
-    final actualCommands = [
-      if (autoCd) 'cd "\$_pkgdir"',
-      ...commands,
-    ];
-
     return '''
 $name() {
-${actualCommands.map((c) => '  $c').join('\n')}
+${commands.map((c) => '  $c').join('\n')}
 }
 ''';
   }

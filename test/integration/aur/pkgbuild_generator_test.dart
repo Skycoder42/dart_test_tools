@@ -61,6 +61,7 @@ void main() {
             'dependency-b',
             'dependency-c',
           ],
+        if (!minimal) 'sourcesDir': 'test-package-sources/my_app',
         if (!minimal) 'binariesArchivePrefix': 'my-app',
         if (!minimal) 'install': 'custom_package.install',
         if (!minimal)
@@ -239,24 +240,24 @@ arch=('x86_64')
 url='https://example.com/home'
 license=('custom')
 depends=()
-_pkgdir='test_package-1.2.3-dev+5'
-source=("$_pkgdir.tar.gz::https://example.com/home/archive/refs/tags/v1.2.3-dev+5.tar.gz"
+source=("sources.tar.gz::https://example.com/home/archive/refs/tags/v1.2.3-dev+5.tar.gz"
         "bin.tar.xz::https://example.com/home/releases/download/v1.2.3-dev+5/binaries-linux.tar.xz"
         "debug.tar.xz::https://example.com/home/releases/download/v1.2.3-dev+5/binaries-linux-debug-symbols.tar.xz")
 b2sums=('PLACEHOLDER'
         'PLACEHOLDER'
         'PLACEHOLDER')
 options=('!strip')
+_pkgdir='test_package-1.2.3-dev+5'
 
 package_test_package() {
+  install -D -m755 'exe_1' "$pkgdir/usr/bin/"'exe_1'
   cd "$_pkgdir"
-  install -D -m755 '../exe_1' "$pkgdir/usr/bin/"'exe_1'
 }
 
 package_test_package-debug() {
+  install -D -m644 'exe_1.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe_1'.sym
   cd "$_pkgdir"
-  install -D -m644 '../exe_1.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe_1'.sym
-  find . -exec install -D -m644 "{}" "$pkgdir/usr/src/debug/$pkgname/{}" \;
+  find . -exec install -D -m644 "{}" "$pkgdir/usr/src/debug/$pkgbase/{}" \;
 }
 
 ''';
@@ -273,8 +274,7 @@ arch=('x86_64')
 url='https://example.com/home'
 license=('MIT')
 depends=('dependency-a' 'dependency-b' 'dependency-c')
-_pkgdir='test_package-1.2.3-dev+5'
-source=("$_pkgdir.tar.gz::https://example.com/home/git/archive/refs/tags/my-app%2Fv1.2.3-dev+5.tar.gz"
+source=("sources.tar.gz::https://example.com/home/git/archive/refs/tags/my-app%2Fv1.2.3-dev+5.tar.gz"
         "bin.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux.tar.xz"
         "debug.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux-debug-symbols.tar.xz")
 b2sums=('PLACEHOLDER'
@@ -284,21 +284,22 @@ install='custom_package.install'
 changelog='CHANGELOG.md'
 backup=('etc/config.json')
 options=('!strip')
+_pkgdir='test-package-sources/my_app'
 
 package_custom_package() {
+  install -D -m755 'bin/exe_1' "$pkgdir/usr/bin/"'exe_1'
+  install -D -m755 'bin/exe-two' "$pkgdir/usr/bin/"'exe-two'
   cd "$_pkgdir"
-  install -D -m755 '../bin/exe_1' "$pkgdir/usr/bin/"'exe_1'
-  install -D -m755 '../bin/exe-two' "$pkgdir/usr/bin/"'exe-two'
   install -D -m644 'config/config.json' "$pkgdir/etc/config.json"
   install -D -m600 'data/database.db' "$pkgdir/usr/share/$pkgname/core.db"
   install -D -m644 'LICENSE.txt' "$pkgdir/usr/share/licenses/$pkgname/"'LICENSE.txt'
 }
 
 package_custom_package-debug() {
+  install -D -m644 'debug/exe_1.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe_1'.sym
+  install -D -m644 'debug/exe-two.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe-two'.sym
   cd "$_pkgdir"
-  install -D -m644 '../debug/exe_1.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe_1'.sym
-  install -D -m644 '../debug/exe-two.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe-two'.sym
-  find . -exec install -D -m644 "{}" "$pkgdir/usr/src/debug/$pkgname/{}" \;
+  find . -exec install -D -m644 "{}" "$pkgdir/usr/src/debug/$pkgbase/{}" \;
 }
 
 ''';
@@ -313,8 +314,7 @@ arch=('amd64')
 url='https://example.com/home'
 license=('custom')
 depends=()
-_pkgdir='test_package-1.2.3-dev+5'
-source=("$_pkgdir.tar.gz::https://example.com/home/archive/refs/tags/v1.2.3-dev+5.tar.gz"
+source=("sources.tar.gz::https://example.com/home/archive/refs/tags/v1.2.3-dev+5.tar.gz"
         "bin.tar.xz::https://example.com/home/releases/download/v1.2.3-dev+5/binaries-linux.tar.xz"
         "debug.tar.xz::https://example.com/home/releases/download/v1.2.3-dev+5/binaries-linux-debug-symbols.tar.xz")
 b2sums=('PLACEHOLDER'
@@ -322,16 +322,17 @@ b2sums=('PLACEHOLDER'
         'PLACEHOLDER')
 options=('!strip')
 extensions=('zipman')
+_pkgdir='test_package-1.2.3-dev+5'
 
 package_test_package() {
+  install -D -m755 'exe_1' "$pkgdir/usr/bin/"'exe_1'
   cd "$_pkgdir"
-  install -D -m755 '../exe_1' "$pkgdir/usr/bin/"'exe_1'
 }
 
 package_test_package-debug() {
+  install -D -m644 'exe_1.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe_1'.sym
   cd "$_pkgdir"
-  install -D -m644 '../exe_1.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe_1'.sym
-  find . -exec install -D -m644 "{}" "$pkgdir/usr/src/debug/$pkgname/{}" \;
+  find . -exec install -D -m644 "{}" "$pkgdir/usr/src/debug/$pkgbase/{}" \;
 }
 
 ''';
@@ -348,8 +349,7 @@ arch=('amd64')
 url='https://example.com/home'
 license=('MIT')
 depends=('dependency-x' 'dependency-y' 'dependency-z')
-_pkgdir='test_package-1.2.3-dev+5'
-source=("$_pkgdir.tar.gz::https://example.com/home/git/archive/refs/tags/my-app%2Fv1.2.3-dev+5.tar.gz"
+source=("sources.tar.gz::https://example.com/home/git/archive/refs/tags/my-app%2Fv1.2.3-dev+5.tar.gz"
         "bin.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux.tar.xz"
         "debug.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux-debug-symbols.tar.xz")
 b2sums=('PLACEHOLDER'
@@ -360,20 +360,21 @@ changelog='CHANGELOG.md'
 backup=('/etc/config.json')
 options=('!strip')
 extensions=('zipman')
+_pkgdir='test-package-sources/my_app'
 
 package_custom_package() {
+  install -D -m755 'bin/exe_1' "$pkgdir/usr/bin/"'exe_1'
+  install -D -m755 'bin/exe-two' "$pkgdir/usr/bin/"'exe-two'
   cd "$_pkgdir"
-  install -D -m755 '../bin/exe_1' "$pkgdir/usr/bin/"'exe_1'
-  install -D -m755 '../bin/exe-two' "$pkgdir/usr/bin/"'exe-two'
   install -D -m644 'config/deb.json' "$pkgdir/etc/config.json"
   install -D -m644 'LICENSE.txt' "$pkgdir/usr/share/licenses/$pkgname/"'LICENSE.txt'
 }
 
 package_custom_package-debug() {
+  install -D -m644 'debug/exe_1.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe_1'.sym
+  install -D -m644 'debug/exe-two.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe-two'.sym
   cd "$_pkgdir"
-  install -D -m644 '../debug/exe_1.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe_1'.sym
-  install -D -m644 '../debug/exe-two.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe-two'.sym
-  find . -exec install -D -m644 "{}" "$pkgdir/usr/src/debug/$pkgname/{}" \;
+  find . -exec install -D -m644 "{}" "$pkgdir/usr/src/debug/$pkgbase/{}" \;
 }
 
 ''';

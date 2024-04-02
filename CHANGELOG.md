@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.8.1] - 2024-04-02
+### Fixed
+- Fix subdir handling
+
 ## [5.8.0] - 2024-03-29
 ### Changed
 - add more makepkg options
@@ -284,6 +288,7 @@ have been added:
 ### Added
 - Initial release
 
+[5.8.1]: https://github.com/Skycoder42/dart_test_tools/compare/v5.8.0...v5.8.1
 [5.8.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.7.0...v5.8.0
 [5.7.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.6.2...v5.7.0
 [5.6.2]: https://github.com/Skycoder42/dart_test_tools/compare/v5.6.1...v5.6.2
