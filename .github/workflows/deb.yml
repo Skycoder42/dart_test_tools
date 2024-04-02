@@ -34,7 +34,7 @@ jobs:
       - name: Install needed packages
         run: sudo apt-get install -y dart makedeb
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^5.8.0
+        run: dart pub global activate dart_test_tools ^5.8.1
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -78,4 +78,3 @@ jobs:
         uses: lpenz/ghaction-packagecloud@v0.4
         with:
           repository: ${{ inputs.packagecloudRepository }}
-          directory: deb

@@ -27,7 +27,6 @@ class PackagecloudUploadBuilder implements StepBuilder {
           uses: Tools.lpenzGhactionPackagecloud,
           withArgs: {
             'repository': repository.toString(),
-            'directory': 'deb',
           },
           env: {
             'PACKAGECLOUD_TOKEN': packagecloudToken.toString(),
