@@ -61,7 +61,7 @@ void main() {
             'dependency-b',
             'dependency-c',
           ],
-        if (!minimal) 'sourcesDir': 'test-package-sources/my_app',
+        if (!minimal) 'sourcesDir': r'test-package-sources-$pkgver/my_app',
         if (!minimal) 'binariesArchivePrefix': 'my-app',
         if (!minimal) 'install': 'custom_package.install',
         if (!minimal)
@@ -247,7 +247,7 @@ b2sums=('PLACEHOLDER'
         'PLACEHOLDER'
         'PLACEHOLDER')
 options=('!strip')
-_pkgdir='test_package-1.2.3-dev+5'
+_pkgdir="$pkgbase-$pkgver"
 
 package_test_package() {
   install -D -m755 'exe_1' "$pkgdir/usr/bin/"'exe_1'
@@ -284,7 +284,7 @@ install='custom_package.install'
 changelog='CHANGELOG.md'
 backup=('etc/config.json')
 options=('!strip')
-_pkgdir='test-package-sources/my_app'
+_pkgdir="test-package-sources-$pkgver/my_app"
 
 package_custom_package() {
   install -D -m755 'bin/exe_1' "$pkgdir/usr/bin/"'exe_1'
@@ -322,7 +322,7 @@ b2sums=('PLACEHOLDER'
         'PLACEHOLDER')
 options=('!strip')
 extensions=('zipman')
-_pkgdir='test_package-1.2.3-dev+5'
+_pkgdir="$pkgbase-$pkgver"
 
 package_test_package() {
   install -D -m755 'exe_1' "$pkgdir/usr/bin/"'exe_1'
@@ -360,7 +360,7 @@ changelog='CHANGELOG.md'
 backup=('/etc/config.json')
 options=('!strip')
 extensions=('zipman')
-_pkgdir='test-package-sources/my_app'
+_pkgdir="test-package-sources-$pkgver/my_app"
 
 package_custom_package() {
   install -D -m755 'bin/exe_1' "$pkgdir/usr/bin/"'exe_1'

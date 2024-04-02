@@ -114,9 +114,9 @@ class PkgBuildGenerator {
           // See https://github.com/makedeb/makedeb/blob/alpha/src/main.sh#L130
           'extensions': PkgProperty.literalList(const ['zipman']),
         if (options.aurOptions.sourcesDir case String dir)
-          '_pkgdir': PkgProperty(dir)
+          '_pkgdir': PkgProperty.interpolate(dir)
         else
-          '_pkgdir': PkgProperty('${options.pubspec.name}-$version'),
+          '_pkgdir': PkgProperty.interpolate(r'$pkgbase-$pkgver'),
       },
       functions: {
         'package_$pkgBase': PkgFunction(
