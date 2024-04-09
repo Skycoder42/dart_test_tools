@@ -47,7 +47,7 @@ jobs:
       - name: Build flatpak
         uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6
         with:
-          bundle: org.freedesktop.Sdk.Extension.flutter.${{ env.SDK_VERSION }}.${{ matrix.arch }}.flatpak
+          bundle: org.freedesktop.Sdk.Extension.flutter_${{ env.SDK_VERSION }}_${{ matrix.arch }}.flatpak
           manifest-path: flatpak/flutter-extension/org.freedesktop.Sdk.Extension.flutter.yaml
           verbose: true
           cache: false
@@ -58,18 +58,25 @@ jobs:
     needs:
       - build_extension
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          path: _src
       - name: Download flatpak bundles
         uses: actions/download-artifact@v4
         with:
           path: bundles
-          pattern: org.freedesktop.Sdk.Extension.flutter.*
+          # pattern: org.freedesktop.Sdk.Extension.flutter_*
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: flatpak-flutter-extension/${{ env.SDK_VERSION }}
           name: Flatpak Flutter Extension - ${{ env.SDK_VERSION }}
           target_commitish: ${{ github.sha }}
-          files: bundles/org.freedesktop.Sdk.Extension.flutter.*/*.flatpak
+          files: bundles/org.freedesktop.Sdk.Extension.flutter_*/*.flatpak
+          fail_on_unmatched_files: true
+          make_latest: false
       - uses: geekyeggo/delete-artifact@v5
         with:
-            name: org.freedesktop.Sdk.Extension.flutter.*
+            name: org.freedesktop.Sdk.Extension.flutter_*
