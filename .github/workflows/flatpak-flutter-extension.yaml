@@ -46,7 +46,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Import GPG key
-        run: echo '${{ secrets.GPG_KEY }}' | gpg --import '${{ runner.temp }}/flatpak.key'
+        run: echo '${{ secrets.GPG_KEY }}' | gpg --import
       - name: Build flatpak
         uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@86f5f35aa999f626a05d2943460ff0e811655327 # v6, but needs new feature
         with:
