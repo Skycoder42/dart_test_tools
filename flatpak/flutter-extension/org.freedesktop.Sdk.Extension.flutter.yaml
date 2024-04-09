@@ -2,7 +2,7 @@
 
 ---
 app-id: org.freedesktop.Sdk.Extension.flutter
-branch: stable
+branch: "23.08"
 runtime: org.freedesktop.Sdk
 runtime-version: "23.08"
 sdk: org.freedesktop.Sdk
@@ -10,7 +10,6 @@ sdk-extensions:
   - org.freedesktop.Sdk.Extension.llvm17
 build-extension: true
 separate-locales: false
-# appstream-compose: false
 modules:
   - name: flutter-sdk
     buildsystem: simple
@@ -50,4 +49,3 @@ modules:
     build-commands:
       - mkdir -p "$FLATPAK_DEST/share/metainfo/"
       - cp -a "$FLATPAK_ID.metainfo.xml" "$FLATPAK_DEST/share/metainfo/"
-      # - appstream-compose "--prefix=$FLATPAK_DEST" --origin=flatpak "--basename=$FLATPAK_ID" "$FLATPAK_ID"
