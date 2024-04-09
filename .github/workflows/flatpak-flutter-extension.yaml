@@ -1,0 +1,49 @@
+name: Flatpak Flutter Extension
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - flatpak/flutter-extension
+      - .github/workflows/flatpak-flutter-extension.yaml
+
+jobs:
+  build_extension:
+    name: systemd_status_flutter - Build flatpak bundle
+    runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:freedesktop-23.08
+      options: --privileged
+    strategy:
+      matrix:
+        arch:
+          - x86_64
+          - aarch64
+
+        include:
+          - arch: aarch64
+            qemuArch: arm64
+    steps:
+      - name: Install docker # Docker is required by the docker/setup-qemu-action which enables emulation
+        if: ${{ matrix.qemuArch }}
+        run: |
+          dnf -y install docker
+      - name: Setup QEMU
+        if: ${{ matrix.qemuArch }}
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: ${{ matrix.qemuArch }}
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Build flatpak
+        uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: org.freedesktop.Sdk.Extension.flutter.flatpak
+          manifest-path: flatpak/flutter-extension/org.freedesktop.Sdk.Extension.flutter.yaml
+          verbose: true
+          cache: false
+          arch: ${{ matrix.arch }}
