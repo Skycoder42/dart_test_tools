@@ -5,9 +5,15 @@ on:
   push:
     branches:
       - "*"
+    paths-ignore:
+      - flatpak/flutter-extension
+      - .github/workflows/flatpak-flutter-extension.yaml
   pull_request:
     branches:
       - "*"
+    paths-ignore:
+      - flatpak/flutter-extension
+      - .github/workflows/flatpak-flutter-extension.yaml
 
 jobs:
   ci:
