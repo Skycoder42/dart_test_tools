@@ -2,6 +2,7 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
+import '../contexts.dart';
 import '../tools.dart';
 
 class ReleaseEntryBuilder implements StepBuilder {
@@ -67,7 +68,7 @@ ${releaseContentBodyPath.bashSetter(r'$version_changelog_file')}
             'tag_name': releaseContentTagName.expression.toString(),
             'name': releaseContentReleaseName.expression.toString(),
             'body_path': releaseContentBodyPath.expression.toString(),
-            'target_commitish': Expression('github.sha').toString(),
+            'target_commitish': Github.sha.toString(),
             if (files != null) 'files': files,
           },
         ),

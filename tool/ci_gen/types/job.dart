@@ -2,6 +2,7 @@
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'container.dart';
 import 'expression.dart';
 import 'id.dart';
 import 'step.dart';
@@ -65,7 +66,7 @@ class Job with _$Job {
     @_StepOutputMapConverter()
     Map<JobIdOutput, StepIdOutput>? outputs,
     @JsonKey(name: 'runs-on') required String runsOn,
-    @JsonKey(includeIfNull: false) String? container,
+    @JsonKey(includeIfNull: false) Container? container,
     required Steps steps,
   }) = _Job;
 

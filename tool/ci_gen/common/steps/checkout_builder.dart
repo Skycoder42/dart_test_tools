@@ -1,6 +1,7 @@
 import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
+import '../contexts.dart';
 import '../tools.dart';
 
 class CheckoutBuilder implements StepBuilder {
@@ -8,12 +9,16 @@ class CheckoutBuilder implements StepBuilder {
   final String? path;
   final Expression? persistCredentials;
   final int? fetchDepth;
+  final Expression? artifactDependencies;
+  final Expression artifactTargetDir;
 
   const CheckoutBuilder({
     this.gitRef,
     this.path,
     this.persistCredentials,
     this.fetchDepth,
+    this.artifactDependencies,
+    this.artifactTargetDir = Runner.temp,
   });
 
   @override
@@ -28,5 +33,15 @@ class CheckoutBuilder implements StepBuilder {
             if (fetchDepth != null) 'fetch-depth': fetchDepth,
           },
         ),
+        if (artifactDependencies != null)
+          Step.uses(
+            name: 'Download artifacts',
+            ifExpression: artifactDependencies!.ne(Expression.empty),
+            uses: Tools.actionsDownloadArtifact,
+            withArgs: {
+              'pattern': 'package-*',
+              'path': '$artifactTargetDir/.artifacts',
+            },
+          ),
       ];
 }

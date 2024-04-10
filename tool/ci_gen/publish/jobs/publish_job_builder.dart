@@ -1,4 +1,5 @@
 import '../../common/api/job_builder.dart';
+import '../../common/contexts.dart';
 import '../../common/environments.dart';
 import '../../dart/steps/dart_sdk_builder.dart';
 import '../../flutter/steps/flutter_sdk_builder.dart';
@@ -41,7 +42,7 @@ class PublishJobBuilder implements JobBuilder {
         name: 'Publish to pub.dev',
         environment: Environments.pubDeploy,
         ifExpression: const Expression('startsWith')([
-          const Expression('github.ref'),
+          Github.ref,
           const Expression('format')([
             const Expression.literal('refs/tags/{0}'),
             tagPrefix,

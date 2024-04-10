@@ -1,11 +1,9 @@
 import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
-import '../tools.dart';
+import '../contexts.dart';
 
 class ProjectPrepareBuilder implements StepBuilder {
-  static const _runnerTemp = Expression('runner.temp');
-
   final String? titleSuffix;
   final Expression workingDirectory;
   final Expression? artifactDependencies;
@@ -42,19 +40,9 @@ class ProjectPrepareBuilder implements StepBuilder {
           workingDirectory: workingDirectory.toString(),
           shell: 'bash',
         ),
-        if (artifactDependencies != null) ...[
-          Step.uses(
-            name: 'Download artifacts',
-            ifExpression:
-                artifactDependencies!.ne(Expression.empty) & ifExpression,
-            uses: Tools.actionsDownloadArtifact,
-            withArgs: {
-              'pattern': 'package-*',
-              'path': '$_runnerTemp/.artifacts',
-            },
-          ),
+        if (artifactDependencies != null)
           Step.run(
-            name: 'Create pubspec_overrides.yaml for required packages',
+            name: 'Create pubspec_overrides.yaml for artifact packages',
             ifExpression:
                 artifactDependencies!.ne(Expression.empty) & ifExpression,
             shell: 'bash',
@@ -62,12 +50,11 @@ class ProjectPrepareBuilder implements StepBuilder {
 set -eo pipefail
 touch pubspec_overrides.yaml
 for package in ${artifactDependencies}; do
-  yq -i ".dependency_overrides.\$package.path=\\"$_runnerTemp/.artifacts/package-\$package\\"" pubspec_overrides.yaml
+  yq -i ".dependency_overrides.\$package.path=\\"${Runner.temp}/.artifacts/package-\$package\\"" pubspec_overrides.yaml
 done
 ''',
             workingDirectory: workingDirectory.toString(),
           ),
-        ],
         Step.run(
           name: 'Restore dart packages$_titleSuffix',
           ifExpression: ifExpression,

@@ -1,4 +1,5 @@
 import '../../common/api/job_builder.dart';
+import '../../common/contexts.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
@@ -30,7 +31,7 @@ class ReleaseJobBuilder implements JobBuilder {
   Job build() => Job(
         name: 'Create release if needed',
         runsOn: 'ubuntu-latest',
-        ifExpression: const Expression('github.ref').eq(releaseRef),
+        ifExpression: Github.ref.eq(releaseRef),
         outputs: {
           updateOutput: ReleaseBuilder.versionUpdate,
           versionOutput: ReleaseBuilder.versionOutput,

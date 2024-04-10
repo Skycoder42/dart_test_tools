@@ -2,6 +2,7 @@ import '../api/job_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
+import '../contexts.dart';
 import '../steps/tag_release_builder.dart';
 
 class TagReleaseJobBuilder implements JobBuilder {
@@ -34,7 +35,7 @@ class TagReleaseJobBuilder implements JobBuilder {
   Job build() => Job(
         name: 'Create release if needed',
         needs: compileJobIds,
-        ifExpression: const Expression('github.ref').eq(releaseRef),
+        ifExpression: Github.ref.eq(releaseRef),
         permissions: const {
           'contents': 'write',
         },
