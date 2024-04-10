@@ -29,7 +29,7 @@ AQD1vBoAhv6iM+ePgHGAnl01VyKuJfcRcsOQ7bQl5j/bKAEAzXtbKs3/rLkKlBF5
   const BuildLinuxWorkflow();
 
   @override
-  String get name => 'build/linux';
+  String get name => 'build-linux';
 
   @override
   Workflow build() {
