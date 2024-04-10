@@ -63,6 +63,7 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
         ),
         Step.uses(
           name: 'Setup QEMU',
+          ifExpression: qemuArch.expression,
           uses: Tools.dockerSetupQemuAction,
           withArgs: {
             'platforms': qemuArch.expression.toString(),

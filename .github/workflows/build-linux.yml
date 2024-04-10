@@ -63,6 +63,7 @@ jobs:
         if: matrix.qemuArch
         run: dnf -y install docker
       - name: Setup QEMU
+        if: matrix.qemuArch
         uses: docker/setup-qemu-action@v3
         with:
           platforms: ${{ matrix.qemuArch }}
