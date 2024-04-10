@@ -1,4 +1,5 @@
 import '../../common/api/step_builder.dart';
+import '../../common/contexts.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
@@ -27,10 +28,10 @@ git status --short
           run: 'git push',
           workingDirectory: 'aur',
         ),
-        const Step.run(
+        Step.run(
           name: 'Clean up SSH key',
           ifExpression: Expression.always,
-          run: r'shred -fzvu "$RUNNER_TEMP/ssh-key"',
+          run: "shred -fzvu '${Runner.temp}/ssh-key'",
         ),
       ];
 }

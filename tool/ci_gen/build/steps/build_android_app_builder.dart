@@ -1,4 +1,5 @@
 import '../../common/api/step_builder.dart';
+import '../../common/contexts.dart';
 import '../../common/steps/install_dart_test_tools_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../common/tools.dart';
@@ -63,7 +64,7 @@ dart run cider describe "\$version" > "\$changelogs_dir/${GenerateBuildNumberBui
           name: 'Prepare signing keystore',
           run: '''
 set -eo pipefail
-keystore_path="\$RUNNER_TEMP/app.keystore"
+keystore_path="${Runner.temp}/app.keystore"
 echo '$keystore' | openssl base64 -d > "\$keystore_path"
 cat << EOF > android/key.properties
 storeFile=\$keystore_path
@@ -83,9 +84,10 @@ EOF
         Step.run(
           name: 'Cleanup keystore and properties',
           ifExpression: Expression.always,
+          continueOnError: true,
           run: '''
 rm -rf android/key.properties
-rm -rf "\$RUNNER_TEMP/app.keystore"
+rm -rf "${Runner.temp}/app.keystore"
 ''',
           workingDirectory: workingDirectory.toString(),
           shell: 'bash',

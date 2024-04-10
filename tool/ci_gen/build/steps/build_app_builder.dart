@@ -1,4 +1,5 @@
 import '../../common/api/step_builder.dart';
+import '../../common/contexts.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
@@ -21,7 +22,7 @@ class BuildAppBuilder implements StepBuilder {
   Iterable<Step> build() => [
         Step.run(
           name: 'Prepare dart defines',
-          run: 'echo \'$dartDefines\' > "\$RUNNER_TEMP/dart-defines.env"',
+          run: "echo '$dartDefines' > '${Runner.temp}/dart-defines.env'",
           shell: 'bash',
         ),
         Step.run(
@@ -30,13 +31,14 @@ class BuildAppBuilder implements StepBuilder {
               '--release '
               '--build-number=$buildNumber '
               '--obfuscate --split-debug-info=$debugInfoDir/debug-info '
-              '--dart-define-from-file="\$RUNNER_TEMP/dart-defines.env"',
+              "--dart-define-from-file='${Runner.temp}/dart-defines.env'",
           workingDirectory: workingDirectory.toString(),
         ),
         Step.run(
           name: 'Cleanup dart defines',
           ifExpression: Expression.always,
-          run: 'rm -f "\$RUNNER_TEMP/dart-defines.env"',
+          continueOnError: true,
+          run: "rm -f '${Runner.temp}/dart-defines.env'",
           shell: 'bash',
         ),
       ];

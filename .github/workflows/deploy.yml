@@ -164,7 +164,7 @@ jobs:
       - name: Prepare signing keystore
         run: |
           set -eo pipefail
-          keystore_path="$RUNNER_TEMP/app.keystore"
+          keystore_path="${{ runner.temp }}/app.keystore"
           echo '${{ secrets.keystore }}' | openssl base64 -d > "$keystore_path"
           cat << EOF > android/key.properties
           storeFile=$keystore_path
@@ -173,20 +173,22 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Prepare dart defines
-        run: echo '${{ secrets.dartDefines }}' > "$RUNNER_TEMP/dart-defines.env"
+        run: echo '${{ secrets.dartDefines }}' > '${{ runner.temp }}/dart-defines.env'
         shell: bash
       - name: Build android appbundle
-        run: flutter build appbundle --release --build-number=${{ steps.generateBuildNumber.outputs.buildNumber }} --obfuscate --split-debug-info=build/app/outputs/debug-info --dart-define-from-file="$RUNNER_TEMP/dart-defines.env"
+        run: flutter build appbundle --release --build-number=${{ steps.generateBuildNumber.outputs.buildNumber }} --obfuscate --split-debug-info=build/app/outputs/debug-info --dart-define-from-file='${{ runner.temp }}/dart-defines.env'
         working-directory: ${{ inputs.workingDirectory }}
       - name: Cleanup dart defines
         if: always()
-        run: rm -f "$RUNNER_TEMP/dart-defines.env"
+        continue-on-error: true
+        run: rm -f '${{ runner.temp }}/dart-defines.env'
         shell: bash
       - name: Cleanup keystore and properties
         if: always()
+        continue-on-error: true
         run: |
           rm -rf android/key.properties
-          rm -rf "$RUNNER_TEMP/app.keystore"
+          rm -rf "${{ runner.temp }}/app.keystore"
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Upload app bundle and debug info
@@ -305,12 +307,12 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Prepare Google Play key
-        run: echo '${{ secrets.googlePlayKey }}' > "$RUNNER_TEMP/fastlane-key-file.json"
+        run: echo '${{ secrets.googlePlayKey }}' > "${{ runner.temp }}/fastlane-key-file.json"
       - name: Deploy to Google Play
-        run: fastlane upload_to_play_store --json_key "$RUNNER_TEMP/fastlane-key-file.json" --package_name '${{ steps.detectPackageName.outputs.packageName }}' --track '${{ inputs.googlePlayTrack }}' --release_status '${{ inputs.googlePlayReleaseStatus }}' --aab build/bundle/release/app-release.aab --mapping build/mapping/release/mapping.txt --metadata_path build/metadata
+        run: fastlane upload_to_play_store --json_key "${{ runner.temp }}/fastlane-key-file.json" --package_name '${{ steps.detectPackageName.outputs.packageName }}' --track '${{ inputs.googlePlayTrack }}' --release_status '${{ inputs.googlePlayReleaseStatus }}' --aab build/bundle/release/app-release.aab --mapping build/mapping/release/mapping.txt --metadata_path build/metadata
       - name: Cleanup Google Play key
         if: always()
-        run: rm -f "$RUNNER_TEMP/fastlane-key-file.json"
+        run: rm -f "${{ runner.temp }}/fastlane-key-file.json"
       - name: Install sentry_dart_plugin
         if: secrets.sentryAuthToken != ''
         run: flutter pub global activate sentry_dart_plugin

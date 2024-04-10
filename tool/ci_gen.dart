@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:yaml_writer/yaml_writer.dart';
 
 import 'ci_gen/aur/aur_workflow.dart';
+import 'ci_gen/build/build_android_workflow.dart';
 import 'ci_gen/common/api/workflow_builder.dart';
 import 'ci_gen/deb/deb_workflow.dart';
 import 'ci_gen/compile/compile_workflow.dart';
@@ -28,6 +29,7 @@ Future<void> main() async {
     DebWorkflow(),
     DockerWorkflow(),
     DeployWorkflow(),
+    BuildAndroidWorkflow(),
     BuildLinuxWorkflow(),
   ];
 

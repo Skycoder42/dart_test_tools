@@ -79,11 +79,6 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-          path: _src
       - name: Download flatpak bundles
         uses: actions/download-artifact@v4
         with:

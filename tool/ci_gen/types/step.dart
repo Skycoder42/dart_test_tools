@@ -19,6 +19,8 @@ class Step with _$Step {
     @JsonKey(name: 'if', includeIfNull: false)
     @ExpressionConverter()
     Expression? ifExpression,
+    @JsonKey(name: 'continue-on-error', includeIfNull: false)
+    bool? continueOnError,
     @JsonKey(includeIfNull: false) Env? env,
     required String run,
     @JsonKey(name: 'working-directory', includeIfNull: false)
@@ -32,6 +34,8 @@ class Step with _$Step {
     @JsonKey(name: 'if', includeIfNull: false)
     @ExpressionConverter()
     Expression? ifExpression,
+    @JsonKey(name: 'continue-on-error', includeIfNull: false)
+    bool? continueOnError,
     @JsonKey(includeIfNull: false) Map<String, String>? env,
     required String uses,
     @JsonKey(name: 'with', includeIfNull: false) Map<String, dynamic>? withArgs,

@@ -1,3 +1,4 @@
+import '../build/jobs/build_android_job_builder.dart';
 import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
 import '../common/api/workflow_output.dart';
@@ -9,7 +10,6 @@ import '../common/secrets.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
-import 'jobs/build_android_job_builder.dart';
 import 'jobs/deploy_android_job_builder.dart';
 
 class DeployWorkflow implements WorkflowBuilder {

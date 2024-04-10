@@ -1,4 +1,5 @@
 import '../../common/api/step_builder.dart';
+import '../../common/contexts.dart';
 import '../../common/steps/checkout_builder.dart';
 import '../../common/tools.dart';
 import '../../types/expression.dart';
@@ -57,12 +58,12 @@ class DeployAndroidAppBuilder implements StepBuilder {
         Step.run(
           name: 'Prepare Google Play key',
           run:
-              'echo \'$googlePlayKey\' > "\$RUNNER_TEMP/fastlane-key-file.json"',
+              'echo \'$googlePlayKey\' > "${Runner.temp}/fastlane-key-file.json"',
         ),
         Step.run(
           name: 'Deploy to Google Play',
           run: 'fastlane upload_to_play_store '
-              r'--json_key "$RUNNER_TEMP/fastlane-key-file.json" '
+              '--json_key "${Runner.temp}/fastlane-key-file.json" '
               "--package_name '${packageNameOutput.expression}' "
               "--track '$googlePlayTrack' "
               "--release_status '$googlePlayReleaseStatus' "
@@ -73,7 +74,7 @@ class DeployAndroidAppBuilder implements StepBuilder {
         Step.run(
           name: 'Cleanup Google Play key',
           ifExpression: Expression.always,
-          run: 'rm -f "\$RUNNER_TEMP/fastlane-key-file.json"',
+          run: 'rm -f "${Runner.temp}/fastlane-key-file.json"',
         ),
         ...UploadSentrySymbolsBuilder(
           workingDirectory: workingDirectory,
