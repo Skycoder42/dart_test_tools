@@ -23,6 +23,7 @@ jobs:
       options: --privileged
     environment: flatpak
     strategy:
+      fail-fast: false
       matrix:
         arch:
           - x86_64
@@ -67,7 +68,8 @@ jobs:
           retention-days: 1
       - name: Delete GPG key
         if: always()
-        run: gpg --delete-secret-key '${{ secrets.GPG_KEY_ID }}'
+        continue-on-error: true
+        run: gpg --batch --yes --delete-secret-keys '${{ secrets.GPG_KEY_ID }}'
 
   release_extension:
     name: Release flatpak runtime extension
