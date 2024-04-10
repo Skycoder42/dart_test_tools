@@ -35,8 +35,7 @@ jobs:
     steps:
       - name: Install docker # Docker is required by the docker/setup-qemu-action which enables emulation
         if: ${{ matrix.qemuArch }}
-        run: |
-          dnf -y install docker
+        run: dnf -y install docker
       - name: Setup QEMU
         if: ${{ matrix.qemuArch }}
         uses: docker/setup-qemu-action@v3
@@ -77,6 +76,8 @@ jobs:
     needs:
       - build_extension
     environment: flatpak
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
