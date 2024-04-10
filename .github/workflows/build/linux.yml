@@ -1,0 +1,91 @@
+on:
+  workflow_call:
+    inputs:
+      flatpakSdkVersion:
+        type: string
+        required: false
+        default: "23.08"
+        description: The version of the freedesktop sdk and runtime being used.
+      bundleName:
+        type: string
+        required: true
+        description: The output flatpak bundle name.
+      workingDirectory:
+        type: string
+        required: false
+        default: .
+        description: The root directory of the dart package to build and test.
+      artifactDependencies:
+        type: string
+        required: false
+        default: ""
+        description: A space-separated list of package names that should be downloaded from the artifacts and overwritten for the workflow. The packages should be space separated and placed in a single line. You can use the YAML ">-" for that.
+      manifestPath:
+        type: string
+        required: true
+        description: The path to the flatpak manifest to be built.
+env:
+  FLUTTER_SDK_GPG_KEY: |
+    -----BEGIN PGP PUBLIC KEY BLOCK-----
+
+    mDMEZhVSPhYJKwYBBAHaRw8BAQdAyUCjyTVvL0R5RQZw6NeF1mcjTyxjz56RjWRE
+    x+qI6dC0dFNreWNvZGVyNDIgKEdQRyBLZXkgZm9yIG9yZy5mcmVlZGVza3RvcC5T
+    ZGsuRXh0ZW5zaW9uLmZsdXR0ZXIgZmxhdHBhayBidW5kbGVzKSA8U2t5Y29kZXI0
+    MkB1c2Vycy5ub3JlcGx5LmdpdGh1Yi5jb20+iJMEExYKADsWIQRM3jbjqquCG4iR
+    YqdbEIdDIpRYLgUCZhVSPgIbAwULCQgHAgIiAgYVCgkICwIEFgIDAQIeBwIXgAAK
+    CRBbEIdDIpRYLmBgAP40jr4173kOMnhnIsLwgwOIunXht/KZkVRGWjHUV7wP5wD8
+    C2ebyeiaya6PrQ/u+AG/mIbTPm2qgl58ESWpQXVmawC4OARmFVI+EgorBgEEAZdV
+    AQUBAQdARVAUlIBUyukjFlGYscv8T49PdW4PAexZRqE1JnyMr1cDAQgHiHgEGBYK
+    ACAWIQRM3jbjqquCG4iRYqdbEIdDIpRYLgUCZhVSPgIbDAAKCRBbEIdDIpRYLv5A
+    AQD1vBoAhv6iM+ePgHGAnl01VyKuJfcRcsOQ7bQl5j/bKAEAzXtbKs3/rLkKlBF5
+    08PRzDxSMStKeNf+L6NVrSKNVgc=
+    =Cnso
+    -----END PGP PUBLIC KEY BLOCK-----
+jobs:
+  build_linux:
+    name: Build linux flatpak bundle
+    environment: flatpak
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - x86_64
+          - aarch64
+        include:
+          - arch: aarch64
+            qemuArch: arm64
+    runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:freedesktop-${{ inputs.flatpakSdkVersion }}
+      options: --privileged
+    steps:
+      - name: Install docker
+        if: matrix.qemuArch
+        run: dnf -y install docker
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: ${{ matrix.qemuArch }}
+      - name: Import GPG public key
+        run: echo '${{ env.FLUTTER_SDK_GPG_KEY }}' | gpg --import
+      - name: Download flatpak flutter SDK
+        run: curl --fail-with-body -L -o /tmp/flutter.flatpak 'https://github.com/Skycoder42/dart_test_tools/releases/download/flatpak-flutter-extension%2F${{ inputs.flatpakSdkVersion }}/org.freedesktop.Sdk.Extension.flutter_${{ inputs.flatpakSdkVersion }}_${{ matrix.arch }}.flatpak'
+      - name: Install flatpak flutter SDK
+        run: flatpak install --system -y --noninteractive /tmp/flutter.flatpak
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Download artifacts
+        if: inputs.artifactDependencies != ''
+        uses: actions/download-artifact@v4
+        with:
+          pattern: package-*
+          path: ${{ github.workspace }}/.artifacts
+      - name: Build flatpak bundle
+        uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: ${{ inputs.bundleName }}
+          manifest-path: ${{ inputs.workingDirectory }}/${{ inputs.manifestPath }}
+          cache: false
+          arch: ${{ matrix.arch }}

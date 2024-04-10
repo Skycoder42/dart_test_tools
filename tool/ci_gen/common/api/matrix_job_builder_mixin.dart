@@ -1,3 +1,4 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meta/meta.dart';
 
 import '../../types/expression.dart';
@@ -48,12 +49,12 @@ abstract base class Matrix<TMatrixSelector extends IMatrixSelector> {
 }
 
 base mixin MatrixJobBuilderMixin<TMatrix extends Matrix<TMatrixSelector>,
-    TMatrixSelector extends IMatrixSelector> on JobBuilder {
+    TMatrixSelector extends IMatrixSelector> implements JobBuilder {
   @protected
   TMatrix get matrix;
 
   @protected
-  Expression get matrixCondition;
+  Expression? get matrixCondition => null;
 
   @protected
   Expression get matrixRunsOn;
@@ -78,7 +79,9 @@ base mixin MatrixJobBuilderMixin<TMatrix extends Matrix<TMatrixSelector>,
       steps: [
         for (final step in rawJob.steps)
           step.copyWith(
-            ifExpression: matrixCondition & step.ifExpression,
+            ifExpression: matrixCondition != null
+                ? (matrixCondition! & step.ifExpression)
+                : step.ifExpression,
           ),
       ],
     );

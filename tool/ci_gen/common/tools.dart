@@ -43,4 +43,8 @@ abstract class Tools {
 
   /// https://github.com/lpenz/ghaction-packagecloud/releases
   static const lpenzGhactionPackagecloud = 'lpenz/ghaction-packagecloud@v0.4';
+
+  /// https://github.com/bilelmoussaoui/flatpak-github-actions/releases
+  static const bilelmoussaouiFlatpakGithubActionsFlatpakBuilder =
+      'bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6';
 }

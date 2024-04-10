@@ -430,4 +430,32 @@ Example:
       description: 'The packagecloud repository to publish to.',
     ),
   );
+
+  static const flatpakSdkVersion = WorkflowInput(
+    name: 'flatpakSdkVersion',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: '23.08',
+      description: 'The version of the freedesktop sdk and runtime being used.',
+    ),
+  );
+
+  static const bundleName = WorkflowInput(
+    name: 'bundleName',
+    input: Input(
+      type: Type.string,
+      required: true,
+      description: 'The output flatpak bundle name.',
+    ),
+  );
+
+  static const manifestPath = WorkflowInput(
+    name: 'manifestPath',
+    input: Input(
+      type: Type.string,
+      required: true,
+      description: 'The path to the flatpak manifest to be built.',
+    ),
+  );
 }
