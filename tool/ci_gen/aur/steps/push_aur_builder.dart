@@ -1,6 +1,5 @@
 import '../../common/api/step_builder.dart';
 import '../../common/contexts.dart';
-import '../../types/expression.dart';
 import '../../types/step.dart';
 
 class PushAurBuilder implements StepBuilder {
@@ -30,7 +29,7 @@ git status --short
         ),
         Step.run(
           name: 'Clean up SSH key',
-          ifExpression: Expression.always,
+          ifExpression: Functions.always,
           run: "shred -fzvu '${Runner.temp}/ssh-key'",
         ),
       ];

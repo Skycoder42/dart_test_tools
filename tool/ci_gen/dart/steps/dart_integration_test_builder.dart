@@ -1,6 +1,7 @@
 import '../../common/api/matrix_job_builder_mixin.dart';
 import '../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/contexts.dart';
 import '../../common/steps/cache_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../types/expression.dart';
@@ -94,7 +95,7 @@ class DartIntegrationTestBuilder implements StepBuilder {
         ),
         Step.run(
           name: 'Shred .env file',
-          ifExpression: Expression.always,
+          ifExpression: Functions.always,
           run: 'shred -fzvu .env',
           workingDirectory: workingDirectory.toString(),
         ),

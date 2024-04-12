@@ -83,7 +83,7 @@ EOF
         ).build(),
         Step.run(
           name: 'Cleanup keystore and properties',
-          ifExpression: Expression.always,
+          ifExpression: Functions.always,
           continueOnError: true,
           run: '''
 rm -rf android/key.properties

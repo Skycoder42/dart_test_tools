@@ -74,15 +74,24 @@ jobs:
       - name: Import GPG key
         run: echo '${{ secrets.gpgKey }}' | gpg --import
       - name: Build flatpak bundle
-        uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6
+        uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@86f5f35aa999f626a05d2943460ff0e811655327
         with:
           bundle: ${{ inputs.bundleName }}
           manifest-path: ${{ inputs.workingDirectory }}/${{ inputs.manifestPath }}
           branch: ${{ github.ref_name }}
+          arch: ${{ matrix.arch }}
           gpg-sign: ${{ secrets.gpgKeyId }}
           cache: false
-          arch: ${{ matrix.arch }}
+          upload-artifact: false
       - name: Delete GPG key
         if: always()
         continue-on-error: true
         run: gpg --batch --yes --delete-secret-keys '${{ secrets.gpgKeyId }}'
+      - name: Upload bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flatpak-bundle-${{ matrix.arch }}
+          path: ${{ inputs.bundleName }}
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 1

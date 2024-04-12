@@ -19,3 +19,9 @@ abstract base class Github {
 
   static const workspace = Expression('github.workspace');
 }
+
+abstract base class Functions {
+  const Functions._();
+
+  static const always = Expression('always()');
+}

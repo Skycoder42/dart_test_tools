@@ -5,6 +5,7 @@ import '../../../common/steps/checkout_builder.dart';
 import '../../../common/tools.dart';
 import '../../../types/expression.dart';
 import '../../../types/step.dart';
+import '../../steps/with_gpg_key.dart';
 
 enum FlatpakArchMatrixSelector implements IMatrixSelector {
   x86_64,
@@ -85,27 +86,35 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
           artifactDependencies: artifactDependencies,
           artifactTargetDir: Github.workspace,
         ).build(),
-        Step.run(
-          name: 'Import GPG key',
-          run: "echo '$gpgKey' | gpg --import",
-        ),
+        ...WithGpgKey(
+          gpgKey: gpgKey,
+          gpgKeyId: gpgKeyId,
+          steps: [
+            Step.uses(
+              name: 'Build flatpak bundle',
+              uses: Tools.bilelmoussaouiFlatpakGithubActionsFlatpakBuilder,
+              withArgs: {
+                'bundle': bundleName.toString(),
+                'manifest-path': '$workingDirectory/$manifestPath',
+                'branch': Github.refName.toString(),
+                'arch': arch.expression.toString(),
+                'gpg-sign': gpgKeyId.toString(),
+                'cache': false,
+                'upload-artifact': false,
+              },
+            ),
+          ],
+        ).build(),
         Step.uses(
-          name: 'Build flatpak bundle',
-          uses: Tools.bilelmoussaouiFlatpakGithubActionsFlatpakBuilder,
+          name: 'Upload bundle artifact',
+          uses: Tools.actionsUploadArtifact,
           withArgs: {
-            'bundle': bundleName.toString(),
-            'manifest-path': '$workingDirectory/$manifestPath',
-            'branch': Github.refName.toString(),
-            'gpg-sign': gpgKeyId.toString(),
-            'cache': false,
-            'arch': arch.expression.toString(),
+            'name': 'flatpak-bundle-${arch.expression}',
+            'path': bundleName.toString(),
+            'compression-level': 0,
+            'if-no-files-found': 'error',
+            'retention-days': 1,
           },
-        ),
-        Step.run(
-          name: 'Delete GPG key',
-          ifExpression: Expression('always()'), // TODO extract
-          continueOnError: true,
-          run: "gpg --batch --yes --delete-secret-keys '$gpgKeyId'",
         ),
       ];
 }

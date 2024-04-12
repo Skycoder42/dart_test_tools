@@ -36,7 +36,7 @@ class BuildAppBuilder implements StepBuilder {
         ),
         Step.run(
           name: 'Cleanup dart defines',
-          ifExpression: Expression.always,
+          ifExpression: Functions.always,
           continueOnError: true,
           run: "rm -f '${Runner.temp}/dart-defines.env'",
           shell: 'bash',
