@@ -95,6 +95,7 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
           withArgs: {
             'bundle': bundleName.toString(),
             'manifest-path': '$workingDirectory/$manifestPath',
+            'branch': Github.refName.toString(),
             'gpg-sign': gpgKeyId.toString(),
             'cache': false,
             'arch': arch.expression.toString(),

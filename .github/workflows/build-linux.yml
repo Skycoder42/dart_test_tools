@@ -78,6 +78,7 @@ jobs:
         with:
           bundle: ${{ inputs.bundleName }}
           manifest-path: ${{ inputs.workingDirectory }}/${{ inputs.manifestPath }}
+          branch: ${{ github.ref_name }}
           gpg-sign: ${{ secrets.gpgKeyId }}
           cache: false
           arch: ${{ matrix.arch }}

@@ -13,6 +13,8 @@ abstract base class Github {
 
   static const ref = Expression('github.ref');
 
+  static const refName = Expression('github.ref_name');
+
   static const sha = Expression('github.sha');
 
   static const workspace = Expression('github.workspace');
