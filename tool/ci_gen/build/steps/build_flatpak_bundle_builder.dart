@@ -39,7 +39,8 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
   final Expression workingDirectory;
   final Expression artifactDependencies;
   final Expression manifestPath;
-  final Expression flutterSdkGpgKey;
+  final Expression gpgKeyId;
+  final Expression gpgKey;
   final ArchMatrixProperty arch;
   final QEmuArchProperty qemuArch;
 
@@ -49,7 +50,8 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
     required this.workingDirectory,
     required this.artifactDependencies,
     required this.manifestPath,
-    required this.flutterSdkGpgKey,
+    required this.gpgKeyId,
+    required this.gpgKey,
     required this.arch,
     required this.qemuArch,
   });
@@ -70,10 +72,6 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
           },
         ),
         Step.run(
-          name: 'Import GPG public key',
-          run: "echo '$flutterSdkGpgKey' | gpg --import",
-        ),
-        Step.run(
           name: 'Download flatpak flutter SDK',
           run: "curl --fail-with-body -L -o /tmp/flutter.flatpak "
               "'https://github.com/Skycoder42/dart_test_tools/releases/download/flatpak-flutter-extension%2F$sdkVersion/org.freedesktop.Sdk.Extension.flutter_${sdkVersion}_${arch.expression}.flatpak'",
@@ -87,12 +85,17 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
           artifactDependencies: artifactDependencies,
           artifactTargetDir: Github.workspace,
         ).build(),
+        Step.run(
+          name: 'Import GPG key',
+          run: "echo '$gpgKey' | gpg --import",
+        ),
         Step.uses(
           name: 'Build flatpak bundle',
           uses: Tools.bilelmoussaouiFlatpakGithubActionsFlatpakBuilder,
           withArgs: {
             'bundle': bundleName.toString(),
             'manifest-path': '$workingDirectory/$manifestPath',
+            'gpg-sign': gpgKeyId.toString(),
             'cache': false,
             'arch': arch.expression.toString(),
           },

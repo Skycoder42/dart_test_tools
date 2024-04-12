@@ -31,6 +31,8 @@ final class BuildLinuxJobBuilder
   final Expression workingDirectory;
   final Expression artifactDependencies;
   final Expression manifestPath;
+  final Expression gpgKeyId;
+  final Expression gpgKey;
 
   const BuildLinuxJobBuilder({
     required this.sdkVersion,
@@ -38,6 +40,8 @@ final class BuildLinuxJobBuilder
     required this.workingDirectory,
     required this.artifactDependencies,
     required this.manifestPath,
+    required this.gpgKeyId,
+    required this.gpgKey,
   }) : matrix = const _FlatpakMatrix();
 
   @override
@@ -66,7 +70,8 @@ final class BuildLinuxJobBuilder
             workingDirectory: workingDirectory,
             artifactDependencies: artifactDependencies,
             manifestPath: manifestPath,
-            flutterSdkGpgKey: Expression('env.FLUTTER_SDK_GPG_KEY'),
+            gpgKeyId: gpgKeyId,
+            gpgKey: gpgKey,
             arch: matrix.arch,
             qemuArch: matrix.qemuArch,
           ).build(),

@@ -24,23 +24,13 @@ on:
         type: string
         required: true
         description: The path to the flatpak manifest to be built.
-env:
-  FLUTTER_SDK_GPG_KEY: |
-    -----BEGIN PGP PUBLIC KEY BLOCK-----
-
-    mDMEZhVSPhYJKwYBBAHaRw8BAQdAyUCjyTVvL0R5RQZw6NeF1mcjTyxjz56RjWRE
-    x+qI6dC0dFNreWNvZGVyNDIgKEdQRyBLZXkgZm9yIG9yZy5mcmVlZGVza3RvcC5T
-    ZGsuRXh0ZW5zaW9uLmZsdXR0ZXIgZmxhdHBhayBidW5kbGVzKSA8U2t5Y29kZXI0
-    MkB1c2Vycy5ub3JlcGx5LmdpdGh1Yi5jb20+iJMEExYKADsWIQRM3jbjqquCG4iR
-    YqdbEIdDIpRYLgUCZhVSPgIbAwULCQgHAgIiAgYVCgkICwIEFgIDAQIeBwIXgAAK
-    CRBbEIdDIpRYLmBgAP40jr4173kOMnhnIsLwgwOIunXht/KZkVRGWjHUV7wP5wD8
-    C2ebyeiaya6PrQ/u+AG/mIbTPm2qgl58ESWpQXVmawC4OARmFVI+EgorBgEEAZdV
-    AQUBAQdARVAUlIBUyukjFlGYscv8T49PdW4PAexZRqE1JnyMr1cDAQgHiHgEGBYK
-    ACAWIQRM3jbjqquCG4iRYqdbEIdDIpRYLgUCZhVSPgIbDAAKCRBbEIdDIpRYLv5A
-    AQD1vBoAhv6iM+ePgHGAnl01VyKuJfcRcsOQ7bQl5j/bKAEAzXtbKs3/rLkKlBF5
-    08PRzDxSMStKeNf+L6NVrSKNVgc=
-    =Cnso
-    -----END PGP PUBLIC KEY BLOCK-----
+    secrets:
+      gpgKey:
+        required: true
+        description: The GPG key to sign the flatpak bundle and repository with.
+      gpgKeyId:
+        required: true
+        description: The id of the gpgKey
 jobs:
   build_linux:
     name: Build linux flatpak bundle
@@ -67,8 +57,6 @@ jobs:
         uses: docker/setup-qemu-action@v3
         with:
           platforms: ${{ matrix.qemuArch }}
-      - name: Import GPG public key
-        run: echo '${{ env.FLUTTER_SDK_GPG_KEY }}' | gpg --import
       - name: Download flatpak flutter SDK
         run: curl --fail-with-body -L -o /tmp/flutter.flatpak 'https://github.com/Skycoder42/dart_test_tools/releases/download/flatpak-flutter-extension%2F${{ inputs.flatpakSdkVersion }}/org.freedesktop.Sdk.Extension.flutter_${{ inputs.flatpakSdkVersion }}_${{ matrix.arch }}.flatpak'
       - name: Install flatpak flutter SDK
@@ -83,10 +71,13 @@ jobs:
         with:
           pattern: package-*
           path: ${{ github.workspace }}/.artifacts
+      - name: Import GPG key
+        run: echo '${{ secrets.gpgKey }}' | gpg --import
       - name: Build flatpak bundle
         uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6
         with:
           bundle: ${{ inputs.bundleName }}
           manifest-path: ${{ inputs.workingDirectory }}/${{ inputs.manifestPath }}
+          gpg-sign: ${{ secrets.gpgKeyId }}
           cache: false
           arch: ${{ matrix.arch }}

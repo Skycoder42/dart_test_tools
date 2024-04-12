@@ -115,4 +115,21 @@ VARIABLE2=value2
       description: 'The access token for the packagecloud upload.',
     ),
   );
+
+  static const gpgKey = WorkflowSecret(
+    name: 'gpgKey',
+    secret: Secret(
+      required: true,
+      description:
+          'The GPG key to sign the flatpak bundle and repository with.',
+    ),
+  );
+
+  static const gpgKeyId = WorkflowSecret(
+    name: 'gpgKeyId',
+    secret: Secret(
+      required: true,
+      description: 'The id of the gpgKey',
+    ),
+  );
 }
