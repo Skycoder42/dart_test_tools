@@ -1,7 +1,7 @@
-import '../../common/api/step_builder.dart';
-import '../../types/expression.dart';
-import '../../types/id.dart';
-import '../../types/step.dart';
+import '../../../common/api/step_builder.dart';
+import '../../../types/expression.dart';
+import '../../../types/id.dart';
+import '../../../types/step.dart';
 
 class GenerateBuildNumberBuilder implements StepBuilder {
   static const stepId = StepId('generateBuildNumber');

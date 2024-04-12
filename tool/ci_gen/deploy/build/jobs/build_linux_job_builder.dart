@@ -1,11 +1,11 @@
-import '../../common/api/job_builder.dart';
-import '../../common/api/matrix_job_builder_mixin.dart';
-import '../../common/environments.dart';
-import '../../types/container.dart';
-import '../../types/expression.dart';
-import '../../types/id.dart';
-import '../../types/job.dart';
-import '../../types/runs_on.dart';
+import '../../../common/api/job_builder.dart';
+import '../../../common/api/matrix_job_builder_mixin.dart';
+import '../../../common/environments.dart';
+import '../../../types/container.dart';
+import '../../../types/expression.dart';
+import '../../../types/id.dart';
+import '../../../types/job.dart';
+import '../../../types/runs_on.dart';
 import '../steps/build_flatpak_bundle_builder.dart';
 
 final class _FlatpakMatrix extends Matrix<FlatpakArchMatrixSelector> {

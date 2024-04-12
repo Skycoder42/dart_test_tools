@@ -1,10 +1,10 @@
-import '../../common/api/matrix_job_builder_mixin.dart';
-import '../../common/api/step_builder.dart';
-import '../../common/contexts.dart';
-import '../../common/steps/checkout_builder.dart';
-import '../../common/tools.dart';
-import '../../types/expression.dart';
-import '../../types/step.dart';
+import '../../../common/api/matrix_job_builder_mixin.dart';
+import '../../../common/api/step_builder.dart';
+import '../../../common/contexts.dart';
+import '../../../common/steps/checkout_builder.dart';
+import '../../../common/tools.dart';
+import '../../../types/expression.dart';
+import '../../../types/step.dart';
 
 enum FlatpakArchMatrixSelector implements IMatrixSelector {
   x86_64,

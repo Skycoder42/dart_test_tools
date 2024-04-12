@@ -1,11 +1,11 @@
-import '../common/api/workflow_builder.dart';
-import '../common/api/workflow_input.dart';
-import '../common/api/workflow_secret.dart';
-import '../common/inputs.dart';
-import '../common/secrets.dart';
-import '../types/on.dart';
-import '../types/workflow.dart';
-import '../types/workflow_call.dart';
+import '../../common/api/workflow_builder.dart';
+import '../../common/api/workflow_input.dart';
+import '../../common/api/workflow_secret.dart';
+import '../../common/inputs.dart';
+import '../../common/secrets.dart';
+import '../../types/on.dart';
+import '../../types/workflow.dart';
+import '../../types/workflow_call.dart';
 import 'jobs/build_linux_job_builder.dart';
 
 class BuildLinuxWorkflow implements WorkflowBuilder {
