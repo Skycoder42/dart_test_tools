@@ -100,5 +100,11 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
             'arch': arch.expression.toString(),
           },
         ),
+        Step.run(
+          name: 'Delete GPG key',
+          ifExpression: Expression('always()'), // TODO extract
+          continueOnError: true,
+          run: "gpg --batch --yes --delete-secret-keys '$gpgKeyId'",
+        ),
       ];
 }

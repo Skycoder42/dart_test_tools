@@ -81,3 +81,7 @@ jobs:
           gpg-sign: ${{ secrets.gpgKeyId }}
           cache: false
           arch: ${{ matrix.arch }}
+      - name: Delete GPG key
+        if: always()
+        continue-on-error: true
+        run: gpg --batch --yes --delete-secret-keys '${{ secrets.gpgKeyId }}'
