@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:dart_test_tools/src/tools/io.dart';
+
 import '../tools/github.dart';
 import 'repo_metadata.dart';
 
@@ -18,11 +20,25 @@ class RepoGenerator {
     await _updateRepo(repo, metadata);
   }
 
-  Future<void> _initRepo(Directory repo) => Github.exec('ostree', [
-        'init',
-        '--mode=archive',
-        '--repo=${repo.path}',
-      ]);
+  Future<void> _initRepo(Directory repo) async {
+    await Github.exec('ostree', [
+      'init',
+      '--mode=archive',
+      '--repo=${repo.path}',
+    ]);
+
+    final emptyDirs = await repo
+        .list(recursive: true)
+        .where((e) => e is Directory)
+        .cast<Directory>()
+        .asyncMap((d) async => (d, await d.list().isEmpty))
+        .where((d) => d.$2)
+        .map((d) => d.$1)
+        .toList();
+    for (final dir in emptyDirs) {
+      await dir.subFile('.gitkeep').create();
+    }
+  }
 
   Future<void> _updateRepo(
     Directory repo,
