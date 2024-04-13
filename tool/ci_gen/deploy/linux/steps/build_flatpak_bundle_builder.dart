@@ -5,7 +5,7 @@ import '../../../common/steps/checkout_builder.dart';
 import '../../../common/tools.dart';
 import '../../../types/expression.dart';
 import '../../../types/step.dart';
-import '../../steps/with_gpg_key.dart';
+import 'with_gpg_key.dart';
 
 enum FlatpakArchMatrixSelector implements IMatrixSelector {
   x86_64,

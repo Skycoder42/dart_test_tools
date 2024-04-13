@@ -1,7 +1,7 @@
-import '../../common/api/step_builder.dart';
-import '../../common/contexts.dart';
-import '../../types/expression.dart';
-import '../../types/step.dart';
+import '../../../common/api/step_builder.dart';
+import '../../../common/contexts.dart';
+import '../../../types/expression.dart';
+import '../../../types/step.dart';
 
 class WithGpgKey implements StepBuilder {
   final Expression gpgKey;

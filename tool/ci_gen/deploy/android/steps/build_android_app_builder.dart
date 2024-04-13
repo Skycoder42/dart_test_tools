@@ -5,8 +5,8 @@ import '../../../common/steps/project_setup_builder.dart';
 import '../../../common/tools.dart';
 import '../../../types/expression.dart';
 import '../../../types/step.dart';
-import 'build_app_builder.dart';
-import 'generate_build_number_builder.dart';
+import '../../steps/build_app_builder.dart';
+import '../../steps/generate_build_number_builder.dart';
 
 class BuildAndroidAppBuilder implements StepBuilder {
   final Expression workingDirectory;

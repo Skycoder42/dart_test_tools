@@ -8,7 +8,7 @@ import '../../../types/id.dart';
 import '../../../types/job.dart';
 import '../../../types/runs_on.dart';
 import '../steps/build_android_app_builder.dart';
-import '../steps/generate_build_number_builder.dart';
+import '../../steps/generate_build_number_builder.dart';
 
 final class BuildAndroidJobBuilder extends SdkJobBuilder
     with FlutterSdkJobBuilderMixin {

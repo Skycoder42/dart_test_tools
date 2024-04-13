@@ -15,13 +15,13 @@ class TagReleaseJobBuilder implements JobBuilder {
   final String? binaryArtifactsPattern;
 
   const TagReleaseJobBuilder({
-    required this.compileJobIds,
+    this.compileJobIds,
     required this.releaseRef,
     required this.dartSdkVersion,
     required this.workingDirectory,
     required this.tagPrefix,
     required this.persistCredentials,
-    required this.binaryArtifactsPattern,
+    this.binaryArtifactsPattern,
   });
 
   @override

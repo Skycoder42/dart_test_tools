@@ -1,11 +1,11 @@
-import '../../common/api/step_builder.dart';
-import '../../common/contexts.dart';
-import '../../common/steps/checkout_builder.dart';
-import '../../common/tools.dart';
-import '../../types/expression.dart';
-import '../../types/id.dart';
-import '../../types/step.dart';
-import 'upload_sentry_symbols.dart';
+import '../../../common/api/step_builder.dart';
+import '../../../common/contexts.dart';
+import '../../../common/steps/checkout_builder.dart';
+import '../../../common/tools.dart';
+import '../../../types/expression.dart';
+import '../../../types/id.dart';
+import '../../../types/step.dart';
+import '../../steps/upload_sentry_symbols.dart';
 
 class DeployAndroidAppBuilder implements StepBuilder {
   static const detectPackageNameStepId = StepId('detectPackageName');
