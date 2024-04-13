@@ -23,6 +23,7 @@ class MetadataCollector {
 
     var metadata = RepoMetadata(
       name: repository,
+      id: 'PLACEHOLDER',
       url: Uri.https(
         '${username.toLowerCase()}.github.io',
         '/${repository}/',
@@ -99,6 +100,7 @@ class MetadataCollector {
         ?.innerText;
 
     return metadata.copyWith(
+      id: metaInfoXml.xpath('/component/id').first.innerText,
       title: metaInfoXml.xpath('/component/name').firstOrNull?.innerText,
       summary: metaInfoXml.xpath('/component/summary').firstOrNull?.innerText,
       description:

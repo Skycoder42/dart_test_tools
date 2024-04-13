@@ -25,6 +25,7 @@ class GpgInfo with _$GpgInfo {
 class RepoMetadata with _$RepoMetadata {
   const factory RepoMetadata({
     required String name,
+    required String id,
     required Uri url,
     required GpgInfo gpgInfo,
     @Default('main') String branch,
