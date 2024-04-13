@@ -5,9 +5,11 @@ import '../common/api/workflow_secret.dart';
 import '../common/inputs.dart';
 import '../common/jobs/tag_release_job_builder.dart';
 import '../common/outputs.dart';
+import '../common/secrets.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
+import 'linux/jobs/deploy_linux_job_builder.dart';
 
 class DeployWorkflow implements WorkflowBuilder {
   const DeployWorkflow();
@@ -32,19 +34,13 @@ class DeployWorkflow implements WorkflowBuilder {
       ..add(WorkflowOutputs.releaseCreated, releaseJobBuilder.updateOutput)
       ..add(WorkflowOutputs.releaseVersion, releaseJobBuilder.versionOutput);
 
-    // final deployAndroidJobBuilder = DeployAndroidJobBuilder(
-    //   enabledPlatforms: inputContext(WorkflowInputs.enabledPlatforms),
-    //   releaseCreated: releaseJobBuilder.updateOutput,
-    //   flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
-    //   javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
-    //   workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-    //   buildNumber: buildAndroidJobBuilder.buildNumber,
-    //   googlePlayTrack: inputContext(WorkflowInputs.googlePlayTrack),
-    //   googlePlayReleaseStatus:
-    //       inputContext(WorkflowInputs.googlePlayReleaseStatus),
-    //   sentryAuthToken: secretContext(WorkflowSecrets.sentryAuthToken),
-    //   googlePlayKey: secretContext(WorkflowSecrets.googlePlayKey),
-    // );
+    final deployLinuxJobBuilder = DeployLinuxJobBuilder(
+      releaseCreated: releaseJobBuilder.updateOutput,
+      enabledPlatforms: inputContext(WorkflowInputs.enabledPlatforms),
+      sdkVersion: inputContext(WorkflowInputs.flatpakSdkVersion),
+      gpgKey: secretContext(WorkflowSecrets.gpgKey),
+      gpgKeyId: secretContext(WorkflowSecrets.gpgKeyId),
+    );
 
     return Workflow(
       on: On(
@@ -56,7 +52,7 @@ class DeployWorkflow implements WorkflowBuilder {
       ),
       jobs: {
         releaseJobBuilder.id: releaseJobBuilder.build(),
-        // deployAndroidJobBuilder.id: deployAndroidJobBuilder.build(),
+        deployLinuxJobBuilder.id: deployLinuxJobBuilder.build(),
       },
     );
   }

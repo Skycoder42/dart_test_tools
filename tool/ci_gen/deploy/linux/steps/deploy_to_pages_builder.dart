@@ -1,0 +1,72 @@
+import '../../../common/api/step_builder.dart';
+import '../../../common/steps/checkout_builder.dart';
+import '../../../common/tools.dart';
+import '../../../types/expression.dart';
+import '../../../types/step.dart';
+import 'with_gpg_key.dart';
+
+class DeployToPagesBuilder implements StepBuilder {
+  static const _gpPagesBranch = 'gh-pages';
+
+  final Expression gpgKeyId;
+  final Expression gpgKey;
+
+  DeployToPagesBuilder({
+    required this.gpgKeyId,
+    required this.gpgKey,
+  });
+
+  @override
+  Iterable<Step> build() => [
+        ...const CheckoutBuilder(
+          gitRef: Expression.fake(_gpPagesBranch),
+          path: 'repo',
+          persistCredentials: ExpressionOrValue.value(true),
+        ).build(),
+        const Step.uses(
+          name: 'Download flatpak bundle artifacts',
+          uses: Tools.actionsDownloadArtifact,
+          withArgs: {
+            'pattern': 'flatpak-bundle-*',
+            'path': 'bundles',
+          },
+        ),
+        ...WithGpgKey(
+          gpgKey: gpgKey,
+          gpgKeyId: gpgKeyId,
+          steps: [
+            Step.run(
+              name: 'Import bundles into repository',
+              run: '''
+set -eo pipefail
+for bundle in bundles/*/*.flatpak; do
+  echo "Importing \$bundle..."
+  flatpak build-import-bundle \\
+    --update-appstream \\
+    --gpg-sign='$gpgKeyId' \\
+    repo \\
+    "\$bundle"
+done
+''',
+            ),
+            Step.run(
+              name: 'Generate static deltas',
+              run: 'flatpak build-update-repo '
+                  '--generate-static-deltas '
+                  '--prune '
+                  "--gpg-sign='$gpgKeyId' "
+                  'repo',
+            ),
+          ],
+        ).build(),
+        const Step.uses(
+          name: 'Commit repository updates',
+          uses: Tools.stefanzweifelGitAutoCommitAction,
+          withArgs: {
+            'branch': _gpPagesBranch,
+            'repository': 'repo',
+            'skip_dirty_check': true,
+          },
+        ),
+      ];
+}

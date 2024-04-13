@@ -69,6 +69,21 @@ class Expression with _$Expression {
       );
 }
 
+@freezed
+class ExpressionOrValue with _$ExpressionOrValue {
+  const factory ExpressionOrValue.expression(Expression expression) =
+      _ExpressionOrValueExpression;
+  const factory ExpressionOrValue.value(dynamic value) =
+      _ExpressionOrValueValue;
+
+  const ExpressionOrValue._();
+
+  dynamic get asParameter => when(
+        expression: (expression) => expression.toString(),
+        value: (value) => value,
+      );
+}
+
 class ExpressionConverter implements JsonConverter<Expression?, dynamic> {
   const ExpressionConverter();
 

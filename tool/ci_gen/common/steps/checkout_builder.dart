@@ -7,7 +7,7 @@ import '../tools.dart';
 class CheckoutBuilder implements StepBuilder {
   final Expression? gitRef;
   final String? path;
-  final Expression? persistCredentials;
+  final ExpressionOrValue? persistCredentials;
   final int? fetchDepth;
   final Expression? artifactDependencies;
   final Expression artifactTargetDir;
@@ -27,7 +27,7 @@ class CheckoutBuilder implements StepBuilder {
           name: 'Checkout repository',
           uses: Tools.actionsCheckout,
           withArgs: <String, dynamic>{
-            'persist-credentials': persistCredentials?.toString() ?? false,
+            'persist-credentials': persistCredentials?.asParameter ?? false,
             if (path != null) 'path': path,
             if (gitRef != null) 'ref': gitRef.toString(),
             if (fetchDepth != null) 'fetch-depth': fetchDepth,

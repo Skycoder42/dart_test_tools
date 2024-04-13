@@ -32,7 +32,7 @@ class TagReleaseBuilder implements StepBuilder {
           dartSdkVersion: dartSdkVersion,
         ).build(),
         ...CheckoutBuilder(
-          persistCredentials: persistCredentials,
+          persistCredentials: ExpressionOrValue.expression(persistCredentials),
         ).build(),
         Step.run(
           id: versionStepId,
