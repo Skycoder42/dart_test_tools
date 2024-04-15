@@ -26,6 +26,7 @@ Future<void> main() async {
 
   await _writeNormalOptions(generator, writer);
   await _writePackageOptions(generator, writer);
+  await _writeSelfOptions(generator, writer);
 }
 
 Future<void> _writeNormalOptions(
@@ -78,4 +79,36 @@ Future<void> _writePackageOptions(
     customOptions: packageOptionsRef,
   );
   await writer.saveAnalysisOptions(packageOptionsRef, packageOptions);
+}
+
+Future<void> _writeSelfOptions(
+  RulesGenerator generator,
+  AnalysisOptionsWriter writer,
+) async {
+  const normalOptionsRef = AnalysisOptionsRef.local(
+    'analysis_options.yaml',
+  );
+  stdout.writeln('Generating $normalOptionsRef');
+  final normalOptions = await generator.generateRules(
+    baseOptions: const AnalysisOptionsRef.package(
+      packageName: 'lint',
+      path: 'strict.yaml',
+    ),
+    mergeOptions: const [
+      AnalysisOptionsRef.package(
+        packageName: 'lints',
+        path: 'recommended.yaml',
+      ),
+      AnalysisOptionsRef.package(
+        packageName: 'flutter_lints',
+        path: 'flutter.yaml',
+      ),
+      AnalysisOptionsRef.package(
+        packageName: 'lint',
+        path: 'package.yaml',
+      ),
+    ],
+    customOptions: normalOptionsRef,
+  );
+  await writer.saveAnalysisOptions(normalOptionsRef, normalOptions);
 }
