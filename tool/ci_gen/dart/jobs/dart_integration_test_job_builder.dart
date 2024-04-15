@@ -4,14 +4,15 @@ import '../../common/jobs/sdk_job_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
-import '../steps/dart_integration_test_builder.dart';
 import '../dart_platform.dart';
+import '../steps/dart_integration_test_builder.dart';
 import 'dart_sdk_job_builder_mixin.dart';
 
-final class _DartIntegrationTestMatrix extends PlatformMatrix {
-  const _DartIntegrationTestMatrix() : super(DartPlatform.values);
+final class DartIntegrationTestMatrix extends PlatformMatrix {
+  const DartIntegrationTestMatrix() : super(DartPlatform.values);
 
-  DartTestArgsMatrixProperty get dartTestArgs => DartTestArgsMatrixProperty();
+  DartTestArgsMatrixProperty get dartTestArgs =>
+      const DartTestArgsMatrixProperty();
 
   @override
   List<IMatrixProperty<IPlatformMatrixSelector>> get includeProperties => [
@@ -23,9 +24,9 @@ final class _DartIntegrationTestMatrix extends PlatformMatrix {
 final class DartIntegrationTestJobBuilder extends SdkJobBuilder
     with
         DartSdkJobBuilderMixin,
-        MatrixJobBuilderMixin<_DartIntegrationTestMatrix,
+        MatrixJobBuilderMixin<DartIntegrationTestMatrix,
             IPlatformMatrixSelector>,
-        PlatformJobBuilderMixin<_DartIntegrationTestMatrix> {
+        PlatformJobBuilderMixin<DartIntegrationTestMatrix> {
   final JobIdOutput enabledPlatformsOutput;
   @override
   final Expression dartSdkVersion;
@@ -40,9 +41,9 @@ final class DartIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression integrationTestCacheConfig;
 
   @override
-  final _DartIntegrationTestMatrix matrix;
+  final DartIntegrationTestMatrix matrix;
 
-  const DartIntegrationTestJobBuilder({
+  DartIntegrationTestJobBuilder({
     required this.enabledPlatformsOutput,
     required this.dartSdkVersion,
     required this.workingDirectory,
@@ -54,7 +55,7 @@ final class DartIntegrationTestJobBuilder extends SdkJobBuilder
     required this.integrationTestPaths,
     required this.integrationTestEnvVars,
     required this.integrationTestCacheConfig,
-  }) : matrix = const _DartIntegrationTestMatrix();
+  }) : matrix = const DartIntegrationTestMatrix();
 
   @override
   JobId get id => const JobId('integration_tests');

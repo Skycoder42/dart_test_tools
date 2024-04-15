@@ -5,8 +5,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:meta/meta.dart';
-import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
+import 'package:test/test.dart';
 
 typedef TypeMatcherCb<T> = TypeMatcher<T> Function(TypeMatcher<T> match);
 
@@ -73,7 +73,7 @@ Matcher emitsCustomLint(String lint, List<String> locations) =>
     emitsCustomLints({lint: locations});
 
 Matcher emitsCustomLints(Map<String, List<String>> lints) {
-  var issuesCount = lints.values.fold(0, (p, l) => p + l.length);
+  final issuesCount = lints.values.fold(0, (p, l) => p + l.length);
   return emitsInAnyOrder(
     <dynamic>[
       'Analyzing...',
@@ -82,7 +82,7 @@ Matcher emitsCustomLints(Map<String, List<String>> lints) {
         (e) => e.value.map((location) => customLint(e.key, location)),
       ),
       '',
-      issuesCount == 1 ? '1 issue found.' : '${issuesCount} issues found.',
+      if (issuesCount == 1) '1 issue found.' else '$issuesCount issues found.',
       emitsDone,
     ],
   );
@@ -108,13 +108,16 @@ Future<Directory> _setup() async {
   final dartTestToolsConfig = {
     'path': Directory.current.path,
   };
-  await _runDart([
-    'pub',
-    'add',
-    'meta',
-    'dev:custom_lint',
-    'dev:dart_test_tools:${json.encode(dartTestToolsConfig)}',
-  ], dartDir);
+  await _runDart(
+    [
+      'pub',
+      'add',
+      'meta',
+      'dev:custom_lint',
+      'dev:dart_test_tools:${json.encode(dartTestToolsConfig)}',
+    ],
+    dartDir,
+  );
 
   final analysisOptionsFile = File.fromUri(
     dartDir.uri.resolve('analysis_options.yaml'),

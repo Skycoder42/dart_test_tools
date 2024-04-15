@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 abstract class TestEnv {
   static const defaultPath = '.env';
 
-  static const _vmCode = r'''
+  static const _vmCode = '''
 import 'dart:io';
 
 import 'package:dart_test_tools/src/test/test_env.dart';
@@ -20,7 +20,7 @@ Future<void> hybridMain(StreamChannel channel, Object? message) async {
   TestEnv._();
 
   static Future<Map<String, String>> load([String path = defaultPath]) async {
-    var channel = spawnHybridCode(
+    final channel = spawnHybridCode(
       _vmCode,
       message: path,
     );

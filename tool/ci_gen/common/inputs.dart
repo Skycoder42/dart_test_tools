@@ -298,7 +298,8 @@ Example:
       required: true,
       description:
           'The name (e.g. owner/image) of the image to be built and published. '
-          'The name is combined with generated version tags - See version for details.',
+          'The name is combined with generated version tags - '
+          'See version for details.',
     ),
   );
 

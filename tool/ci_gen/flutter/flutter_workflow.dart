@@ -1,8 +1,8 @@
 import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
 import '../common/api/workflow_output.dart';
-import '../common/jobs/validate_coverage_job_builder.dart';
 import '../common/inputs.dart';
+import '../common/jobs/validate_coverage_job_builder.dart';
 import '../common/outputs.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';

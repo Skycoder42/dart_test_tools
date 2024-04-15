@@ -1,16 +1,17 @@
+// ignore_for_file: implementation_imports
+
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cider/src/cli/channel.dart';
+import 'package:cider/src/cli/command/cider_command.dart';
+import 'package:cider/src/cli/find_project_root.dart';
 import 'package:cider/src/project.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
-import 'package:cider/src/cli/command/cider_command.dart';
-import 'package:cider/src/cli/find_project_root.dart';
-import 'package:cider/src/cli/channel.dart';
-
 class VersionSyncCommand extends CiderCommand {
-  VersionSyncCommand(super.printer);
+  VersionSyncCommand(super.console);
 
   @override
   String get name => 'version-sync';
@@ -23,7 +24,7 @@ class VersionSyncCommand extends CiderCommand {
   @override
   Future<int> exec(Project project) async {
     final rootDir = switch (globalResults!['project-root']) {
-      String path => Directory(path),
+      final String path => Directory(path),
       _ => findProjectRoot(Directory.current)
     };
 

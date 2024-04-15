@@ -74,7 +74,7 @@ Future<void> _writePackageOptions(
       AnalysisOptionsRef.package(
         packageName: 'lint',
         path: 'package.yaml',
-      )
+      ),
     ],
     customOptions: packageOptionsRef,
   );

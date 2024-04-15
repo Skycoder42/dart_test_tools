@@ -27,7 +27,7 @@ sudo apt-get -qq update
 sudo apt-get -qq install lcov dos2unix
 ''',
         ),
-        ...CheckoutBuilder().build(),
+        ...const CheckoutBuilder().build(),
         Step.uses(
           name: 'Download coverage data',
           uses: Tools.actionsDownloadArtifact,

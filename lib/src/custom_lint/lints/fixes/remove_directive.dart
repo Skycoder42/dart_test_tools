@@ -14,13 +14,14 @@ class RemoveDirective extends DartFix {
     List<AnalysisError> others,
   ) {
     context.registry.addNamespaceDirective((node) {
-      final changeBuilder = reporter.createChangeBuilder(
-        message: 'Remove the ${_directiveKind(node)}',
-        priority: 0,
-      );
-      changeBuilder.addDartFileEdit(
-        (builder) => builder.addDeletion(node.sourceRange),
-      );
+      reporter
+          .createChangeBuilder(
+            message: 'Remove the ${_directiveKind(node)}',
+            priority: 0,
+          )
+          .addDartFileEdit(
+            (builder) => builder.addDeletion(node.sourceRange),
+          );
     });
   }
 

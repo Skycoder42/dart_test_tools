@@ -12,7 +12,7 @@ extension ContextRootX on ContextRoot {
 
   Pubspec get pubspec => _pubspecExpando[this] ??= () {
         final pubspecFile = _workspaceRoot.getChildAssumingFile('pubspec.yaml');
-        assert(pubspecFile.exists);
+        assert(pubspecFile.exists, 'pubspec.yaml must exist');
         final pubspecData = pubspecFile.readAsStringSync();
         return Pubspec.parse(pubspecData);
       }();

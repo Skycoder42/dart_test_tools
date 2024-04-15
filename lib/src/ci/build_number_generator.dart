@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:dart_test_tools/src/tools/github.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
+
+import '../tools/github.dart';
 
 class BuildNumberGenerator {
   const BuildNumberGenerator();

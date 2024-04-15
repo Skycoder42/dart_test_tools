@@ -35,7 +35,7 @@ extension HttpClientX on HttpClient {
     if (withSignature) {
       await download(
         targetDir,
-        uri.replace(path: "${uri.path}.minisig"),
+        uri.replace(path: '${uri.path}.minisig'),
         withSignature: false,
       );
     }

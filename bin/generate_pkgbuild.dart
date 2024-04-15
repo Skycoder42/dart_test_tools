@@ -30,7 +30,6 @@ Future<void> main(List<String> rawArgs) async {
       'makedeb',
       abbr: 'd',
       negatable: false,
-      defaultsTo: false,
       help: 'Use makedeb instead of makepkg to generate a debian package '
           'instead of an arch linux package.',
     )

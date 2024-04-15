@@ -3,19 +3,20 @@ import 'package:meta/meta.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
-import '../steps/coverage_collector_builder.dart';
-import '../steps/unit_test_builder.dart';
 import '../api/matrix_job_builder_mixin.dart';
 import '../api/platform_matrix_job_builder_mixin.dart';
+import '../steps/coverage_collector_builder.dart';
+import '../steps/unit_test_builder.dart';
 import 'sdk_job_builder.dart';
 
-final class _UnitTestMatrix extends PlatformMatrix {
-  const _UnitTestMatrix(super.selectors);
+final class UnitTestMatrix extends PlatformMatrix {
+  const UnitTestMatrix(super._selectors);
 
-  DartTestArgsMatrixProperty get dartTestArgs => DartTestArgsMatrixProperty();
+  DartTestArgsMatrixProperty get dartTestArgs =>
+      const DartTestArgsMatrixProperty();
 
   LcovCleanCommandMatrixProperty get lcovCleanCommand =>
-      LcovCleanCommandMatrixProperty();
+      const LcovCleanCommandMatrixProperty();
 
   @override
   List<IMatrixProperty<IPlatformMatrixSelector>> get includeProperties => [
@@ -27,8 +28,8 @@ final class _UnitTestMatrix extends PlatformMatrix {
 
 abstract base class UnitTestJobBuilder extends SdkJobBuilder
     with
-        MatrixJobBuilderMixin<_UnitTestMatrix, IPlatformMatrixSelector>,
-        PlatformJobBuilderMixin<_UnitTestMatrix> {
+        MatrixJobBuilderMixin<UnitTestMatrix, IPlatformMatrixSelector>,
+        PlatformJobBuilderMixin<UnitTestMatrix> {
   final JobIdOutput enabledPlatformsOutput;
   final Expression workingDirectory;
   final Expression artifactDependencies;
@@ -39,7 +40,7 @@ abstract base class UnitTestJobBuilder extends SdkJobBuilder
   final Expression minCoverage;
 
   @override
-  final _UnitTestMatrix matrix;
+  final UnitTestMatrix matrix;
 
   UnitTestJobBuilder({
     required List<IPlatformMatrixSelector> platformSelectors,
@@ -51,7 +52,7 @@ abstract base class UnitTestJobBuilder extends SdkJobBuilder
     required this.removePubspecOverrides,
     required this.unitTestPaths,
     required this.minCoverage,
-  }) : matrix = _UnitTestMatrix(platformSelectors);
+  }) : matrix = UnitTestMatrix(platformSelectors);
 
   @override
   JobId get id => const JobId('unit_tests');

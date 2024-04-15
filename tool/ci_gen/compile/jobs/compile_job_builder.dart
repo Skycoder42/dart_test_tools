@@ -8,8 +8,8 @@ import '../../types/id.dart';
 import '../../types/job.dart';
 import '../steps/compile_builder.dart';
 
-final class _CompileMatrix extends PlatformMatrix {
-  const _CompileMatrix() : super(DartPlatform.values);
+final class CompileMatrix extends PlatformMatrix {
+  const CompileMatrix() : super(DartPlatform.values);
 
   BinaryTypeMatrixProperty get binaryType => const BinaryTypeMatrixProperty();
 
@@ -31,8 +31,8 @@ final class _CompileMatrix extends PlatformMatrix {
 final class CompileJobBuilder extends SdkJobBuilder
     with
         DartSdkJobBuilderMixin,
-        MatrixJobBuilderMixin<_CompileMatrix, IPlatformMatrixSelector>,
-        PlatformJobBuilderMixin<_CompileMatrix> {
+        MatrixJobBuilderMixin<CompileMatrix, IPlatformMatrixSelector>,
+        PlatformJobBuilderMixin<CompileMatrix> {
   @override
   JobId get id => const JobId('compile');
 
@@ -47,7 +47,7 @@ final class CompileJobBuilder extends SdkJobBuilder
   final Expression removePubspecOverrides;
   final Expression archivePrefix;
 
-  const CompileJobBuilder({
+  CompileJobBuilder({
     required this.enabledPlatforms,
     required this.dartSdkVersion,
     required this.workingDirectory,
@@ -56,10 +56,10 @@ final class CompileJobBuilder extends SdkJobBuilder
     required this.buildRunnerArgs,
     required this.removePubspecOverrides,
     required this.archivePrefix,
-  }) : matrix = const _CompileMatrix();
+  }) : matrix = const CompileMatrix();
 
   @override
-  final _CompileMatrix matrix;
+  final CompileMatrix matrix;
 
   @override
   Job buildGeneric(String runsOn) => Job(
@@ -83,7 +83,7 @@ final class CompileJobBuilder extends SdkJobBuilder
             archiveType: matrix.archiveType,
             pubTool: pubTool,
             runTool: runTool,
-          ).build()
+          ).build(),
         ],
       );
 }

@@ -25,12 +25,12 @@ class AurDeployJobBuilder implements JobBuilder {
   Job build() => Job(
         name: 'Deploy to AUR',
         runsOn: 'ubuntu-latest',
-        container: Container(image: 'archlinux:base-devel'),
+        container: const Container(image: 'archlinux:base-devel'),
         steps: [
           ...PrepareArchBuilder(
             dartSdkVersion: dartSdkVersion,
           ).build(),
-          ...CheckoutBuilder(
+          ...const CheckoutBuilder(
             path: 'src',
           ).build(),
           ...CloneAurBuilder(

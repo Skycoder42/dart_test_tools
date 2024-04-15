@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dart_test_tools/src/tools/github.dart';
+import 'github.dart';
 
 abstract base class Minisign {
   static bool _forceDocker = false;

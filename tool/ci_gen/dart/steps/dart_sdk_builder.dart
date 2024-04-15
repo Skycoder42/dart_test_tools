@@ -21,6 +21,6 @@ class DartSdkBuilder implements StepBuilder {
           withArgs: <String, dynamic>{
             'sdk': dartSdkVersion.toString(),
           },
-        )
+        ),
       ];
 }

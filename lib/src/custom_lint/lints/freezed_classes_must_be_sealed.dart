@@ -1,7 +1,7 @@
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/error/listener.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
-import 'package:dart_test_tools/src/custom_lint/lints/fixes/add_sealed_keyword.dart';
+import 'fixes/add_sealed_keyword.dart';
 
 class FreezedClassesMustBeSealed extends DartLintRule {
   static const _code = LintCode(

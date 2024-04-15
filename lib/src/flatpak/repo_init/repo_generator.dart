@@ -1,8 +1,7 @@
 import 'dart:io';
 
-import 'package:dart_test_tools/src/tools/io.dart';
-
 import '../../tools/github.dart';
+import '../../tools/io.dart';
 import 'repo_metadata.dart';
 
 class RepoGenerator {
@@ -46,11 +45,11 @@ class RepoGenerator {
   ) =>
       Github.exec('flatpak', [
         'build-update-repo',
-        if (metadata.title case String title) '--title=$title',
-        if (metadata.summary case String summary) '--comment=$summary',
-        if (metadata.description case String description)
+        if (metadata.title case final String title) '--title=$title',
+        if (metadata.summary case final String summary) '--comment=$summary',
+        if (metadata.description case final String description)
           '--description=$description',
-        if (metadata.homepage case Uri homepage) '--homepage=$homepage',
+        if (metadata.homepage case final Uri homepage) '--homepage=$homepage',
         if (metadata.icon case IconInfo(iconUrl: final iconUrl))
           '--icon=$iconUrl',
         '--gpg-import=${metadata.gpgInfo.publicKeyFile.path}',

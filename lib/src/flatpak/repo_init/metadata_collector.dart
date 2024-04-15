@@ -26,7 +26,7 @@ class MetadataCollector {
       id: 'PLACEHOLDER',
       url: Uri.https(
         '${username.toLowerCase()}.github.io',
-        '/${repository}/',
+        '/$repository/',
       ),
       gpgInfo: GpgInfo(
         keyId: gpgKeyId,

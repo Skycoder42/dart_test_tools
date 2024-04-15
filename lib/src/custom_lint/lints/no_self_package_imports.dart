@@ -1,12 +1,12 @@
 import 'package:analyzer/dart/analysis/context_root.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/error/error.dart';
 import 'package:analyzer/error/listener.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
-import 'package:dart_test_tools/src/custom_lint/lints/fixes/remove_directive.dart';
-import 'package:dart_test_tools/src/custom_lint/lints/context_root_extensions.dart';
 import 'package:meta/meta.dart';
+
+import 'context_root_extensions.dart';
+import 'fixes/remove_directive.dart';
 
 @internal
 class NoSelfPackageImports extends DartLintRule {
@@ -15,7 +15,6 @@ class NoSelfPackageImports extends DartLintRule {
     problemMessage: 'Libraries in lib/src, test or tool should not '
         'import package library files from lib.',
     correctionMessage: 'Import the library from the src folder instead.',
-    errorSeverity: ErrorSeverity.INFO,
   );
 
   const NoSelfPackageImports() : super(code: _code);

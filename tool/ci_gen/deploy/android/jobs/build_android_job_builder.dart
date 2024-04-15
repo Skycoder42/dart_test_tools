@@ -7,8 +7,8 @@ import '../../../types/expression.dart';
 import '../../../types/id.dart';
 import '../../../types/job.dart';
 import '../../../types/runs_on.dart';
-import '../steps/build_android_app_builder.dart';
 import '../../steps/generate_build_number_builder.dart';
+import '../steps/build_android_app_builder.dart';
 
 final class BuildAndroidJobBuilder extends SdkJobBuilder
     with FlutterSdkJobBuilderMixin {
@@ -50,14 +50,16 @@ final class BuildAndroidJobBuilder extends SdkJobBuilder
         name: 'Build android app bundle',
         runsOn: RunsOn.ubuntuLatest.id,
         environment: Environments.googlePlay,
-        ifExpression: EnabledPlatforms.check(enabledPlatforms,
-            Expression.literal(FlutterPlatform.android.platform)),
+        ifExpression: EnabledPlatforms.check(
+          enabledPlatforms,
+          Expression.literal(FlutterPlatform.android.platform),
+        ),
         outputs: {
           buildNumber: GenerateBuildNumberBuilder.buildNumberOutput,
         },
         steps: [
           ...buildSetupSdkSteps(
-            buildPlatform: Expression.fake('android'),
+            buildPlatform: const Expression.fake('android'),
             enforceJdk: true,
           ),
           ...BuildAndroidAppBuilder(

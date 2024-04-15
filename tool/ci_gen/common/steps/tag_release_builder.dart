@@ -1,11 +1,11 @@
-import '../api/step_builder.dart';
-import 'checkout_builder.dart';
-import 'release_entry_builder.dart';
-import '../tools.dart';
 import '../../dart/steps/dart_sdk_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
+import '../api/step_builder.dart';
+import '../tools.dart';
+import 'checkout_builder.dart';
+import 'release_entry_builder.dart';
 
 class TagReleaseBuilder implements StepBuilder {
   static const versionStepId = StepId('version');

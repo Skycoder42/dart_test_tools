@@ -13,12 +13,14 @@ void main() {
       final testFile =
           Directory.systemTemp.subFile('file-that-should-not-exist');
       expect(
-        () => testFile.assertExists(),
-        throwsA(isException.having(
-          (m) => m.toString(),
-          'toString()',
-          contains(testFile.toString()),
-        )),
+        testFile.assertExists,
+        throwsA(
+          isException.having(
+            (m) => m.toString(),
+            'toString()',
+            contains(testFile.toString()),
+          ),
+        ),
       );
     });
   });
@@ -76,14 +78,14 @@ void main() {
 
     group('getHeader', () {
       test('returns header value if present', () async {
-        const headerName = "Test-Header";
-        const headerValue = "test-header-value";
+        const headerName = 'Test-Header';
+        const headerValue = 'test-header-value';
 
         final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
         addTearDown(server.close);
 
         server.listen((request) {
-          request.response.statusCode = request.method == "HEAD"
+          request.response.statusCode = request.method == 'HEAD'
               ? HttpStatus.ok
               : HttpStatus.methodNotAllowed;
           request.response.headers.add(headerName, headerValue);
@@ -101,13 +103,13 @@ void main() {
       });
 
       test('throws if header is not present', () async {
-        const headerName = "Test-Header";
+        const headerName = 'Test-Header';
 
         final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
         addTearDown(server.close);
 
         server.listen((request) {
-          request.response.statusCode = request.method == "HEAD"
+          request.response.statusCode = request.method == 'HEAD'
               ? HttpStatus.ok
               : HttpStatus.methodNotAllowed;
           request.response.close();

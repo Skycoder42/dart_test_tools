@@ -5,14 +5,13 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/error/error.dart';
 import 'package:analyzer/error/listener.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
-import 'package:dart_test_tools/src/custom_lint/lints/context_root_extensions.dart';
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' as path;
 import 'package:synchronized/extension.dart';
 
-import 'package:path/path.dart' as path;
+import 'context_root_extensions.dart';
 
 @internal
 class SrcLibraryNotExported extends DartLintRule {
@@ -24,7 +23,6 @@ class SrcLibraryNotExported extends DartLintRule {
         'is not exported in any of the package library files.',
     correctionMessage: 'Exports the library from the package or '
         'make all top level elements non-public.',
-    errorSeverity: ErrorSeverity.INFO,
   );
 
   static final _sessionExports = Expando<Set<String>>();
@@ -66,7 +64,7 @@ class SrcLibraryNotExported extends DartLintRule {
     }
 
     final exportedLibraries =
-        context.sharedState[_packageExportsKey] as Set<String>;
+        context.sharedState[_packageExportsKey]! as Set<String>;
 
     context.registry.addCompilationUnit((node) {
       final element = node.declaredElement;
@@ -163,7 +161,7 @@ class SrcLibraryNotExported extends DartLintRule {
     await Future.wait([
       for (final source in exportedSources)
         if (exportSet.add(source))
-          _scanForExports(session, contextRoot, exportSet, source)
+          _scanForExports(session, contextRoot, exportSet, source),
     ]);
   }
 

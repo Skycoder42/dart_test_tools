@@ -74,10 +74,10 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
         ),
         Step.run(
           name: 'Download flatpak flutter SDK',
-          run: "curl --fail-with-body -L -o /tmp/flutter.flatpak "
+          run: 'curl --fail-with-body -L -o /tmp/flutter.flatpak '
               "'https://github.com/Skycoder42/dart_test_tools/releases/download/flatpak-flutter-extension%2F$sdkVersion/org.freedesktop.Sdk.Extension.flutter_${sdkVersion}_${arch.expression}.flatpak'",
         ),
-        Step.run(
+        const Step.run(
           name: 'Install flatpak flutter SDK',
           run: 'flatpak install --system -y --noninteractive '
               '/tmp/flutter.flatpak',

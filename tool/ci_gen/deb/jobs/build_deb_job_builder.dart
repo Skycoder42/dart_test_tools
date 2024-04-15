@@ -1,8 +1,8 @@
 import '../../common/api/job_builder.dart';
 import '../../common/steps/checkout_builder.dart';
 import '../../types/expression.dart';
-import '../../types/job.dart';
 import '../../types/id.dart';
+import '../../types/job.dart';
 import '../steps/makedeb_builder.dart';
 import '../steps/prepare_deb_builder.dart';
 
@@ -22,7 +22,7 @@ class BuildDebJobBuilder implements JobBuilder {
         runsOn: 'ubuntu-latest',
         steps: [
           ...const PrepareDebBuilder().build(),
-          ...CheckoutBuilder(
+          ...const CheckoutBuilder(
             path: 'src',
           ).build(),
           ...MakedebBuilder(

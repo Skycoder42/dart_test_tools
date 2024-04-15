@@ -1,7 +1,7 @@
-import '../api/job_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
+import '../api/job_builder.dart';
 import '../contexts.dart';
 import '../steps/tag_release_builder.dart';
 
@@ -25,7 +25,7 @@ class TagReleaseJobBuilder implements JobBuilder {
   });
 
   @override
-  JobId get id => JobId('release');
+  JobId get id => const JobId('release');
 
   JobIdOutput get updateOutput => id.output('update');
 

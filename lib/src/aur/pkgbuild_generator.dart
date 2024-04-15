@@ -1,9 +1,10 @@
 import 'dart:io';
 
-import 'package:dart_test_tools/src/aur/aur_options.dart';
-import 'package:dart_test_tools/src/aur/aur_options_loader.dart';
-import 'package:dart_test_tools/src/aur/pkgbuild.dart';
 import 'package:path/path.dart';
+
+import 'aur_options.dart';
+import 'aur_options_loader.dart';
+import 'pkgbuild.dart';
 
 class PkgBuildGenerator {
   static const _supportedArchs = ['x86_64'];
@@ -31,13 +32,15 @@ class PkgBuildGenerator {
     await aurDirectory.create(recursive: true);
 
     final pkgBuildFile = File.fromUri(aurDirectory.uri.resolve('PKGBUILD'));
-    await pkgBuildFile.writeAsString(_pkgbuildTemplate(
-      options: aurOptions,
-      licenseFileName: _fileName(licenseFile),
-      installFileName: _fileName(installFile),
-      changelogFileName: _fileName(changelogFile),
-      makedebMode: makedebMode,
-    ));
+    await pkgBuildFile.writeAsString(
+      _pkgbuildTemplate(
+        options: aurOptions,
+        licenseFileName: _fileName(licenseFile),
+        installFileName: _fileName(installFile),
+        changelogFileName: _fileName(changelogFile),
+        makedebMode: makedebMode,
+      ),
+    );
     _printFileName(pkgBuildFile);
 
     if (installFile != null) {
@@ -113,10 +116,10 @@ class PkgBuildGenerator {
           // Workaround for https://github.com/makedeb/makedeb/issues/214
           // See https://github.com/makedeb/makedeb/blob/alpha/src/main.sh#L130
           'extensions': PkgProperty.literalList(const ['zipman']),
-        if (options.aurOptions.sourcesDir case String dir)
+        if (options.aurOptions.sourcesDir case final String dir)
           '_pkgdir': PkgProperty.interpolate(dir)
         else
-          '_pkgdir': PkgProperty.interpolate(r'$pkgbase-$pkgver'),
+          '_pkgdir': const PkgProperty.interpolate(r'$pkgbase-$pkgver'),
       },
       functions: {
         'package_$pkgBase': PkgFunction(
@@ -141,21 +144,26 @@ class PkgBuildGenerator {
 
     final repoUri = Uri.parse(
       baseRepoString.endsWith('/') ? baseRepoString : '$baseRepoString/',
-    ).resolveUri(Uri(
-      path: 'archive/refs/tags/$tagPrefix${options.pubspec.version}.tar.gz',
-    ));
+    ).resolveUri(
+      Uri(
+        path: 'archive/refs/tags/$tagPrefix${options.pubspec.version}.tar.gz',
+      ),
+    );
 
     final binariesBaseUri = Uri.parse(
       baseRepoString.endsWith('/') ? baseRepoString : '$baseRepoString/',
     ).resolveUri(
-        Uri(path: 'releases/download/$tagPrefix${options.pubspec.version}/'));
+      Uri(path: 'releases/download/$tagPrefix${options.pubspec.version}/'),
+    );
 
     return PkgProperty.list(multiLine: true, [
       PkgProperty.interpolate('sources.tar.gz::$repoUri'),
       PkgProperty.interpolate(
+        // ignore: lines_longer_than_80_chars
         'bin.tar.xz::${binariesBaseUri.resolve('${options.aurOptions.binariesArchivePrefix}-linux.tar.xz')}',
       ),
       PkgProperty.interpolate(
+        // ignore: lines_longer_than_80_chars
         'debug.tar.xz::${binariesBaseUri.resolve('${options.aurOptions.binariesArchivePrefix}-linux-debug-symbols.tar.xz')}',
       ),
     ]);
@@ -172,6 +180,7 @@ class PkgBuildGenerator {
 
     yield* options.executables.entries.map(
       (entry) =>
+          // ignore: prefer_interpolation_to_compose_strings
           'install -D -m755 ' +
           (options.executables.length > 1
               ? "'bin/${entry.key}' "
@@ -207,6 +216,7 @@ class PkgBuildGenerator {
 
     yield* options.executables.entries.map(
       (entry) =>
+          // ignore: prefer_interpolation_to_compose_strings
           'install -D -m644 ' +
           (options.executables.length > 1
               ? "'debug/${entry.key}.sym' "
@@ -216,6 +226,6 @@ class PkgBuildGenerator {
 
     yield r'cd "$_pkgdir"';
     yield 'find . -exec '
-        'install -D -m644 "{}" "\$pkgdir/usr/src/debug/\$pkgbase/{}" \\;';
+        r'install -D -m644 "{}" "$pkgdir/usr/src/debug/$pkgbase/{}" \;';
   }
 }

@@ -24,8 +24,8 @@ final class DesktopMatrixProperty extends IMatrixProperty<FlutterPlatform> {
       };
 }
 
-final class _FlutterIntegrationTestMatrix extends PlatformMatrix {
-  const _FlutterIntegrationTestMatrix() : super(FlutterPlatform.values);
+final class FlutterIntegrationTestMatrix extends PlatformMatrix {
+  const FlutterIntegrationTestMatrix() : super(FlutterPlatform.values);
 
   TestArgsMatrixProperty get testArgs => const TestArgsMatrixProperty();
 
@@ -45,9 +45,9 @@ final class _FlutterIntegrationTestMatrix extends PlatformMatrix {
 final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     with
         FlutterSdkJobBuilderMixin,
-        MatrixJobBuilderMixin<_FlutterIntegrationTestMatrix,
+        MatrixJobBuilderMixin<FlutterIntegrationTestMatrix,
             IPlatformMatrixSelector>,
-        PlatformJobBuilderMixin<_FlutterIntegrationTestMatrix> {
+        PlatformJobBuilderMixin<FlutterIntegrationTestMatrix> {
   final JobIdOutput enabledPlatformsOutput;
   @override
   final Expression flutterSdkChannel;
@@ -65,7 +65,7 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression androidAVDImage;
   final Expression androidAVDDevice;
 
-  const FlutterIntegrationTestJobBuilder({
+  FlutterIntegrationTestJobBuilder({
     required this.enabledPlatformsOutput,
     required this.flutterSdkChannel,
     required this.javaJdkVersion,
@@ -80,7 +80,7 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     required this.integrationTestCacheConfig,
     required this.androidAVDImage,
     required this.androidAVDDevice,
-  }) : matrix = const _FlutterIntegrationTestMatrix();
+  }) : matrix = const FlutterIntegrationTestMatrix();
 
   @override
   JobId get id => const JobId('integration_tests');
@@ -89,7 +89,7 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   Expression get enabledPlatforms => enabledPlatformsOutput.expression;
 
   @override
-  final _FlutterIntegrationTestMatrix matrix;
+  final FlutterIntegrationTestMatrix matrix;
 
   @override
   Job buildGeneric(String runsOn) => Job(

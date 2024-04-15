@@ -31,48 +31,64 @@ class ExportXmlChangelog {
   }
 
   void _buildReleases(XmlBuilder builder, Changelog changelog) {
-    builder.element('releases', nest: () {
-      for (final release in changelog.history().toList().reversed) {
-        _buildRelease(builder, release);
-      }
-    });
+    builder.element(
+      'releases',
+      nest: () {
+        for (final release in changelog.history().toList().reversed) {
+          _buildRelease(builder, release);
+        }
+      },
+    );
   }
 
   void _buildRelease(XmlBuilder builder, Release release) {
-    builder.element('release', nest: () {
-      builder
-        ..attribute('version', release.version)
-        ..attribute('date', release.date.toIso8601String().substring(0, 10))
-        ..attribute(
-          'type',
-          release.version.isPreRelease ? 'development' : 'stable',
-        )
-        ..element(
-          'description',
-          nest: () => _buildDescription(builder, release.changes()),
-        );
+    builder.element(
+      'release',
+      nest: () {
+        builder
+          ..attribute('version', release.version)
+          ..attribute('date', release.date.toIso8601String().substring(0, 10))
+          ..attribute(
+            'type',
+            release.version.isPreRelease ? 'development' : 'stable',
+          )
+          ..element(
+            'description',
+            nest: () => _buildDescription(builder, release.changes()),
+          );
 
-      if (release.link.isNotEmpty) {
-        builder.element('url', nest: () {
-          builder.text(release.link);
-        });
-      }
-    });
+        if (release.link.isNotEmpty) {
+          builder.element(
+            'url',
+            nest: () {
+              builder.text(release.link);
+            },
+          );
+        }
+      },
+    );
   }
 
   void _buildDescription(XmlBuilder builder, Iterable<Change> allChanges) {
-    var changeMap = allChanges.groupListsBy((element) => element.type);
+    final changeMap = allChanges.groupListsBy((element) => element.type);
     for (final MapEntry(key: type, value: changes) in changeMap.entries) {
       builder
-        ..element('h3', nest: () {
-          builder.text(type);
-        })
-        ..element('ul', nest: () {
-          for (final change in changes) {
-            final visitor = _DescriptionVisitor()..visitAll(change.description);
-            builder.xml(visitor.toXml());
-          }
-        });
+        ..element(
+          'h3',
+          nest: () {
+            builder.text(type);
+          },
+        )
+        ..element(
+          'ul',
+          nest: () {
+            for (final change in changes) {
+              final visitor = _DescriptionVisitor()
+                ..visitAll(change.description);
+              builder.xml(visitor.toXml());
+            }
+          },
+        );
     }
   }
 }

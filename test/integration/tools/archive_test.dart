@@ -9,7 +9,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('$Archive', () {
-    void _testArchive(String suffix, {String? testOn}) {
+    void testArchive(String suffix, {String? testOn}) {
       test(
         'can create and extract $suffix archives',
         testOn: testOn,
@@ -33,8 +33,8 @@ void main() {
       );
     }
 
-    _testArchive('tar.xz', testOn: 'posix');
+    testArchive('tar.xz', testOn: 'posix');
 
-    _testArchive('zip');
+    testArchive('zip');
   });
 }

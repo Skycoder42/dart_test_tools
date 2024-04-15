@@ -19,12 +19,14 @@ dependencies:
   change: ^0.7.3
   checked_yaml: ^2.0.3
   cider: ^0.2.7
+  collection: ^1.18.0
   custom_lint_builder: ^0.6.4
   dotenv: ^4.2.0
   freezed_annotation: ^2.4.1
   json_annotation: ^4.8.1
   lint: ^2.3.0
   logging: ^1.2.0
+  markdown: ^7.2.2
   meta: ^1.11.0
   mocktail: ^1.0.3
   path: ^1.9.0

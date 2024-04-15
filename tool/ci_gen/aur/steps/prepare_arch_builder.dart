@@ -21,7 +21,7 @@ class PrepareArchBuilder implements StepBuilder {
         ...DartSdkBuilder(
           dartSdkVersion: dartSdkVersion,
         ).build(),
-        ...InstallDartTestToolsBuilder().build(),
+        ...const InstallDartTestToolsBuilder().build(),
         const Step.run(
           name: 'Create build user',
           run: '''

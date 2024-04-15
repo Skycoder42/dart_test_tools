@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dart_test_tools/src/tools/github.dart';
+import 'github.dart';
 
 abstract base class Archive {
   static final _tarFileRegexp = RegExp(r'.*\.tar(?:\.\w+)?$');

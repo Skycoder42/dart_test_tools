@@ -37,11 +37,12 @@ class DeployLinuxJobBuilder implements JobBuilder {
               'bilelmoussaoui/flatpak-github-actions:freedesktop-$sdkVersion',
           options: '--privileged',
         ),
-        ifExpression: releaseCreated.expression.eq(Expression.literal('true')) &
-            EnabledPlatforms.check(
-              enabledPlatforms,
-              Expression.literal(FlutterPlatform.linux.platform),
-            ),
+        ifExpression:
+            releaseCreated.expression.eq(const Expression.literal('true')) &
+                EnabledPlatforms.check(
+                  enabledPlatforms,
+                  Expression.literal(FlutterPlatform.linux.platform),
+                ),
         environment: Environments.flatpak,
         permissions: const {
           'contents': 'write',

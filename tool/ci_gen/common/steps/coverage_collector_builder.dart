@@ -1,9 +1,9 @@
 import '../../types/expression.dart';
 import '../../types/runs_on.dart';
 import '../../types/step.dart';
-import '../api/step_builder.dart';
 import '../api/matrix_job_builder_mixin.dart';
 import '../api/platform_matrix_job_builder_mixin.dart';
+import '../api/step_builder.dart';
 import '../tools.dart';
 import 'coverage_builder_mixin.dart';
 

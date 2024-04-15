@@ -71,9 +71,9 @@ abstract base class EnabledPlatforms {
   EnabledPlatforms._();
 
   static Expression check(Expression enabledPlatforms, Expression platform) =>
-      (enabledPlatforms.eq(Expression.literal('[]')) |
-              Expression('contains')([
-                Expression('fromJSON')([enabledPlatforms]),
+      (enabledPlatforms.eq(const Expression.literal('[]')) |
+              const Expression('contains')([
+                const Expression('fromJSON')([enabledPlatforms]),
                 platform,
               ]))
           .parenthesized;

@@ -60,7 +60,7 @@ class RepoFileGenerator {
         'Branch': metadata.branch,
         'RuntimeRepo': 'https://dl.flathub.org/repo/flathub.flatpakrepo',
         'IsRuntime': 'false',
-        'Title': '${metadata.title ?? metadata.name}',
+        'Title': metadata.title ?? metadata.name,
         ..._createCommonInfo(metadata, gpgKey),
       };
 
@@ -69,10 +69,10 @@ class RepoFileGenerator {
     String gpgKey,
   ) =>
       {
-        if (metadata.homepage case Uri homepage)
+        if (metadata.homepage case final Uri homepage)
           'Homepage': homepage.toString(),
-        if (metadata.summary case String summary) 'Comment': summary,
-        if (metadata.description case String description)
+        if (metadata.summary case final String summary) 'Comment': summary,
+        if (metadata.description case final String description)
           'Description': description.replaceAll(_whitespaceRegex, ' ').trim(),
         if (metadata.icon case IconInfo(iconUrl: final iconUrl))
           'Icon': iconUrl.toString(),

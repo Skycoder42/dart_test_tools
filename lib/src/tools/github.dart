@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart_test_tools/dart_test_tools.dart';
+import '../../dart_test_tools.dart';
 
 class _GithubEnv {
   const _GithubEnv();
@@ -34,7 +34,7 @@ class _GithubEnv {
     final outputFile = File(outputFilePath);
     if (multiline) {
       await outputFile.writeAsString(
-        '$name<<EOF\n${value}\nEOF\n',
+        '$name<<EOF\n$value\nEOF\n',
         mode: FileMode.append,
       );
     } else {
@@ -139,10 +139,12 @@ abstract base class Github {
 
     process.stderr
         .transform(utf8.decoder)
-        .transform(LineSplitter())
+        .transform(const LineSplitter())
         .listen(onStderr);
 
-    yield* process.stdout.transform(utf8.decoder).transform(LineSplitter());
+    yield* process.stdout
+        .transform(utf8.decoder)
+        .transform(const LineSplitter());
 
     final exitCode = await process.exitCode;
     if (expectedExitCode != null && exitCode != expectedExitCode) {

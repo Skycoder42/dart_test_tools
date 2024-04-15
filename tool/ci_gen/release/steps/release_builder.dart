@@ -28,7 +28,7 @@ class ReleaseBuilder implements StepBuilder {
         ...DartSdkBuilder(
           dartSdkVersion: dartSdkVersion,
         ).build(),
-        ...CheckoutBuilder().build(),
+        ...const CheckoutBuilder().build(),
         Step.run(
           id: versionStepId,
           name: 'Check if package should be published',

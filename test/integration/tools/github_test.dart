@@ -1,3 +1,5 @@
+// ignore_for_file: discarded_futures
+
 @TestOn('dart-vm')
 library github_test;
 
@@ -23,8 +25,8 @@ void main() {
 
       group('setOutput', () {
         test('sets single line output var', () async {
-          var testName = 'testName';
-          var testValue = 'testValue';
+          const testName = 'testName';
+          const testValue = 'testValue';
 
           await Github.env.setOutput(testName, testValue);
 
@@ -34,8 +36,8 @@ void main() {
         });
 
         test('sets multi line output var', () async {
-          var testName = 'testName';
-          var testValue = 'test\nValue';
+          const testName = 'testName';
+          const testValue = 'test\nValue';
 
           await Github.env.setOutput(testName, testValue, multiline: true);
 
@@ -49,8 +51,8 @@ void main() {
         });
 
         test('sets single line env var', () async {
-          var testName = 'testName';
-          var testValue = 'testValue';
+          const testName = 'testName';
+          const testValue = 'testValue';
 
           await Github.env.setOutput(testName, testValue, asEnv: true);
 
@@ -92,7 +94,7 @@ void main() {
           () => Github.logGroupAsync(
             'test-title',
             () => Future.delayed(
-              Duration(seconds: 1),
+              const Duration(seconds: 1),
               () => print('test-message'),
             ),
           ),
@@ -135,11 +137,13 @@ void main() {
       test('throws on failure', () {
         expect(
           Github.exec('bash', const ['-c', 'exit 42']),
-          throwsA(isException.having(
-            (m) => m.toString(),
-            'toString()',
-            contains('42'),
-          )),
+          throwsA(
+            isException.having(
+              (m) => m.toString(),
+              'toString()',
+              contains('42'),
+            ),
+          ),
         );
       });
 
@@ -194,11 +198,13 @@ void main() {
         expect(
           Github.execLines('bash', const ['-c', 'exit 42']),
           emitsInOrder([
-            emitsError(isException.having(
-              (m) => m.toString(),
-              'toString()',
-              contains('42'),
-            )),
+            emitsError(
+              isException.having(
+                (m) => m.toString(),
+                'toString()',
+                contains('42'),
+              ),
+            ),
             emitsDone,
           ]),
         );
@@ -221,7 +227,7 @@ void main() {
             'bash',
             const [
               '-c',
-              'echo "Hello world"; echo ""; echo -n test; echo test'
+              'echo "Hello world"; echo ""; echo -n test; echo test',
             ],
             expectedExitCode: null,
           ),

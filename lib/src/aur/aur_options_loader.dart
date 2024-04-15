@@ -1,10 +1,11 @@
 import 'dart:io';
 
 import 'package:checked_yaml/checked_yaml.dart';
-import 'package:dart_test_tools/src/aur/aur_options.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
+
+import 'aur_options.dart';
 
 @internal
 class AurOptionsLoader {

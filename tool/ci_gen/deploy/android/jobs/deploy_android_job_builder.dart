@@ -49,9 +49,12 @@ final class DeployAndroidJobBuilder extends SdkJobBuilder
           buildNumber.jobId,
         },
         environment: Environments.googlePlay,
-        ifExpression: releaseCreated.expression.eq(Expression.literal('true')) &
-            EnabledPlatforms.check(enabledPlatforms,
-                Expression.literal(FlutterPlatform.android.platform)),
+        ifExpression:
+            releaseCreated.expression.eq(const Expression.literal('true')) &
+                EnabledPlatforms.check(
+                  enabledPlatforms,
+                  Expression.literal(FlutterPlatform.android.platform),
+                ),
         steps: [
           ...buildSetupSdkSteps(),
           ...DeployAndroidAppBuilder(

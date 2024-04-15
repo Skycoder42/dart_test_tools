@@ -42,7 +42,7 @@ class PackageBuilder implements StepBuilder {
         Step.run(
           id: _getPackageNameStepId,
           name: 'Get package name for artifact upload',
-          run: '${_packageNameOutput.bashSetter(r'$(yq .name pubspec.yaml)')}',
+          run: _packageNameOutput.bashSetter(r'$(yq .name pubspec.yaml)'),
           workingDirectory: workingDirectory.toString(),
         ),
         Step.uses(

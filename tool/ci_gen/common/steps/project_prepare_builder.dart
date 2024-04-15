@@ -49,7 +49,7 @@ class ProjectPrepareBuilder implements StepBuilder {
             run: '''
 set -eo pipefail
 touch pubspec_overrides.yaml
-for package in ${artifactDependencies}; do
+for package in $artifactDependencies; do
   yq -i ".dependency_overrides.\$package.path=\\"${Runner.temp}/.artifacts/package-\$package\\"" pubspec_overrides.yaml
 done
 ''',

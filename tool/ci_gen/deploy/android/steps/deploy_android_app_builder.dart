@@ -48,10 +48,10 @@ class DeployAndroidAppBuilder implements StepBuilder {
         Step.run(
           id: detectPackageNameStepId,
           name: 'Detect android package name',
-          run: '${packageNameOutput.bashSetter(
+          run: packageNameOutput.bashSetter(
             'cat android/app/build.gradle | grep \'applicationId "\' | cut -d \'"\' -f2',
             isCommand: true,
-          )}',
+          ),
           workingDirectory: workingDirectory.toString(),
           shell: 'bash',
         ),

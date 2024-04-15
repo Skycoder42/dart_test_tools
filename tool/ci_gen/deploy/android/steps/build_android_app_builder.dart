@@ -35,7 +35,7 @@ class BuildAndroidAppBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        ...InstallDartTestToolsBuilder().build(),
+        ...const InstallDartTestToolsBuilder().build(),
         ...ProjectSetupBuilder(
           workingDirectory: workingDirectory,
           buildRunner: buildRunner,
@@ -92,7 +92,7 @@ rm -rf "${Runner.temp}/app.keystore"
           workingDirectory: workingDirectory.toString(),
           shell: 'bash',
         ),
-        Step.uses(
+        const Step.uses(
           name: 'Upload app bundle and debug info',
           uses: Tools.actionsUploadArtifact,
           withArgs: {

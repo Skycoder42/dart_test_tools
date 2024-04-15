@@ -27,7 +27,7 @@ abstract base class AnalyzeJobBuilder extends SdkJobBuilder {
   });
 
   @override
-  JobId get id => JobId('analyze');
+  JobId get id => const JobId('analyze');
 
   JobIdOutput get platformsOutput => id.output('platforms');
 

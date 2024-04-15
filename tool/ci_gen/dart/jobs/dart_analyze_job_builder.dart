@@ -25,6 +25,6 @@ final class DartAnalyzeJobBuilder extends AnalyzeJobBuilder
           name: 'Static analysis',
           run: 'dart analyze --fatal-infos',
           workingDirectory: workingDirectory.toString(),
-        )
+        ),
       ];
 }

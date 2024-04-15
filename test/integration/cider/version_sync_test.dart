@@ -4,13 +4,12 @@ library version_sync_test;
 import 'dart:io';
 
 import 'package:cider/cider.dart';
+import 'package:cider/src/cli/channel.dart';
 // ignore: test_library_import
 import 'package:dart_test_tools/cider.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 import 'package:yaml_edit/yaml_edit.dart';
-
-import 'package:cider/src/cli/channel.dart';
 
 class MockChannel extends Mock implements Channel {}
 
@@ -184,7 +183,7 @@ Future<void> _createTestProject(Directory pwd, String version) async {
       'web',
       '--template',
       'plugin',
-      '.'
+      '.',
     ],
     workingDirectory: pwd.path,
   );
@@ -201,14 +200,14 @@ const name = 'version_sync_test';
   final pubspecEditor = YamlEditor(await pubspecFile.readAsString())
     ..update(const ['version'], version)
     ..update(const [
-      'cider'
+      'cider',
     ], {
       'version_sync': const {
         'lib/src/version.dart': {
           'pattern': r"^const version = '.*';$",
           'replacement': "const version = '%{version}';",
         },
-      }
+      },
     });
 
   await pubspecFile.writeAsString(pubspecEditor.toString(), flush: true);

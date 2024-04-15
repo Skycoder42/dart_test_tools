@@ -37,7 +37,7 @@ abstract base class Matrix<TMatrixSelector extends IMatrixSelector> {
       final include = {
         selectorProperty.name: selectorProperty.valueFor(selector),
         for (final property in includeProperties)
-          if (property.valueFor(selector) case Object value)
+          if (property.valueFor(selector) case final Object value)
             property.name: value,
       };
 

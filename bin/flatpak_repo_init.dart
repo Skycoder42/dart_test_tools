@@ -60,7 +60,7 @@ Future<void> main(List<String> args) async {
     }
 
     const repoInit = RepoInit();
-    var iconPath = options['icon'] as String?;
+    final iconPath = options['icon'] as String?;
     await repoInit(
       repo: Directory(options['repo'] as String),
       metaInfo: File(options['metainfo'] as String),

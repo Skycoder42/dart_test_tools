@@ -8,8 +8,8 @@ import '../../../types/job.dart';
 import '../../../types/runs_on.dart';
 import '../steps/build_flatpak_bundle_builder.dart';
 
-final class _FlatpakMatrix extends Matrix<FlatpakArchMatrixSelector> {
-  const _FlatpakMatrix() : super(FlatpakArchMatrixSelector.values);
+final class FlatpakMatrix extends Matrix<FlatpakArchMatrixSelector> {
+  const FlatpakMatrix() : super(FlatpakArchMatrixSelector.values);
 
   ArchMatrixProperty get arch => const ArchMatrixProperty();
 
@@ -24,7 +24,7 @@ final class _FlatpakMatrix extends Matrix<FlatpakArchMatrixSelector> {
 }
 
 final class BuildLinuxJobBuilder
-    with MatrixJobBuilderMixin<_FlatpakMatrix, FlatpakArchMatrixSelector>
+    with MatrixJobBuilderMixin<FlatpakMatrix, FlatpakArchMatrixSelector>
     implements JobBuilder {
   final Expression sdkVersion;
   final Expression bundleName;
@@ -34,7 +34,7 @@ final class BuildLinuxJobBuilder
   final Expression gpgKeyId;
   final Expression gpgKey;
 
-  const BuildLinuxJobBuilder({
+  BuildLinuxJobBuilder({
     required this.sdkVersion,
     required this.bundleName,
     required this.workingDirectory,
@@ -42,13 +42,13 @@ final class BuildLinuxJobBuilder
     required this.manifestPath,
     required this.gpgKeyId,
     required this.gpgKey,
-  }) : matrix = const _FlatpakMatrix();
+  }) : matrix = const FlatpakMatrix();
 
   @override
   JobId get id => const JobId('build_linux');
 
   @override
-  final _FlatpakMatrix matrix;
+  final FlatpakMatrix matrix;
 
   @override
   Expression get matrixRunsOn => Expression.fake(RunsOn.ubuntuLatest.id);

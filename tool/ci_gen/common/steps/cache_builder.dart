@@ -34,11 +34,11 @@ class CacheBuilder implements StepBuilder {
               'key',
               'path',
               'restore-keys',
-              'upload-chunk-size'
+              'upload-chunk-size',
             ])
               key: _cacheConfig(key),
           },
-        )
+        ),
       ];
 
   String _cacheConfig(String key) {

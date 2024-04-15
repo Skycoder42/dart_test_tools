@@ -50,7 +50,7 @@ void main() {
   });
 }
 
-const _testChangelogMdFull = r'''
+const _testChangelogMdFull = '''
 # Changelog
 This is the preamble. It is ignored.
 
@@ -89,7 +89,7 @@ This is the preamble. It is ignored.
 [1.2.0-dev]: https://example.com/dev-release
 ''';
 
-const _testChangelogMdMinimal = r'''
+const _testChangelogMdMinimal = '''
 # Changelog
 This is the preamble. It is ignored.
 
@@ -98,7 +98,7 @@ This is the preamble. It is ignored.
 - added
 ''';
 
-const _testChangelogXml = r'''
+const _testChangelogXml = '''
 <?xml version="1.0" encoding="UTF-8"?>
 <releases>
   <release version="1.2.3" date="2024-10-10" type="stable">
@@ -180,7 +180,7 @@ const _testChangelogXml = r'''
   </release>
 </releases>''';
 
-const _testMetainfoXml = r'''
+const _testMetainfoXml = '''
 <?xml version="1.0" encoding="UTF-8"?>
 <component>
   <id>test-id</id>

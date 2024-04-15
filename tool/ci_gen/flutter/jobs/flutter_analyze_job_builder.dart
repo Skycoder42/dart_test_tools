@@ -28,6 +28,6 @@ final class FlutterAnalyzeJobBuilder extends AnalyzeJobBuilder
           name: 'Static analysis',
           run: 'flutter analyze',
           workingDirectory: workingDirectory.toString(),
-        )
+        ),
       ];
 }

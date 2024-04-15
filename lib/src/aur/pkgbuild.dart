@@ -5,30 +5,26 @@ part 'pkgbuild.freezed.dart';
 @internal
 @freezed
 class Pkgbuild with _$Pkgbuild {
-  const Pkgbuild._();
-
   const factory Pkgbuild({
     required String maintainer,
     required Map<String, PkgProperty> properties,
     required Map<String, PkgFunction> functions,
   }) = _Pkgbuild;
+  const Pkgbuild._();
 
-  String encode() {
-    return '''
+  String encode() => '''
 # Maintainer: $maintainer
 ${properties.encode()}
 
 ${functions.encode()}
 ''';
-  }
 }
 
 @internal
 @freezed
 class PkgProperty with _$PkgProperty {
-  const PkgProperty._();
-
   const factory PkgProperty(Object? value) = _Single;
+  const PkgProperty._();
   const factory PkgProperty.interpolate(String value) = _Interpolate;
   const factory PkgProperty.list(
     List<PkgProperty> values, {
@@ -63,9 +59,9 @@ class PkgProperty with _$PkgProperty {
           }
         },
         interpolate: (value) => '"$value"',
-        list: (values, skipEmpty, multiline) => multiline
-            ? '(${values.map((v) => v.encode()).join('\n' + ' ' * (width + 1))})'
-            : '(${values.map((v) => v.encode()).join(' ')})',
+        list: (vs, skipEmpty, multiline) => multiline
+            ? '(${vs.map((v) => v.encode()).join('\n${' ' * (width + 1)}')})'
+            : '(${vs.map((v) => v.encode()).join(' ')})',
       );
 }
 
@@ -84,17 +80,14 @@ extension PkgPropertyMapX on Map<String, PkgProperty> {
 @internal
 @freezed
 class PkgFunction with _$PkgFunction {
+  const factory PkgFunction(List<String> commands) = _PkgFunction;
   const PkgFunction._();
 
-  const factory PkgFunction(List<String> commands) = _PkgFunction;
-
-  String encode(String name) {
-    return '''
+  String encode(String name) => '''
 $name() {
 ${commands.map((c) => '  $c').join('\n')}
 }
 ''';
-  }
 }
 
 @internal

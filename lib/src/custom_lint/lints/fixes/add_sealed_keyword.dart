@@ -1,6 +1,6 @@
 import 'package:analyzer/error/error.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
-import 'package:dart_test_tools/src/custom_lint/lints/freezed_classes_must_be_sealed.dart';
+import '../freezed_classes_must_be_sealed.dart';
 
 class FreezedClassesMustBeSealedFix extends DartFix {
   FreezedClassesMustBeSealedFix();
@@ -15,12 +15,12 @@ class FreezedClassesMustBeSealedFix extends DartFix {
   ) {
     context.registry.addClassDeclaration((node) {
       if (node.isUnsealedFreezed) {
-        final builder = reporter.createChangeBuilder(
+        reporter
+            .createChangeBuilder(
           message: 'Add sealed keyword to class definition.',
           priority: 0,
-        );
-
-        builder.addDartFileEdit((builder) {
+        )
+            .addDartFileEdit((builder) {
           builder.addInsertion(node.classKeyword.offset, (builder) {
             builder.write('sealed ');
           });
