@@ -1,3 +1,6 @@
+@TestOn('dart-vm')
+library freezed_classes_must_be_sealed_test;
+
 import 'package:test/test.dart';
 
 import 'custom_lint_test_helper.dart';

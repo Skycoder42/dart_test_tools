@@ -1,3 +1,6 @@
+@TestOn('dart-vm')
+library export_xml_changelog_test;
+
 import 'dart:io';
 
 import 'package:dart_test_tools/src/flatpak/export_xml_changelog/export_xml_changelog.dart';

@@ -1,3 +1,6 @@
+@TestOn('dart-vm')
+library build_number_generator_test;
+
 import 'dart:io';
 
 import 'package:dart_test_tools/src/ci/build_number_generator.dart';
