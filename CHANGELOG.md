@@ -4,9 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [5.9.0] - 2024-04-15
 ### Added
-- Add flatpak_repo_init tool to create or update a flatpak repository with metadata
+- Added `flatpak-repo-init` tool to create or update a flatpak repository with metadata
+- Added `export-xml-changelog` tool to convert the CHANGELOG.md into Release Information XML
+- Added new custom\_lint rule `freezed_classes_must_be_sealed` that ensures freezed classes are always marked as `sealed`
+
+### Changed
+- Renamed binary tools to use `-` instead of `_`
+  - `generate-build-number`
+  - `generate-pkgbuild`
+- Added `--env` parameter to `generate-build-number` to allow setting an environment variable instead of a an output
+variable
 
 ## [5.8.1] - 2024-04-02
 ### Fixed
@@ -278,7 +287,7 @@ have been added:
 
 ## [2.0.0] - 2022-01-21
 ### Added
-- analysis\_options.yaml and analysis\_options\_package.yaml for stricter defaults based on lint\](https://pub.dev/packages/lint)
+- analysis\_options.yaml and analysis\_options\_package.yaml for stricter defaults based on [lint](https://pub.dev/packages/lint)
 - import analyser for library imports in tests
 
 ### Changed
@@ -292,7 +301,7 @@ have been added:
 ### Added
 - Initial release
 
-[Unreleased]: https://github.com/Skycoder42/dart_test_tools/compare/v5.8.1...vHEAD
+[5.9.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.8.1...v5.9.0
 [5.8.1]: https://github.com/Skycoder42/dart_test_tools/compare/v5.8.0...v5.8.1
 [5.8.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.7.0...v5.8.0
 [5.7.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.6.2...v5.7.0

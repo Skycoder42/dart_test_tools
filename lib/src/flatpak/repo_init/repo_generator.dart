@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:dart_test_tools/src/tools/io.dart';
 
-import '../tools/github.dart';
+import '../../tools/github.dart';
 import 'repo_metadata.dart';
 
 class RepoGenerator {

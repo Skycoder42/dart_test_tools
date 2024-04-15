@@ -18,7 +18,7 @@ class VersionSyncCommand extends CiderCommand {
   @override
   String get description =>
       'Updates the native package versions of flutter plugins '
-      'to match the pubspec.yaml version';
+      'to match the pubspec.yaml version.';
 
   @override
   Future<int> exec(Project project) async {

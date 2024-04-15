@@ -23,20 +23,22 @@ class _GithubEnv {
     String name,
     Object? value, {
     bool multiline = false,
+    bool asEnv = false,
   }) async {
-    final githubOutput = Platform.environment['GITHUB_OUTPUT'];
-    if (githubOutput == null) {
-      throw Exception('Cannot set output! GITHUB_OUTPUT env var is not set');
+    final outKey = asEnv ? 'GITHUB_ENV' : 'GITHUB_OUTPUT';
+    final outputFilePath = Platform.environment[outKey];
+    if (outputFilePath == null) {
+      throw Exception('Cannot set output! $outKey env var is not set');
     }
 
-    final githubOutputFile = File(githubOutput);
+    final outputFile = File(outputFilePath);
     if (multiline) {
-      await githubOutputFile.writeAsString(
+      await outputFile.writeAsString(
         '$name<<EOF\n${value}\nEOF\n',
         mode: FileMode.append,
       );
     } else {
-      await githubOutputFile.writeAsString(
+      await outputFile.writeAsString(
         '$name=$value\n',
         mode: FileMode.append,
       );

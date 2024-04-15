@@ -4,8 +4,8 @@ import 'package:path/path.dart' as path;
 import 'package:xml/xml.dart';
 import 'package:xml/xpath.dart';
 
-import '../tools/github.dart';
-import '../tools/io.dart';
+import '../../tools/github.dart';
+import '../../tools/io.dart';
 import 'repo_metadata.dart';
 
 class MetadataCollector {

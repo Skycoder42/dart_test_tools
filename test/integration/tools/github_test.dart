@@ -22,7 +22,7 @@ void main() {
       });
 
       group('setOutput', () {
-        test('sets single line env var', () async {
+        test('sets single line output var', () async {
           var testName = 'testName';
           var testValue = 'testValue';
 
@@ -33,7 +33,7 @@ void main() {
           expect(lines.last, '$testName=$testValue');
         });
 
-        test('sets multi line env var', () async {
+        test('sets multi line output var', () async {
           var testName = 'testName';
           var testValue = 'test\nValue';
 
@@ -46,6 +46,17 @@ void main() {
             ...testValue.split('\n'),
             'EOF',
           ]);
+        });
+
+        test('sets single line env var', () async {
+          var testName = 'testName';
+          var testValue = 'testValue';
+
+          await Github.env.setOutput(testName, testValue, asEnv: true);
+
+          final lines =
+              await File(Platform.environment['GITHUB_ENV']!).readAsLines();
+          expect(lines.last, '$testName=$testValue');
         });
       });
     });

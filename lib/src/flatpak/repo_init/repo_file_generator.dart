@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 
-import '../tools/io.dart';
+import '../../tools/io.dart';
 import 'repo_metadata.dart';
 
 class RepoFileGenerator {

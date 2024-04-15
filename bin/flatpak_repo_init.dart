@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:dart_test_tools/src/flatpak/repo_init.dart';
+import 'package:dart_test_tools/src/flatpak/repo_init/repo_init.dart';
 
 Future<void> main(List<String> args) async {
   final parser = ArgParser(
