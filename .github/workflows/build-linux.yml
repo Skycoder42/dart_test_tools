@@ -73,10 +73,6 @@ jobs:
         uses: docker/setup-qemu-action@v3
         with:
           platforms: ${{ matrix.qemuArch }}
-      - name: Print disk usage
-        if: always()
-        continue-on-error: true
-        run: df
       - name: Download flatpak flutter SDK
         run: curl --fail-with-body -L -o /tmp/flutter.flatpak 'https://github.com/Skycoder42/dart_test_tools/releases/download/flatpak-flutter-extension%2F${{ inputs.flatpakSdkVersion }}/org.freedesktop.Sdk.Extension.flutter_${{ inputs.flatpakSdkVersion }}_${{ matrix.arch }}.flatpak'
       - name: Install flatpak flutter SDK
@@ -95,13 +91,13 @@ jobs:
         name: Generate build number
         run: dart pub global run dart_test_tools:generate_build_number ${{ inputs.buildNumberArgs }} --env
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Import GPG key
-        run: echo '${{ secrets.gpgKey }}' | gpg --import
-      - name: Prepare ostree repo
+      - name: Prepare flatpak repo
         run: |
           set -eo pipefail
-          ostree init --mode=archive --repo=repo
+          ostree init --repo=repo --mode=archive
           ostree --repo=repo config set core.min-free-space-size "1MB"
+      - name: Import GPG key
+        run: echo '${{ secrets.gpgKey }}' | gpg --import
       - name: Build flatpak bundle
         uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@86f5f35aa999f626a05d2943460ff0e811655327
         with:
@@ -112,10 +108,6 @@ jobs:
           gpg-sign: ${{ secrets.gpgKeyId }}
           cache: false
           upload-artifact: false
-      - name: Print disk usage
-        if: always()
-        continue-on-error: true
-        run: df
       - name: Delete GPG key
         if: always()
         continue-on-error: true

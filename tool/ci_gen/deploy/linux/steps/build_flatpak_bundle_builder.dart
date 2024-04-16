@@ -94,6 +94,14 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
           workingDirectory: workingDirectory,
           asEnv: true,
         ).build(),
+        const Step.run(
+          name: 'Prepare flatpak repo',
+          run: '''
+set -eo pipefail
+ostree init --repo=repo --mode=archive
+ostree --repo=repo config set core.min-free-space-size "1MB"
+''',
+        ),
         ...WithGpgKey(
           gpgKey: gpgKey,
           gpgKeyId: gpgKeyId,
