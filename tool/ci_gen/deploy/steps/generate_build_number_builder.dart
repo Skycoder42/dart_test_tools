@@ -9,10 +9,12 @@ class GenerateBuildNumberBuilder implements StepBuilder {
 
   final Expression buildNumberArgs;
   final Expression workingDirectory;
+  final bool asEnv;
 
-  GenerateBuildNumberBuilder({
+  const GenerateBuildNumberBuilder({
     required this.buildNumberArgs,
     required this.workingDirectory,
+    this.asEnv = false,
   });
 
   @override
@@ -21,7 +23,7 @@ class GenerateBuildNumberBuilder implements StepBuilder {
           id: stepId,
           name: 'Generate build number',
           run: 'dart pub global run dart_test_tools:generate_build_number '
-              '$buildNumberArgs',
+              '$buildNumberArgs${asEnv ? ' --env' : ''}',
           workingDirectory: workingDirectory.toString(),
         ),
       ];

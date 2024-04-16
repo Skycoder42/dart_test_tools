@@ -38,6 +38,7 @@ modules:
       - dart --disable-analytics
       - flutter config --disable-analytics
       - flutter precache --universal --linux
+      - dart pub global activate dart_test_tools
   - name: flatpak-metadata
     buildsystem: simple
     sources:
