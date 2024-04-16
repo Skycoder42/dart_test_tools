@@ -20,10 +20,12 @@ class BuildLinuxWorkflow implements WorkflowBuilder {
     final secretContext = WorkflowSecretContext();
 
     final buildLinuxJobBuilder = BuildLinuxJobBuilder(
-      sdkVersion: inputContext(WorkflowInputs.flatpakSdkVersion),
+      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+      flatpakSdkVersion: inputContext(WorkflowInputs.flatpakSdkVersion),
       bundleName: inputContext(WorkflowInputs.bundleName),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+      buildNumberArgs: inputContext(WorkflowInputs.buildNumberArgs),
       manifestPath: inputContext(WorkflowInputs.manifestPath),
       gpgKey: secretContext(WorkflowSecrets.gpgKey),
       gpgKeyId: secretContext(WorkflowSecrets.gpgKeyId),

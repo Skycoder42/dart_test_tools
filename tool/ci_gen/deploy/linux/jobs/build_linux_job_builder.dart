@@ -1,6 +1,8 @@
-import '../../../common/api/job_builder.dart';
 import '../../../common/api/matrix_job_builder_mixin.dart';
 import '../../../common/environments.dart';
+import '../../../common/jobs/sdk_job_builder.dart';
+import '../../../common/steps/install_dart_test_tools_builder.dart';
+import '../../../dart/jobs/dart_sdk_job_builder_mixin.dart';
 import '../../../types/container.dart';
 import '../../../types/expression.dart';
 import '../../../types/id.dart';
@@ -23,22 +25,28 @@ final class FlatpakMatrix extends Matrix<FlatpakArchMatrixSelector> {
       [arch, qemuArch];
 }
 
-final class BuildLinuxJobBuilder
-    with MatrixJobBuilderMixin<FlatpakMatrix, FlatpakArchMatrixSelector>
-    implements JobBuilder {
-  final Expression sdkVersion;
+final class BuildLinuxJobBuilder extends SdkJobBuilder
+    with
+        DartSdkJobBuilderMixin,
+        MatrixJobBuilderMixin<FlatpakMatrix, FlatpakArchMatrixSelector> {
+  @override
+  final Expression dartSdkVersion;
+  final Expression flatpakSdkVersion;
   final Expression bundleName;
   final Expression workingDirectory;
   final Expression artifactDependencies;
+  final Expression buildNumberArgs;
   final Expression manifestPath;
   final Expression gpgKeyId;
   final Expression gpgKey;
 
   BuildLinuxJobBuilder({
-    required this.sdkVersion,
+    required this.dartSdkVersion,
+    required this.flatpakSdkVersion,
     required this.bundleName,
     required this.workingDirectory,
     required this.artifactDependencies,
+    required this.buildNumberArgs,
     required this.manifestPath,
     required this.gpgKeyId,
     required this.gpgKey,
@@ -59,16 +67,19 @@ final class BuildLinuxJobBuilder
         runsOn: runsOn,
         container: Container(
           image:
-              'bilelmoussaoui/flatpak-github-actions:freedesktop-$sdkVersion',
+              'bilelmoussaoui/flatpak-github-actions:freedesktop-$flatpakSdkVersion',
           options: '--privileged',
         ),
         environment: Environments.flatpak,
         steps: [
+          ...buildSetupSdkSteps(),
+          ...const InstallDartTestToolsBuilder().build(),
           ...BuildFlatpakBundleBuilder(
-            sdkVersion: sdkVersion,
+            sdkVersion: flatpakSdkVersion,
             bundleName: bundleName,
             workingDirectory: workingDirectory,
             artifactDependencies: artifactDependencies,
+            buildNumberArgs: buildNumberArgs,
             manifestPath: manifestPath,
             gpgKeyId: gpgKeyId,
             gpgKey: gpgKey,

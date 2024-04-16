@@ -1,6 +1,11 @@
 on:
   workflow_call:
     inputs:
+      dartSdkVersion:
+        type: string
+        required: false
+        default: stable
+        description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
       flatpakSdkVersion:
         type: string
         required: false
@@ -20,6 +25,11 @@ on:
         required: false
         default: ""
         description: A space-separated list of package names that should be downloaded from the artifacts and overwritten for the workflow. The packages should be space separated and placed in a single line. You can use the YAML ">-" for that.
+      buildNumberArgs:
+        type: string
+        required: false
+        default: ""
+        description: Additional args for the build number generator.
       manifestPath:
         type: string
         required: true
@@ -49,6 +59,12 @@ jobs:
       image: bilelmoussaoui/flatpak-github-actions:freedesktop-${{ inputs.flatpakSdkVersion }}
       options: --privileged
     steps:
+      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ inputs.dartSdkVersion }}
+      - name: Install dart_test_tools
+        run: dart pub global activate dart_test_tools ^5.9.0
       - name: Install docker
         if: matrix.qemuArch
         run: dnf -y install docker
@@ -71,6 +87,10 @@ jobs:
         with:
           pattern: package-*
           path: ${{ github.workspace }}/.artifacts
+      - id: generateBuildNumber
+        name: Generate build number
+        run: dart pub global run dart_test_tools:generate_build_number ${{ inputs.buildNumberArgs }} --env
+        working-directory: ${{ inputs.workingDirectory }}
       - name: Import GPG key
         run: echo '${{ secrets.gpgKey }}' | gpg --import
       - name: Build flatpak bundle

@@ -5,6 +5,7 @@ import '../../../common/steps/checkout_builder.dart';
 import '../../../common/tools.dart';
 import '../../../types/expression.dart';
 import '../../../types/step.dart';
+import '../../steps/generate_build_number_builder.dart';
 import 'with_gpg_key.dart';
 
 enum FlatpakArchMatrixSelector implements IMatrixSelector {
@@ -39,6 +40,7 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
   final Expression bundleName;
   final Expression workingDirectory;
   final Expression artifactDependencies;
+  final Expression buildNumberArgs;
   final Expression manifestPath;
   final Expression gpgKeyId;
   final Expression gpgKey;
@@ -50,6 +52,7 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
     required this.bundleName,
     required this.workingDirectory,
     required this.artifactDependencies,
+    required this.buildNumberArgs,
     required this.manifestPath,
     required this.gpgKeyId,
     required this.gpgKey,
@@ -85,6 +88,11 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
         ...CheckoutBuilder(
           artifactDependencies: artifactDependencies,
           artifactTargetDir: Github.workspace,
+        ).build(),
+        ...GenerateBuildNumberBuilder(
+          buildNumberArgs: buildNumberArgs,
+          workingDirectory: workingDirectory,
+          asEnv: true,
         ).build(),
         ...WithGpgKey(
           gpgKey: gpgKey,
