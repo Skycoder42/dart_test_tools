@@ -4,8 +4,17 @@ library export_xml_changelog_test;
 import 'dart:io';
 
 import 'package:dart_test_tools/src/flatpak/export_xml_changelog/export_xml_changelog.dart';
-import 'package:dart_test_tools/src/tools/io.dart';
+import 'package:path/path.dart';
 import 'package:test/test.dart';
+
+class _TestOverrides extends IOOverrides {
+  final Directory testDir;
+
+  _TestOverrides(this.testDir);
+
+  @override
+  File createFile(String path) => super.createFile(join(testDir.path, path));
+}
 
 void main() {
   group('$ExportXmlChangelog', () {
@@ -15,41 +24,49 @@ void main() {
 
     setUp(() async {
       testDir = await Directory.systemTemp.createTemp();
-      Directory.current = testDir;
     });
 
     tearDown(() async {
       await testDir.delete(recursive: true);
     });
 
-    test('generates changelog XML from MD', () async {
-      await testDir.subFile('CHANGELOG.md').writeAsString(_testChangelogMdFull);
+    test(
+      'generates changelog XML from MD',
+      () async => IOOverrides.runWithIOOverrides(
+        () async {
+          await File('CHANGELOG.md').writeAsString(_testChangelogMdFull);
 
-      final outFile = testDir.subFile('releases.xml');
-      await sut(outFile: outFile, isMetadataXml: false);
+          final outFile = File('releases.xml');
+          await sut(outFile: outFile, isMetadataXml: false);
 
-      print(outFile.path);
-      expect(outFile.existsSync(), isTrue);
-      expect(outFile.readAsString(), completion(_testChangelogXml));
-    });
+          expect(outFile.existsSync(), isTrue);
+          expect(outFile.readAsString(), completion(_testChangelogXml));
+        },
+        _TestOverrides(testDir),
+      ),
+    );
 
-    test('adds changelog to metainfo.xml', () async {
-      await testDir
-          .subFile('CHANGELOG.md')
-          .writeAsString(_testChangelogMdMinimal);
-      final outFile = testDir.subFile('metainfo.xml');
-      await outFile.writeAsString('''
+    test(
+      'adds changelog to metainfo.xml',
+      () async => IOOverrides.runWithIOOverrides(
+        () async {
+          await File('CHANGELOG.md').writeAsString(_testChangelogMdMinimal);
+          final outFile = File('metainfo.xml');
+          await outFile.writeAsString('''
 <?xml version="1.0" encoding="UTF-8"?>
 <component>
   <id>test-id</id>
 </component>
 ''');
 
-      await sut(outFile: outFile);
+          await sut(outFile: outFile);
 
-      expect(outFile.existsSync(), isTrue);
-      expect(outFile.readAsString(), completion(_testMetainfoXml));
-    });
+          expect(outFile.existsSync(), isTrue);
+          expect(outFile.readAsString(), completion(_testMetainfoXml));
+        },
+        _TestOverrides(testDir),
+      ),
+    );
   });
 }
 
