@@ -101,7 +101,8 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
         runsOn: runsOn,
         steps: [
           ...buildSetupSdkSteps(
-            buildPlatform: matrix.platform.expression,
+            buildPlatform:
+                ExpressionOrValue.expression(matrix.platform.expression),
             enableDesktopCondition: matrix.desktop.expression,
           ),
           ...FlutterIntegrationTestBuilder(

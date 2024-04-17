@@ -26,7 +26,7 @@ class BuildAppBuilder implements StepBuilder {
           shell: 'bash',
         ),
         Step.run(
-          name: 'Build android appbundle',
+          name: 'Build $buildTarget',
           run: 'flutter build $buildTarget '
               '--release '
               '--build-number=$buildNumber '

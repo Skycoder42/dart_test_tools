@@ -1,10 +1,6 @@
 on:
   workflow_call:
     inputs:
-      enabledPlatforms:
-        type: string
-        required: true
-        description: A JSON-encoded list of all platforms that this project can build/run for.
       flutterSdkChannel:
         type: string
         required: false
@@ -20,6 +16,11 @@ on:
         required: false
         default: .
         description: The root directory of the dart package to build and test.
+      artifactDependencies:
+        type: string
+        required: false
+        default: ""
+        description: A space-separated list of package names that should be downloaded from the artifacts and overwritten for the workflow. The packages should be space separated and placed in a single line. You can use the YAML ">-" for that.
       buildRunner:
         type: boolean
         required: false
@@ -34,11 +35,6 @@ on:
         required: false
         default: ""
         description: Additional args for the build number generator.
-      primaryLocale:
-        type: string
-        required: false
-        default: en-US
-        description: The default locale of the app. This is used to set the language of the generated changelogs
     secrets:
       dartDefines:
         required: false
@@ -47,33 +43,29 @@ on:
 
           VARIABLE1=value1
           VARIABLE2=value2
-      keystore:
+      signingCert:
         required: true
-        description: A base64 encoded java keystore used for signing the android app. Use "cat keystore.jks | openssl base64" to encode it.
-      keystorePassword:
+        description: |
+          The windows signing certificate to sign the msix installer with.
+          Must be a base64 encoded PKCS#12 (.pfx or .p12) file. Use the following command to encode it:
+
+          openssl base64 -e -in path/to/certificate.pfx -out encoded_certificate.txt
+      signingCertPassword:
         required: true
-        description: The primary password for the signing keystore. Must be the password for both, keystore and signing key.
+        description: The password to decrypt the signingCert with. See https://learn.microsoft.com/en-us/windows/msix/package/create-certificate-package-signing
 jobs:
-  build_android:
-    name: Build android app bundle
-    if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), 'android'))
-    environment: google-play
-    outputs:
-      buildNumber: ${{ steps.generateBuildNumber.outputs.buildNumber }}
-    runs-on: ubuntu-latest
+  build_windows:
+    name: Build windows msix installer
+    environment: msix
+    runs-on: windows-latest
     steps:
-      - name: Install JDK Version ${{ inputs.javaJdkVersion }}
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: ${{ inputs.javaJdkVersion }}
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
         uses: subosito/flutter-action@v2
         with:
           channel: ${{ inputs.flutterSdkChannel }}
           cache: true
       - name: Download flutter binary artifacts
-        run: flutter precache --universal --android
+        run: flutter precache --universal --windows
       - name: Install dart_test_tools
         run: dart pub global activate dart_test_tools ^5.9.0
       - name: Install scoop
@@ -94,8 +86,24 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - name: Download artifacts
+        if: inputs.artifactDependencies != ''
+        uses: actions/download-artifact@v4
+        with:
+          pattern: package-*
+          path: ${{ runner.temp }}/.artifacts
       - name: Remove pubspec_overrides.yaml
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Create pubspec_overrides.yaml for artifact packages
+        if: inputs.artifactDependencies != ''
+        run: |
+          set -eo pipefail
+          touch pubspec_overrides.yaml
+          for package in ${{ inputs.artifactDependencies }}; do
+            yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
+          done
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
@@ -109,49 +117,30 @@ jobs:
         name: Generate build number
         run: dart pub global run dart_test_tools:generate_build_number ${{ inputs.buildNumberArgs }}
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Generate Changelog
-        run: |
-          set -eo pipefail
-          version=$(yq e '.version' pubspec.yaml)
-          changelogs_dir='build/app/outputs/metadata/${{ inputs.primaryLocale }}/changelogs'
-          mkdir -p "$changelogs_dir"
-          dart run cider describe "$version" > "$changelogs_dir/${{ steps.generateBuildNumber.outputs.buildNumber }}.txt"
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
-      - name: Prepare signing keystore
-        run: |
-          set -eo pipefail
-          keystore_path="${{ runner.temp }}/app.keystore"
-          echo '${{ secrets.keystore }}' | openssl base64 -d > "$keystore_path"
-          cat << EOF > android/key.properties
-          storeFile=$keystore_path
-          password=${{ secrets.keystorePassword }}
-          EOF
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Prepare dart defines
         run: echo '${{ secrets.dartDefines }}' > '${{ runner.temp }}/dart-defines.env'
         shell: bash
-      - name: Build appbundle
-        run: flutter build appbundle --release --build-number=${{ steps.generateBuildNumber.outputs.buildNumber }} --obfuscate --split-debug-info=build/app/outputs/debug-info --dart-define-from-file='${{ runner.temp }}/dart-defines.env'
+      - name: Build windows
+        run: flutter build windows --release --build-number=${{ steps.generateBuildNumber.outputs.buildNumber }} --obfuscate --split-debug-info=build/windows/msix/debug-info --dart-define-from-file='${{ runner.temp }}/dart-defines.env'
         working-directory: ${{ inputs.workingDirectory }}
       - name: Cleanup dart defines
         if: always()
         continue-on-error: true
         run: rm -f '${{ runner.temp }}/dart-defines.env'
         shell: bash
-      - name: Cleanup keystore and properties
+      - name: Prepare signing certificate
+        run: echo '${{ secrets.signingCert }}' | openssl base64 -d -out '${{ runner.temp }}/signing-cert.pfx'
+      - name: Create msix package
+        run: dart run msix:create --release --build-windows false --output-path build\windows\msix --certificate-path '${{ runner.temp }}\signing-cert.pfx' --certificate-password '${{ secrets.signingCertPassword }}' --install-certificate false
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Cleanup signing certificate
         if: always()
         continue-on-error: true
-        run: |
-          rm -rf android/key.properties
-          rm -rf "${{ runner.temp }}/app.keystore"
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
-      - name: Upload app bundle and debug info
+        run: Remove-Item -Force '${{ runner.temp }}/signing-cert.pfx'
+      - name: Upload msix installer and debug info
         uses: actions/upload-artifact@v4
         with:
-          name: android-app
-          path: build/app/outputs
+          name: windows-installer
+          path: ${{ inputs.workingDirectory }}/build/windows/msix
           retention-days: 1
           if-no-files-found: error

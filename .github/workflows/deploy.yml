@@ -85,6 +85,12 @@ jobs:
             echo "update=false" >> $GITHUB_OUTPUT
           fi
         working-directory: ${{ inputs.workingDirectory }}
+      - name: Download all binary artifacts
+        if: steps.version.outputs.update == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: windows-installer
       - name: Activate cider
         if: steps.version.outputs.update == 'true'
         run: dart pub global activate cider
@@ -116,6 +122,7 @@ jobs:
           name: ${{ steps.release_content.outputs.release_name }}
           body_path: ${{ steps.release_content.outputs.body_path }}
           target_commitish: ${{ github.sha }}
+          files: artifacts/windows-installer/*
   deploy_linux:
     name: Deploy flatpak bundles to GitHub Pages
     needs:

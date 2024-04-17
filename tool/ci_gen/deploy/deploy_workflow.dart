@@ -29,6 +29,7 @@ class DeployWorkflow implements WorkflowBuilder {
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       tagPrefix: inputContext(WorkflowInputs.tagPrefix),
       persistCredentials: inputContext(WorkflowInputs.persistCredentials),
+      binaryArtifactsPattern: 'windows-installer',
     );
     outputContext
       ..add(WorkflowOutputs.releaseCreated, releaseJobBuilder.updateOutput)

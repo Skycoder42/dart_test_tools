@@ -78,10 +78,18 @@ class ExpressionOrValue with _$ExpressionOrValue {
 
   const ExpressionOrValue._();
 
-  dynamic get asParameter => when(
+  dynamic get asValue => when(
         expression: (expression) => expression.toString(),
         value: (value) => value,
       );
+
+  Expression get asExpression => when(
+        expression: (expression) => expression,
+        value: Expression.literal,
+      );
+
+  @override
+  String toString() => asValue.toString();
 }
 
 class ExpressionConverter implements JsonConverter<Expression?, dynamic> {

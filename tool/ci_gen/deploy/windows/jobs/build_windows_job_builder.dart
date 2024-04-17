@@ -1,4 +1,3 @@
-import '../../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../../common/environments.dart';
 import '../../../common/jobs/sdk_job_builder.dart';
 import '../../../flutter/flutter_platform.dart';
@@ -7,70 +6,58 @@ import '../../../types/expression.dart';
 import '../../../types/id.dart';
 import '../../../types/job.dart';
 import '../../../types/runs_on.dart';
-import '../../steps/generate_build_number_builder.dart';
-import '../steps/build_android_app_builder.dart';
+import '../steps/build_windows_installer_builder.dart';
 
-final class BuildAndroidJobBuilder extends SdkJobBuilder
+final class BuildWindowsJobBuilder extends SdkJobBuilder
     with FlutterSdkJobBuilderMixin {
-  final Expression enabledPlatforms;
   @override
   final Expression flutterSdkChannel;
   @override
   final Expression javaJdkVersion;
   final Expression workingDirectory;
+  final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression buildNumberArgs;
-  final Expression primaryLocale;
   final Expression dartDefines;
-  final Expression keystore;
-  final Expression keystorePassword;
+  final Expression signingCert;
+  final Expression signingCertPassword;
 
-  const BuildAndroidJobBuilder({
-    required this.enabledPlatforms,
+  const BuildWindowsJobBuilder({
     required this.flutterSdkChannel,
     required this.javaJdkVersion,
     required this.workingDirectory,
+    required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.buildNumberArgs,
-    required this.primaryLocale,
     required this.dartDefines,
-    required this.keystore,
-    required this.keystorePassword,
+    required this.signingCert,
+    required this.signingCertPassword,
   });
 
   @override
-  JobId get id => const JobId('build_android');
-
-  JobIdOutput get buildNumber => id.output('buildNumber');
+  JobId get id => const JobId('build_windows');
 
   @override
   Job build() => Job(
-        name: 'Build android app bundle',
-        runsOn: RunsOn.ubuntuLatest.id,
-        environment: Environments.googlePlay,
-        ifExpression: EnabledPlatforms.check(
-          enabledPlatforms,
-          Expression.literal(FlutterPlatform.android.platform),
-        ),
-        outputs: {
-          buildNumber: GenerateBuildNumberBuilder.buildNumberOutput,
-        },
+        name: 'Build windows msix installer',
+        runsOn: RunsOn.windowsLatest.id,
+        environment: Environments.msix,
         steps: [
           ...buildSetupSdkSteps(
             buildPlatform:
-                ExpressionOrValue.value(FlutterPlatform.android.platform),
+                ExpressionOrValue.value(FlutterPlatform.windows.platform),
           ),
-          ...BuildAndroidAppBuilder(
+          ...BuildWindowsInstallerBuilder(
             workingDirectory: workingDirectory,
+            artifactDependencies: artifactDependencies,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
             buildNumberArgs: buildNumberArgs,
-            primaryLocale: primaryLocale,
             dartDefines: dartDefines,
-            keystore: keystore,
-            keystorePassword: keystorePassword,
+            signingCert: signingCert,
+            signingCertPassword: signingCertPassword,
             pubTool: pubTool,
             runTool: runTool,
           ).build(),

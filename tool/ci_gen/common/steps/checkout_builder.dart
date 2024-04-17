@@ -27,7 +27,7 @@ class CheckoutBuilder implements StepBuilder {
           name: 'Checkout repository',
           uses: Tools.actionsCheckout,
           withArgs: <String, dynamic>{
-            'persist-credentials': persistCredentials?.asParameter ?? false,
+            'persist-credentials': persistCredentials?.asValue ?? false,
             if (path != null) 'path': path,
             if (gitRef != null) 'ref': gitRef.toString(),
             if (fetchDepth != null) 'fetch-depth': fetchDepth,

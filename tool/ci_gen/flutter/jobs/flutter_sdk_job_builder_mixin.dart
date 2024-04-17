@@ -12,9 +12,8 @@ base mixin FlutterSdkJobBuilderMixin on SdkJobBuilder {
 
   @override
   Iterable<Step> buildSetupSdkSteps({
-    Expression? buildPlatform,
+    ExpressionOrValue? buildPlatform,
     Expression? enableDesktopCondition,
-    bool enforceJdk = false,
   }) =>
       [
         ...FlutterSdkBuilder(
@@ -22,7 +21,6 @@ base mixin FlutterSdkJobBuilderMixin on SdkJobBuilder {
           javaJdkVersion: javaJdkVersion,
           buildPlatform: buildPlatform,
           enableDesktopCondition: enableDesktopCondition,
-          enforceJdk: enforceJdk,
         ).build(),
       ];
 }
