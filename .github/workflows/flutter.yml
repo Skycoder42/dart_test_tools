@@ -384,15 +384,12 @@ jobs:
             os: ubuntu-latest
             testArgs: -d linux
             runPrefix: xvfb-run --auto-servernum
-            desktop: true
           - platform: macos
             os: macos-13
             testArgs: -d macos
-            desktop: true
           - platform: windows
             os: windows-latest
             testArgs: -d windows
-            desktop: true
           - platform: web
             os: windows-latest
     runs-on: ${{ matrix.os }}
@@ -409,9 +406,6 @@ jobs:
         with:
           channel: ${{ inputs.flutterSdkChannel }}
           cache: true
-      - name: Enable experimental platforms
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.desktop
-        run: flutter config --enable-${{ matrix.platform }}-desktop
       - name: Download flutter binary artifacts
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: flutter precache --universal --${{ matrix.platform }}

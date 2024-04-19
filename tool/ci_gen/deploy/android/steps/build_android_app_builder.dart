@@ -5,7 +5,7 @@ import '../../../common/steps/project_setup_builder.dart';
 import '../../../common/tools.dart';
 import '../../../types/expression.dart';
 import '../../../types/step.dart';
-import '../../steps/build_app_builder.dart';
+import '../../steps/flutter_build_builder.dart';
 import '../../steps/generate_build_number_builder.dart';
 
 class BuildAndroidAppBuilder implements StepBuilder {
@@ -74,12 +74,11 @@ EOF
           workingDirectory: workingDirectory.toString(),
           shell: 'bash',
         ),
-        ...BuildAppBuilder(
+        ...FlutterBuildBuilder(
           buildNumber: GenerateBuildNumberBuilder.buildNumberOutput.expression,
           workingDirectory: workingDirectory,
           dartDefines: dartDefines,
           buildTarget: 'appbundle',
-          debugInfoDir: 'build/app/outputs',
         ).build(),
         Step.run(
           name: 'Cleanup keystore and properties',

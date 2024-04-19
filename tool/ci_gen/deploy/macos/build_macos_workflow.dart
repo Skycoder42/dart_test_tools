@@ -6,26 +6,27 @@ import '../../common/secrets.dart';
 import '../../types/on.dart';
 import '../../types/workflow.dart';
 import '../../types/workflow_call.dart';
-import 'jobs/build_windows_job_builder.dart';
+import 'jobs/build_macos_job_builder.dart';
 
-class BuildWindowsWorkflow implements WorkflowBuilder {
-  const BuildWindowsWorkflow();
+class BuildMacosWorkflow implements WorkflowBuilder {
+  const BuildMacosWorkflow();
 
   @override
-  String get name => 'build-windows';
+  String get name => 'build-macos';
 
   @override
   Workflow build() {
     final inputContext = WorkflowInputContext();
     final secretContext = WorkflowSecretContext();
 
-    final buildWindowsJobBuilder = BuildWindowsJobBuilder(
+    final buildMacosJobBuilder = BuildMacosJobBuilder(
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       buildNumberArgs: inputContext(WorkflowInputs.buildNumberArgs),
+      dmgConfigPath: inputContext(WorkflowInputs.dmgConfigPath),
       dartDefines: secretContext(WorkflowSecrets.dartDefines),
     );
 
@@ -37,7 +38,7 @@ class BuildWindowsWorkflow implements WorkflowBuilder {
         ),
       ),
       jobs: {
-        buildWindowsJobBuilder.id: buildWindowsJobBuilder.build(),
+        buildMacosJobBuilder.id: buildMacosJobBuilder.build(),
       },
     );
   }

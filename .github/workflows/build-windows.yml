@@ -6,11 +6,6 @@ on:
         required: false
         default: stable
         description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action".
-      javaJdkVersion:
-        type: number
-        required: false
-        default: 17
-        description: The Java-SDK version (mayor only). Passed as "java-version" to "actions/setup-java".
       workingDirectory:
         type: string
         required: false
@@ -110,7 +105,7 @@ jobs:
         run: echo '${{ secrets.dartDefines }}' > '${{ runner.temp }}/dart-defines.env'
         shell: bash
       - name: Build windows
-        run: flutter build windows --release --build-number=${{ steps.generateBuildNumber.outputs.buildNumber }} --obfuscate --split-debug-info=build/windows/msix/debug-info --dart-define-from-file='${{ runner.temp }}/dart-defines.env'
+        run: flutter build windows --release --build-number=${{ steps.generateBuildNumber.outputs.buildNumber }} --dart-define-from-file='${{ runner.temp }}/dart-defines.env'
         working-directory: ${{ inputs.workingDirectory }}
       - name: Cleanup dart defines
         if: always()
@@ -118,12 +113,12 @@ jobs:
         run: rm -f '${{ runner.temp }}/dart-defines.env'
         shell: bash
       - name: Create msix package
-        run: dart run msix:create --release --build-windows false --output-path build\windows\msix --sign-msix false --install-certificate false
+        run: dart run msix:create --release --store --build-windows false --output-path build\windows\msix
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Upload msix installer and debug info
+      - name: Upload app and debug info
         uses: actions/upload-artifact@v4
         with:
-          name: windows-installer
+          name: app-deployment-windows
           path: ${{ inputs.workingDirectory }}/build/windows/msix
           retention-days: 1
           if-no-files-found: error

@@ -52,4 +52,7 @@ abstract class Tools {
   /// https://github.com/stefanzweifel/git-auto-commit-action/releases
   static const stefanzweifelGitAutoCommitAction =
       'stefanzweifel/git-auto-commit-action@v5';
+
+  /// https://github.com/actions/setup-node/releases
+  static const actionsSetupNode = 'actions/setup-node@v4';
 }

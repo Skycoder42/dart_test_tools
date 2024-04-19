@@ -5,7 +5,8 @@ import '../steps/flutter_sdk_builder.dart';
 
 base mixin FlutterSdkJobBuilderMixin on SdkJobBuilder {
   Expression get flutterSdkChannel;
-  Expression get javaJdkVersion;
+
+  Expression? get javaJdkVersion => null;
 
   @override
   String get baseTool => 'flutter';
@@ -13,14 +14,12 @@ base mixin FlutterSdkJobBuilderMixin on SdkJobBuilder {
   @override
   Iterable<Step> buildSetupSdkSteps({
     ExpressionOrValue? buildPlatform,
-    Expression? enableDesktopCondition,
   }) =>
       [
         ...FlutterSdkBuilder(
           flutterSdkChannel: flutterSdkChannel,
           javaJdkVersion: javaJdkVersion,
           buildPlatform: buildPlatform,
-          enableDesktopCondition: enableDesktopCondition,
         ).build(),
       ];
 }

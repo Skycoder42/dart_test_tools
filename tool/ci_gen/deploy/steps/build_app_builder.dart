@@ -1,45 +1,71 @@
 import '../../common/api/step_builder.dart';
-import '../../common/contexts.dart';
+import '../../common/steps/install_dart_test_tools_builder.dart';
+import '../../common/steps/project_setup_builder.dart';
+import '../../common/tools.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
+import 'flutter_build_builder.dart';
+import 'generate_build_number_builder.dart';
 
 class BuildAppBuilder implements StepBuilder {
-  final Expression buildNumber;
   final Expression workingDirectory;
+  final Expression artifactDependencies;
+  final Expression buildRunner;
+  final Expression buildRunnerArgs;
+  final Expression buildNumberArgs;
   final Expression dartDefines;
+  final String pubTool;
+  final String runTool;
   final String buildTarget;
-  final String debugInfoDir;
+  final String artifactDir;
+  final List<Step> packageSteps;
 
   const BuildAppBuilder({
-    required this.buildNumber,
     required this.workingDirectory,
+    required this.artifactDependencies,
+    required this.buildRunner,
+    required this.buildRunnerArgs,
+    required this.buildNumberArgs,
     required this.dartDefines,
+    required this.pubTool,
+    required this.runTool,
     required this.buildTarget,
-    required this.debugInfoDir,
+    required this.artifactDir,
+    required this.packageSteps,
   });
 
   @override
   Iterable<Step> build() => [
-        Step.run(
-          name: 'Prepare dart defines',
-          run: "echo '$dartDefines' > '${Runner.temp}/dart-defines.env'",
-          shell: 'bash',
-        ),
-        Step.run(
-          name: 'Build $buildTarget',
-          run: 'flutter build $buildTarget '
-              '--release '
-              '--build-number=$buildNumber '
-              '--obfuscate --split-debug-info=$debugInfoDir/debug-info '
-              "--dart-define-from-file='${Runner.temp}/dart-defines.env'",
-          workingDirectory: workingDirectory.toString(),
-        ),
-        Step.run(
-          name: 'Cleanup dart defines',
-          ifExpression: Functions.always,
-          continueOnError: true,
-          run: "rm -f '${Runner.temp}/dart-defines.env'",
-          shell: 'bash',
+        ...const InstallDartTestToolsBuilder().build(),
+        ...ProjectSetupBuilder(
+          workingDirectory: workingDirectory,
+          artifactDependencies: artifactDependencies,
+          buildRunner: buildRunner,
+          buildRunnerArgs: buildRunnerArgs,
+          releaseMode: true,
+          pubTool: pubTool,
+          runTool: runTool,
+        ).build(),
+        ...GenerateBuildNumberBuilder(
+          buildNumberArgs: buildNumberArgs,
+          workingDirectory: workingDirectory,
+        ).build(),
+        ...FlutterBuildBuilder(
+          buildNumber: GenerateBuildNumberBuilder.buildNumberOutput.expression,
+          workingDirectory: workingDirectory,
+          dartDefines: dartDefines,
+          buildTarget: buildTarget,
+        ).build(),
+        ...packageSteps,
+        Step.uses(
+          name: 'Upload app and debug info',
+          uses: Tools.actionsUploadArtifact,
+          withArgs: {
+            'name': 'app-deployment-$buildTarget',
+            'path': '$workingDirectory/$artifactDir',
+            'retention-days': 1,
+            'if-no-files-found': 'error',
+          },
         ),
       ];
 }

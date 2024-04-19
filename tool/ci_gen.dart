@@ -11,6 +11,7 @@ import 'ci_gen/deb/deb_workflow.dart';
 import 'ci_gen/deploy/android/build_android_workflow.dart';
 import 'ci_gen/deploy/deploy_workflow.dart';
 import 'ci_gen/deploy/linux/build_linux_workflow.dart';
+import 'ci_gen/deploy/macos/build_macos_workflow.dart';
 import 'ci_gen/deploy/windows/build_windows_workflow.dart';
 import 'ci_gen/docker/docker_workflow.dart';
 import 'ci_gen/flutter/flutter_workflow.dart';
@@ -32,6 +33,7 @@ Future<void> main() async {
     DeployWorkflow(),
     BuildAndroidWorkflow(),
     BuildLinuxWorkflow(),
+    BuildMacosWorkflow(),
     BuildWindowsWorkflow(),
   ];
 

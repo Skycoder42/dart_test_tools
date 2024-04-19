@@ -8,22 +8,6 @@ import '../flutter_platform.dart';
 import '../steps/flutter_integration_test_builder.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-final class DesktopMatrixProperty extends IMatrixProperty<FlutterPlatform> {
-  const DesktopMatrixProperty();
-
-  @override
-  String get name => 'desktop';
-
-  @override
-  Object? valueFor(FlutterPlatform selector) => switch (selector) {
-        FlutterPlatform.linux ||
-        FlutterPlatform.macos ||
-        FlutterPlatform.windows =>
-          true,
-        _ => null,
-      };
-}
-
 final class FlutterIntegrationTestMatrix extends PlatformMatrix {
   const FlutterIntegrationTestMatrix() : super(FlutterPlatform.values);
 
@@ -31,14 +15,11 @@ final class FlutterIntegrationTestMatrix extends PlatformMatrix {
 
   RunPrefixMatrixProperty get runPrefix => const RunPrefixMatrixProperty();
 
-  DesktopMatrixProperty get desktop => const DesktopMatrixProperty();
-
   @override
   List<IMatrixProperty<IPlatformMatrixSelector>> get includeProperties => [
         ...super.includeProperties,
         testArgs,
         runPrefix,
-        desktop,
       ];
 }
 
@@ -103,7 +84,6 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
           ...buildSetupSdkSteps(
             buildPlatform:
                 ExpressionOrValue.expression(matrix.platform.expression),
-            enableDesktopCondition: matrix.desktop.expression,
           ),
           ...FlutterIntegrationTestBuilder(
             workingDirectory: workingDirectory,
