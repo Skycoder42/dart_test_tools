@@ -120,12 +120,12 @@ jobs:
         continue-on-error: true
         run: rm -f '${{ runner.temp }}/dart-defines.env'
         shell: bash
-      - id: getDmgTitle
-        name: Get DMG title from config
-        run: echo "title=$(jq -r '.title' '${{ inputs.dmgConfigPath }}')" >> $GITHUB_OUTPUT
-        working-directory: ${{ inputs.workingDirectory }}
-      - name: Generate DMG file
-        run: appdmg '${{ inputs.dmgConfigPath }}' 'build/macos/dmg/${{ steps.getDmgTitle.outputs.title }}.dmg'
+      - name: Generate DMG image
+        run: |
+          set -eo pipefail
+          title=$(jq -r '.title' '${{ inputs.dmgConfigPath }}')
+          mkdir -p build/macos/dmg
+          appdmg '${{ inputs.dmgConfigPath }}' "build/macos/dmg/$title.dmg"
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload app and debug info
         uses: actions/upload-artifact@v4

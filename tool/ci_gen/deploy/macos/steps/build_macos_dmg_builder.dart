@@ -1,14 +1,10 @@
 import '../../../common/api/step_builder.dart';
 import '../../../common/tools.dart';
 import '../../../types/expression.dart';
-import '../../../types/id.dart';
 import '../../../types/step.dart';
 import '../../steps/build_app_builder.dart';
 
 class BuildMacosDmgBuilder implements StepBuilder {
-  static const getDmgTitleStepId = StepId('getDmgTitle');
-  static final dmgTitleOutput = getDmgTitleStepId.output('title');
-
   final Expression workingDirectory;
   final Expression artifactDependencies;
   final Expression buildRunner;
@@ -54,18 +50,13 @@ class BuildMacosDmgBuilder implements StepBuilder {
           artifactDir: 'build/macos/dmg',
           packageSteps: [
             Step.run(
-              id: getDmgTitleStepId,
-              name: 'Get DMG title from config',
-              run: dmgTitleOutput.bashSetter(
-                "jq -r '.title' '$dmgConfigPath'",
-                isCommand: true,
-              ),
-              workingDirectory: workingDirectory.toString(),
-            ),
-            Step.run(
-              name: 'Generate DMG file',
-              run: "appdmg '$dmgConfigPath' "
-                  "'build/macos/dmg/${dmgTitleOutput.expression}.dmg'",
+              name: 'Generate DMG image',
+              run: '''
+set -eo pipefail
+title=\$(jq -r '.title' '$dmgConfigPath')
+mkdir -p build/macos/dmg
+appdmg '$dmgConfigPath' "build/macos/dmg/\$title.dmg"
+''',
               workingDirectory: workingDirectory.toString(),
             ),
           ],
