@@ -1,5 +1,4 @@
 import '../../../common/api/step_builder.dart';
-import '../../../common/contexts.dart';
 import '../../../common/steps/install_dart_test_tools_builder.dart';
 import '../../../common/steps/project_setup_builder.dart';
 import '../../../common/tools.dart';
@@ -15,8 +14,6 @@ class BuildWindowsInstallerBuilder implements StepBuilder {
   final Expression buildRunnerArgs;
   final Expression buildNumberArgs;
   final Expression dartDefines;
-  final Expression signingCert;
-  final Expression signingCertPassword;
   final String pubTool;
   final String runTool;
 
@@ -27,8 +24,6 @@ class BuildWindowsInstallerBuilder implements StepBuilder {
     required this.buildRunnerArgs,
     required this.buildNumberArgs,
     required this.dartDefines,
-    required this.signingCert,
-    required this.signingCertPassword,
     required this.pubTool,
     required this.runTool,
   });
@@ -57,25 +52,13 @@ class BuildWindowsInstallerBuilder implements StepBuilder {
           debugInfoDir: 'build/windows/msix',
         ).build(),
         Step.run(
-          name: 'Prepare signing certificate',
-          run: "echo '$signingCert' | "
-              "openssl base64 -d -out '${Runner.temp}/signing-cert.pfx'",
-        ),
-        Step.run(
           name: 'Create msix package',
           run: 'dart run msix:create --release '
               '--build-windows false '
               r'--output-path build\windows\msix '
-              "--certificate-path '${Runner.temp}\\signing-cert.pfx' "
-              "--certificate-password '$signingCertPassword' "
+              '--sign-msix false '
               '--install-certificate false',
           workingDirectory: workingDirectory.toString(),
-        ),
-        Step.run(
-          name: 'Cleanup signing certificate',
-          ifExpression: Functions.always,
-          continueOnError: true,
-          run: "Remove-Item -Force '${Runner.temp}/signing-cert.pfx'",
         ),
         Step.uses(
           name: 'Upload msix installer and debug info',

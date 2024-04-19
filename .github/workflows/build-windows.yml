@@ -43,20 +43,9 @@ on:
 
           VARIABLE1=value1
           VARIABLE2=value2
-      signingCert:
-        required: true
-        description: |
-          The windows signing certificate to sign the msix installer with.
-          Must be a base64 encoded PKCS#12 (.pfx or .p12) file. Use the following command to encode it:
-
-          openssl base64 -e -in path/to/certificate.pfx -out encoded_certificate.txt
-      signingCertPassword:
-        required: true
-        description: The password to decrypt the signingCert with. See https://learn.microsoft.com/en-us/windows/msix/package/create-certificate-package-signing
 jobs:
   build_windows:
     name: Build windows msix installer
-    environment: msix
     runs-on: windows-latest
     steps:
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
@@ -128,15 +117,9 @@ jobs:
         continue-on-error: true
         run: rm -f '${{ runner.temp }}/dart-defines.env'
         shell: bash
-      - name: Prepare signing certificate
-        run: echo '${{ secrets.signingCert }}' | openssl base64 -d -out '${{ runner.temp }}/signing-cert.pfx'
       - name: Create msix package
-        run: dart run msix:create --release --build-windows false --output-path build\windows\msix --certificate-path '${{ runner.temp }}\signing-cert.pfx' --certificate-password '${{ secrets.signingCertPassword }}' --install-certificate false
+        run: dart run msix:create --release --build-windows false --output-path build\windows\msix --sign-msix false --install-certificate false
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Cleanup signing certificate
-        if: always()
-        continue-on-error: true
-        run: Remove-Item -Force '${{ runner.temp }}/signing-cert.pfx'
       - name: Upload msix installer and debug info
         uses: actions/upload-artifact@v4
         with:

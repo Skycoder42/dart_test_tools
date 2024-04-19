@@ -132,26 +132,4 @@ VARIABLE2=value2
       description: 'The id of the gpgKey',
     ),
   );
-
-  static const signingCert = WorkflowSecret(
-    name: 'signingCert',
-    secret: Secret(
-      required: true,
-      description: '''
-The windows signing certificate to sign the msix installer with.
-Must be a base64 encoded PKCS#12 (.pfx or .p12) file. Use the following command to encode it:
-
-openssl base64 -e -in path/to/certificate.pfx -out encoded_certificate.txt
-''',
-    ),
-  );
-
-  static const signingCertPassword = WorkflowSecret(
-    name: 'signingCertPassword',
-    secret: Secret(
-      required: true,
-      description: 'The password to decrypt the signingCert with. '
-          'See https://learn.microsoft.com/en-us/windows/msix/package/create-certificate-package-signing',
-    ),
-  );
 }

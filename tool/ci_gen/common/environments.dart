@@ -6,5 +6,4 @@ abstract base class Environments {
   static const flatpak = 'flatpak';
   static const packagecloud = 'packagecloud';
   static const dockerHub = 'docker-hub';
-  static const msix = 'msix';
 }

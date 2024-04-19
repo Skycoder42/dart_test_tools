@@ -28,8 +28,6 @@ class BuildWindowsWorkflow implements WorkflowBuilder {
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       buildNumberArgs: inputContext(WorkflowInputs.buildNumberArgs),
       dartDefines: secretContext(WorkflowSecrets.dartDefines),
-      signingCert: secretContext(WorkflowSecrets.signingCert),
-      signingCertPassword: secretContext(WorkflowSecrets.signingCertPassword),
     );
 
     return Workflow(

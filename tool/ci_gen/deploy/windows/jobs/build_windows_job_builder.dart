@@ -1,4 +1,3 @@
-import '../../../common/environments.dart';
 import '../../../common/jobs/sdk_job_builder.dart';
 import '../../../flutter/flutter_platform.dart';
 import '../../../flutter/jobs/flutter_sdk_job_builder_mixin.dart';
@@ -20,8 +19,6 @@ final class BuildWindowsJobBuilder extends SdkJobBuilder
   final Expression buildRunnerArgs;
   final Expression buildNumberArgs;
   final Expression dartDefines;
-  final Expression signingCert;
-  final Expression signingCertPassword;
 
   const BuildWindowsJobBuilder({
     required this.flutterSdkChannel,
@@ -32,8 +29,6 @@ final class BuildWindowsJobBuilder extends SdkJobBuilder
     required this.buildRunnerArgs,
     required this.buildNumberArgs,
     required this.dartDefines,
-    required this.signingCert,
-    required this.signingCertPassword,
   });
 
   @override
@@ -43,7 +38,6 @@ final class BuildWindowsJobBuilder extends SdkJobBuilder
   Job build() => Job(
         name: 'Build windows msix installer',
         runsOn: RunsOn.windowsLatest.id,
-        environment: Environments.msix,
         steps: [
           ...buildSetupSdkSteps(
             buildPlatform:
@@ -56,8 +50,6 @@ final class BuildWindowsJobBuilder extends SdkJobBuilder
             buildRunnerArgs: buildRunnerArgs,
             buildNumberArgs: buildNumberArgs,
             dartDefines: dartDefines,
-            signingCert: signingCert,
-            signingCertPassword: signingCertPassword,
             pubTool: pubTool,
             runTool: runTool,
           ).build(),
