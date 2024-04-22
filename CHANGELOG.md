@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.10.0] - 2024-04-22
+### Added
+- Added generate-cask tool
+
 ## [5.9.0] - 2024-04-15
 ### Added
 - Added `flatpak-repo-init` tool to create or update a flatpak repository with metadata
@@ -301,6 +305,7 @@ have been added:
 ### Added
 - Initial release
 
+[5.10.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.9.0...v5.10.0
 [5.9.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.8.1...v5.9.0
 [5.8.1]: https://github.com/Skycoder42/dart_test_tools/compare/v5.8.0...v5.8.1
 [5.8.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.7.0...v5.8.0

@@ -8,7 +8,7 @@ part 'aur_options.g.dart';
 
 @internal
 @freezed
-class PubspecWithAur with _$PubspecWithAur {
+sealed class PubspecWithAur with _$PubspecWithAur {
   const factory PubspecWithAur({
     required Pubspec pubspec,
     required AurOptions aurOptions,
@@ -18,7 +18,7 @@ class PubspecWithAur with _$PubspecWithAur {
 
 @internal
 @freezed
-class AurOptionsPubspecView with _$AurOptionsPubspecView {
+sealed class AurOptionsPubspecView with _$AurOptionsPubspecView {
   @JsonSerializable(
     anyMap: true,
     checked: true,
@@ -37,7 +37,7 @@ class AurOptionsPubspecView with _$AurOptionsPubspecView {
 
 @internal
 @freezed
-class AurOptions with _$AurOptions {
+sealed class AurOptions with _$AurOptions {
   @JsonSerializable(
     anyMap: true,
     checked: true,
@@ -65,7 +65,7 @@ class AurOptions with _$AurOptions {
 
 @internal
 @freezed
-class InstallTarget with _$InstallTarget {
+sealed class InstallTarget with _$InstallTarget {
   @JsonSerializable(
     anyMap: true,
     checked: true,
@@ -83,7 +83,7 @@ class InstallTarget with _$InstallTarget {
 
 @internal
 @freezed
-class MakedebOptions with _$MakedebOptions {
+sealed class MakedebOptions with _$MakedebOptions {
   @JsonSerializable(
     anyMap: true,
     checked: true,

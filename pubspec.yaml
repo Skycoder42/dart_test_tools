@@ -1,6 +1,6 @@
 name: dart_test_tools
 description: Additional tools and helpers for writing dart unit tests and GitHub Actions Workflows.
-version: 5.9.0
+version: 5.10.0
 homepage: https://github.com/Skycoder42/dart_test_tools
 
 environment:
@@ -12,6 +12,7 @@ executables:
   cider:
   flatpak-repo-init: flatpak_repo_init
   export-xml-changelog: export_xml_changelog
+  generate-cask: generate_cask
 
 dependencies:
   analyzer: ^6.4.1
@@ -20,6 +21,7 @@ dependencies:
   checked_yaml: ^2.0.3
   cider: ^0.2.7
   collection: ^1.18.0
+  crypto: ^3.0.3
   custom_lint_builder: ^0.6.4
   dotenv: ^4.2.0
   freezed_annotation: ^2.4.1
