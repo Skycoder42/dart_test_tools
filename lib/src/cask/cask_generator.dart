@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 
+import '../tools/github.dart';
 import '../tools/io.dart';
 import 'cask_options.dart';
 import 'cask_options_loader.dart';
@@ -19,7 +20,11 @@ class CaskGenerator {
   }) async {
     final options = await _caskOptionsLoader.load(inDir);
     final config = await _buildCasksConfig(options);
-    await _writeCaskScript(outDir, options, config);
+
+    final caskName = _getCaskName(options);
+    await Github.env.setOutput('caskName', caskName);
+
+    await _writeCaskScript(outDir, options, caskName, config);
   }
 
   Future<List<Map<String, dynamic>>> _buildCasksConfig(
@@ -85,9 +90,9 @@ class CaskGenerator {
   Future<void> _writeCaskScript(
     Directory outDir,
     CaskOptions options,
+    String caskName,
     List<Map<String, dynamic>> config,
   ) async {
-    final caskName = options.options.caskName ?? options.pubspec.name;
     final casksDir = await outDir.subDir('Casks').create();
     final caskFile = casksDir.subFile('$caskName.rb');
     final caskSink = caskFile.openWrite();
@@ -130,5 +135,15 @@ class CaskGenerator {
     } finally {
       await caskSink.close();
     }
+  }
+
+  String _getCaskName(CaskOptions options) {
+    if (options.options.caskName case final String caskName) {
+      return caskName;
+    }
+
+    return options.pubspec.name
+        .toLowerCase()
+        .replaceAll(RegExp('[^a-z0-9-]'), '-');
   }
 }

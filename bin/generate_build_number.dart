@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:dart_test_tools/src/ci/build_number_generator.dart';
-import 'package:dart_test_tools/tools.dart';
+import 'package:dart_test_tools/src/tools/github.dart';
 
 Future<void> main(List<String> args) => Github.runZoned(() async {
       final parser = ArgParser(
