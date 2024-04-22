@@ -143,16 +143,18 @@ jobs:
       image: bilelmoussaoui/flatpak-github-actions:freedesktop-${{ inputs.flatpakSdkVersion }}
       options: --privileged
     steps:
-      - name: '[Validate Inputs] Fail if gpgKeyId is not set'
-        if: secrets.gpgKeyId == ''
+      - name: '[Validate Inputs] Ensure gpgKeyId is set'
         run: |
-          echo '::error::Platform is enabled, but required input gpgKeyId is not set'
-          exit 1
-      - name: '[Validate Inputs] Fail if gpgKey is not set'
-        if: secrets.gpgKey == ''
+          if [[ '${{ secrets.gpgKeyId }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input gpgKeyId is not set'
+            exit 1
+          fi
+      - name: '[Validate Inputs] Ensure gpgKey is set'
         run: |
-          echo '::error::Platform is enabled, but required input gpgKey is not set'
-          exit 1
+          if [[ '${{ secrets.gpgKey }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input gpgKey is not set'
+            exit 1
+          fi
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -197,16 +199,18 @@ jobs:
     environment: homebrew
     runs-on: macos-latest
     steps:
-      - name: '[Validate Inputs] Fail if targetRepo is not set'
-        if: inputs.targetRepo == ''
+      - name: '[Validate Inputs] Ensure targetRepo is set'
         run: |
-          echo '::error::Platform is enabled, but required input targetRepo is not set'
-          exit 1
-      - name: '[Validate Inputs] Fail if targetRepoToken is not set'
-        if: secrets.targetRepoToken == ''
+          if [[ '${{ inputs.targetRepo }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input targetRepo is not set'
+            exit 1
+          fi
+      - name: '[Validate Inputs] Ensure targetRepoToken is set'
         run: |
-          echo '::error::Platform is enabled, but required input targetRepoToken is not set'
-          exit 1
+          if [[ '${{ secrets.targetRepoToken }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input targetRepoToken is not set'
+            exit 1
+          fi
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         uses: dart-lang/setup-dart@v1
         with:

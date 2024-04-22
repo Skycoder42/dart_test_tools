@@ -11,11 +11,12 @@ class ValidateInputsBuilder implements StepBuilder {
   Iterable<Step> build() => [
         for (final MapEntry(key: name, value: input) in inputs.entries)
           Step.run(
-            name: '[Validate Inputs] Fail if $name is not set',
-            ifExpression: input.eq(Expression.empty),
+            name: '[Validate Inputs] Ensure $name is set',
             run: '''
-echo '::error::Platform is enabled, but required input $name is not set'
-exit 1
+if [[ '$input' == '' ]]; then
+  echo '::error::Platform is enabled, but required input $name is not set'
+  exit 1
+fi
 ''',
           ),
       ];
