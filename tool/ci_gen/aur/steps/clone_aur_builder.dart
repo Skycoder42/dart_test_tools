@@ -50,12 +50,13 @@ git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
           run: '''
 set -eo pipefail
 
-echo "$aurSshPrivateKey" >> "${Runner.temp}/ssh-key"
-chmod 600 "${Runner.temp}/ssh-key"
+mkdir -p '${Runner.temp}'
+echo '$aurSshPrivateKey' > '${Runner.temp}/ssh-key'
+chmod 600 '${Runner.temp}/ssh-key'
 
-echo "Host aur.archlinux.org" > /etc/ssh/ssh_config
-echo "  IdentityFile ${Runner.temp}/ssh-key" >> /etc/ssh/ssh_config
-echo "  User aur" >> /etc/ssh/ssh_config
+echo 'Host aur.archlinux.org' > /etc/ssh/ssh_config
+echo '  IdentityFile ${Runner.temp}/ssh-key' >> /etc/ssh/ssh_config
+echo '  User aur' >> /etc/ssh/ssh_config
 ''',
         ),
         const Step.run(

@@ -52,12 +52,13 @@ jobs:
         run: |
           set -eo pipefail
 
-          echo "${{ secrets.AUR_SSH_PRIVATE_KEY }}" >> "${{ runner.temp }}/ssh-key"
-          chmod 600 "${{ runner.temp }}/ssh-key"
+          mkdir -p '${{ runner.temp }}'
+          echo '${{ secrets.AUR_SSH_PRIVATE_KEY }}' > '${{ runner.temp }}/ssh-key'
+          chmod 600 '${{ runner.temp }}/ssh-key'
 
-          echo "Host aur.archlinux.org" > /etc/ssh/ssh_config
-          echo "  IdentityFile ${{ runner.temp }}/ssh-key" >> /etc/ssh/ssh_config
-          echo "  User aur" >> /etc/ssh/ssh_config
+          echo 'Host aur.archlinux.org' > /etc/ssh/ssh_config
+          echo '  IdentityFile ${{ runner.temp }}/ssh-key' >> /etc/ssh/ssh_config
+          echo '  User aur' >> /etc/ssh/ssh_config
       - name: Clone AUR repository
         run: git clone "ssh://aur@aur.archlinux.org/$(yq ".name" src/pubspec.yaml).git" ./aur
       - name: Cleanup AUR repository
