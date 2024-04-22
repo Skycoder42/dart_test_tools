@@ -459,12 +459,23 @@ Example:
       description: 'The path to the flatpak manifest to be built.',
     ),
   );
+
   static const dmgConfigPath = WorkflowInput(
     name: 'dmgConfigPath',
     input: Input(
       type: Type.string,
       required: true,
       description: 'Path to the configuration file for the appdmg tool.',
+    ),
+  );
+
+  static const targetRepo = WorkflowInput(
+    name: 'targetRepo',
+    input: Input(
+      type: Type.string,
+      required: false,
+      description: 'The repository identifier (<owner>/<repo>) '
+          'to which the cask should be published.',
     ),
   );
 }

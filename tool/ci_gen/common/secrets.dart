@@ -116,20 +116,29 @@ VARIABLE2=value2
     ),
   );
 
-  static const gpgKey = WorkflowSecret(
-    name: 'gpgKey',
-    secret: Secret(
-      required: true,
-      description:
-          'The GPG key to sign the flatpak bundle and repository with.',
-    ),
-  );
+  static WorkflowSecret gpgKey(bool required) => WorkflowSecret(
+        name: 'gpgKey',
+        secret: Secret(
+          required: required,
+          description:
+              'The GPG key to sign the flatpak bundle and repository with.',
+        ),
+      );
 
-  static const gpgKeyId = WorkflowSecret(
-    name: 'gpgKeyId',
+  static WorkflowSecret gpgKeyId(bool required) => WorkflowSecret(
+        name: 'gpgKeyId',
+        secret: Secret(
+          required: required,
+          description: 'The id of the gpgKey',
+        ),
+      );
+
+  static const targetRepoToken = WorkflowSecret(
+    name: 'targetRepoToken',
     secret: Secret(
-      required: true,
-      description: 'The id of the gpgKey',
+      required: false,
+      description: 'A GitHub PAT that has the permission '
+          'to push commits to the targetRepo.',
     ),
   );
 }

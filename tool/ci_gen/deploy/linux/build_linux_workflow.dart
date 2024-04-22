@@ -27,8 +27,8 @@ class BuildLinuxWorkflow implements WorkflowBuilder {
       artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
       buildNumberArgs: inputContext(WorkflowInputs.buildNumberArgs),
       manifestPath: inputContext(WorkflowInputs.manifestPath),
-      gpgKey: secretContext(WorkflowSecrets.gpgKey),
-      gpgKeyId: secretContext(WorkflowSecrets.gpgKeyId),
+      gpgKey: secretContext(WorkflowSecrets.gpgKey(true)),
+      gpgKeyId: secretContext(WorkflowSecrets.gpgKeyId(true)),
     );
 
     return Workflow(

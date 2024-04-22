@@ -10,6 +10,7 @@ import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'linux/jobs/deploy_linux_job_builder.dart';
+import 'macos/jobs/deploy_macos_job_builder.dart';
 
 class DeployWorkflow implements WorkflowBuilder {
   const DeployWorkflow();
@@ -39,8 +40,18 @@ class DeployWorkflow implements WorkflowBuilder {
       releaseCreated: releaseJobBuilder.updateOutput,
       enabledPlatforms: inputContext(WorkflowInputs.enabledPlatforms),
       sdkVersion: inputContext(WorkflowInputs.flatpakSdkVersion),
-      gpgKey: secretContext(WorkflowSecrets.gpgKey),
-      gpgKeyId: secretContext(WorkflowSecrets.gpgKeyId),
+      gpgKey: secretContext(WorkflowSecrets.gpgKey(false)),
+      gpgKeyId: secretContext(WorkflowSecrets.gpgKeyId(false)),
+    );
+
+    final deployMacosJobBuilder = DeployMacosJobBuilder(
+      releaseCreated: releaseJobBuilder.updateOutput,
+      releaseVersion: releaseJobBuilder.versionOutput,
+      enabledPlatforms: inputContext(WorkflowInputs.enabledPlatforms),
+      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+      targetRepo: inputContext(WorkflowInputs.targetRepo),
+      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      targetRepoToken: secretContext(WorkflowSecrets.targetRepoToken),
     );
 
     return Workflow(
@@ -54,6 +65,7 @@ class DeployWorkflow implements WorkflowBuilder {
       jobs: {
         releaseJobBuilder.id: releaseJobBuilder.build(),
         deployLinuxJobBuilder.id: deployLinuxJobBuilder.build(),
+        deployMacosJobBuilder.id: deployMacosJobBuilder.build(),
       },
     );
   }

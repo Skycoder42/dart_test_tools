@@ -1,12 +1,14 @@
 import '../../../common/api/job_builder.dart';
 import '../../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../../common/environments.dart';
+import '../../../common/secrets.dart';
 import '../../../flutter/flutter_platform.dart';
 import '../../../types/container.dart';
 import '../../../types/expression.dart';
 import '../../../types/id.dart';
 import '../../../types/job.dart';
 import '../../../types/runs_on.dart';
+import '../../steps/validate_inputs_builder.dart';
 import '../steps/deploy_to_pages_builder.dart';
 
 class DeployLinuxJobBuilder implements JobBuilder {
@@ -48,6 +50,10 @@ class DeployLinuxJobBuilder implements JobBuilder {
           'contents': 'write',
         },
         steps: [
+          ...ValidateInputsBuilder({
+            WorkflowSecrets.gpgKeyId(false).name: gpgKeyId,
+            WorkflowSecrets.gpgKey(false).name: gpgKey,
+          }).build(),
           ...DeployToPagesBuilder(
             gpgKeyId: gpgKeyId,
             gpgKey: gpgKey,

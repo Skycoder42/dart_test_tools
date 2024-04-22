@@ -64,7 +64,7 @@ jobs:
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^5.9.0
+        run: dart pub global activate dart_test_tools ^5.10.1
       - name: Install docker
         if: matrix.qemuArch
         run: dnf -y install docker

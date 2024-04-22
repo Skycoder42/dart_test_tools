@@ -35,6 +35,10 @@ on:
         required: false
         default: "23.08"
         description: The version of the freedesktop sdk and runtime being used.
+      targetRepo:
+        type: string
+        required: false
+        description: The repository identifier (<owner>/<repo>) to which the cask should be published.
     outputs:
       releaseCreated:
         value: ${{ jobs.release.outputs.update }}
@@ -44,11 +48,14 @@ on:
         description: Holds the version number of the created release, if the releaseCreated output is true. Otherwise, it is not set.
     secrets:
       gpgKey:
-        required: true
+        required: false
         description: The GPG key to sign the flatpak bundle and repository with.
       gpgKeyId:
-        required: true
+        required: false
         description: The id of the gpgKey
+      targetRepoToken:
+        required: false
+        description: A GitHub PAT that has the permission to push commits to the targetRepo.
 jobs:
   release:
     name: Create release if needed
@@ -136,6 +143,16 @@ jobs:
       image: bilelmoussaoui/flatpak-github-actions:freedesktop-${{ inputs.flatpakSdkVersion }}
       options: --privileged
     steps:
+      - name: '[Validate Inputs] Fail if gpgKeyId is not set'
+        if: secrets.gpgKeyId == ''
+        run: |
+          echo '::error::Platform is enabled, but required input gpgKeyId is not set'
+          exit 1
+      - name: '[Validate Inputs] Fail if gpgKey is not set'
+        if: secrets.gpgKey == ''
+        run: |
+          echo '::error::Platform is enabled, but required input gpgKey is not set'
+          exit 1
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -172,3 +189,51 @@ jobs:
           branch: gh-pages
           repository: repo
           skip_dirty_check: true
+  deploy_macos:
+    name: Deploy DMG image to homebrew tap
+    needs:
+      - release
+    if: needs.release.outputs.update == 'true' && (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), 'macos'))
+    environment: homebrew
+    runs-on: macos-latest
+    steps:
+      - name: '[Validate Inputs] Fail if targetRepo is not set'
+        if: inputs.targetRepo == ''
+        run: |
+          echo '::error::Platform is enabled, but required input targetRepo is not set'
+          exit 1
+      - name: '[Validate Inputs] Fail if targetRepoToken is not set'
+        if: secrets.targetRepoToken == ''
+        run: |
+          echo '::error::Platform is enabled, but required input targetRepoToken is not set'
+          exit 1
+      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ inputs.dartSdkVersion }}
+      - name: Install dart_test_tools
+        run: dart pub global activate dart_test_tools ^5.10.1
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          path: src
+      - name: Checkout ${{ inputs.targetRepo }}
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          path: tap
+          repository: ${{ inputs.targetRepo }}
+          token: ${{ secrets.targetRepoToken }}
+      - id: generate-cask
+        name: Generate cask formula
+        run: dart pub global run dart_test_tools:generate_cask --input 'src/${{ inputs.workingDirectory }}' --output tap
+      - name: Tap local repository
+        run: brew tap ${{ inputs.targetRepo }} tap
+      - name: Audit generated cask
+        run: brew audit --arch all --strict --git --online --no-signing --token-conflicts --cask '${{ inputs.targetRepo }}/${{ steps.generate-cask.outputs.caskName }}'
+      - name: Commit repository updates
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Updated cask to v${{ needs.release.outputs.version }}
+          repository: tap
