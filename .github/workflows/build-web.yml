@@ -112,10 +112,18 @@ jobs:
         continue-on-error: true
         run: rm -f '${{ runner.temp }}/dart-defines.env'
         shell: bash
+      - name: Create archive
+        run: |
+          set -eo pipefail
+
+          archive_name=$(jq -r '.short_name' ../../web/manifest.json)
+          mkdir ../web-archive
+          tar -cJvf "../web-archive/$archive_name Web.tar.xz" .
+        working-directory: ${{ inputs.workingDirectory }}/build/web
       - name: Upload app and debug info
         uses: actions/upload-artifact@v4
         with:
           name: app-deployment-web
-          path: ${{ inputs.workingDirectory }}/build/web
+          path: ${{ inputs.workingDirectory }}/build/web-archive
           retention-days: 1
           if-no-files-found: error

@@ -47,6 +47,7 @@ curl -sSLo \$pub_info_file \\
 if cat \$pub_info_file | jq -e "\$version_exists_query" > /dev/null; then
   echo Version already exists on pub.dev - skipping deployment
   ${versionUpdate.bashSetter('false')}
+  ${versionOutput.bashSetter(r'$package_version')}
 else
   echo Version does not exists on pub.dev - creating release
   ${versionUpdate.bashSetter('true')}

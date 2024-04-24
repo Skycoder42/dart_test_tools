@@ -37,7 +37,20 @@ class BuildWebArchiveBuilder implements StepBuilder {
           runTool: runTool,
           buildTarget: 'web',
           buildArgs: '--no-web-resources-cdn --csp --source-maps --dump-info',
-          artifactDir: 'build/web',
+          artifactDir: 'build/web-archive',
+          packageSteps: [
+            Step.run(
+              name: 'Create archive',
+              run: r'''
+set -eo pipefail
+
+archive_name=$(jq -r '.short_name' ../../web/manifest.json)
+mkdir ../web-archive
+tar -cJvf "../web-archive/$archive_name Web.tar.xz" .
+''',
+              workingDirectory: '$workingDirectory/build/web',
+            ),
+          ],
         ).build(),
       ];
 }

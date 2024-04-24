@@ -66,6 +66,7 @@ jobs:
           if cat $pub_info_file | jq -e "$version_exists_query" > /dev/null; then
             echo Version already exists on pub.dev - skipping deployment
             echo "update=false" >> $GITHUB_OUTPUT
+            echo "version=$package_version" >> $GITHUB_OUTPUT
           else
             echo Version does not exists on pub.dev - creating release
             echo "update=true" >> $GITHUB_OUTPUT
