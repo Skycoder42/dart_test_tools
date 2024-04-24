@@ -42,11 +42,11 @@ final class DeployMacosJobBuilder extends SdkJobBuilder
         needs: {releaseCreated.jobId, releaseVersion.jobId},
         runsOn: RunsOn.macosLatest.id,
         ifExpression:
-            // releaseCreated.expression.eq(const Expression.literal('true')) &
-            EnabledPlatforms.check(
-          enabledPlatforms,
-          Expression.literal(FlutterPlatform.macos.platform),
-        ),
+            releaseCreated.expression.eq(const Expression.literal('true')) &
+                EnabledPlatforms.check(
+                  enabledPlatforms,
+                  Expression.literal(FlutterPlatform.macos.platform),
+                ),
         environment: Environments.homebrew,
         steps: [
           ...ValidateInputsBuilder({

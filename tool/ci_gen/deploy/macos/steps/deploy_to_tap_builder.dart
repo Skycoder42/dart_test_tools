@@ -53,7 +53,8 @@ class DeployToTapBuilder implements StepBuilder {
               // ignore: missing_whitespace_between_adjacent_strings
               '-c user.email='
               "'41898282+github-actions[bot]@users.noreply.github.com' "
-              "commit -m 'Updated cask to v$releaseVersion' "
+              'commit -m '
+              "'Updated cask ${caskNameOutput.expression} to v$releaseVersion' "
               '--author '
               "'${Github.actor} <${Github.actor}@users.noreply.github.com>'",
           workingDirectory: 'tap',

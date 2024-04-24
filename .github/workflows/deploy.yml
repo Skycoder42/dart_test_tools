@@ -195,7 +195,7 @@ jobs:
     name: Deploy DMG image to homebrew tap
     needs:
       - release
-    if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), 'macos'))
+    if: needs.release.outputs.update == 'true' && (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), 'macos'))
     environment: homebrew
     runs-on: macos-latest
     steps:
@@ -236,7 +236,7 @@ jobs:
         run: git add Casks/${{ steps.generate-cask.outputs.caskName }}.rb
         working-directory: tap
       - name: Commit tap update
-        run: git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Updated cask to v${{ needs.release.outputs.version }}' --author '${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>'
+        run: git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Updated cask ${{ steps.generate-cask.outputs.caskName }} to v${{ needs.release.outputs.version }}' --author '${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>'
         working-directory: tap
       - name: Tap local repository
         run: brew tap ${{ inputs.targetRepo }} tap
