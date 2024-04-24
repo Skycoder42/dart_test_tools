@@ -195,7 +195,7 @@ jobs:
     name: Deploy DMG image to homebrew tap
     needs:
       - release
-    if: needs.release.outputs.update == 'true' && (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), 'macos'))
+    if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), 'macos'))
     environment: homebrew
     runs-on: macos-latest
     steps:
@@ -232,12 +232,16 @@ jobs:
       - id: generate-cask
         name: Generate cask formula
         run: dart pub global run dart_test_tools:generate_cask --input 'src/${{ inputs.workingDirectory }}' --output tap
+      - name: Stage cask update
+        run: git add Casks/${{ steps.generate-cask.outputs.caskName }}.rb
+        working-directory: tap
+      - name: Commit tap update
+        run: git -c user.name 'github-actions[bot]' -c user.email '41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Updated cask to v${{ needs.release.outputs.version }}' --author '${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>'
+        working-directory: tap
       - name: Tap local repository
         run: brew tap ${{ inputs.targetRepo }} tap
       - name: Audit generated cask
         run: brew audit --arch all --strict --git --online --no-signing --token-conflicts --cask '${{ inputs.targetRepo }}/${{ steps.generate-cask.outputs.caskName }}'
-      - name: Commit repository updates
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: Updated cask to v${{ needs.release.outputs.version }}
-          repository: tap
+      - name: Push tap update to remite
+        run: git push origin
+        working-directory: tap

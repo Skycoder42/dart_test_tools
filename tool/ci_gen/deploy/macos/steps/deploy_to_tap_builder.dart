@@ -1,7 +1,7 @@
 import '../../../common/api/step_builder.dart';
+import '../../../common/contexts.dart';
 import '../../../common/steps/checkout_builder.dart';
 import '../../../common/steps/install_dart_test_tools_builder.dart';
-import '../../../common/tools.dart';
 import '../../../types/expression.dart';
 import '../../../types/id.dart';
 import '../../../types/step.dart';
@@ -43,6 +43,21 @@ class DeployToTapBuilder implements StepBuilder {
               "--input 'src/$workingDirectory' --output tap",
         ),
         Step.run(
+          name: 'Stage cask update',
+          run: 'git add Casks/${caskNameOutput.expression}.rb',
+          workingDirectory: 'tap',
+        ),
+        Step.run(
+          name: 'Commit tap update',
+          run: "git -c user.name 'github-actions[bot]' "
+              '-c user.email '
+              "'41898282+github-actions[bot]@users.noreply.github.com' "
+              "commit -m 'Updated cask to v$releaseVersion' "
+              '--author '
+              "'${Github.actor} <${Github.actor}@users.noreply.github.com>'",
+          workingDirectory: 'tap',
+        ),
+        Step.run(
           name: 'Tap local repository',
           run: 'brew tap $targetRepo tap',
         ),
@@ -51,13 +66,10 @@ class DeployToTapBuilder implements StepBuilder {
           run: 'brew audit --arch all --strict --git --online --no-signing '
               "--token-conflicts --cask '$targetRepo/${caskNameOutput.expression}'",
         ),
-        Step.uses(
-          name: 'Commit repository updates',
-          uses: Tools.stefanzweifelGitAutoCommitAction,
-          withArgs: {
-            'commit_message': 'Updated cask to v$releaseVersion',
-            'repository': 'tap',
-          },
+        const Step.run(
+          name: 'Push tap update to remite',
+          run: 'git push origin',
+          workingDirectory: 'tap',
         ),
       ];
 }
