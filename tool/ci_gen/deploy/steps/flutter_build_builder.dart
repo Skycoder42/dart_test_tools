@@ -8,12 +8,14 @@ class FlutterBuildBuilder implements StepBuilder {
   final Expression workingDirectory;
   final Expression dartDefines;
   final String buildTarget;
+  final String? buildArgs;
 
   const FlutterBuildBuilder({
     required this.buildNumber,
     required this.workingDirectory,
     required this.dartDefines,
     required this.buildTarget,
+    this.buildArgs,
   });
 
   @override
@@ -28,7 +30,8 @@ class FlutterBuildBuilder implements StepBuilder {
           run: 'flutter build $buildTarget '
               '--release '
               '--build-number=$buildNumber '
-              "--dart-define-from-file='${Runner.temp}/dart-defines.env'",
+              "--dart-define-from-file='${Runner.temp}/dart-defines.env'"
+              '${buildArgs != null ? ' $buildArgs' : ''}',
           workingDirectory: workingDirectory.toString(),
         ),
         Step.run(

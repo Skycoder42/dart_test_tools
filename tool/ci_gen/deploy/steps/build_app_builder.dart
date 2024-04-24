@@ -17,6 +17,7 @@ class BuildAppBuilder implements StepBuilder {
   final String pubTool;
   final String runTool;
   final String buildTarget;
+  final String? buildArgs;
   final String artifactDir;
   final List<Step> packageSteps;
 
@@ -30,8 +31,9 @@ class BuildAppBuilder implements StepBuilder {
     required this.pubTool,
     required this.runTool,
     required this.buildTarget,
+    this.buildArgs,
     required this.artifactDir,
-    required this.packageSteps,
+    this.packageSteps = const [],
   });
 
   @override
@@ -55,6 +57,7 @@ class BuildAppBuilder implements StepBuilder {
           workingDirectory: workingDirectory,
           dartDefines: dartDefines,
           buildTarget: buildTarget,
+          buildArgs: buildArgs,
         ).build(),
         ...packageSteps,
         Step.uses(

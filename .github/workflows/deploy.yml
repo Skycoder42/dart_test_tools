@@ -236,7 +236,7 @@ jobs:
         run: git add Casks/${{ steps.generate-cask.outputs.caskName }}.rb
         working-directory: tap
       - name: Commit tap update
-        run: git -c user.name 'github-actions[bot]' -c user.email '41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Updated cask to v${{ needs.release.outputs.version }}' --author '${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>'
+        run: git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Updated cask to v${{ needs.release.outputs.version }}' --author '${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>'
         working-directory: tap
       - name: Tap local repository
         run: brew tap ${{ inputs.targetRepo }} tap

@@ -1,0 +1,121 @@
+on:
+  workflow_call:
+    inputs:
+      flutterSdkChannel:
+        type: string
+        required: false
+        default: stable
+        description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action".
+      workingDirectory:
+        type: string
+        required: false
+        default: .
+        description: The root directory of the dart package to build and test.
+      artifactDependencies:
+        type: string
+        required: false
+        default: ""
+        description: A space-separated list of package names that should be downloaded from the artifacts and overwritten for the workflow. The packages should be space separated and placed in a single line. You can use the YAML ">-" for that.
+      buildRunner:
+        type: boolean
+        required: false
+        default: false
+        description: Specify whether build_runner is used in the project (defaults to false).
+      buildRunnerArgs:
+        type: string
+        required: false
+        description: Optional additional arguments to be passed to the build runner.
+      buildNumberArgs:
+        type: string
+        required: false
+        default: ""
+        description: Additional args for the build number generator.
+    secrets:
+      dartDefines:
+        required: false
+        description: |
+          Additional dart-defines that are passed to the build command. In the format of:
+
+          VARIABLE1=value1
+          VARIABLE2=value2
+jobs:
+  build_web:
+    name: Build web archive
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
+      - name: Download flutter binary artifacts
+        run: flutter precache --universal --web
+      - name: Install dart_test_tools
+        run: dart pub global activate dart_test_tools ^5.10.1
+      - name: Install scoop
+        if: runner.os == 'Windows'
+        run: |
+          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
+        shell: pwsh
+      - name: Install yq (Windows)
+        if: runner.os == 'Windows'
+        run: scoop install yq
+      - name: Install yq and coreutils (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install yq coreutils
+          echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Download artifacts
+        if: inputs.artifactDependencies != ''
+        uses: actions/download-artifact@v4
+        with:
+          pattern: package-*
+          path: ${{ runner.temp }}/.artifacts
+      - name: Remove pubspec_overrides.yaml
+        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Create pubspec_overrides.yaml for artifact packages
+        if: inputs.artifactDependencies != ''
+        run: |
+          set -eo pipefail
+          touch pubspec_overrides.yaml
+          for package in ${{ inputs.artifactDependencies }}; do
+            yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
+          done
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Restore dart packages
+        run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Create build files
+        if: inputs.buildRunner
+        run: flutter pub run build_runner build --release ${{ inputs.buildRunnerArgs }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - id: generateBuildNumber
+        name: Generate build number
+        run: dart pub global run dart_test_tools:generate_build_number ${{ inputs.buildNumberArgs }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Prepare dart defines
+        run: echo '${{ secrets.dartDefines }}' > '${{ runner.temp }}/dart-defines.env'
+        shell: bash
+      - name: Build web
+        run: flutter build web --release --build-number=${{ steps.generateBuildNumber.outputs.buildNumber }} --dart-define-from-file='${{ runner.temp }}/dart-defines.env' --no-web-resources-cdn --csp --source-maps --dump-info
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Cleanup dart defines
+        if: always()
+        continue-on-error: true
+        run: rm -f '${{ runner.temp }}/dart-defines.env'
+        shell: bash
+      - name: Upload app and debug info
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-deployment-web
+          path: ${{ inputs.workingDirectory }}/build/web
+          retention-days: 1
+          if-no-files-found: error
