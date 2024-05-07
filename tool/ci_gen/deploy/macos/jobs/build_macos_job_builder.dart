@@ -36,7 +36,7 @@ final class BuildMacosJobBuilder extends SdkJobBuilder
   @override
   Job build() => Job(
         name: 'Build macos dmg image',
-        runsOn: RunsOn.macosLatestArm64.id,
+        runsOn: RunsOn.macosLatest.id,
         steps: [
           ...buildSetupSdkSteps(
             buildPlatform:

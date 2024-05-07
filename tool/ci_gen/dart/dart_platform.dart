@@ -3,7 +3,7 @@ import '../types/runs_on.dart';
 
 enum DartPlatform implements IPlatformMatrixSelector {
   linux('linux', RunsOn.ubuntuLatest, false),
-  macos('macos', RunsOn.macosLatestArm64, false),
+  macos('macos', RunsOn.macosLatest, false),
   windows('windows', RunsOn.windowsLatest, false),
   web('web', RunsOn.ubuntuLatest, true);
 

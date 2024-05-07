@@ -40,7 +40,7 @@ final class DeployMacosJobBuilder extends SdkJobBuilder
   Job build() => Job(
         name: 'Deploy DMG image to homebrew tap',
         needs: {releaseCreated.jobId, releaseVersion.jobId},
-        runsOn: RunsOn.macosLatestArm64.id,
+        runsOn: RunsOn.macosLatest.id,
         ifExpression:
             releaseCreated.expression.eq(const Expression.literal('true')) &
                 EnabledPlatforms.check(

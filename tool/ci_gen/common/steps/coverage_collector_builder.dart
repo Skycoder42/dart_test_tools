@@ -18,8 +18,7 @@ final class LcovCleanCommandMatrixProperty
   Object? valueFor(IPlatformMatrixSelector selector) => switch (selector) {
         IPlatformMatrixSelector(os: RunsOn.ubuntuLatest) =>
           r'sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info',
-        IPlatformMatrixSelector(os: RunsOn.macosLatestArm64) ||
-        IPlatformMatrixSelector(os: RunsOn.macosLatestX86) =>
+        IPlatformMatrixSelector(os: RunsOn.macosLatest) =>
           r'sed -i "" "s#SF:$PWD/#SF:#g" coverage/lcov.info',
         IPlatformMatrixSelector(os: RunsOn.windowsLatest) =>
           r'(Get-Content coverage\lcov.info).replace("SF:$PWD\", "SF:").replace("\", "/") | Set-Content coverage\lcov.info',
