@@ -232,7 +232,7 @@ Example:
     input: Input(
       type: Type.string,
       required: false,
-      defaultValue: 'pixel_8',
+      defaultValue: 'pixel_7',
       description:
           'The AVD device template to be used for android integration testing',
     ),
