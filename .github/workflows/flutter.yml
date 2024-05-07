@@ -96,7 +96,7 @@ on:
       androidAVDImage:
         type: string
         required: false
-        default: system-images;android-34;google_apis;arm64-v8a
+        default: system-images;android-34;google_apis;x86_64
         description: The AVD-Image to be used for android integration testing
       androidAVDDevice:
         type: string
@@ -375,7 +375,7 @@ jobs:
           - web
         include:
           - platform: android
-            os: macos-latest
+            os: macos-latest-large
             testArgs: --timeout 3x
           - platform: ios
             os: macos-latest
@@ -385,7 +385,7 @@ jobs:
             testArgs: -d linux
             runPrefix: xvfb-run --auto-servernum
           - platform: macos
-            os: macos-13
+            os: macos-latest
             testArgs: -d macos
           - platform: windows
             os: windows-latest

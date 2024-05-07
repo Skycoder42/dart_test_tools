@@ -1,7 +1,7 @@
 enum RunsOn {
   ubuntuLatest('ubuntu-latest'),
-  macosLatest('macos-latest'),
-  macos13('macos-13'),
+  macosLatestArm64('macos-latest'),
+  macosLatestX86('macos-latest-large'),
   windowsLatest('windows-latest');
 
   final String id;

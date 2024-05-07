@@ -43,7 +43,7 @@ final class DeployAndroidJobBuilder extends SdkJobBuilder
   @override
   Job build() => Job(
         name: 'Deploy android app to Google Play',
-        runsOn: RunsOn.macosLatest.id,
+        runsOn: RunsOn.macosLatestArm64.id,
         needs: {
           releaseCreated.jobId,
           buildNumber.jobId,
