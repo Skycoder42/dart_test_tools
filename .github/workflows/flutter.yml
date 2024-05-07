@@ -96,12 +96,12 @@ on:
       androidAVDImage:
         type: string
         required: false
-        default: system-images;android-33;google_apis;x86_64
+        default: system-images;android-34;google_apis;arm64-v8a
         description: The AVD-Image to be used for android integration testing
       androidAVDDevice:
         type: string
         required: false
-        default: pixel_4
+        default: pixel_8
         description: The AVD device template to be used for android integration testing
     outputs:
       enabledPlatforms:

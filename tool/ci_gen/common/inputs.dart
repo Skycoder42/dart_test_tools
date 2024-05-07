@@ -222,7 +222,7 @@ Example:
     input: Input(
       type: Type.string,
       required: false,
-      defaultValue: 'system-images;android-33;google_apis;x86_64',
+      defaultValue: 'system-images;android-34;google_apis;arm64-v8a',
       description: 'The AVD-Image to be used for android integration testing',
     ),
   );
@@ -232,7 +232,7 @@ Example:
     input: Input(
       type: Type.string,
       required: false,
-      defaultValue: 'pixel_4',
+      defaultValue: 'pixel_8',
       description:
           'The AVD device template to be used for android integration testing',
     ),
