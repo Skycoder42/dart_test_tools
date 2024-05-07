@@ -506,7 +506,7 @@ jobs:
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.platform == 'android'
         run: |
           set -ex
-          nohup $ANDROID_HOME/emulator/emulator -no-window @default &
+          nohup $ANDROID_HOME/emulator/emulator -no-metrics -no-window @default &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
           flutter devices
         working-directory: ${{ inputs.workingDirectory }}
