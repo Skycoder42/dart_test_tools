@@ -148,7 +148,7 @@ sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
               platform.expression.eq(const Expression.literal('android')),
           run: '''
 set -ex
-nohup \$ANDROID_HOME/emulator/emulator -no-metrics -no-window @default &
+nohup \$ANDROID_HOME/emulator/emulator -no-metrics -no-snapstorage -no-snapshot -no-audio -no-boot-anim -no-window @default &
 \$ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z \$(getprop sys.boot_completed | tr -d '\\r') ]]; do sleep 1; done; input keyevent 82'
 $baseTool devices
 ''',
