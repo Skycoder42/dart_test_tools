@@ -99,7 +99,7 @@ jobs:
       - name: Import GPG key
         run: echo '${{ secrets.gpgKey }}' | gpg --import
       - name: Build flatpak bundle
-        uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@86f5f35aa999f626a05d2943460ff0e811655327
+        uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@d6ddccb268e43e87b19ca0112b83de26fb83b215
         with:
           bundle: ${{ inputs.bundleName }}
           manifest-path: ${{ inputs.workingDirectory }}/${{ inputs.manifestPath }}
