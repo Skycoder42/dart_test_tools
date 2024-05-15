@@ -68,9 +68,10 @@ class UnitTestBuilder implements StepBuilder {
         ).build(),
         Step.run(
           name: 'Run unit tests',
-          run: '$baseTool test ${dartTestArgs.expression} '
-              '$coverageArgs --reporter github $unitTestPaths',
+          run: '$baseTool test ${dartTestArgs.expression} $coverageArgs '
+              '--reporter github $unitTestPaths || [ \$? = 79 ]',
           workingDirectory: workingDirectory.toString(),
+          shell: 'bash',
         ),
         ...CoverageCollectorBuilder(
           workingDirectory: workingDirectory,

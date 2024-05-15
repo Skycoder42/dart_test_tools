@@ -281,8 +281,9 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run unit tests
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
-        run: dart test ${{ matrix.dartTestArgs }} --coverage=coverage --reporter github ${{ inputs.unitTestPaths }}
+        run: dart test ${{ matrix.dartTestArgs }} --coverage=coverage --reporter github ${{ inputs.unitTestPaths }} || [ $? = 79 ]
         working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Convert coverage data to lcov format
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.minCoverage > 0
         run: dart run coverage:format_coverage --lcov --check-ignore --in=coverage --out=coverage/lcov.info --report-on=lib
@@ -448,8 +449,9 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run integration tests
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
-        run: dart test ${{ matrix.dartTestArgs }} --reporter github ${{ inputs.integrationTestPaths }}
+        run: dart test ${{ matrix.dartTestArgs }} --reporter github ${{ inputs.integrationTestPaths }} || [ $? = 79 ]
         working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Shred .env file
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && always()
         run: shred -fzvu .env

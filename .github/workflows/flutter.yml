@@ -295,8 +295,9 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run unit tests
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
-        run: flutter test ${{ matrix.dartTestArgs }} --coverage --reporter github ${{ inputs.unitTestPaths }}
+        run: flutter test ${{ matrix.dartTestArgs }} --coverage --reporter github ${{ inputs.unitTestPaths }} || [ $? = 79 ]
         working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Normalize coverage paths
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.minCoverage > 0
         run: ${{ matrix.lcovCleanCommand }}
@@ -519,10 +520,11 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run integration tests (dart-vm)
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.platform != 'web'
-        run: ${{ matrix.runPrefix }} flutter test ${{ matrix.testArgs }} --reporter expanded ${{ inputs.integrationTestPaths }}
+        run: ${{ matrix.runPrefix }} flutter test ${{ matrix.testArgs }} --reporter expanded ${{ inputs.integrationTestPaths }} || [ $? = 79 ]
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+        shell: bash
       - name: Run integration tests (web)
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.platform == 'web'
-        run: $ChromeWebDriver/chromedriver --port=4444 & flutter drive --driver test_driver/integration_test.dart --target ${{ inputs.integrationTestPaths }} --release -d chrome --browser-name chrome
+        run: $ChromeWebDriver/chromedriver --port=4444 & flutter drive --driver test_driver/integration_test.dart --target ${{ inputs.integrationTestPaths }} --release -d chrome --browser-name chrome || [ $? = 79 ]
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
         shell: bash

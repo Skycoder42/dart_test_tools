@@ -90,8 +90,9 @@ class DartIntegrationTestBuilder implements StepBuilder {
         Step.run(
           name: 'Run integration tests',
           run: '$baseTool test ${dartTestArgs.expression} '
-              '--reporter github $integrationTestPaths',
+              '--reporter github $integrationTestPaths || [ \$? = 79 ]',
           workingDirectory: workingDirectory.toString(),
+          shell: 'bash',
         ),
         Step.run(
           name: 'Shred .env file',

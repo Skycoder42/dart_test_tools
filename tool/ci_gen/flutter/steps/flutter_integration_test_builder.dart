@@ -169,8 +169,9 @@ $baseTool devices
           ifExpression: platform.expression.ne(const Expression.literal('web')),
           run: '${runPrefix.expression} '
               '$baseTool test ${testArgs.expression} '
-              '--reporter expanded $integrationTestPaths',
+              '--reporter expanded $integrationTestPaths || [ \$? = 79 ]',
           workingDirectory: '$workingDirectory/$integrationTestProject',
+          shell: 'bash',
         ),
         Step.run(
           name: 'Run integration tests (web)',
@@ -180,7 +181,8 @@ $baseTool devices
               '--driver test_driver/integration_test.dart '
               '--target $integrationTestPaths '
               '--release '
-              '-d chrome --browser-name chrome',
+              '-d chrome --browser-name chrome '
+              r'|| [ $? = 79 ]',
           workingDirectory: '$workingDirectory/$integrationTestProject',
           shell: 'bash',
         ),
