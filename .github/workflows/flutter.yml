@@ -165,6 +165,9 @@ jobs:
       - name: Restore dart packages
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}
+      - name: Generate localization files
+        run: flutter gen-l10n
+        working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
         if: inputs.buildRunner
         run: flutter pub run build_runner build ${{ inputs.buildRunnerArgs }}
@@ -288,6 +291,10 @@ jobs:
       - name: Restore dart packages
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Generate localization files
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
+        run: flutter gen-l10n
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.buildRunner
@@ -453,6 +460,10 @@ jobs:
       - name: Restore dart packages
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Generate localization files
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
+        run: flutter gen-l10n
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.buildRunner
