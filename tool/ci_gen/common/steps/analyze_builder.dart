@@ -19,6 +19,7 @@ class AnalyzeBuilder implements StepBuilder {
   final Expression removePubspecOverrides;
   final Expression analyzeImage;
   final Expression panaScoreThreshold;
+  final bool isFlutter;
   final String baseTool;
   final String pubTool;
   final String runTool;
@@ -32,6 +33,7 @@ class AnalyzeBuilder implements StepBuilder {
     required this.removePubspecOverrides,
     required this.analyzeImage,
     required this.panaScoreThreshold,
+    required this.isFlutter,
     required this.baseTool,
     required this.pubTool,
     required this.runTool,
@@ -50,6 +52,7 @@ class AnalyzeBuilder implements StepBuilder {
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
           removePubspecOverrides: removePubspecOverrides,
+          isFlutter: ExpressionOrValue.value(isFlutter),
           pubTool: pubTool,
           runTool: runTool,
         ).build(),

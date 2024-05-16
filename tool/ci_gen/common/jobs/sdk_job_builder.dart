@@ -7,6 +7,9 @@ abstract base class SdkJobBuilder implements JobBuilder {
   const SdkJobBuilder();
 
   @protected
+  bool get isFlutter => false;
+
+  @protected
   String get baseTool;
 
   @protected

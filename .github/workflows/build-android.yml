@@ -101,6 +101,15 @@ jobs:
       - name: Restore dart packages
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}
+      - id: checkGenerate
+        name: Check if localizations generation is required
+        run: echo "generate=$(yq -r '.flutter.generate // false' pubspec.yaml)" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Generate localization files
+        if: steps.checkGenerate.outputs.generate == 'true'
+        run: flutter gen-l10n
+        working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
         if: inputs.buildRunner
         run: flutter pub run build_runner build --release ${{ inputs.buildRunnerArgs }}

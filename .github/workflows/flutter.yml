@@ -165,7 +165,13 @@ jobs:
       - name: Restore dart packages
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}
+      - id: checkGenerate
+        name: Check if localizations generation is required
+        run: echo "generate=$(yq -r '.flutter.generate // false' pubspec.yaml)" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Generate localization files
+        if: steps.checkGenerate.outputs.generate == 'true'
         run: flutter gen-l10n
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
@@ -292,8 +298,14 @@ jobs:
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Generate localization files
+      - id: checkGenerate
+        name: Check if localizations generation is required
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
+        run: echo "generate=$(yq -r '.flutter.generate // false' pubspec.yaml)" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Generate localization files
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && steps.checkGenerate.outputs.generate == 'true'
         run: flutter gen-l10n
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
@@ -461,8 +473,14 @@ jobs:
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Generate localization files
+      - id: checkGenerate
+        name: Check if localizations generation is required
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
+        run: echo "generate=$(yq -r '.flutter.generate // false' pubspec.yaml)" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Generate localization files
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && steps.checkGenerate.outputs.generate == 'true'
         run: flutter gen-l10n
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files

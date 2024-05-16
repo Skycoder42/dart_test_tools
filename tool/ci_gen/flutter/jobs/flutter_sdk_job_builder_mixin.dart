@@ -9,6 +9,9 @@ base mixin FlutterSdkJobBuilderMixin on SdkJobBuilder {
   Expression? get javaJdkVersion => null;
 
   @override
+  bool get isFlutter => true;
+
+  @override
   String get baseTool => 'flutter';
 
   @override

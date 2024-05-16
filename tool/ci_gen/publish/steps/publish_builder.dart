@@ -47,6 +47,7 @@ fi
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
           releaseMode: true,
+          isFlutter: ExpressionOrValue.expression(flutter),
           pubTool: toolsPub.expression.toString(),
           runTool: toolsPubRun.expression.toString(),
           skipYqInstall: true,

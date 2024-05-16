@@ -11,6 +11,7 @@ class ProjectSetupBuilder implements StepBuilder {
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression? removePubspecOverrides;
+  final ExpressionOrValue isFlutter;
   final bool releaseMode;
   final String pubTool;
   final String runTool;
@@ -22,6 +23,7 @@ class ProjectSetupBuilder implements StepBuilder {
     required this.buildRunner,
     required this.buildRunnerArgs,
     this.removePubspecOverrides,
+    required this.isFlutter,
     this.releaseMode = false,
     required this.pubTool,
     required this.runTool,
@@ -63,6 +65,7 @@ echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
           removePubspecOverrides: removePubspecOverrides,
+          isFlutter: isFlutter,
           releaseMode: releaseMode,
           pubTool: pubTool,
           runTool: runTool,

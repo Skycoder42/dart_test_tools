@@ -48,6 +48,7 @@ abstract base class AnalyzeJobBuilder extends SdkJobBuilder {
             removePubspecOverrides: removePubspecOverrides,
             analyzeImage: analyzeImage,
             panaScoreThreshold: panaScoreThreshold,
+            isFlutter: isFlutter,
             baseTool: baseTool,
             pubTool: pubTool,
             runTool: runTool,

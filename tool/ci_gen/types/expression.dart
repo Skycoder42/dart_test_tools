@@ -78,6 +78,15 @@ class ExpressionOrValue with _$ExpressionOrValue {
 
   const ExpressionOrValue._();
 
+  bool get isExpression => this is _ExpressionOrValueExpression;
+
+  bool get isValue => this is _ExpressionOrValueValue;
+
+  T rawValueOr<T>(T defaultValue) => when(
+        expression: (_) => defaultValue,
+        value: (value) => value as T,
+      );
+
   dynamic get asValue => when(
         expression: (expression) => expression.toString(),
         value: (value) => value,

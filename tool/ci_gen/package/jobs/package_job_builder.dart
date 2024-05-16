@@ -39,6 +39,7 @@ final class PackageJobBuilder extends SdkJobBuilder
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
             removePubspecOverrides: removePubspecOverrides,
+            isFlutter: isFlutter,
             pubTool: pubTool,
             runTool: runTool,
           ).build(),

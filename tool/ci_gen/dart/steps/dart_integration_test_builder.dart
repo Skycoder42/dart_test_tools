@@ -65,6 +65,7 @@ class DartIntegrationTestBuilder implements StepBuilder {
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
           removePubspecOverrides: removePubspecOverrides,
+          isFlutter: const ExpressionOrValue.value(false),
           pubTool: pubTool,
           runTool: runTool,
         ).build(),

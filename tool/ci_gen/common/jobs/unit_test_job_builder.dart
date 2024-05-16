@@ -87,6 +87,7 @@ abstract base class UnitTestJobBuilder extends SdkJobBuilder
             dartTestArgs: matrix.dartTestArgs,
             lcovCleanCommand: matrix.lcovCleanCommand,
             platform: matrix.platform,
+            isFlutter: isFlutter,
             baseTool: baseTool,
             pubTool: pubTool,
             runTool: runTool,

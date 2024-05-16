@@ -112,6 +112,7 @@ class CompileBuilder implements StepBuilder {
           buildRunnerArgs: buildRunnerArgs,
           removePubspecOverrides: removePubspecOverrides,
           releaseMode: true,
+          isFlutter: const ExpressionOrValue.value(false),
           pubTool: pubTool,
           runTool: runTool,
         ).build(),

@@ -31,6 +31,7 @@ class UnitTestBuilder implements StepBuilder {
   final PlatformMatrixProperty platform;
   final DartTestArgsMatrixProperty dartTestArgs;
   final LcovCleanCommandMatrixProperty lcovCleanCommand;
+  final bool isFlutter;
   final String baseTool;
   final String pubTool;
   final String runTool;
@@ -45,6 +46,7 @@ class UnitTestBuilder implements StepBuilder {
     required this.removePubspecOverrides,
     required this.unitTestPaths,
     required this.minCoverage,
+    required this.isFlutter,
     required this.baseTool,
     required this.pubTool,
     required this.runTool,
@@ -63,6 +65,7 @@ class UnitTestBuilder implements StepBuilder {
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
           removePubspecOverrides: removePubspecOverrides,
+          isFlutter: ExpressionOrValue.value(isFlutter),
           pubTool: pubTool,
           runTool: runTool,
         ).build(),

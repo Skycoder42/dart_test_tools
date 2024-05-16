@@ -41,6 +41,7 @@ class BuildAndroidAppBuilder implements StepBuilder {
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
           releaseMode: true,
+          isFlutter: const ExpressionOrValue.value(true),
           pubTool: pubTool,
           runTool: runTool,
         ).build(),

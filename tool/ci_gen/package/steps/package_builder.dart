@@ -15,6 +15,7 @@ class PackageBuilder implements StepBuilder {
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression removePubspecOverrides;
+  final bool isFlutter;
   final String pubTool;
   final String runTool;
 
@@ -24,6 +25,7 @@ class PackageBuilder implements StepBuilder {
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.removePubspecOverrides,
+    required this.isFlutter,
     required this.pubTool,
     required this.runTool,
   });
@@ -36,6 +38,7 @@ class PackageBuilder implements StepBuilder {
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
           removePubspecOverrides: removePubspecOverrides,
+          isFlutter: ExpressionOrValue.value(isFlutter),
           pubTool: pubTool,
           runTool: runTool,
         ).build(),
