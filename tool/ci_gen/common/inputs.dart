@@ -478,4 +478,15 @@ Example:
           'to which the cask should be published.',
     ),
   );
+
+  static const baseHref = WorkflowInput(
+    name: 'baseHref',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: '/',
+      description:
+          'The base href for the generated web application. Defaults to "/".',
+    ),
+  );
 }

@@ -30,6 +30,11 @@ on:
         required: false
         default: ""
         description: Additional args for the build number generator.
+      baseHref:
+        type: string
+        required: false
+        default: /
+        description: The base href for the generated web application. Defaults to "/".
     secrets:
       dartDefines:
         required: false
@@ -110,7 +115,7 @@ jobs:
         run: echo '${{ secrets.dartDefines }}' > '${{ runner.temp }}/dart-defines.env'
         shell: bash
       - name: Build web
-        run: flutter build web --release --build-number=${{ steps.generateBuildNumber.outputs.buildNumber }} --dart-define-from-file='${{ runner.temp }}/dart-defines.env' --no-web-resources-cdn --csp --source-maps --dump-info
+        run: flutter build web --release --build-number=${{ steps.generateBuildNumber.outputs.buildNumber }} --dart-define-from-file='${{ runner.temp }}/dart-defines.env' --no-web-resources-cdn --csp --source-maps --dump-info --base-href='${{ inputs.baseHref }}'
         working-directory: ${{ inputs.workingDirectory }}
       - name: Cleanup dart defines
         if: always()

@@ -9,6 +9,7 @@ class BuildWebArchiveBuilder implements StepBuilder {
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression buildNumberArgs;
+  final Expression baseHref;
   final Expression dartDefines;
   final String pubTool;
   final String runTool;
@@ -20,6 +21,7 @@ class BuildWebArchiveBuilder implements StepBuilder {
     required this.buildRunnerArgs,
     required this.buildNumberArgs,
     required this.dartDefines,
+    required this.baseHref,
     required this.pubTool,
     required this.runTool,
   });
@@ -36,7 +38,11 @@ class BuildWebArchiveBuilder implements StepBuilder {
           pubTool: pubTool,
           runTool: runTool,
           buildTarget: 'web',
-          buildArgs: '--no-web-resources-cdn --csp --source-maps --dump-info',
+          buildArgs: '--no-web-resources-cdn '
+              '--csp '
+              '--source-maps '
+              '--dump-info '
+              "--base-href='$baseHref'",
           artifactDir: 'build/web-archive',
           packageSteps: [
             Step.run(

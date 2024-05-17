@@ -26,6 +26,7 @@ class BuildWebWorkflow implements WorkflowBuilder {
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       buildNumberArgs: inputContext(WorkflowInputs.buildNumberArgs),
+      baseHref: inputContext(WorkflowInputs.baseHref),
       dartDefines: secretContext(WorkflowSecrets.dartDefines),
     );
 

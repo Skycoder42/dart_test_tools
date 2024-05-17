@@ -16,6 +16,7 @@ final class BuildWebJobBuilder extends SdkJobBuilder
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression buildNumberArgs;
+  final Expression baseHref;
   final Expression dartDefines;
 
   const BuildWebJobBuilder({
@@ -25,6 +26,7 @@ final class BuildWebJobBuilder extends SdkJobBuilder
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.buildNumberArgs,
+    required this.baseHref,
     required this.dartDefines,
   });
 
@@ -46,6 +48,7 @@ final class BuildWebJobBuilder extends SdkJobBuilder
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,
             buildNumberArgs: buildNumberArgs,
+            baseHref: baseHref,
             dartDefines: dartDefines,
             pubTool: pubTool,
             runTool: runTool,
