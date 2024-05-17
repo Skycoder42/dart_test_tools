@@ -71,8 +71,8 @@ class VersionSyncCommand extends CiderCommand {
 
     await _replaceInFileMapped(
       buildGradle,
-      r"^version '.*'$",
-      (m) => "version '${pubspec.version}'",
+      r'''^version\s+(?:=\s*)?["'].*["']$''',
+      (m) => 'version = "${pubspec.version}"',
     );
     stdout.writeln('Synced version with android');
   }

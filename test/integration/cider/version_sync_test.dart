@@ -54,7 +54,10 @@ void main() {
     'versions are updated to $testVersion after sync',
     timeout: const Timeout(Duration(minutes: 2)),
     () async {
-      expect(buildGradle.readAsLinesSync(), contains("version '1.0-SNAPSHOT'"));
+      expect(
+        buildGradle.readAsLinesSync(),
+        contains('version = "1.0-SNAPSHOT"'),
+      );
       expect(
         iosPodspec.readAsLinesSync(),
         contains("  s.version          = '0.0.1'"),
@@ -75,7 +78,10 @@ void main() {
       ]);
       expect(result, 0);
 
-      expect(buildGradle.readAsLinesSync(), contains("version '$testVersion'"));
+      expect(
+        buildGradle.readAsLinesSync(),
+        contains('version = "$testVersion"'),
+      );
       expect(
         iosPodspec.readAsLinesSync(),
         contains("  s.version          = '$testVersion'"),
@@ -107,7 +113,10 @@ void main() {
       ]);
       expect(result, 1);
 
-      expect(buildGradle.readAsLinesSync(), contains("version '1.0-SNAPSHOT'"));
+      expect(
+        buildGradle.readAsLinesSync(),
+        contains('version = "1.0-SNAPSHOT"'),
+      );
       expect(
         iosPodspec.readAsLinesSync(),
         contains("  s.version          = '0.0.1'"),
