@@ -13,7 +13,7 @@ class ProjectPrepareBuilder implements StepBuilder {
   final Expression? artifactDependencies;
   final Expression? buildRunner;
   final Expression? buildRunnerArgs;
-  final Expression? removePubspecOverrides;
+  final ExpressionOrValue removePubspecOverrides;
   final ExpressionOrValue isFlutter;
   final bool releaseMode;
   final String pubTool;
@@ -26,7 +26,7 @@ class ProjectPrepareBuilder implements StepBuilder {
     this.artifactDependencies,
     this.buildRunner,
     this.buildRunnerArgs,
-    this.removePubspecOverrides,
+    this.removePubspecOverrides = const ExpressionOrValue.value(true),
     required this.isFlutter,
     this.releaseMode = false,
     required this.pubTool,
@@ -36,16 +36,17 @@ class ProjectPrepareBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        Step.run(
-          name: 'Remove pubspec_overrides.yaml$_titleSuffix',
-          ifExpression: removePubspecOverrides != null
-              ? (removePubspecOverrides! & ifExpression)
-              : ifExpression,
-          run: 'find . -type f -name "pubspec_overrides.yaml" '
-              r'-exec git rm -f {} \;',
-          workingDirectory: workingDirectory.toString(),
-          shell: 'bash',
-        ),
+        if (removePubspecOverrides.rawValueOr(true))
+          Step.run(
+            name: 'Remove pubspec_overrides.yaml$_titleSuffix',
+            ifExpression: removePubspecOverrides.isExpression
+                ? (removePubspecOverrides.asExpression & ifExpression)
+                : ifExpression,
+            run: 'find . -type f -name "pubspec_overrides.yaml" '
+                r'-exec git rm -f {} \;',
+            workingDirectory: workingDirectory.toString(),
+            shell: 'bash',
+          ),
         if (artifactDependencies != null)
           Step.run(
             name: 'Create pubspec_overrides.yaml for artifact packages',

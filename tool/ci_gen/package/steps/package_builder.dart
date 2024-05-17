@@ -37,7 +37,8 @@ class PackageBuilder implements StepBuilder {
           artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
-          removePubspecOverrides: removePubspecOverrides,
+          removePubspecOverrides:
+              ExpressionOrValue.expression(removePubspecOverrides),
           isFlutter: ExpressionOrValue.value(isFlutter),
           pubTool: pubTool,
           runTool: runTool,

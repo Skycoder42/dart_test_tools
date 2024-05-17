@@ -94,10 +94,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Remove pubspec_overrides.yaml
-        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Restore dart packages
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}

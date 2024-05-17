@@ -10,7 +10,7 @@ class ProjectSetupBuilder implements StepBuilder {
   final Expression? artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
-  final Expression? removePubspecOverrides;
+  final ExpressionOrValue removePubspecOverrides;
   final ExpressionOrValue isFlutter;
   final bool releaseMode;
   final String pubTool;
@@ -22,7 +22,7 @@ class ProjectSetupBuilder implements StepBuilder {
     this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
-    this.removePubspecOverrides,
+    this.removePubspecOverrides = const ExpressionOrValue.value(true),
     required this.isFlutter,
     this.releaseMode = false,
     required this.pubTool,

@@ -76,10 +76,6 @@ jobs:
         with:
           pattern: package-*
           path: ${{ runner.temp }}/.artifacts
-      - name: Remove pubspec_overrides.yaml
-        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Create pubspec_overrides.yaml for artifact packages
         if: inputs.artifactDependencies != ''
         run: |

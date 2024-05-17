@@ -86,7 +86,8 @@ class FlutterIntegrationTestBuilder implements StepBuilder {
           artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
-          removePubspecOverrides: removePubspecOverrides,
+          removePubspecOverrides:
+              ExpressionOrValue.expression(removePubspecOverrides),
           isFlutter: const ExpressionOrValue.value(true),
           pubTool: pubTool,
           runTool: runTool,
@@ -125,7 +126,8 @@ sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
           titleSuffix: '(Integration test project)',
           workingDirectory:
               Expression.fake('$workingDirectory/$integrationTestProject'),
-          removePubspecOverrides: removePubspecOverrides,
+          removePubspecOverrides:
+              ExpressionOrValue.expression(removePubspecOverrides),
           isFlutter: const ExpressionOrValue.value(false),
           pubTool: pubTool,
           runTool: runTool,
