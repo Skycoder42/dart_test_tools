@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.10.2] - 2024-05-17
+### Changed
+- Update min required dart sdk to 3.4.0
+- Update dependencies
+
 ## [5.10.1] - 2024-04-22
 ### Fixed
 - Fixed cask name generation
@@ -309,6 +314,7 @@ have been added:
 ### Added
 - Initial release
 
+[5.10.2]: https://github.com/Skycoder42/dart_test_tools/compare/v5.10.1...v5.10.2
 [5.10.1]: https://github.com/Skycoder42/dart_test_tools/compare/v5.10.0...v5.10.1
 [5.10.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.9.0...v5.10.0
 [5.9.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.8.1...v5.9.0

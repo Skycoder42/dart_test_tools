@@ -46,7 +46,7 @@ abstract class Tools {
 
   /// https://github.com/bilelmoussaoui/flatpak-github-actions/releases
   static const bilelmoussaouiFlatpakGithubActionsFlatpakBuilder =
-      'bilelmoussaoui/flatpak-github-actions/flatpak-builder@86f5f35aa999f626a05d2943460ff0e811655327';
+      'bilelmoussaoui/flatpak-github-actions/flatpak-builder@d6ddccb268e43e87b19ca0112b83de26fb83b215';
   // TODO change back to v6 once upload-artifact option has been published
 
   /// https://github.com/stefanzweifel/git-auto-commit-action/releases

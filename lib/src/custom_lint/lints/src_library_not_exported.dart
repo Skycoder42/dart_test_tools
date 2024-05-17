@@ -87,7 +87,7 @@ class SrcLibraryNotExported extends DartLintRule {
       }
 
       for (final element in exportableElements) {
-        reporter.reportErrorForElement(_code, element);
+        reporter.atElement(element, _code);
       }
     });
   }
