@@ -9,8 +9,8 @@ on:
       flatpakSdkVersion:
         type: string
         required: false
-        default: "23.08"
-        description: The version of the freedesktop sdk and runtime being used.
+        default: "46"
+        description: The version of the gnome sdk and runtime being used.
       bundleName:
         type: string
         required: true
@@ -56,7 +56,7 @@ jobs:
             qemuArch: arm64
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/flatpak-github-actions:freedesktop-${{ inputs.flatpakSdkVersion }}
+      image: bilelmoussaoui/flatpak-github-actions:gnome-${{ inputs.flatpakSdkVersion }}
       options: --privileged
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
@@ -74,7 +74,7 @@ jobs:
         with:
           platforms: ${{ matrix.qemuArch }}
       - name: Download flatpak flutter SDK
-        run: curl --fail-with-body -L -o /tmp/flutter.flatpak 'https://github.com/Skycoder42/dart_test_tools/releases/download/flatpak-flutter-extension%2F${{ inputs.flatpakSdkVersion }}/org.freedesktop.Sdk.Extension.flutter_${{ inputs.flatpakSdkVersion }}_${{ matrix.arch }}.flatpak'
+        run: curl --fail-with-body -L -o /tmp/flutter.flatpak 'https://github.com/Skycoder42/dart_test_tools/releases/download/flatpak-flutter-extension%2F${{ inputs.flatpakSdkVersion }}/org.gnome.Sdk.Extension.flutter_${{ inputs.flatpakSdkVersion }}_${{ matrix.arch }}.flatpak'
       - name: Install flatpak flutter SDK
         run: flatpak install --system -y --noninteractive /tmp/flutter.flatpak
       - name: Checkout repository

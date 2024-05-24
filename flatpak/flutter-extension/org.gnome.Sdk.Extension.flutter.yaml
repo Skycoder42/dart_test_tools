@@ -1,11 +1,11 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/flatpak/flatpak-builder/main/data/flatpak-manifest.schema.json
 
 ---
-app-id: org.freedesktop.Sdk.Extension.flutter
-branch: "23.08"
-runtime: org.freedesktop.Sdk
-runtime-version: "23.08"
-sdk: org.freedesktop.Sdk
+app-id: org.gnome.Sdk.Extension.flutter
+branch: "46"
+runtime: org.gnome.Sdk
+runtime-version: "46"
+sdk: org.gnome.Sdk
 build-extension: true
 separate-locales: false
 modules:
@@ -43,7 +43,7 @@ modules:
     buildsystem: simple
     sources:
       - type: file
-        path: org.freedesktop.Sdk.Extension.flutter.metainfo.xml
+        path: org.gnome.Sdk.Extension.flutter.metainfo.xml
     build-commands:
       - mkdir -p "$FLATPAK_DEST/share/metainfo/"
       - cp -a "$FLATPAK_ID.metainfo.xml" "$FLATPAK_DEST/share/metainfo/"

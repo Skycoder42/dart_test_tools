@@ -12,14 +12,14 @@ on:
     - cron: "17 5 * * 6"
 
 env:
-  SDK_VERSION: "23.08"
+  SDK_VERSION: "46"
 
 jobs:
   build_extension:
     name: Build flatpak runtime extension
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/flatpak-github-actions:freedesktop-23.08
+      image: bilelmoussaoui/flatpak-github-actions:gnome-46
       options: --privileged
     environment: flatpak
     strategy:
@@ -50,8 +50,8 @@ jobs:
       - name: Build flatpak
         uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@d6ddccb268e43e87b19ca0112b83de26fb83b215 # v6, but needs new feature
         with:
-          bundle: org.freedesktop.Sdk.Extension.flutter_${{ env.SDK_VERSION }}_${{ matrix.arch }}.flatpak
-          manifest-path: flatpak/flutter-extension/org.freedesktop.Sdk.Extension.flutter.yaml
+          bundle: org.gnome.Sdk.Extension.flutter_${{ env.SDK_VERSION }}_${{ matrix.arch }}.flatpak
+          manifest-path: flatpak/flutter-extension/org.gnome.Sdk.Extension.flutter.yaml
           gpg-sign: ${{ secrets.GPG_KEY_ID }}
           verbose: true
           cache: false
@@ -61,7 +61,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: flatpak-bundle-${{ matrix.arch }}
-          path: org.freedesktop.Sdk.Extension.flutter_${{ env.SDK_VERSION }}_${{ matrix.arch }}.flatpak
+          path: org.gnome.Sdk.Extension.flutter_${{ env.SDK_VERSION }}_${{ matrix.arch }}.flatpak
           compression-level: 0
           if-no-files-found: error
           retention-days: 1

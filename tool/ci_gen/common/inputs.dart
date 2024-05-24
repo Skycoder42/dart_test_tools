@@ -437,8 +437,8 @@ Example:
     input: Input(
       type: Type.string,
       required: false,
-      defaultValue: '23.08',
-      description: 'The version of the freedesktop sdk and runtime being used.',
+      defaultValue: '46',
+      description: 'The version of the gnome sdk and runtime being used.',
     ),
   );
 
