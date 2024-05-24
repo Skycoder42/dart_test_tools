@@ -105,7 +105,10 @@ class PkgBuildGenerator {
         ),
         'source': _getSourceUrls(options),
         'b2sums': PkgProperty.literalList(
-          const ['PLACEHOLDER', 'PLACEHOLDER', 'PLACEHOLDER'],
+          List.filled(
+            3 + options.aurOptions.extraSources.length,
+            'PLACEHOLDER',
+          ),
           multiLine: true,
         ),
         'install': PkgProperty(installFileName),
@@ -166,6 +169,8 @@ class PkgBuildGenerator {
         // ignore: lines_longer_than_80_chars
         'debug.tar.xz::${binariesBaseUri.resolve('${options.aurOptions.binariesArchivePrefix}-linux-debug-symbols.tar.xz')}',
       ),
+      for (final extraSource in options.aurOptions.extraSources)
+        PkgProperty.interpolate('${extraSource.name}::${extraSource.url}'),
     ]);
   }
 
@@ -195,8 +200,15 @@ class PkgBuildGenerator {
             options.aurOptions.files;
 
     for (final install in installFiles) {
-      yield "install -D -m${install.permissions} '${install.source}' "
-          '"\$pkgdir${install.target}"';
+      if (install.recursive) {
+        yield "cd '${install.source}'";
+        yield 'find . -type f -exec install -D -m${install.permissions} "{}" '
+            '"\$pkgdir${install.target}/{}" \\;';
+        yield r'cd "$_pkgdir"';
+      } else {
+        yield "install -D -m${install.permissions} '${install.source}' "
+            '"\$pkgdir${install.target}"';
+      }
     }
 
     if (licenseFileName != null) {

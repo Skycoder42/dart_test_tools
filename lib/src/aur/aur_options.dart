@@ -24,8 +24,8 @@ sealed class AurOptionsPubspecView with _$AurOptionsPubspecView {
     checked: true,
   )
   const factory AurOptionsPubspecView({
-    required Map<String, String?> executables,
-    required AurOptions aur,
+    @JsonKey(required: true) required Map<String, String?> executables,
+    @JsonKey(required: true) required AurOptions aur,
   }) = _AurOptionsPubspecView;
 
   factory AurOptionsPubspecView.fromJson(Map<String, dynamic> json) =>
@@ -44,23 +44,40 @@ sealed class AurOptions with _$AurOptions {
     disallowUnrecognizedKeys: true,
   )
   const factory AurOptions({
-    required String maintainer,
+    @JsonKey(required: true) required String maintainer,
     String? pkgname,
     int? epoch,
     @Default(1) int pkgrel,
     @Default('v') String tagPrefix,
     @Default('custom') String license,
-    @Default(<String>[]) List<String> depends,
+    @Default([]) List<String> depends,
     String? sourcesDir,
     @Default('binaries') String binariesArchivePrefix,
+    @Default([]) List<Source> extraSources,
     String? install,
-    @Default(<InstallTarget>[]) List<InstallTarget> files,
-    @Default(<String>[]) List<String> backup,
+    @Default([]) List<InstallTarget> files,
+    @Default([]) List<String> backup,
     MakedebOptions? makedeb,
   }) = _AurOptions;
 
   factory AurOptions.fromJson(Map<String, dynamic> json) =>
       _$AurOptionsFromJson(json);
+}
+
+@internal
+@freezed
+sealed class Source with _$Source {
+  @JsonSerializable(
+    anyMap: true,
+    checked: true,
+    disallowUnrecognizedKeys: true,
+  )
+  const factory Source({
+    @JsonKey(required: true) required String name,
+    @JsonKey(required: true) required Uri url,
+  }) = _Source;
+
+  factory Source.fromJson(Map<String, dynamic> json) => _$SourceFromJson(json);
 }
 
 @internal
@@ -72,9 +89,10 @@ sealed class InstallTarget with _$InstallTarget {
     disallowUnrecognizedKeys: true,
   )
   const factory InstallTarget({
-    required String source,
-    required String target,
+    @JsonKey(required: true) required String source,
+    @JsonKey(required: true) required String target,
     @Default(644) int permissions,
+    @Default(false) bool recursive,
   }) = _InstallTarget;
 
   factory InstallTarget.fromJson(Map<String, dynamic> json) =>
@@ -90,9 +108,9 @@ sealed class MakedebOptions with _$MakedebOptions {
     disallowUnrecognizedKeys: true,
   )
   const factory MakedebOptions({
-    List<String>? depends,
-    List<InstallTarget>? files,
-    List<String>? backup,
+    @Default([]) List<String> depends,
+    @Default([]) List<InstallTarget> files,
+    @Default([]) List<String> backup,
   }) = _MakedebOptions;
 
   factory MakedebOptions.fromJson(Map<String, dynamic> json) =>

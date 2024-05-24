@@ -50,11 +50,11 @@ class BuildWebArchiveBuilder implements StepBuilder {
               run: r'''
 set -eo pipefail
 
-archive_name=$(jq -r '.short_name' ../../web/manifest.json)
-mkdir ../web-archive
-tar -cJvf "../web-archive/$archive_name Web.tar.xz" .
+archive_name=$(jq -r '.short_name' ../web/manifest.json)
+mkdir web-archive
+tar -cJvf "web-archive/$archive_name Web.tar.xz" web
 ''',
-              workingDirectory: '$workingDirectory/build/web',
+              workingDirectory: '$workingDirectory/build',
             ),
           ],
         ).build(),

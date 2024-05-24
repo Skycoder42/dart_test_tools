@@ -2,7 +2,7 @@
   "cSpell.words": [
     "makedeb",
     "pana",
-    "Pkgbuild"
+    "pkgbuild"
   ],
   "yaml.schemas": {
     "https://json.schemastore.org/github-workflow.json": "file:///workspaces/dart_test_tools/.github/workflows/deploy.yml"

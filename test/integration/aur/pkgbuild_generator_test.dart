@@ -63,6 +63,13 @@ void main() {
           ],
         if (!minimal) 'sourcesDir': r'test-package-sources-$pkgver/my_app',
         if (!minimal) 'binariesArchivePrefix': 'my-app',
+        if (!minimal)
+          'extraSources': const [
+            {
+              'name': 'extra-source.tar.gz',
+              'url': 'https://example.com/extra/source.tar.gz',
+            }
+          ],
         if (!minimal) 'install': 'custom_package.install',
         if (!minimal)
           'files': const [
@@ -74,6 +81,17 @@ void main() {
               'source': 'data/database.db',
               'target': r'/usr/share/$pkgname/core.db',
               'permissions': 600,
+            },
+            {
+              'source': 'doc',
+              'target': '/usr/doc',
+              'recursive': true,
+            },
+            {
+              'source': 'data/base-data',
+              'target': r'/usr/share/$pkgname/base',
+              'permissions': 755,
+              'recursive': true,
             },
           ],
         if (!minimal) 'backup': const ['etc/config.json'],
@@ -88,6 +106,12 @@ void main() {
               {
                 'source': 'config/deb.json',
                 'target': '/etc/config.json',
+              },
+              {
+                'source': 'data/deb-data',
+                'target': r'/usr/share/$pkgname/base',
+                'permissions': 755,
+                'recursive': true,
               },
             ],
             'backup': const ['/etc/config.json'],
@@ -276,8 +300,10 @@ license=('MIT')
 depends=('dependency-a' 'dependency-b' 'dependency-c')
 source=("sources.tar.gz::https://example.com/home/git/archive/refs/tags/my-app%2Fv1.2.3-dev+5.tar.gz"
         "bin.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux.tar.xz"
-        "debug.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux-debug-symbols.tar.xz")
+        "debug.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux-debug-symbols.tar.xz"
+        "extra-source.tar.gz::https://example.com/extra/source.tar.gz")
 b2sums=('PLACEHOLDER'
+        'PLACEHOLDER'
         'PLACEHOLDER'
         'PLACEHOLDER')
 install='custom_package.install'
@@ -292,6 +318,12 @@ package_custom_package() {
   cd "$_pkgdir"
   install -D -m644 'config/config.json' "$pkgdir/etc/config.json"
   install -D -m600 'data/database.db' "$pkgdir/usr/share/$pkgname/core.db"
+  cd 'doc'
+  find . -type f -exec install -D -m644 "{}" "$pkgdir/usr/doc/{}" \;
+  cd "$_pkgdir"
+  cd 'data/base-data'
+  find . -type f -exec install -D -m755 "{}" "$pkgdir/usr/share/$pkgname/base/{}" \;
+  cd "$_pkgdir"
   install -D -m644 'LICENSE.txt' "$pkgdir/usr/share/licenses/$pkgname/"'LICENSE.txt'
 }
 
@@ -351,8 +383,10 @@ license=('MIT')
 depends=('dependency-x' 'dependency-y' 'dependency-z')
 source=("sources.tar.gz::https://example.com/home/git/archive/refs/tags/my-app%2Fv1.2.3-dev+5.tar.gz"
         "bin.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux.tar.xz"
-        "debug.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux-debug-symbols.tar.xz")
+        "debug.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux-debug-symbols.tar.xz"
+        "extra-source.tar.gz::https://example.com/extra/source.tar.gz")
 b2sums=('PLACEHOLDER'
+        'PLACEHOLDER'
         'PLACEHOLDER'
         'PLACEHOLDER')
 install='custom_package.install'
@@ -367,6 +401,9 @@ package_custom_package() {
   install -D -m755 'bin/exe-two' "$pkgdir/usr/bin/"'exe-two'
   cd "$_pkgdir"
   install -D -m644 'config/deb.json' "$pkgdir/etc/config.json"
+  cd 'data/deb-data'
+  find . -type f -exec install -D -m755 "{}" "$pkgdir/usr/share/$pkgname/base/{}" \;
+  cd "$_pkgdir"
   install -D -m644 'LICENSE.txt' "$pkgdir/usr/share/licenses/$pkgname/"'LICENSE.txt'
 }
 
