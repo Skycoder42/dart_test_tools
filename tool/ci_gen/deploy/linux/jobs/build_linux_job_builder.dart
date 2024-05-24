@@ -67,7 +67,7 @@ final class BuildLinuxJobBuilder extends SdkJobBuilder
         runsOn: runsOn,
         container: Container(
           image:
-              'bilelmoussaoui/flatpak-github-actions:gnome-$flatpakSdkVersion',
+              'bilelmoussaoui/flatpak-github-actions:freedesktop-$flatpakSdkVersion',
           options: '--privileged',
         ),
         environment: Environments.flatpak,

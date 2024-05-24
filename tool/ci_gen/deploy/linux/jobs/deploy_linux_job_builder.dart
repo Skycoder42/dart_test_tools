@@ -35,7 +35,8 @@ class DeployLinuxJobBuilder implements JobBuilder {
         needs: {releaseCreated.jobId},
         runsOn: RunsOn.ubuntuLatest.id,
         container: Container(
-          image: 'bilelmoussaoui/flatpak-github-actions:gnome-$sdkVersion',
+          image:
+              'bilelmoussaoui/flatpak-github-actions:freedesktop-$sdkVersion',
           options: '--privileged',
         ),
         ifExpression:

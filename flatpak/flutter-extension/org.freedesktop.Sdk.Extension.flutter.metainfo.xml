@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="addon">
-    <id>org.gnome.Sdk.Extension.flutter</id>
-    <extends>org.gnome.Sdk</extends>
+    <id>org.freedesktop.Sdk.Extension.flutter</id>
+    <extends>org.freedesktop.Sdk</extends>
     <name>Flutter</name>
     <summary>Flutter SDK with precached linux build binaries. Requires network to build.</summary>
     <project_license>BSD-3-Clause</project_license>
