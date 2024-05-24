@@ -442,6 +442,16 @@ Example:
     ),
   );
 
+  static const flatpakPlatformImage = WorkflowInput(
+    name: 'flatpakPlatformImage',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: 'flatpak-github-actions:gnome-46',
+      description: 'The docker image to be used to build the bundle with',
+    ),
+  );
+
   static const bundleName = WorkflowInput(
     name: 'bundleName',
     input: Input(

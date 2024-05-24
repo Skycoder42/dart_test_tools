@@ -30,11 +30,11 @@ on:
         type: string
         required: true
         description: A JSON-encoded list of all platforms that this project can build/run for.
-      flatpakSdkVersion:
+      flatpakPlatformImage:
         type: string
         required: false
-        default: "23.08"
-        description: The version of the freedesktop sdk and runtime being used.
+        default: flatpak-github-actions:gnome-46
+        description: The docker image to be used to build the bundle with
       targetRepo:
         type: string
         required: false
@@ -140,7 +140,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/flatpak-github-actions:freedesktop-${{ inputs.flatpakSdkVersion }}
+      image: bilelmoussaoui/${{ inputs.flatpakPlatformImage }}
       options: --privileged
     steps:
       - name: '[Validate Inputs] Ensure gpgKeyId is set'

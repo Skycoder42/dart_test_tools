@@ -21,6 +21,7 @@ class BuildLinuxWorkflow implements WorkflowBuilder {
 
     final buildLinuxJobBuilder = BuildLinuxJobBuilder(
       dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+      flatpakPlatformImage: inputContext(WorkflowInputs.flatpakPlatformImage),
       flatpakSdkVersion: inputContext(WorkflowInputs.flatpakSdkVersion),
       bundleName: inputContext(WorkflowInputs.bundleName),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),

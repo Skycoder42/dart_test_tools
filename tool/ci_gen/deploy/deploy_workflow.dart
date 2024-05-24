@@ -39,7 +39,7 @@ class DeployWorkflow implements WorkflowBuilder {
     final deployLinuxJobBuilder = DeployLinuxJobBuilder(
       releaseCreated: releaseJobBuilder.updateOutput,
       enabledPlatforms: inputContext(WorkflowInputs.enabledPlatforms),
-      sdkVersion: inputContext(WorkflowInputs.flatpakSdkVersion),
+      flatpakPlatformImage: inputContext(WorkflowInputs.flatpakPlatformImage),
       gpgKey: secretContext(WorkflowSecrets.gpgKey(false)),
       gpgKeyId: secretContext(WorkflowSecrets.gpgKeyId(false)),
     );

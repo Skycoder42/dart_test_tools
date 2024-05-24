@@ -14,14 +14,14 @@ import '../steps/deploy_to_pages_builder.dart';
 class DeployLinuxJobBuilder implements JobBuilder {
   final JobIdOutput releaseCreated;
   final Expression enabledPlatforms;
-  final Expression sdkVersion;
+  final Expression flatpakPlatformImage;
   final Expression gpgKeyId;
   final Expression gpgKey;
 
   DeployLinuxJobBuilder({
     required this.releaseCreated,
     required this.enabledPlatforms,
-    required this.sdkVersion,
+    required this.flatpakPlatformImage,
     required this.gpgKeyId,
     required this.gpgKey,
   });
@@ -35,8 +35,7 @@ class DeployLinuxJobBuilder implements JobBuilder {
         needs: {releaseCreated.jobId},
         runsOn: RunsOn.ubuntuLatest.id,
         container: Container(
-          image:
-              'bilelmoussaoui/flatpak-github-actions:freedesktop-$sdkVersion',
+          image: 'bilelmoussaoui/$flatpakPlatformImage',
           options: '--privileged',
         ),
         ifExpression:

@@ -31,6 +31,7 @@ final class BuildLinuxJobBuilder extends SdkJobBuilder
         MatrixJobBuilderMixin<FlatpakMatrix, FlatpakArchMatrixSelector> {
   @override
   final Expression dartSdkVersion;
+  final Expression flatpakPlatformImage;
   final Expression flatpakSdkVersion;
   final Expression bundleName;
   final Expression workingDirectory;
@@ -42,6 +43,7 @@ final class BuildLinuxJobBuilder extends SdkJobBuilder
 
   BuildLinuxJobBuilder({
     required this.dartSdkVersion,
+    required this.flatpakPlatformImage,
     required this.flatpakSdkVersion,
     required this.bundleName,
     required this.workingDirectory,
@@ -66,8 +68,7 @@ final class BuildLinuxJobBuilder extends SdkJobBuilder
         name: 'Build linux flatpak bundle',
         runsOn: runsOn,
         container: Container(
-          image:
-              'bilelmoussaoui/flatpak-github-actions:freedesktop-$flatpakSdkVersion',
+          image: 'bilelmoussaoui/$flatpakPlatformImage',
           options: '--privileged',
         ),
         environment: Environments.flatpak,
