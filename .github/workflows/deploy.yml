@@ -241,7 +241,9 @@ jobs:
       - name: Tap local repository
         run: brew tap ${{ inputs.targetRepo }} tap
       - name: Audit generated cask
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.targetRepoToken }}
         run: brew audit --arch all --strict --git --online --no-signing --token-conflicts --cask '${{ inputs.targetRepo }}/${{ steps.generate-cask.outputs.caskName }}'
-      - name: Push tap update to remite
+      - name: Push tap update to remote
         run: git push origin
         working-directory: tap

@@ -2,6 +2,7 @@ import '../../../common/api/step_builder.dart';
 import '../../../common/contexts.dart';
 import '../../../common/steps/checkout_builder.dart';
 import '../../../common/steps/install_dart_test_tools_builder.dart';
+import '../../../types/env.dart';
 import '../../../types/expression.dart';
 import '../../../types/id.dart';
 import '../../../types/step.dart';
@@ -67,9 +68,12 @@ class DeployToTapBuilder implements StepBuilder {
           name: 'Audit generated cask',
           run: 'brew audit --arch all --strict --git --online --no-signing '
               "--token-conflicts --cask '$targetRepo/${caskNameOutput.expression}'",
+          env: Env({
+            'HOMEBREW_GITHUB_API_TOKEN': targetRepoToken.toString(),
+          }),
         ),
         const Step.run(
-          name: 'Push tap update to remite',
+          name: 'Push tap update to remote',
           run: 'git push origin',
           workingDirectory: 'tap',
         ),
