@@ -201,10 +201,10 @@ class PkgBuildGenerator {
 
     for (final install in installFiles) {
       if (install.recursive) {
-        yield "cd '${install.source}'";
+        yield "pushd '${install.source}'";
         yield 'find . -type f -exec install -D -m${install.permissions} "{}" '
             '"\$pkgdir${install.target}/{}" \\;';
-        yield r'cd "$_pkgdir"';
+        yield 'popd';
       } else {
         yield "install -D -m${install.permissions} '${install.source}' "
             '"\$pkgdir${install.target}"';

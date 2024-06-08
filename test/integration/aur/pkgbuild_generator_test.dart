@@ -318,12 +318,12 @@ package_custom_package() {
   cd "$_pkgdir"
   install -D -m644 'config/config.json' "$pkgdir/etc/config.json"
   install -D -m600 'data/database.db' "$pkgdir/usr/share/$pkgname/core.db"
-  cd 'doc'
+  pushd 'doc'
   find . -type f -exec install -D -m644 "{}" "$pkgdir/usr/doc/{}" \;
-  cd "$_pkgdir"
-  cd 'data/base-data'
+  popd
+  pushd 'data/base-data'
   find . -type f -exec install -D -m755 "{}" "$pkgdir/usr/share/$pkgname/base/{}" \;
-  cd "$_pkgdir"
+  popd
   install -D -m644 'LICENSE.txt' "$pkgdir/usr/share/licenses/$pkgname/"'LICENSE.txt'
 }
 
@@ -401,9 +401,9 @@ package_custom_package() {
   install -D -m755 'bin/exe-two' "$pkgdir/usr/bin/"'exe-two'
   cd "$_pkgdir"
   install -D -m644 'config/deb.json' "$pkgdir/etc/config.json"
-  cd 'data/deb-data'
+  pushd 'data/deb-data'
   find . -type f -exec install -D -m755 "{}" "$pkgdir/usr/share/$pkgname/base/{}" \;
-  cd "$_pkgdir"
+  popd
   install -D -m644 'LICENSE.txt' "$pkgdir/usr/share/licenses/$pkgname/"'LICENSE.txt'
 }
 

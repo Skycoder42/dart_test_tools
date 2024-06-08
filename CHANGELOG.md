@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.11.1] - 2024-06-08
+### Fixed
+- fix pkgbuild generator
+
 ## [5.11.0] - 2024-05-24
 ### Added
 - Improved generate-pkgbuild:
@@ -324,6 +328,7 @@ have been added:
 ### Added
 - Initial release
 
+[5.11.1]: https://github.com/Skycoder42/dart_test_tools/compare/v5.11.0...v5.11.1
 [5.11.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.10.2+1...v5.11.0
 [5.10.2+1]: https://github.com/Skycoder42/dart_test_tools/compare/v5.10.2...v5.10.2+1
 [5.10.2]: https://github.com/Skycoder42/dart_test_tools/compare/v5.10.1...v5.10.2
