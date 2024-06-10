@@ -108,9 +108,9 @@ sealed class MakedebOptions with _$MakedebOptions {
     disallowUnrecognizedKeys: true,
   )
   const factory MakedebOptions({
-    @Default([]) List<String> depends,
-    @Default([]) List<InstallTarget> files,
-    @Default([]) List<String> backup,
+    List<String>? depends,
+    List<InstallTarget>? files,
+    List<String>? backup,
   }) = _MakedebOptions;
 
   factory MakedebOptions.fromJson(Map<String, dynamic> json) =>

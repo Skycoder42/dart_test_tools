@@ -25,7 +25,7 @@ class VersionSyncCommand extends CiderCommand {
   Future<int> exec(Project project) async {
     final rootDir = switch (globalResults!['project-root']) {
       final String path => Directory(path),
-      _ => findProjectRoot(Directory.current)
+      _ => await findProjectRoot(Directory.current)
     };
 
     final pubspecFile = File.fromUri(rootDir.uri.resolve('pubspec.yaml'));
