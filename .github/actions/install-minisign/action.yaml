@@ -15,7 +15,16 @@ runs:
       if: runner.os	== 'macOS'
       run: brew install minisign
       shell: bash
-    - name: Install minisign from scoop
+    # - name: Install minisign from scoop
+    #   if: runner.os	== 'Windows'
+    #   run: scoop install minisign
+    #   shell: powershell
+    - name: Install minisign from github
       if: runner.os	== 'Windows'
-      run: scoop install minisign
-      shell: powershell
+      run: |
+        set -exo pipefail
+
+        curl -sSLo "$RUNNER_TEMP/minisign.zip" 'https://github.com/jedisct1/minisign/releases/download/0.11/minisign-win64.zip'
+        unzip "$RUNNER_TEMP/minisign.zip" -d "$RUNNER_TOOL_CACHE"
+        echo '${{ runner.tool_cache }}\minisign-win64' >> "$GITHUB_PATH"
+      shell: bash

@@ -8,9 +8,7 @@ import 'package:dart_test_tools/src/tools/minisign.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('$Minisign', onPlatform: {
-    'windows': const Skip('Scoop minisign is broken'),
-  }, () {
+  group('$Minisign', () {
     test('installs minisign', () async {
       printOnFailure(
         Platform.environment.entries

@@ -12,6 +12,11 @@ class _GithubEnv {
     return runnerTemp != null ? Directory(runnerTemp) : Directory.systemTemp;
   }
 
+  Directory get runnerToolCache {
+    final runnerToolCache = Platform.environment['RUNNER_TOOL_CACHE'];
+    return runnerToolCache != null ? Directory(runnerToolCache) : runnerTemp;
+  }
+
   Directory get githubWorkspace {
     final githubWorkspace = Platform.environment['GITHUB_WORKSPACE'];
     return githubWorkspace != null
@@ -43,6 +48,20 @@ class _GithubEnv {
         mode: FileMode.append,
       );
     }
+  }
+
+  Future<void> addPath(Directory directory) async {
+    final outputFilePath = Platform.environment['GITHUB_PATH'];
+    if (outputFilePath == null) {
+      throw Exception('Cannot set output! GITHUB_PATH env var is not set');
+    }
+
+    final resolvedPath = await directory.resolveSymbolicLinks();
+    final outputFile = File(outputFilePath);
+    await outputFile.writeAsString(
+      '$resolvedPath\n',
+      mode: FileMode.append,
+    );
   }
 }
 

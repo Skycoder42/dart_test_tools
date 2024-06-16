@@ -16,6 +16,7 @@ void main() {
           'variables are reported correctly', [
         (() => Github.env.githubWorkspace, 'GITHUB_WORKSPACE'),
         (() => Github.env.runnerTemp, 'RUNNER_TEMP'),
+        (() => Github.env.runnerToolCache, 'RUNNER_TOOL_CACHE'),
       ], (fixture) {
         expect(
           fixture.$1().path,
@@ -60,6 +61,16 @@ void main() {
               await File(Platform.environment['GITHUB_ENV']!).readAsLines();
           expect(lines.last, '$testName=$testValue');
         });
+      });
+
+      test('addPath appends resolved path to file', () async {
+        final testDir = Directory('test-dir');
+
+        await Github.env.addPath(testDir);
+
+        final lines =
+            await File(Platform.environment['GITHUB_PATH']!).readAsLines();
+        expect(lines.last, await testDir.resolveSymbolicLinks());
       });
     });
 
