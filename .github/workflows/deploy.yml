@@ -216,7 +216,7 @@ jobs:
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^5.11.1
+        run: dart pub global activate dart_test_tools ^5.11.3
       - name: Checkout repository
         uses: actions/checkout@v4
         with:

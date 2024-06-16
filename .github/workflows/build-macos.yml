@@ -59,7 +59,7 @@ jobs:
       - name: Install appdmg
         run: npm install -g appdmg
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^5.11.1
+        run: dart pub global activate dart_test_tools ^5.11.3
       - name: Install scoop
         if: runner.os == 'Windows'
         run: |
