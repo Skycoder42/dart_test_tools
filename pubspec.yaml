@@ -30,7 +30,7 @@ dependencies:
   logging: ^1.2.0
   markdown: ^7.2.2
   meta: ^1.12.0
-  mocktail: ^1.0.3
+  mocktail: ^1.0.4
   path: ^1.9.0
   pub_semver: ^2.1.4
   pubspec_parse: ^1.3.0
@@ -62,5 +62,6 @@ dart_pre_commit:
   pull-up-dependencies:
     allowed:
       - analyzer
+      - collection
       - meta
       - test

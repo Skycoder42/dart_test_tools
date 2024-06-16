@@ -64,7 +64,8 @@ void main() {
       });
 
       test('addPath appends resolved path to file', () async {
-        final testDir = Directory('test-dir');
+        final testDir = await Directory('test-dir').create();
+        addTearDown(testDir.delete);
 
         await Github.env.addPath(testDir);
 
