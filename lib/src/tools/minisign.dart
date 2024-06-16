@@ -6,6 +6,7 @@ import 'io.dart';
 
 abstract base class Minisign {
   static bool _forceDocker = false;
+  static bool _forceKnownPath = false;
 
   Minisign._();
 
@@ -32,6 +33,7 @@ abstract base class Minisign {
     } else if (Platform.isMacOS) {
       await Github.exec('brew', const ['install', 'minisign']);
     } else if (Platform.isWindows) {
+      _forceKnownPath = true;
       final client = HttpClient();
       final minisignZip = await client.download(
         Github.env.runnerTemp,
@@ -71,7 +73,7 @@ abstract base class Minisign {
         '/src/$filename',
       ]);
     } else {
-      await Github.exec('minisign', [
+      await Github.exec(_minisignExecutable, [
         '-P',
         publicKey,
         '-Vm',
@@ -97,7 +99,7 @@ abstract base class Minisign {
         '/src/$filename',
       ]);
     } else {
-      await Github.exec('minisign', [
+      await Github.exec(_minisignExecutable, [
         '-Ss',
         secretKey.path,
         '-m',
@@ -105,4 +107,11 @@ abstract base class Minisign {
       ]);
     }
   }
+
+  static String get _minisignExecutable => _forceKnownPath
+      ? Github.env.runnerToolCache
+          .subDir('minisign-win64')
+          .subFile('minisign.exe')
+          .path
+      : 'minisign';
 }
