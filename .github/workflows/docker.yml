@@ -16,11 +16,11 @@ on:
       dockerPlatforms:
         type: string
         required: false
-        description: A comma or newline separated list of docker target platforms to build the docker image for. If not specified, the image is built for all available platforms. Passed to docker/build-push-action@v5 as "platforms".
+        description: A comma or newline separated list of docker target platforms to build the docker image for. If not specified, the image is built for all available platforms. Passed to docker/build-push-action@v6 as "platforms".
       dockerBuildArgs:
         type: string
         required: false
-        description: A newline separated list of docker build arguments to build the docker image with. Passed to docker/build-push-action@v5 as "build-args"
+        description: A newline separated list of docker build arguments to build the docker image with. Passed to docker/build-push-action@v6 as "build-args"
     secrets:
       dockerHubUsername:
         required: true
@@ -64,7 +64,7 @@ jobs:
           username: ${{ secrets.dockerHubUsername }}
           password: ${{ secrets.dockerHubToken }}
       - name: Build and push image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           platforms: ${{ inputs.dockerPlatforms != '' && inputs.dockerPlatforms || steps.setup-docker-buildx.outputs.platforms }}
           build-args: ${{ inputs.dockerBuildArgs }}
