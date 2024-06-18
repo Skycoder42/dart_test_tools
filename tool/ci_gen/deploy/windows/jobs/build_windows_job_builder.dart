@@ -12,6 +12,7 @@ final class BuildWindowsJobBuilder extends SdkJobBuilder
   @override
   final Expression flutterSdkChannel;
   final Expression workingDirectory;
+  final Expression removePubspecOverrides;
   final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
@@ -21,6 +22,7 @@ final class BuildWindowsJobBuilder extends SdkJobBuilder
   const BuildWindowsJobBuilder({
     required this.flutterSdkChannel,
     required this.workingDirectory,
+    required this.removePubspecOverrides,
     required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
@@ -42,6 +44,7 @@ final class BuildWindowsJobBuilder extends SdkJobBuilder
           ),
           ...BuildWindowsInstallerBuilder(
             workingDirectory: workingDirectory,
+            removePubspecOverrides: removePubspecOverrides,
             artifactDependencies: artifactDependencies,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,

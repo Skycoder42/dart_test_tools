@@ -3,6 +3,7 @@ import '../../types/id.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
 import '../contexts.dart';
+import 'update_overrides_builder.dart';
 
 class ProjectPrepareBuilder implements StepBuilder {
   static const checkGenerateStepId = StepId('checkGenerate');
@@ -36,32 +37,14 @@ class ProjectPrepareBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        if (removePubspecOverrides.rawValueOr(true))
-          Step.run(
-            name: 'Remove pubspec_overrides.yaml$_titleSuffix',
-            ifExpression: removePubspecOverrides.isExpression
-                ? (removePubspecOverrides.asExpression & ifExpression)
-                : ifExpression,
-            run: 'find . -type f -name "pubspec_overrides.yaml" '
-                r'-exec git rm -f {} \;',
-            workingDirectory: workingDirectory.toString(),
-            shell: 'bash',
-          ),
-        if (artifactDependencies != null)
-          Step.run(
-            name: 'Create pubspec_overrides.yaml for artifact packages',
-            ifExpression:
-                artifactDependencies!.ne(Expression.empty) & ifExpression,
-            shell: 'bash',
-            run: '''
-set -eo pipefail
-touch pubspec_overrides.yaml
-for package in $artifactDependencies; do
-  yq -i ".dependency_overrides.\$package.path=\\"${Runner.temp}/.artifacts/package-\$package\\"" pubspec_overrides.yaml
-done
-''',
-            workingDirectory: workingDirectory.toString(),
-          ),
+        ...UpdateOverridesBuilder(
+          titleSuffix: _titleSuffix,
+          workingDirectory: workingDirectory,
+          removePubspecOverrides: removePubspecOverrides,
+          artifactDependencies: artifactDependencies,
+          artifactTargetDir: const ExpressionOrValue.expression(Runner.temp),
+          ifExpression: ifExpression,
+        ).build(),
         Step.run(
           name: 'Restore dart packages$_titleSuffix',
           ifExpression: ifExpression,

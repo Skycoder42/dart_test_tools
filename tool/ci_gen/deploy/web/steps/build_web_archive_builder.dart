@@ -5,6 +5,7 @@ import '../../steps/build_app_builder.dart';
 
 class BuildWebArchiveBuilder implements StepBuilder {
   final Expression workingDirectory;
+  final Expression removePubspecOverrides;
   final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
@@ -16,6 +17,7 @@ class BuildWebArchiveBuilder implements StepBuilder {
 
   const BuildWebArchiveBuilder({
     required this.workingDirectory,
+    required this.removePubspecOverrides,
     required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
@@ -30,6 +32,8 @@ class BuildWebArchiveBuilder implements StepBuilder {
   Iterable<Step> build() => [
         ...BuildAppBuilder(
           workingDirectory: workingDirectory,
+          removePubspecOverrides:
+              ExpressionOrValue.expression(removePubspecOverrides),
           artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,

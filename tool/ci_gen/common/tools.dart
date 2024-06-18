@@ -29,7 +29,7 @@ abstract class Tools {
   static const dockerLoginAction = 'docker/login-action@v3';
 
   /// https://github.com/docker/build-push-action/releases
-  static const dockerBuildAndPushAction = 'docker/build-push-action@v5';
+  static const dockerBuildAndPushAction = 'docker/build-push-action@v6';
 
   /// https://github.com/subosito/flutter-action/releases
   static const subositoFlutterAction = 'subosito/flutter-action@v2';

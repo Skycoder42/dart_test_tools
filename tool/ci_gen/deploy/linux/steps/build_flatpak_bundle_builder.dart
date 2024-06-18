@@ -2,6 +2,7 @@ import '../../../common/api/matrix_job_builder_mixin.dart';
 import '../../../common/api/step_builder.dart';
 import '../../../common/contexts.dart';
 import '../../../common/steps/checkout_builder.dart';
+import '../../../common/steps/update_overrides_builder.dart';
 import '../../../common/tools.dart';
 import '../../../types/expression.dart';
 import '../../../types/step.dart';
@@ -39,6 +40,7 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
   final Expression sdkVersion;
   final Expression bundleName;
   final Expression workingDirectory;
+  final Expression removePubspecOverrides;
   final Expression artifactDependencies;
   final Expression buildNumberArgs;
   final Expression manifestPath;
@@ -51,6 +53,7 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
     required this.sdkVersion,
     required this.bundleName,
     required this.workingDirectory,
+    required this.removePubspecOverrides,
     required this.artifactDependencies,
     required this.buildNumberArgs,
     required this.manifestPath,
@@ -85,9 +88,13 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
           run: 'flatpak install --system -y --noninteractive '
               '/tmp/flutter.flatpak',
         ),
-        ...CheckoutBuilder(
+        ...const CheckoutBuilder().build(),
+        ...UpdateOverridesBuilder(
+          workingDirectory: workingDirectory,
+          removePubspecOverrides:
+              ExpressionOrValue.expression(removePubspecOverrides),
           artifactDependencies: artifactDependencies,
-          artifactTargetDir: Github.workspace,
+          artifactTargetDir: const ExpressionOrValue.value('.'),
         ).build(),
         ...GenerateBuildNumberBuilder(
           buildNumberArgs: buildNumberArgs,

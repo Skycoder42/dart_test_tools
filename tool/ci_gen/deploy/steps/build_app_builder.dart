@@ -9,6 +9,7 @@ import 'generate_build_number_builder.dart';
 
 class BuildAppBuilder implements StepBuilder {
   final Expression workingDirectory;
+  final ExpressionOrValue removePubspecOverrides;
   final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
@@ -23,6 +24,7 @@ class BuildAppBuilder implements StepBuilder {
 
   const BuildAppBuilder({
     required this.workingDirectory,
+    required this.removePubspecOverrides,
     required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
@@ -41,11 +43,11 @@ class BuildAppBuilder implements StepBuilder {
         ...const InstallDartTestToolsBuilder().build(),
         ...ProjectSetupBuilder(
           workingDirectory: workingDirectory,
+          removePubspecOverrides: removePubspecOverrides,
           artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
           releaseMode: true,
-          removePubspecOverrides: const ExpressionOrValue.value(false),
           isFlutter: const ExpressionOrValue.value(true),
           pubTool: pubTool,
           runTool: runTool,

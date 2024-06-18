@@ -5,6 +5,7 @@ import '../../steps/build_app_builder.dart';
 
 class BuildWindowsInstallerBuilder implements StepBuilder {
   final Expression workingDirectory;
+  final Expression removePubspecOverrides;
   final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
@@ -15,6 +16,7 @@ class BuildWindowsInstallerBuilder implements StepBuilder {
 
   const BuildWindowsInstallerBuilder({
     required this.workingDirectory,
+    required this.removePubspecOverrides,
     required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
@@ -28,6 +30,8 @@ class BuildWindowsInstallerBuilder implements StepBuilder {
   Iterable<Step> build() => [
         ...BuildAppBuilder(
           workingDirectory: workingDirectory,
+          removePubspecOverrides:
+              ExpressionOrValue.expression(removePubspecOverrides),
           artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,

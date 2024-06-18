@@ -22,6 +22,8 @@ class BuildWindowsWorkflow implements WorkflowBuilder {
     final buildWindowsJobBuilder = BuildWindowsJobBuilder(
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      removePubspecOverrides:
+          inputContext(WorkflowInputs.removePubspecOverrides),
       artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),

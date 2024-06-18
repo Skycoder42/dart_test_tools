@@ -56,9 +56,7 @@ echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
 ''',
           ),
         ],
-        ...CheckoutBuilder(
-          artifactDependencies: artifactDependencies,
-        ).build(),
+        ...const CheckoutBuilder().build(),
         ...ProjectPrepareBuilder(
           workingDirectory: workingDirectory,
           artifactDependencies: artifactDependencies,

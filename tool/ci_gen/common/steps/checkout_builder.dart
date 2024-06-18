@@ -1,7 +1,6 @@
 import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
-import '../contexts.dart';
 import '../tools.dart';
 
 class CheckoutBuilder implements StepBuilder {
@@ -11,8 +10,6 @@ class CheckoutBuilder implements StepBuilder {
   final ExpressionOrValue? persistCredentials;
   final int? fetchDepth;
   final Expression? token;
-  final Expression? artifactDependencies;
-  final Expression artifactTargetDir;
 
   const CheckoutBuilder({
     this.path,
@@ -21,8 +18,6 @@ class CheckoutBuilder implements StepBuilder {
     this.persistCredentials,
     this.fetchDepth,
     this.token,
-    this.artifactDependencies,
-    this.artifactTargetDir = Runner.temp,
   });
 
   @override
@@ -41,15 +36,5 @@ class CheckoutBuilder implements StepBuilder {
             if (token != null) 'token': token.toString(),
           },
         ),
-        if (artifactDependencies != null)
-          Step.uses(
-            name: 'Download artifacts',
-            ifExpression: artifactDependencies!.ne(Expression.empty),
-            uses: Tools.actionsDownloadArtifact,
-            withArgs: {
-              'pattern': 'package-*',
-              'path': '$artifactTargetDir/.artifacts',
-            },
-          ),
       ];
 }

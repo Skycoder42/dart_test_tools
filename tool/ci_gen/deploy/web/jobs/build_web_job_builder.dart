@@ -12,6 +12,7 @@ final class BuildWebJobBuilder extends SdkJobBuilder
   @override
   final Expression flutterSdkChannel;
   final Expression workingDirectory;
+  final Expression removePubspecOverrides;
   final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
@@ -22,6 +23,7 @@ final class BuildWebJobBuilder extends SdkJobBuilder
   const BuildWebJobBuilder({
     required this.flutterSdkChannel,
     required this.workingDirectory,
+    required this.removePubspecOverrides,
     required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
@@ -44,6 +46,7 @@ final class BuildWebJobBuilder extends SdkJobBuilder
           ),
           ...BuildWebArchiveBuilder(
             workingDirectory: workingDirectory,
+            removePubspecOverrides: removePubspecOverrides,
             artifactDependencies: artifactDependencies,
             buildRunner: buildRunner,
             buildRunnerArgs: buildRunnerArgs,

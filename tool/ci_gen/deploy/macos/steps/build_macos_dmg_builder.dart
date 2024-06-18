@@ -6,6 +6,7 @@ import '../../steps/build_app_builder.dart';
 
 class BuildMacosDmgBuilder implements StepBuilder {
   final Expression workingDirectory;
+  final Expression removePubspecOverrides;
   final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
@@ -17,6 +18,7 @@ class BuildMacosDmgBuilder implements StepBuilder {
 
   const BuildMacosDmgBuilder({
     required this.workingDirectory,
+    required this.removePubspecOverrides,
     required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
@@ -39,6 +41,8 @@ class BuildMacosDmgBuilder implements StepBuilder {
         ),
         ...BuildAppBuilder(
           workingDirectory: workingDirectory,
+          removePubspecOverrides:
+              ExpressionOrValue.expression(removePubspecOverrides),
           artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,

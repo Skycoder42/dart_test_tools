@@ -35,6 +35,7 @@ final class BuildLinuxJobBuilder extends SdkJobBuilder
   final Expression flatpakSdkVersion;
   final Expression bundleName;
   final Expression workingDirectory;
+  final Expression removePubspecOverrides;
   final Expression artifactDependencies;
   final Expression buildNumberArgs;
   final Expression manifestPath;
@@ -47,6 +48,7 @@ final class BuildLinuxJobBuilder extends SdkJobBuilder
     required this.flatpakSdkVersion,
     required this.bundleName,
     required this.workingDirectory,
+    required this.removePubspecOverrides,
     required this.artifactDependencies,
     required this.buildNumberArgs,
     required this.manifestPath,
@@ -79,6 +81,7 @@ final class BuildLinuxJobBuilder extends SdkJobBuilder
             sdkVersion: flatpakSdkVersion,
             bundleName: bundleName,
             workingDirectory: workingDirectory,
+            removePubspecOverrides: removePubspecOverrides,
             artifactDependencies: artifactDependencies,
             buildNumberArgs: buildNumberArgs,
             manifestPath: manifestPath,
