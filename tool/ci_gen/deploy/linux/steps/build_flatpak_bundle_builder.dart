@@ -78,6 +78,14 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
             'platforms': qemuArch.expression.toString(),
           },
         ),
+        const Step.run(
+          name: 'Manually install yq',
+          run: '''
+set -eo pipefail
+curl -sSLo /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+chmod +x /usr/bin/yq
+''',
+        ),
         Step.run(
           name: 'Download flatpak flutter SDK',
           run: 'curl --fail-with-body -L -o /tmp/flutter.flatpak '

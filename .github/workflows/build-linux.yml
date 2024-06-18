@@ -83,6 +83,11 @@ jobs:
         uses: docker/setup-qemu-action@v3
         with:
           platforms: ${{ matrix.qemuArch }}
+      - name: Manually install yq
+        run: |
+          set -eo pipefail
+          curl -sSLo /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          chmod +x /usr/bin/yq
       - name: Download flatpak flutter SDK
         run: curl --fail-with-body -L -o /tmp/flutter.flatpak 'https://github.com/Skycoder42/dart_test_tools/releases/download/flatpak-flutter-extension%2F${{ inputs.flatpakSdkVersion }}/org.freedesktop.Sdk.Extension.flutter_${{ inputs.flatpakSdkVersion }}_${{ matrix.arch }}.flatpak'
       - name: Install flatpak flutter SDK
