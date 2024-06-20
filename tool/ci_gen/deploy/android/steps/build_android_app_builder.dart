@@ -1,15 +1,14 @@
 import '../../../common/api/step_builder.dart';
 import '../../../common/contexts.dart';
-import '../../../common/steps/install_dart_test_tools_builder.dart';
-import '../../../common/steps/project_setup_builder.dart';
-import '../../../common/tools.dart';
 import '../../../types/expression.dart';
 import '../../../types/step.dart';
-import '../../steps/flutter_build_builder.dart';
+import '../../steps/build_app_builder.dart';
 import '../../steps/generate_build_number_builder.dart';
 
 class BuildAndroidAppBuilder implements StepBuilder {
   final Expression workingDirectory;
+  final Expression removePubspecOverrides;
+  final Expression artifactDependencies;
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression buildNumberArgs;
@@ -22,6 +21,8 @@ class BuildAndroidAppBuilder implements StepBuilder {
 
   const BuildAndroidAppBuilder({
     required this.workingDirectory,
+    required this.removePubspecOverrides,
+    required this.artifactDependencies,
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.buildNumberArgs,
@@ -35,73 +36,53 @@ class BuildAndroidAppBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        ...const InstallDartTestToolsBuilder().build(),
-        ...ProjectSetupBuilder(
+        ...BuildAppBuilder(
           workingDirectory: workingDirectory,
+          removePubspecOverrides:
+              ExpressionOrValue.expression(removePubspecOverrides),
+          artifactDependencies: artifactDependencies,
           buildRunner: buildRunner,
           buildRunnerArgs: buildRunnerArgs,
-          releaseMode: true,
-          removePubspecOverrides: const ExpressionOrValue.value(false),
-          isFlutter: const ExpressionOrValue.value(true),
+          buildNumberArgs: buildNumberArgs,
+          dartDefines: dartDefines,
           pubTool: pubTool,
           runTool: runTool,
-        ).build(),
-        ...GenerateBuildNumberBuilder(
-          buildNumberArgs: buildNumberArgs,
-          workingDirectory: workingDirectory,
-        ).build(),
-        Step.run(
-          name: 'Generate Changelog',
-          run: '''
+          buildTarget: 'appbundle',
+          preBuildSteps: [
+            Step.run(
+              name: 'Prepare signing keystore',
+              run: '''
 set -eo pipefail
-version=\$(yq e '.version' pubspec.yaml)
-changelogs_dir='build/app/outputs/metadata/$primaryLocale/changelogs'
-mkdir -p "\$changelogs_dir"
-dart run cider describe "\$version" > "\$changelogs_dir/${GenerateBuildNumberBuilder.buildNumberOutput.expression}.txt"
-''',
-          workingDirectory: workingDirectory.toString(),
-          shell: 'bash',
-        ),
-        Step.run(
-          name: 'Prepare signing keystore',
-          run: '''
-set -eo pipefail
-keystore_path="${Runner.temp}/app.keystore"
+keystore_path='${Runner.temp}/app.keystore'
 echo '$keystore' | openssl base64 -d > "\$keystore_path"
 cat << EOF > android/key.properties
 storeFile=\$keystore_path
 password=$keystorePassword
 EOF
 ''',
-          workingDirectory: workingDirectory.toString(),
-          shell: 'bash',
-        ),
-        ...FlutterBuildBuilder(
-          buildNumber: GenerateBuildNumberBuilder.buildNumberOutput.expression,
-          workingDirectory: workingDirectory,
-          dartDefines: dartDefines,
-          buildTarget: 'appbundle',
-        ).build(),
-        Step.run(
-          name: 'Cleanup keystore and properties',
-          ifExpression: Functions.always,
-          continueOnError: true,
-          run: '''
-rm -rf android/key.properties
-rm -rf "${Runner.temp}/app.keystore"
+              workingDirectory: workingDirectory.toString(),
+              shell: 'bash',
+            ),
+          ],
+          cleanupPaths: [
+            '$workingDirectory/android/key.properties',
+            '${Runner.temp}/app.keystore',
+          ],
+          artifactDir: 'build/app/outputs',
+          packageSteps: [
+            Step.run(
+              name: 'Generate Changelog',
+              run: '''
+set -eo pipefail
+version=\$(yq e '.version' pubspec.yaml)
+changelogs_dir='build/app/outputs/metadata/$primaryLocale/changelogs'
+mkdir -p "\$changelogs_dir"
+dart run cider describe "\$version" > "\$changelogs_dir/${GenerateBuildNumberBuilder.buildNumberOutput.expression}.txt"
 ''',
-          workingDirectory: workingDirectory.toString(),
-          shell: 'bash',
-        ),
-        const Step.uses(
-          name: 'Upload app bundle and debug info',
-          uses: Tools.actionsUploadArtifact,
-          withArgs: {
-            'name': 'android-app',
-            'path': 'build/app/outputs',
-            'retention-days': 1,
-            'if-no-files-found': 'error',
-          },
-        ),
+              workingDirectory: workingDirectory.toString(),
+              shell: 'bash',
+            ),
+          ],
+        ).build(),
       ];
 }

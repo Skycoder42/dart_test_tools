@@ -129,10 +129,11 @@ jobs:
       - name: Build web
         run: flutter build web --release --build-number=${{ steps.generateBuildNumber.outputs.buildNumber }} --dart-define-from-file='${{ runner.temp }}/dart-defines.env' --no-web-resources-cdn --csp --source-maps --dump-info --base-href='${{ inputs.baseHref }}'
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Cleanup dart defines
+      - name: Cleanup secure files
         if: always()
         continue-on-error: true
-        run: rm -f '${{ runner.temp }}/dart-defines.env'
+        run: |
+          rm -rfv '${{ runner.temp }}/dart-defines.env'
         shell: bash
       - name: Create archive
         run: |

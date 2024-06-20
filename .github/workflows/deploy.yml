@@ -30,6 +30,16 @@ on:
         type: string
         required: true
         description: A JSON-encoded list of all platforms that this project can build/run for.
+      googlePlayTrack:
+        type: string
+        required: false
+        default: production
+        description: 'The google play release track to publish the app to (Standard tracks are: production, beta, alpha, internal).'
+      googlePlayReleaseStatus:
+        type: string
+        required: false
+        default: completed
+        description: The google play release status after publishing the app (completed, draft, halted, inProgress).
       flatpakPlatformImage:
         type: string
         required: false
@@ -47,6 +57,9 @@ on:
         value: ${{ jobs.release.outputs.version }}
         description: Holds the version number of the created release, if the releaseCreated output is true. Otherwise, it is not set.
     secrets:
+      googlePlayKey:
+        required: false
+        description: The google play api upload JSON key. Needed by fastlane to actually publish the app.
       gpgKey:
         required: false
         description: The GPG key to sign the flatpak bundle and repository with.
@@ -130,6 +143,43 @@ jobs:
           body_path: ${{ steps.release_content.outputs.body_path }}
           target_commitish: ${{ github.sha }}
           files: artifacts/app-deployment-*/*
+  deploy_android:
+    name: Deploy android app to Google Play
+    needs:
+      - release
+    if: needs.release.outputs.update == 'true' && (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), 'android'))
+    environment: google-play
+    runs-on: macos-latest
+    steps:
+      - name: '[Validate Inputs] Ensure googlePlayKey is set'
+        run: |
+          if [[ '${{ secrets.googlePlayKey }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input googlePlayKey is not set'
+            exit 1
+          fi
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Download android app artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-deployment-appbundle
+          path: build
+      - id: detectPackageName
+        name: Detect android package name
+        run: echo "packageName=$(cat android/app/build.gradle | grep 'applicationId = "' | cut -d '"' -f2)" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Prepare Google Play key
+        run: echo '${{ secrets.googlePlayKey }}' > '${{ runner.temp }}/fastlane-key-file.json'
+      - name: Deploy to Google Play
+        run: fastlane upload_to_play_store --json_key '${{ runner.temp }}/fastlane-key-file.json' --package_name '${{ steps.detectPackageName.outputs.packageName }}' --track '${{ inputs.googlePlayTrack }}' --release_status '${{ inputs.googlePlayReleaseStatus }}' --aab build/bundle/release/app-release.aab --mapping build/mapping/release/mapping.txt --metadata_path build/metadata
+      - name: Cleanup Google Play key
+        if: always()
+        continue-on-error: true
+        run: rm -f "${{ runner.temp }}/fastlane-key-file.json"
   deploy_linux:
     name: Deploy flatpak bundles to GitHub Pages
     needs:

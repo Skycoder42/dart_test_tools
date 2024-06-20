@@ -19,6 +19,8 @@ class BuildAppBuilder implements StepBuilder {
   final String runTool;
   final String buildTarget;
   final String? buildArgs;
+  final List<Step> preBuildSteps;
+  final List<String> cleanupPaths;
   final String artifactDir;
   final List<Step> packageSteps;
 
@@ -34,6 +36,8 @@ class BuildAppBuilder implements StepBuilder {
     required this.runTool,
     required this.buildTarget,
     this.buildArgs,
+    this.preBuildSteps = const [],
+    this.cleanupPaths = const [],
     required this.artifactDir,
     this.packageSteps = const [],
   });
@@ -62,6 +66,8 @@ class BuildAppBuilder implements StepBuilder {
           dartDefines: dartDefines,
           buildTarget: buildTarget,
           buildArgs: buildArgs,
+          preBuildSteps: preBuildSteps,
+          cleanupPaths: cleanupPaths,
         ).build(),
         ...packageSteps,
         Step.uses(

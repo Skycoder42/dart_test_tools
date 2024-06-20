@@ -102,7 +102,7 @@ VARIABLE2=value2
   static const googlePlayKey = WorkflowSecret(
     name: 'googlePlayKey',
     secret: Secret(
-      required: true,
+      required: false,
       description: 'The google play api upload JSON key. '
           'Needed by fastlane to actually publish the app.',
     ),

@@ -20,10 +20,12 @@ class BuildAndroidWorkflow implements WorkflowBuilder {
     final secretContext = WorkflowSecretContext();
 
     final buildAndroidJobBuilder = BuildAndroidJobBuilder(
-      enabledPlatforms: inputContext(WorkflowInputs.enabledPlatforms),
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
       javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      removePubspecOverrides:
+          inputContext(WorkflowInputs.removePubspecOverrides),
+      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
       buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
       buildNumberArgs: inputContext(WorkflowInputs.buildNumberArgs),

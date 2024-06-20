@@ -9,6 +9,7 @@ import '../common/secrets.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
+import 'android/jobs/deploy_android_job_builder.dart';
 import 'linux/jobs/deploy_linux_job_builder.dart';
 import 'macos/jobs/deploy_macos_job_builder.dart';
 
@@ -35,6 +36,16 @@ class DeployWorkflow implements WorkflowBuilder {
     outputContext
       ..add(WorkflowOutputs.releaseCreated, releaseJobBuilder.updateOutput)
       ..add(WorkflowOutputs.releaseVersion, releaseJobBuilder.versionOutput);
+
+    final deployAndroidJobBuilder = DeployAndroidJobBuilder(
+      releaseCreated: releaseJobBuilder.updateOutput,
+      enabledPlatforms: inputContext(WorkflowInputs.enabledPlatforms),
+      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      googlePlayTrack: inputContext(WorkflowInputs.googlePlayTrack),
+      googlePlayReleaseStatus:
+          inputContext(WorkflowInputs.googlePlayReleaseStatus),
+      googlePlayKey: secretContext(WorkflowSecrets.googlePlayKey),
+    );
 
     final deployLinuxJobBuilder = DeployLinuxJobBuilder(
       releaseCreated: releaseJobBuilder.updateOutput,
@@ -64,6 +75,7 @@ class DeployWorkflow implements WorkflowBuilder {
       ),
       jobs: {
         releaseJobBuilder.id: releaseJobBuilder.build(),
+        deployAndroidJobBuilder.id: deployAndroidJobBuilder.build(),
         deployLinuxJobBuilder.id: deployLinuxJobBuilder.build(),
         deployMacosJobBuilder.id: deployMacosJobBuilder.build(),
       },
