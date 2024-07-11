@@ -1,12 +1,9 @@
 import 'dart:io';
 
-import 'archive.dart';
 import 'github.dart';
-import 'io.dart';
 
 abstract base class Minisign {
   static bool _forceDocker = false;
-  static bool _forceKnownPath = false;
 
   Minisign._();
 
@@ -33,22 +30,10 @@ abstract base class Minisign {
     } else if (Platform.isMacOS) {
       await Github.exec('brew', const ['install', 'minisign']);
     } else if (Platform.isWindows) {
-      _forceKnownPath = true;
-      final client = HttpClient();
-      final minisignZip = await client.download(
-        Github.env.runnerTemp,
-        Uri.parse(
-          'https://github.com/jedisct1/minisign/releases/download/0.11/minisign-win64.zip',
-        ),
-        withSignature: false,
-      );
-      await Archive.extract(
-        archive: minisignZip,
-        outDir: Github.env.runnerToolCache,
-      );
-
-      await Github.env.addPath(
-        Github.env.runnerToolCache.subDir('minisign-win64'),
+      await Github.exec(
+        'scoop',
+        const ['install', 'minisign'],
+        runInShell: true,
       );
     } else {
       throw Exception('Unsupported platform: ${Platform.operatingSystem}');
@@ -73,7 +58,7 @@ abstract base class Minisign {
         '/src/$filename',
       ]);
     } else {
-      await Github.exec(_minisignExecutable, [
+      await Github.exec('minisign', [
         '-P',
         publicKey,
         '-Vm',
@@ -99,7 +84,7 @@ abstract base class Minisign {
         '/src/$filename',
       ]);
     } else {
-      await Github.exec(_minisignExecutable, [
+      await Github.exec('minisign', [
         '-Ss',
         secretKey.path,
         '-m',
@@ -107,11 +92,4 @@ abstract base class Minisign {
       ]);
     }
   }
-
-  static String get _minisignExecutable => _forceKnownPath
-      ? Github.env.runnerToolCache
-          .subDir('minisign-win64')
-          .subFile('minisign.exe')
-          .path
-      : 'minisign';
 }
