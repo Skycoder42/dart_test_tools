@@ -54,7 +54,6 @@ on:
 jobs:
   build_linux:
     name: Build linux flatpak bundle
-    environment: flatpak
     strategy:
       fail-fast: false
       matrix:

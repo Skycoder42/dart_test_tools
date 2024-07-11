@@ -62,7 +62,6 @@ on:
 jobs:
   build_android:
     name: Build android app bundle
-    environment: google-play
     runs-on: ubuntu-latest
     steps:
       - name: Install JDK Version ${{ inputs.javaJdkVersion }}

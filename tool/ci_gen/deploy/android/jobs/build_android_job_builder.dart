@@ -1,4 +1,3 @@
-import '../../../common/environments.dart';
 import '../../../common/jobs/sdk_job_builder.dart';
 import '../../../flutter/flutter_platform.dart';
 import '../../../flutter/jobs/flutter_sdk_job_builder_mixin.dart';
@@ -47,7 +46,6 @@ final class BuildAndroidJobBuilder extends SdkJobBuilder
   Job build() => Job(
         name: 'Build android app bundle',
         runsOn: RunsOn.ubuntuLatest.id,
-        environment: Environments.googlePlay,
         steps: [
           ...buildSetupSdkSteps(
             buildPlatform:

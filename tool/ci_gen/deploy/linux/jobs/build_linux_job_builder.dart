@@ -1,5 +1,4 @@
 import '../../../common/api/matrix_job_builder_mixin.dart';
-import '../../../common/environments.dart';
 import '../../../common/jobs/sdk_job_builder.dart';
 import '../../../common/steps/install_dart_test_tools_builder.dart';
 import '../../../dart/jobs/dart_sdk_job_builder_mixin.dart';
@@ -73,7 +72,6 @@ final class BuildLinuxJobBuilder extends SdkJobBuilder
           image: 'bilelmoussaoui/$flatpakPlatformImage',
           options: '--privileged',
         ),
-        environment: Environments.flatpak,
         steps: [
           ...buildSetupSdkSteps(),
           ...const InstallDartTestToolsBuilder().build(),
