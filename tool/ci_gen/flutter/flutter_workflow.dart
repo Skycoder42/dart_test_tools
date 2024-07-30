@@ -13,6 +13,7 @@ import 'jobs/android_integration_test_job_builder.dart';
 import 'jobs/flutter_analyze_job_builder.dart';
 import 'jobs/flutter_integration_test_job_builder.dart';
 import 'jobs/flutter_unit_test_job_builder.dart';
+import 'jobs/ios_integration_test_job_builder.dart';
 
 class FlutterWorkflow implements WorkflowBuilder {
   const FlutterWorkflow();
@@ -107,6 +108,28 @@ class FlutterWorkflow implements WorkflowBuilder {
           secretContext(WorkflowSecrets.browserStackCredentials),
     );
 
+    final iosIntegrationTestBuilder = IosIntegrationTestJobBuilder(
+      enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
+      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
+      javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
+      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+      buildRunner: inputContext(WorkflowInputs.buildRunner),
+      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+      removePubspecOverrides:
+          inputContext(WorkflowInputs.removePubspecOverrides),
+      integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
+      integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
+      integrationTestProject:
+          inputContext(WorkflowInputs.integrationTestProject),
+      integrationTestCacheConfig:
+          inputContext(WorkflowInputs.integrationTestCacheConfig),
+      browserStackIosDevices:
+          inputContext(WorkflowInputs.browserStackIosDevices),
+      browserStackCredentials:
+          secretContext(WorkflowSecrets.browserStackCredentials),
+    );
+
     return Workflow(
       on: On(
         workflowCall: WorkflowCall(
@@ -121,6 +144,7 @@ class FlutterWorkflow implements WorkflowBuilder {
         validateCoverageBuilder.id: validateCoverageBuilder.build(),
         integrationTestBuilder.id: integrationTestBuilder.build(),
         androidIntegrationTestBuilder.id: androidIntegrationTestBuilder.build(),
+        iosIntegrationTestBuilder.id: iosIntegrationTestBuilder.build(),
       },
     );
   }

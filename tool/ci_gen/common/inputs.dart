@@ -507,7 +507,18 @@ Example:
       defaultValue: const [
         {'device': '.*'},
       ],
-      description: 'The devices to be used with BrowserStack.',
+      description: 'The devices to be used for android with BrowserStack.',
+    ),
+  );
+
+  static final browserStackIosDevices = WorkflowInput(
+    name: 'browserStackIosDevices',
+    input: Input.json(
+      required: false,
+      defaultValue: const [
+        {'device': '.*'},
+      ],
+      description: 'The devices to be used for iOS with BrowserStack.',
     ),
   );
 }

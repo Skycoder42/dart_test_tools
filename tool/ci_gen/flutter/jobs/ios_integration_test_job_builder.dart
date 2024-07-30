@@ -5,10 +5,10 @@ import '../../types/id.dart';
 import '../../types/job.dart';
 import '../../types/runs_on.dart';
 import '../flutter_platform.dart';
-import '../steps/android_integration_test_builder.dart';
+import '../steps/ios_integration_test_builder.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-final class AndroidIntegrationTestJobBuilder extends SdkJobBuilder
+final class IosIntegrationTestJobBuilder extends SdkJobBuilder
     with FlutterSdkJobBuilderMixin {
   final JobIdOutput enabledPlatformsOutput;
   @override
@@ -24,10 +24,10 @@ final class AndroidIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression integrationTestPaths;
   final Expression integrationTestProject;
   final Expression integrationTestCacheConfig;
-  final Expression browserStackAndroidDevices;
+  final Expression browserStackIosDevices;
   final Expression browserStackCredentials;
 
-  AndroidIntegrationTestJobBuilder({
+  IosIntegrationTestJobBuilder({
     required this.enabledPlatformsOutput,
     required this.flutterSdkChannel,
     required this.javaJdkVersion,
@@ -40,20 +40,20 @@ final class AndroidIntegrationTestJobBuilder extends SdkJobBuilder
     required this.integrationTestPaths,
     required this.integrationTestProject,
     required this.integrationTestCacheConfig,
-    required this.browserStackAndroidDevices,
+    required this.browserStackIosDevices,
     required this.browserStackCredentials,
   });
 
   @override
-  JobId get id => const JobId('integration_tests_android');
+  JobId get id => const JobId('integration_tests_ios');
 
   @override
   Job build() => Job(
-        name: 'Integration tests (android)',
+        name: 'Integration tests (ios)',
         ifExpression: integrationTestPaths.ne(Expression.empty) &
             EnabledPlatforms.check(
               enabledPlatformsOutput.expression,
-              Expression.literal(FlutterPlatform.android.platform),
+              Expression.literal(FlutterPlatform.ios.platform),
             ),
         needs: {
           enabledPlatformsOutput.jobId,
@@ -62,9 +62,9 @@ final class AndroidIntegrationTestJobBuilder extends SdkJobBuilder
         steps: [
           ...buildSetupSdkSteps(
             buildPlatform:
-                ExpressionOrValue.value(FlutterPlatform.android.platform),
+                ExpressionOrValue.value(FlutterPlatform.ios.platform),
           ),
-          ...AndroidIntegrationTestBuilder(
+          ...IosIntegrationTestBuilder(
             workingDirectory: workingDirectory,
             artifactDependencies: artifactDependencies,
             buildRunner: buildRunner,
@@ -74,7 +74,7 @@ final class AndroidIntegrationTestJobBuilder extends SdkJobBuilder
             integrationTestPaths: integrationTestPaths,
             integrationTestProject: integrationTestProject,
             integrationTestCacheConfig: integrationTestCacheConfig,
-            browserStackAndroidDevices: browserStackAndroidDevices,
+            browserStackIosDevices: browserStackIosDevices,
             browserStackCredentials: browserStackCredentials,
             baseTool: baseTool,
             pubTool: pubTool,

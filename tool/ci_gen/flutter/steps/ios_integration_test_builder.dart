@@ -7,7 +7,7 @@ import '../../types/step.dart';
 import '../flutter_platform.dart';
 import 'prepare_integration_test_builder.dart';
 
-class AndroidIntegrationTestBuilder implements StepBuilder {
+class IosIntegrationTestBuilder implements StepBuilder {
   static const testSetupCacheStepId = StepId('test-setup-cache');
 
   final Expression workingDirectory;
@@ -19,13 +19,13 @@ class AndroidIntegrationTestBuilder implements StepBuilder {
   final Expression integrationTestPaths;
   final Expression integrationTestProject;
   final Expression integrationTestCacheConfig;
-  final Expression browserStackAndroidDevices;
+  final Expression browserStackIosDevices;
   final Expression browserStackCredentials;
   final String baseTool;
   final String pubTool;
   final String runTool;
 
-  const AndroidIntegrationTestBuilder({
+  const IosIntegrationTestBuilder({
     required this.workingDirectory,
     required this.artifactDependencies,
     required this.buildRunner,
@@ -35,7 +35,7 @@ class AndroidIntegrationTestBuilder implements StepBuilder {
     required this.integrationTestPaths,
     required this.integrationTestProject,
     required this.integrationTestCacheConfig,
-    required this.browserStackAndroidDevices,
+    required this.browserStackIosDevices,
     required this.browserStackCredentials,
     required this.baseTool,
     required this.pubTool,
@@ -57,20 +57,34 @@ class AndroidIntegrationTestBuilder implements StepBuilder {
           integrationTestSetup: integrationTestSetup,
           integrationTestProject: integrationTestProject,
           integrationTestCacheConfig: integrationTestCacheConfig,
-          platform: ExpressionOrValue.value(FlutterPlatform.android.platform),
+          platform: ExpressionOrValue.value(FlutterPlatform.ios.platform),
           baseTool: baseTool,
           pubTool: pubTool,
           runTool: runTool,
         ).build(),
         Step.run(
           name: 'Build integration test app',
-          run: "$baseTool build apk --debug --target '$integrationTestPaths'",
+          run: '$baseTool build ios --release --no-codesign '
+              "'$integrationTestPaths'",
           workingDirectory: '$workingDirectory/$integrationTestProject',
         ),
         Step.run(
           name: 'Build test instrumentation app',
-          run: './gradlew app:assembleAndroidTest',
-          workingDirectory: '$workingDirectory/$integrationTestProject/android',
+          run: 'xcodebuild '
+              '-workspace Runner.xcworkspace '
+              '-scheme Runner '
+              '-config Flutter/Release.xcconfig '
+              '-derivedDataPath ../build/ios_integration '
+              '-sdk iphoneos '
+              'build-for-testing',
+          workingDirectory: '$workingDirectory/$integrationTestProject/ios',
+        ),
+        Step.run(
+          name: 'Create integration test package',
+          run: 'zip -r --must-match -- app-release.zip '
+              'Release-iphoneos *.xctestrun',
+          workingDirectory:
+              '$workingDirectory/$integrationTestProject/build/ios_integration/Build/Products',
         ),
         Step.uses(
           name: 'Run integration tests',
@@ -79,30 +93,22 @@ class AndroidIntegrationTestBuilder implements StepBuilder {
             'fileRoot': '$workingDirectory/$integrationTestProject',
             'user': browserStackCredentials.toString(),
             'script': '''
-POST {{baseUrl}}/app
+POST {{baseUrl}}/test-package
 [MultipartFormData]
-file: file,build/app/outputs/apk/debug/app-debug.apk;
+file: file,example/build/ios_integration/Build/Products/app-release.zip;
 [Options]
-variable: baseUrl=https://api-cloud.browserstack.com/app-automate/flutter-integration-tests/v2/android
+variable: baseUrl=https://api-cloud.browserstack.com/app-automate/flutter-integration-tests/v2/ios
 HTTP 200
 [Captures]
-appUrl: jsonpath "\$['app_url']"
-
-POST {{baseUrl}}/test-suite
-[MultipartFormData]
-file: file,build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk;
-HTTP 200
-[Captures]
-testSuiteUrl: jsonpath "\$['test_suite_url']"
+testPackageUrl: jsonpath "\$['test_package_url']"
 
 POST {{baseUrl}}/build
 {
-  "app": "{{appUrl}}",
-  "testSuite": "{{testSuiteUrl}}",
+  "testPackage": "{{testPackageUrl}}",
   "project": "${Github.repository}",
   "buildTag": "${Github.sha}",
-  "devices": $browserStackAndroidDevices,
-  "autoGrantPermissions": true
+  "devices": $browserStackIosDevices,
+  "deviceLogs": true
 }
 HTTP 200
 [Captures]

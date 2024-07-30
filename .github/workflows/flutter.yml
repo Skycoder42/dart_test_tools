@@ -107,7 +107,12 @@ on:
         type: string
         required: false
         default: '[{"device":".*"}]'
-        description: The devices to be used with BrowserStack.
+        description: The devices to be used for android with BrowserStack.
+      browserStackIosDevices:
+        type: string
+        required: false
+        default: '[{"device":".*"}]'
+        description: The devices to be used for iOS with BrowserStack.
     outputs:
       enabledPlatforms:
         value: ${{ jobs.analyze.outputs.platforms }}
@@ -573,7 +578,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
         shell: bash
   integration_tests_android:
-    name: Integration tests (Android)
+    name: Integration tests (android)
     needs:
       - analyze
     if: inputs.integrationTestPaths != '' && (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), 'android'))
@@ -685,7 +690,6 @@ jobs:
       - name: Run integration tests
         uses: Skycoder42/dart_test_tools/.github/actions/hurl@main
         with:
-          verbose: true
           fileRoot: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
           user: ${{ secrets.browserStackCredentials }}
           script: |
@@ -713,6 +717,156 @@ jobs:
               "buildTag": "${{ github.sha }}",
               "devices": ${{ inputs.browserStackAndroidDevices }},
               "autoGrantPermissions": true
+            }
+            HTTP 200
+            [Captures]
+            buildId: jsonpath "$['build_id']"
+            [Asserts]
+            jsonpath "$.message" == "Success"
+
+            GET {{baseUrl}}/builds/{{buildId}}
+            [Options]
+            retry: 120
+            retry-interval: 30000
+            output: test-results.json
+            HTTP 200
+            [Asserts]
+            jsonpath "$.status" not matches /(running|queued)/
+
+            GET {{baseUrl}}/builds/{{buildId}}
+            HTTP 200
+            [Asserts]
+            jsonpath "$.status" matches /(passed|skipped)/
+  integration_tests_ios:
+    name: Integration tests (ios)
+    needs:
+      - analyze
+    if: inputs.integrationTestPaths != '' && (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), 'ios'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
+      - name: Download flutter binary artifacts
+        run: flutter precache --universal --ios
+      - name: Install hurl
+        uses: Skycoder42/dart_test_tools/.github/actions/install-hurl@main
+      - name: Install scoop
+        if: runner.os == 'Windows'
+        run: |
+          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
+        shell: pwsh
+      - name: Install yq (Windows)
+        if: runner.os == 'Windows'
+        run: scoop install yq
+      - name: Install yq and coreutils (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install yq coreutils
+          echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Remove pubspec_overrides.yaml
+        if: inputs.removePubspecOverrides
+        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Download artifacts
+        if: inputs.artifactDependencies != ''
+        uses: actions/download-artifact@v4
+        with:
+          pattern: package-*
+          path: ${{ runner.temp }}/.artifacts
+      - name: Create pubspec_overrides.yaml for artifact packages
+        if: inputs.artifactDependencies != ''
+        run: |
+          set -eo pipefail
+          if [[ ! -f pubspec_overrides.yaml ]]; then
+            yq '{"dependency_overrides": .dependency_overrides}' pubspec.yaml > pubspec_overrides.yaml
+          fi
+          for package in ${{ inputs.artifactDependencies }}; do
+            yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
+          done
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Restore dart packages
+        run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - id: checkGenerate
+        name: Check if localizations generation is required
+        run: echo "generate=$(yq -r '.flutter.generate // false' pubspec.yaml)" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Generate localization files
+        if: steps.checkGenerate.outputs.generate == 'true'
+        run: flutter gen-l10n
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Create build files
+        if: inputs.buildRunner
+        run: flutter pub run build_runner build ${{ inputs.buildRunnerArgs }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Validate flutter setup
+        run: flutter doctor -v
+      - name: Remove pubspec_overrides.yaml (Integration test project)
+        if: inputs.removePubspecOverrides && inputs.integrationTestProject != ''
+        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+        shell: bash
+      - name: Restore dart packages (Integration test project)
+        if: inputs.integrationTestProject != ''
+        run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+      - id: test-setup-cache
+        name: Restore integration test cache
+        if: inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)['ios'] != ''
+        uses: actions/cache@v4
+        with:
+          key: ios-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
+          path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}
+          restore-keys: ${{ fromJSON(inputs.integrationTestCacheConfig)['restore-keys'] }}
+          upload-chunk-size: ${{ fromJSON(inputs.integrationTestCacheConfig)['upload-chunk-size'] }}
+      - name: Run platform test setup
+        if: fromJSON(inputs.integrationTestSetup)['ios'] != ''
+        env:
+          CACHE_HIT: ${{ steps.test-setup-cache.outputs.cache-hit }}
+        run: ${{ fromJSON(inputs.integrationTestSetup)['ios'] }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Build integration test app
+        run: flutter build ios --release --no-codesign '${{ inputs.integrationTestPaths }}'
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+      - name: Build test instrumentation app
+        run: xcodebuild -workspace Runner.xcworkspace -scheme Runner -config Flutter/Release.xcconfig -derivedDataPath ../build/ios_integration -sdk iphoneos build-for-testing
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}/ios
+      - name: Create integration test package
+        run: zip -r --must-match -- app-release.zip Release-iphoneos *.xctestrun
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}/build/ios_integration/Build/Products
+      - name: Run integration tests
+        uses: Skycoder42/dart_test_tools/.github/actions/hurl@main
+        with:
+          fileRoot: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+          user: ${{ secrets.browserStackCredentials }}
+          script: |
+            POST {{baseUrl}}/test-package
+            [MultipartFormData]
+            file: file,example/build/ios_integration/Build/Products/app-release.zip;
+            [Options]
+            variable: baseUrl=https://api-cloud.browserstack.com/app-automate/flutter-integration-tests/v2/ios
+            HTTP 200
+            [Captures]
+            testPackageUrl: jsonpath "$['test_package_url']"
+
+            POST {{baseUrl}}/build
+            {
+              "testPackage": "{{testPackageUrl}}",
+              "project": "${{ github.repository }}",
+              "buildTag": "${{ github.sha }}",
+              "devices": ${{ inputs.browserStackIosDevices }},
+              "deviceLogs": true
             }
             HTTP 200
             [Captures]
