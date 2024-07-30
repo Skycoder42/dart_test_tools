@@ -31,12 +31,12 @@ runs:
           command="$command --verbose"
         fi
         if [ -n '${{ inputs.fileRoot }}' ]; then
-          command="$command --file-root '${{ inputs.fileRoot }}'"
+          command="$command --file-root ${{ inputs.fileRoot }}"
         else
-          command="$command --file-root '${{ github.workspace }}'"
+          command="$command --file-root ${{ github.workspace }}"
         fi
         if [ -n '${{ inputs.user }}' ]; then
-          command="$command --user '${{ inputs.user }}'"
+          command="$command --user ${{ inputs.user }}"
         fi
         command="$command ${{ inputs.rawArguments }}"
 

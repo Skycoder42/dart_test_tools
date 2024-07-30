@@ -17,6 +17,7 @@ runs:
         #!/bin/sh
         exec docker run --rm -it ghcr.io/orange-opensource/hurl:latest "$@"
         EOF
+        chmod +x "$hurl_path/hurl"
         echo "$hurl_path" >> $GITHUB_PATH
       shell: bash
     - name: Install hurl from homebrew
