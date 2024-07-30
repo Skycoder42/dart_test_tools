@@ -24,7 +24,7 @@ final class AndroidIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression integrationTestPaths;
   final Expression integrationTestProject;
   final Expression integrationTestCacheConfig;
-  final Expression browserStackDevices;
+  final Expression browserStackAndroidDevices;
   final Expression browserStackCredentials;
 
   AndroidIntegrationTestJobBuilder({
@@ -40,7 +40,7 @@ final class AndroidIntegrationTestJobBuilder extends SdkJobBuilder
     required this.integrationTestPaths,
     required this.integrationTestProject,
     required this.integrationTestCacheConfig,
-    required this.browserStackDevices,
+    required this.browserStackAndroidDevices,
     required this.browserStackCredentials,
   });
 
@@ -49,7 +49,7 @@ final class AndroidIntegrationTestJobBuilder extends SdkJobBuilder
 
   @override
   Job build() => Job(
-        name: 'Integration tests',
+        name: 'Integration tests (Android)',
         ifExpression: integrationTestPaths.ne(Expression.empty) &
             EnabledPlatforms.check(
               enabledPlatformsOutput.expression,
@@ -74,7 +74,7 @@ final class AndroidIntegrationTestJobBuilder extends SdkJobBuilder
             integrationTestPaths: integrationTestPaths,
             integrationTestProject: integrationTestProject,
             integrationTestCacheConfig: integrationTestCacheConfig,
-            browserStackDevices: browserStackDevices,
+            browserStackAndroidDevices: browserStackAndroidDevices,
             browserStackCredentials: browserStackCredentials,
             baseTool: baseTool,
             pubTool: pubTool,

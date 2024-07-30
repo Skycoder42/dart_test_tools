@@ -101,7 +101,8 @@ class FlutterWorkflow implements WorkflowBuilder {
           inputContext(WorkflowInputs.integrationTestProject),
       integrationTestCacheConfig:
           inputContext(WorkflowInputs.integrationTestCacheConfig),
-      browserStackDevices: inputContext(WorkflowInputs.browserStackDevices),
+      browserStackAndroidDevices:
+          inputContext(WorkflowInputs.browserStackAndroidDevices),
       browserStackCredentials:
           secretContext(WorkflowSecrets.browserStackCredentials),
     );

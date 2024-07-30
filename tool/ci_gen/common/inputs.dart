@@ -500,8 +500,8 @@ Example:
     ),
   );
 
-  static final browserStackDevices = WorkflowInput(
-    name: 'browserStackDevices',
+  static final browserStackAndroidDevices = WorkflowInput(
+    name: 'browserStackAndroidDevices',
     input: Input.json(
       required: false,
       defaultValue: const [

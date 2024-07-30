@@ -55,4 +55,9 @@ abstract class Tools {
 
   /// https://github.com/actions/setup-node/releases
   static const actionsSetupNode = 'actions/setup-node@v4';
+
+  static const installHurl =
+      'Skycoder42/dart_test_tools/.github/actions/install-hurl@main';
+
+  static const hurl = 'Skycoder42/dart_test_tools/.github/actions/hurl@main';
 }

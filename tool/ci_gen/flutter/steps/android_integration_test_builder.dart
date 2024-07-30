@@ -1,5 +1,6 @@
 import '../../common/api/step_builder.dart';
 import '../../common/contexts.dart';
+import '../../common/tools.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
@@ -18,7 +19,7 @@ class AndroidIntegrationTestBuilder implements StepBuilder {
   final Expression integrationTestPaths;
   final Expression integrationTestProject;
   final Expression integrationTestCacheConfig;
-  final Expression browserStackDevices;
+  final Expression browserStackAndroidDevices;
   final Expression browserStackCredentials;
   final String baseTool;
   final String pubTool;
@@ -34,7 +35,7 @@ class AndroidIntegrationTestBuilder implements StepBuilder {
     required this.integrationTestPaths,
     required this.integrationTestProject,
     required this.integrationTestCacheConfig,
-    required this.browserStackDevices,
+    required this.browserStackAndroidDevices,
     required this.browserStackCredentials,
     required this.baseTool,
     required this.pubTool,
@@ -45,7 +46,7 @@ class AndroidIntegrationTestBuilder implements StepBuilder {
   Iterable<Step> build() => [
         const Step.uses(
           name: 'Install hurl',
-          uses: './.github/actions/install-hurl',
+          uses: Tools.installHurl,
         ),
         ...PrepareIntegrationTestBuilder(
           workingDirectory: workingDirectory,
@@ -73,7 +74,7 @@ class AndroidIntegrationTestBuilder implements StepBuilder {
         ),
         Step.uses(
           name: 'Run integration tests',
-          uses: './.github/actions/hurl',
+          uses: Tools.hurl,
           withArgs: {
             'verbose': true,
             'fileRoot': '$workingDirectory/$integrationTestProject',
@@ -101,7 +102,7 @@ POST {{baseUrl}}/build
   "testSuite": "{{testSuiteUrl}}",
   "project": "${Github.repository}"
   "buildTag": "${Github.sha}"
-  "devices": $browserStackDevices,
+  "devices": $browserStackAndroidDevices,
   "autoGrantPermissions": true
 }
 HTTP 200
