@@ -3,7 +3,6 @@ import '../../common/jobs/sdk_job_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
-import '../../types/runs_on.dart';
 import '../flutter_platform.dart';
 import '../steps/android_integration_test_builder.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
@@ -58,7 +57,7 @@ final class AndroidIntegrationTestJobBuilder extends SdkJobBuilder
         needs: {
           enabledPlatformsOutput.jobId,
         },
-        runsOn: RunsOn.ubuntuLatest.id,
+        runsOn: FlutterPlatform.android.os.id,
         steps: [
           ...buildSetupSdkSteps(
             buildPlatform:

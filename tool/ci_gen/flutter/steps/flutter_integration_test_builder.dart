@@ -48,8 +48,6 @@ class FlutterIntegrationTestBuilder implements StepBuilder {
   final Expression integrationTestPaths;
   final Expression integrationTestProject;
   final Expression integrationTestCacheConfig;
-  final Expression androidAVDImage;
-  final Expression androidAVDDevice;
   final PlatformMatrixProperty platform;
   final TestArgsMatrixProperty testArgs;
   final RunPrefixMatrixProperty runPrefix;
@@ -67,8 +65,6 @@ class FlutterIntegrationTestBuilder implements StepBuilder {
     required this.integrationTestPaths,
     required this.integrationTestProject,
     required this.integrationTestCacheConfig,
-    required this.androidAVDImage,
-    required this.androidAVDDevice,
     required this.platform,
     required this.testArgs,
     required this.runPrefix,
@@ -79,22 +75,6 @@ class FlutterIntegrationTestBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        Step.run(
-          name: 'Install test dependencies (android)',
-          ifExpression:
-              platform.expression.eq(const Expression.literal('android')),
-          run: '''
-set -ex
-export PATH="\$ANDROID_HOME/cmdline-tools/latest/bin:\$PATH"
-printf 'y\\n%.0s' {1..10} | sdkmanager --licenses
-sdkmanager --install emulator '$androidAVDImage'
-avdmanager create avd \\
-  --force \\
-  --name default \\
-  --package '$androidAVDImage' \\
-  --device '$androidAVDDevice'
-''',
-        ),
         Step.run(
           name: 'Install test dependencies (linux)',
           ifExpression:
@@ -119,28 +99,6 @@ sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
           pubTool: pubTool,
           runTool: runTool,
         ).build(),
-        Step.run(
-          name: 'Start Android-Emulator',
-          ifExpression:
-              platform.expression.eq(const Expression.literal('android')),
-          run: '''
-set -ex
-nohup \$ANDROID_HOME/emulator/emulator -no-metrics -no-snapstorage -no-snapshot -no-audio -no-boot-anim -no-window @default &
-\$ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z \$(getprop sys.boot_completed | tr -d '\\r') ]]; do sleep 1; done; input keyevent 82'
-$baseTool devices
-''',
-          workingDirectory: workingDirectory.toString(),
-        ),
-        Step.run(
-          name: 'Start iOS-Simulator',
-          ifExpression: platform.expression.eq(const Expression.literal('ios')),
-          run: '''
-set -e
-open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
-$baseTool devices
-''',
-          workingDirectory: workingDirectory.toString(),
-        ),
         Step.run(
           name: 'Run integration tests (dart-vm)',
           ifExpression: platform.expression.ne(const Expression.literal('web')),

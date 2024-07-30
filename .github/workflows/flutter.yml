@@ -93,16 +93,6 @@ on:
             "key": "test-cache-key",
             "path": "path/to/cache-dir"
           }
-      androidAVDImage:
-        type: string
-        required: false
-        default: system-images;android-34;google_apis;x86_64
-        description: The AVD-Image to be used for android integration testing
-      androidAVDDevice:
-        type: string
-        required: false
-        default: pixel_7
-        description: The AVD device template to be used for android integration testing
       browserStackAndroidDevices:
         type: string
         required: false
@@ -405,19 +395,11 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - android
-          - ios
           - linux
           - macos
           - windows
           - web
         include:
-          - platform: android
-            os: macos-13
-            testArgs: --timeout 3x
-          - platform: ios
-            os: macos-latest
-            testArgs: --timeout 3x
           - platform: linux
             os: ubuntu-latest
             testArgs: -d linux
@@ -447,18 +429,6 @@ jobs:
       - name: Download flutter binary artifacts
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: flutter precache --universal --${{ matrix.platform }}
-      - name: Install test dependencies (android)
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.platform == 'android'
-        run: |
-          set -ex
-          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
-          printf 'y\n%.0s' {1..10} | sdkmanager --licenses
-          sdkmanager --install emulator '${{ inputs.androidAVDImage }}'
-          avdmanager create avd \
-            --force \
-            --name default \
-            --package '${{ inputs.androidAVDImage }}' \
-            --device '${{ inputs.androidAVDDevice }}'
       - name: Install test dependencies (linux)
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.platform == 'linux'
         run: |
@@ -551,21 +521,6 @@ jobs:
         env:
           CACHE_HIT: ${{ steps.test-setup-cache.outputs.cache-hit }}
         run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
-        working-directory: ${{ inputs.workingDirectory }}
-      - name: Start Android-Emulator
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.platform == 'android'
-        run: |
-          set -ex
-          nohup $ANDROID_HOME/emulator/emulator -no-metrics -no-snapstorage -no-snapshot -no-audio -no-boot-anim -no-window @default &
-          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
-          flutter devices
-        working-directory: ${{ inputs.workingDirectory }}
-      - name: Start iOS-Simulator
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.platform == 'ios'
-        run: |
-          set -e
-          open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
-          flutter devices
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run integration tests (dart-vm)
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.platform != 'web'
@@ -742,7 +697,7 @@ jobs:
     needs:
       - analyze
     if: inputs.integrationTestPaths != '' && (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), 'ios'))
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
         uses: subosito/flutter-action@v2

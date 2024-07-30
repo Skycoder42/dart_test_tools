@@ -9,7 +9,13 @@ import '../steps/flutter_integration_test_builder.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
 final class FlutterIntegrationTestMatrix extends PlatformMatrix {
-  const FlutterIntegrationTestMatrix() : super(FlutterPlatform.values);
+  const FlutterIntegrationTestMatrix()
+      : super(const [
+          FlutterPlatform.linux,
+          FlutterPlatform.macos,
+          FlutterPlatform.windows,
+          FlutterPlatform.web,
+        ]);
 
   TestArgsMatrixProperty get testArgs => const TestArgsMatrixProperty();
 
@@ -43,8 +49,6 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression integrationTestPaths;
   final Expression integrationTestProject;
   final Expression integrationTestCacheConfig;
-  final Expression androidAVDImage;
-  final Expression androidAVDDevice;
 
   FlutterIntegrationTestJobBuilder({
     required this.enabledPlatformsOutput,
@@ -59,8 +63,6 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     required this.integrationTestPaths,
     required this.integrationTestProject,
     required this.integrationTestCacheConfig,
-    required this.androidAVDImage,
-    required this.androidAVDDevice,
   }) : matrix = const FlutterIntegrationTestMatrix();
 
   @override
@@ -95,8 +97,6 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
             integrationTestPaths: integrationTestPaths,
             integrationTestProject: integrationTestProject,
             integrationTestCacheConfig: integrationTestCacheConfig,
-            androidAVDImage: androidAVDImage,
-            androidAVDDevice: androidAVDDevice,
             platform: matrix.platform,
             testArgs: matrix.testArgs,
             runPrefix: matrix.runPrefix,

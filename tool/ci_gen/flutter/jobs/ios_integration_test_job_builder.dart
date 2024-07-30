@@ -3,7 +3,6 @@ import '../../common/jobs/sdk_job_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
-import '../../types/runs_on.dart';
 import '../flutter_platform.dart';
 import '../steps/ios_integration_test_builder.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
@@ -13,8 +12,6 @@ final class IosIntegrationTestJobBuilder extends SdkJobBuilder
   final JobIdOutput enabledPlatformsOutput;
   @override
   final Expression flutterSdkChannel;
-  @override
-  final Expression javaJdkVersion;
   final Expression workingDirectory;
   final Expression artifactDependencies;
   final Expression buildRunner;
@@ -30,7 +27,6 @@ final class IosIntegrationTestJobBuilder extends SdkJobBuilder
   IosIntegrationTestJobBuilder({
     required this.enabledPlatformsOutput,
     required this.flutterSdkChannel,
-    required this.javaJdkVersion,
     required this.workingDirectory,
     required this.artifactDependencies,
     required this.buildRunner,
@@ -58,7 +54,7 @@ final class IosIntegrationTestJobBuilder extends SdkJobBuilder
         needs: {
           enabledPlatformsOutput.jobId,
         },
-        runsOn: RunsOn.ubuntuLatest.id,
+        runsOn: FlutterPlatform.ios.os.id,
         steps: [
           ...buildSetupSdkSteps(
             buildPlatform:

@@ -82,8 +82,6 @@ class FlutterWorkflow implements WorkflowBuilder {
           inputContext(WorkflowInputs.integrationTestProject),
       integrationTestCacheConfig:
           inputContext(WorkflowInputs.integrationTestCacheConfig),
-      androidAVDImage: inputContext(WorkflowInputs.androidAVDImage),
-      androidAVDDevice: inputContext(WorkflowInputs.androidAVDDevice),
     );
 
     final androidIntegrationTestBuilder = AndroidIntegrationTestJobBuilder(
@@ -111,7 +109,6 @@ class FlutterWorkflow implements WorkflowBuilder {
     final iosIntegrationTestBuilder = IosIntegrationTestJobBuilder(
       enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
-      javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
       workingDirectory: inputContext(WorkflowInputs.workingDirectory),
       artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
       buildRunner: inputContext(WorkflowInputs.buildRunner),
