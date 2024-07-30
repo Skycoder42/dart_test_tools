@@ -21,7 +21,7 @@ runs:
   steps:
     - name: Run hurl script
       run: |
-        set -eo pipefail
+        set -exo pipefail
 
         command="hurl"
         if [ '${{ inputs.test }}' == 'true' ]; then
@@ -40,7 +40,7 @@ runs:
         fi
         command="$command ${{ inputs.rawArguments }}"
 
-        cat << EOF | $command
+        cat << 'EOF' | $command
         ${{ inputs.script }}
         EOF
       shell: bash
