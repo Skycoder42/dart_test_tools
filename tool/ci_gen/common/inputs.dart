@@ -499,4 +499,15 @@ Example:
           'The base href for the generated web application. Defaults to "/".',
     ),
   );
+
+  static final browserStackDevices = WorkflowInput(
+    name: 'browserStackDevices',
+    input: Input.json(
+      required: false,
+      defaultValue: const [
+        {'device': '.*'},
+      ],
+      description: 'The devices to be used with BrowserStack.',
+    ),
+  );
 }

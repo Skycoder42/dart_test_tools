@@ -1,12 +1,15 @@
 import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
 import '../common/api/workflow_output.dart';
+import '../common/api/workflow_secret.dart';
 import '../common/inputs.dart';
 import '../common/jobs/validate_coverage_job_builder.dart';
 import '../common/outputs.dart';
+import '../common/secrets.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
+import 'jobs/android_integration_test_job_builder.dart';
 import 'jobs/flutter_analyze_job_builder.dart';
 import 'jobs/flutter_integration_test_job_builder.dart';
 import 'jobs/flutter_unit_test_job_builder.dart';
@@ -20,6 +23,7 @@ class FlutterWorkflow implements WorkflowBuilder {
   @override
   Workflow build() {
     final inputContext = WorkflowInputContext();
+    final secretContext = WorkflowSecretContext();
     final outputContext = WorkflowOutputContext();
 
     final analyzeJobBuilder = FlutterAnalyzeJobBuilder(
@@ -81,10 +85,32 @@ class FlutterWorkflow implements WorkflowBuilder {
       androidAVDDevice: inputContext(WorkflowInputs.androidAVDDevice),
     );
 
+    final androidIntegrationTestBuilder = AndroidIntegrationTestJobBuilder(
+      enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
+      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
+      javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
+      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+      buildRunner: inputContext(WorkflowInputs.buildRunner),
+      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+      removePubspecOverrides:
+          inputContext(WorkflowInputs.removePubspecOverrides),
+      integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
+      integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
+      integrationTestProject:
+          inputContext(WorkflowInputs.integrationTestProject),
+      integrationTestCacheConfig:
+          inputContext(WorkflowInputs.integrationTestCacheConfig),
+      browserStackDevices: inputContext(WorkflowInputs.browserStackDevices),
+      browserStackCredentials:
+          secretContext(WorkflowSecrets.browserStackCredentials),
+    );
+
     return Workflow(
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
+          secrets: secretContext.createSecrets(),
           outputs: outputContext.createOutputs(),
         ),
       ),
@@ -93,6 +119,7 @@ class FlutterWorkflow implements WorkflowBuilder {
         unitTestBuilder.id: unitTestBuilder.build(),
         validateCoverageBuilder.id: validateCoverageBuilder.build(),
         integrationTestBuilder.id: integrationTestBuilder.build(),
+        androidIntegrationTestBuilder.id: androidIntegrationTestBuilder.build(),
       },
     );
   }

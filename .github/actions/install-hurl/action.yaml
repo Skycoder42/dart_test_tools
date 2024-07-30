@@ -1,0 +1,29 @@
+name: Install hurl
+description: Install hurl
+runs:
+  using: composite
+  steps:
+    - name: Pull ghcr.io/orange-opensource/hurl:latest image
+      if: runner.os	== 'Linux'
+      run: docker pull ghcr.io/orange-opensource/hurl:latest
+      shell: bash
+    - name: Prepare hurl binary
+      if: runner.os	== 'Linux'
+      run: |
+        set -eo pipefail
+        hurl_path='${{ runner.tool_cache }}/hurl'
+        mkdir -p "$hurl_path"
+        cat << EOF > "$hurl_path/hurl"
+        #!/bin/sh
+        exec docker run --rm -it ghcr.io/orange-opensource/hurl:latest "$@"
+        EOF
+        echo "$hurl_path" >> $GITHUB_PATH
+      shell: bash
+    - name: Install hurl from homebrew
+      if: runner.os	== 'macOS'
+      run: brew install hurl
+      shell: bash
+    - name: Install hurl from winget
+      if: runner.os	== 'Windows'
+      run: winget install hurl
+      shell: powershell

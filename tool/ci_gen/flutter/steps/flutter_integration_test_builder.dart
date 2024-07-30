@@ -1,13 +1,11 @@
 import '../../common/api/matrix_job_builder_mixin.dart';
 import '../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../common/api/step_builder.dart';
-import '../../common/steps/cache_builder.dart';
-import '../../common/steps/project_prepare_builder.dart';
-import '../../common/steps/project_setup_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 import '../flutter_platform.dart';
+import 'prepare_integration_test_builder.dart';
 
 final class TestArgsMatrixProperty extends IMatrixProperty<FlutterPlatform> {
   const TestArgsMatrixProperty();
@@ -81,17 +79,6 @@ class FlutterIntegrationTestBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        ...ProjectSetupBuilder(
-          workingDirectory: workingDirectory,
-          artifactDependencies: artifactDependencies,
-          buildRunner: buildRunner,
-          buildRunnerArgs: buildRunnerArgs,
-          removePubspecOverrides:
-              ExpressionOrValue.expression(removePubspecOverrides),
-          isFlutter: const ExpressionOrValue.value(true),
-          pubTool: pubTool,
-          runTool: runTool,
-        ).build(),
         Step.run(
           name: 'Install test dependencies (android)',
           ifExpression:
@@ -118,34 +105,20 @@ sudo apt-get -qq update
 sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
 ''',
         ),
-        Step.run(
-          name: 'Validate flutter setup',
-          run: '$baseTool doctor -v',
-        ),
-        ...ProjectPrepareBuilder(
-          titleSuffix: '(Integration test project)',
-          workingDirectory:
-              Expression.fake('$workingDirectory/$integrationTestProject'),
-          removePubspecOverrides:
-              ExpressionOrValue.expression(removePubspecOverrides),
-          isFlutter: const ExpressionOrValue.value(false),
+        ...PrepareIntegrationTestBuilder(
+          workingDirectory: workingDirectory,
+          artifactDependencies: artifactDependencies,
+          buildRunner: buildRunner,
+          buildRunnerArgs: buildRunnerArgs,
+          removePubspecOverrides: removePubspecOverrides,
+          integrationTestSetup: integrationTestSetup,
+          integrationTestProject: integrationTestProject,
+          integrationTestCacheConfig: integrationTestCacheConfig,
+          platform: ExpressionOrValue.expression(platform.expression),
+          baseTool: baseTool,
           pubTool: pubTool,
           runTool: runTool,
-          ifExpression: integrationTestProject.ne(Expression.empty),
         ).build(),
-        ...CacheBuilder(
-          cacheStepId: testSetupCacheStepId,
-          platform: platform.expression,
-          cacheConfig: integrationTestCacheConfig,
-          ifExpression: _platformTestSetup.ne(Expression.empty),
-        ).build(),
-        Step.run(
-          name: 'Run platform test setup',
-          ifExpression: _platformTestSetup.ne(Expression.empty),
-          run: _platformTestSetup.toString(),
-          workingDirectory: workingDirectory.toString(),
-          env: CacheBuilder.createEnv(testSetupCacheStepId),
-        ),
         Step.run(
           name: 'Start Android-Emulator',
           ifExpression:
@@ -191,8 +164,4 @@ $baseTool devices
           shell: 'bash',
         ),
       ];
-
-  Expression get _platformTestSetup => Expression(
-        'fromJSON(${integrationTestSetup.value})[${platform.expression.value}]',
-      );
 }

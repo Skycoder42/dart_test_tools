@@ -20,6 +20,8 @@ abstract base class Github {
   static const workspace = Expression('github.workspace');
 
   static const actor = Expression('github.actor');
+
+  static const repository = Expression('github.repository');
 }
 
 abstract base class Functions {

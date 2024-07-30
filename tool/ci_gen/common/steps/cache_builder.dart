@@ -7,7 +7,7 @@ import '../tools.dart';
 
 class CacheBuilder implements StepBuilder {
   final StepId cacheStepId;
-  final Expression platform;
+  final ExpressionOrValue platform;
   final Expression cacheConfig;
   final Expression? ifExpression;
 

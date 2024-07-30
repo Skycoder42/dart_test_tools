@@ -1,0 +1,46 @@
+name: Run hurl
+description: Runs a hurl script
+inputs:
+  script:
+    description: The hurl script to be executed
+    required: true
+  test:
+    description: Run hurl in test mode
+    default: "true"
+  verbose:
+    description: Run hurl in verbose mode
+    default: "false"
+  fileRoot:
+    description: The file root directory for hurl. If not specified, the workspace directory will be used
+  user:
+    description: The basic auth credentials in the form of "<username>:<password>"" to be used by hurl
+  rawArguments:
+    description: Additional arguments to be passed to hurl
+runs:
+  using: composite
+  steps:
+    - name: Run hurl script
+      run: |
+        set -eo pipefail
+
+        command="hurl"
+        if [ '${{ inputs.test }}' == 'true' ]; then
+          command="$command --test"
+        fi
+        if [ '${{ inputs.verbose }}' == 'true' ]; then
+          command="$command --verbose"
+        fi
+        if [ -n '${{ inputs.fileRoot }}' ]; then
+          command="$command --file-root '${{ inputs.fileRoot }}'"
+        else
+          command="$command --file-root '${{ github.workspace }}'"
+        fi
+        if [ -n '${{ inputs.user }}' ]; then
+          command="$command --user '${{ inputs.user }}'"
+        fi
+        command="$command ${{ inputs.rawArguments }}"
+
+        cat << EOF | $command
+        ${{ inputs.script }}
+        EOF
+      shell: bash

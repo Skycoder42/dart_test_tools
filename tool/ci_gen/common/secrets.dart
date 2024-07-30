@@ -141,4 +141,13 @@ VARIABLE2=value2
           'to push commits to the targetRepo.',
     ),
   );
+
+  static const browserStackCredentials = WorkflowSecret(
+    name: 'browserStackCredentials',
+    secret: Secret(
+      required: false,
+      description: 'The BrowserStack access credentials '
+          'in the form of "<username>:<accessKey>"',
+    ),
+  );
 }
