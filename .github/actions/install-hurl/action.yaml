@@ -15,7 +15,7 @@ runs:
         mkdir -p "$hurl_path"
         cat << EOF > "$hurl_path/hurl"
         #!/bin/sh
-        exec docker run --rm -it ghcr.io/orange-opensource/hurl:latest "$@"
+        exec docker run --rm ghcr.io/orange-opensource/hurl:latest "$@"
         EOF
         chmod +x "$hurl_path/hurl"
         echo "$hurl_path" >> $GITHUB_PATH
