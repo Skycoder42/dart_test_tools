@@ -100,8 +100,8 @@ POST {{baseUrl}}/build
 {
   "app": "{{appUrl}}",
   "testSuite": "{{testSuiteUrl}}",
-  "project": "${Github.repository}"
-  "buildTag": "${Github.sha}"
+  "project": "${Github.repository}",
+  "buildTag": "${Github.sha}",
   "devices": $browserStackAndroidDevices,
   "autoGrantPermissions": true
 }

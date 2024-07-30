@@ -3,22 +3,26 @@ description: Install hurl
 runs:
   using: composite
   steps:
-    - name: Pull ghcr.io/orange-opensource/hurl:latest image
-      if: runner.os	== 'Linux'
-      run: docker pull ghcr.io/orange-opensource/hurl:latest
-      shell: bash
-    - name: Prepare hurl binary
+    - name: Install hurl from GitHub releases
       if: runner.os	== 'Linux'
       run: |
         set -eo pipefail
-        hurl_path='${{ runner.tool_cache }}/hurl'
-        mkdir -p "$hurl_path"
-        cat << EOF > "$hurl_path/hurl"
-        #!/bin/sh
-        exec docker run --rm ghcr.io/orange-opensource/hurl:latest "$@"
-        EOF
-        chmod +x "$hurl_path/hurl"
-        echo "$hurl_path" >> $GITHUB_PATH
+
+        echo ::group::Detect latest version
+        hurl_file='${{ runner.temp }}/hurl.json'
+        curl -sSLfo "$hurl_file" 'https://api.github.com/repos/Orange-OpenSource/hurl/releases/latest'
+        echo "Installing Hurl Version $(jq -r '.name' "$hurl_file")"
+        download_url=$(jq -r '.assets[] | select (.name | endswith(".deb")) | .browser_download_url' "$hurl_file")
+        echo ::endgroup::
+
+        echo ::group::Download hurl
+        hurl_deb='${{ runner.temp }}/hurl.deb'
+        curl -Lfo "$hurl_deb" "$download_url"
+        echo ::endgroup::
+
+        echo ::group::Install hurl
+        sudo apt install "$hurl_deb"
+        echo ::endgroup::
       shell: bash
     - name: Install hurl from homebrew
       if: runner.os	== 'macOS'
