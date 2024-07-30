@@ -21,7 +21,7 @@ runs:
   steps:
     - name: Run hurl script
       run: |
-        set -exo pipefail
+        set -eo pipefail
 
         command="hurl"
         if [ '${{ inputs.test }}' == 'true' ]; then

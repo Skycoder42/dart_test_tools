@@ -709,8 +709,8 @@ jobs:
             {
               "app": "{{appUrl}}",
               "testSuite": "{{testSuiteUrl}}",
-              "project": "${{ github.repository }}"
-              "buildTag": "${{ github.sha }}"
+              "project": "${{ github.repository }}",
+              "buildTag": "${{ github.sha }}",
               "devices": ${{ inputs.browserStackAndroidDevices }},
               "autoGrantPermissions": true
             }
