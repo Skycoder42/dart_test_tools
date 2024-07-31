@@ -5,6 +5,7 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 import '../flutter_platform.dart';
+import 'browser_stack_results_builder.dart';
 import 'prepare_integration_test_builder.dart';
 
 class AndroidIntegrationTestBuilder implements StepBuilder {
@@ -114,7 +115,7 @@ GET {{baseUrl}}/builds/{{buildId}}
 [Options]
 retry: 120
 retry-interval: 30000
-output: test-results.json
+output: build/test-results.json
 HTTP 200
 [Asserts]
 jsonpath "\$.status" not matches /(running|queued)/
@@ -122,9 +123,13 @@ jsonpath "\$.status" not matches /(running|queued)/
 GET {{baseUrl}}/builds/{{buildId}}
 HTTP 200
 [Asserts]
-jsonpath "\$.status" matches /(passed|skipped)/
+jsonpath "\$.status" == "passed"
 ''',
           },
         ),
+        ...BrowserStackResultsBuilder(
+          workingDirectory: workingDirectory,
+          integrationTestProject: integrationTestProject,
+        ).build(),
       ];
 }

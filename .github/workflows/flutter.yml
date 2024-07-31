@@ -683,7 +683,7 @@ jobs:
             [Options]
             retry: 120
             retry-interval: 30000
-            output: test-results.json
+            output: build/test-results.json
             HTTP 200
             [Asserts]
             jsonpath "$.status" not matches /(running|queued)/
@@ -691,7 +691,15 @@ jobs:
             GET {{baseUrl}}/builds/{{buildId}}
             HTTP 200
             [Asserts]
-            jsonpath "$.status" matches /(passed|skipped)/
+            jsonpath "$.status" == "passed"
+      - name: Process integration tests results
+        if: always()
+        run: |
+          set -eo pipefail
+          result_file=build/test-results.json
+          echo "Completed BrowserStack test run with status: $(jq -r '.status' "$result_file")"
+          echo "See results at: https://app-automate.browserstack.com/dashboard/v2/builds/$(jq -r '.id' "$result_file")"
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
   integration_tests_ios:
     name: Integration tests (ios)
     needs:
@@ -833,7 +841,7 @@ jobs:
             [Options]
             retry: 120
             retry-interval: 30000
-            output: test-results.json
+            output: build/test-results.json
             HTTP 200
             [Asserts]
             jsonpath "$.status" not matches /(running|queued)/
@@ -841,4 +849,12 @@ jobs:
             GET {{baseUrl}}/builds/{{buildId}}
             HTTP 200
             [Asserts]
-            jsonpath "$.status" matches /(passed|skipped)/
+            jsonpath "$.status" == "passed"
+      - name: Process integration tests results
+        if: always()
+        run: |
+          set -eo pipefail
+          result_file=build/test-results.json
+          echo "Completed BrowserStack test run with status: $(jq -r '.status' "$result_file")"
+          echo "See results at: https://app-automate.browserstack.com/dashboard/v2/builds/$(jq -r '.id' "$result_file")"
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
