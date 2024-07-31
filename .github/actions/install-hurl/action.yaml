@@ -10,7 +10,9 @@ runs:
 
         echo ::group::Detect latest version
         hurl_file='${{ runner.temp }}/hurl.json'
-        curl -sSLfo "$hurl_file" 'https://api.github.com/repos/Orange-OpenSource/hurl/releases/latest'
+        curl -sSLfo "$hurl_file" \
+          --header 'Authorization: Bearer ${{ github.token }}' \
+          'https://api.github.com/repos/Orange-OpenSource/hurl/releases/latest'
         echo "Installing Hurl Version $(jq -r '.name' "$hurl_file")"
         download_url=$(jq -r '.assets[] | select (.name | endswith(".deb")) | .browser_download_url' "$hurl_file")
         echo ::endgroup::
