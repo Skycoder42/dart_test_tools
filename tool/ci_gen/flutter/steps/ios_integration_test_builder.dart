@@ -1,6 +1,7 @@
 import '../../common/api/step_builder.dart';
 import '../../common/contexts.dart';
 import '../../common/tools.dart';
+import '../../types/env.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
@@ -78,6 +79,12 @@ class IosIntegrationTestBuilder implements StepBuilder {
               '-sdk iphoneos '
               'build-for-testing',
           workingDirectory: '$workingDirectory/$integrationTestProject/ios',
+          env: const Env({
+            'CODE_SIGN_IDENTITY': '',
+            'CODE_SIGNING_REQUIRED': 'NO',
+            'CODE_SIGN_ENTITLEMENTS': '',
+            'CODE_SIGNING_ALLOWED': 'NO',
+          }),
         ),
         Step.run(
           name: 'Create integration test package',

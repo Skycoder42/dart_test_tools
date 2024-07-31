@@ -795,6 +795,11 @@ jobs:
         run: flutter build ios --release --no-codesign '${{ inputs.integrationTestPaths }}'
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
       - name: Build test instrumentation app
+        env:
+          CODE_SIGN_IDENTITY: ""
+          CODE_SIGNING_REQUIRED: 'NO'
+          CODE_SIGN_ENTITLEMENTS: ""
+          CODE_SIGNING_ALLOWED: 'NO'
         run: xcodebuild -workspace Runner.xcworkspace -scheme Runner -config Flutter/Release.xcconfig -derivedDataPath ../build/ios_integration -sdk iphoneos build-for-testing
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}/ios
       - name: Create integration test package
