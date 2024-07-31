@@ -95,6 +95,7 @@ class IosIntegrationTestBuilder implements StepBuilder {
           name: 'Run integration tests',
           uses: Tools.hurl,
           withArgs: {
+            'verbose': true,
             'fileRoot': '$workingDirectory/$integrationTestProject',
             'user': browserStackCredentials.toString(),
             'script': '''

@@ -499,6 +499,7 @@ jobs:
       - name: Run integration tests
         uses: Skycoder42/dart_test_tools/.github/actions/hurl@main
         with:
+          verbose: true
           fileRoot: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
           user: ${{ secrets.browserStackCredentials }}
           script: |
@@ -665,6 +666,7 @@ jobs:
       - name: Run integration tests
         uses: Skycoder42/dart_test_tools/.github/actions/hurl@main
         with:
+          verbose: true
           fileRoot: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
           user: ${{ secrets.browserStackCredentials }}
           script: |
