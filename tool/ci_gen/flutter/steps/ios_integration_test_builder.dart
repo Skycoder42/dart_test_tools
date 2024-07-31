@@ -86,7 +86,7 @@ class IosIntegrationTestBuilder implements StepBuilder {
         ),
         Step.run(
           name: 'Create integration test package',
-          run: 'zip -r --must-match -- app-release.zip '
+          run: 'zip -r --must-match app-release.zip '
               'Release-iphoneos *.xctestrun',
           workingDirectory:
               '$workingDirectory/$integrationTestProject/build/ios_integration/Build/Products',
