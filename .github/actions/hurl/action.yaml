@@ -7,6 +7,9 @@ inputs:
   test:
     description: Run hurl in test mode
     default: "true"
+  errorFormat:
+    description: The error format (long by default)
+    default: long
   verbose:
     description: Run hurl in verbose mode
     default: "false"
@@ -23,7 +26,7 @@ runs:
       run: |
         set -eo pipefail
 
-        command="hurl"
+        command="hurl --error-format ${{ inputs.errorFormat }}"
         if [ '${{ inputs.test }}' == 'true' ]; then
           command="$command --test"
         fi
