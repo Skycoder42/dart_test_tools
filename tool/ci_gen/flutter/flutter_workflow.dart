@@ -11,9 +11,10 @@ import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'jobs/android_integration_test_job_builder.dart';
 import 'jobs/flutter_analyze_job_builder.dart';
-import 'jobs/flutter_integration_test_job_builder.dart';
+import 'jobs/desktop_integration_test_job_builder.dart';
 import 'jobs/flutter_unit_test_job_builder.dart';
 import 'jobs/ios_integration_test_job_builder.dart';
+import 'jobs/web_integration_test_job_builder.dart';
 
 class FlutterWorkflow implements WorkflowBuilder {
   const FlutterWorkflow();
@@ -66,24 +67,6 @@ class FlutterWorkflow implements WorkflowBuilder {
       coverageExclude: inputContext(WorkflowInputs.coverageExclude),
     );
 
-    final integrationTestBuilder = FlutterIntegrationTestJobBuilder(
-      enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
-      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
-      javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
-      buildRunner: inputContext(WorkflowInputs.buildRunner),
-      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-      removePubspecOverrides:
-          inputContext(WorkflowInputs.removePubspecOverrides),
-      integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
-      integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
-      integrationTestProject:
-          inputContext(WorkflowInputs.integrationTestProject),
-      integrationTestCacheConfig:
-          inputContext(WorkflowInputs.integrationTestCacheConfig),
-    );
-
     final androidIntegrationTestBuilder = AndroidIntegrationTestJobBuilder(
       enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
       flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
@@ -127,6 +110,41 @@ class FlutterWorkflow implements WorkflowBuilder {
           secretContext(WorkflowSecrets.browserStackCredentials),
     );
 
+    final desktopIntegrationTestBuilder = DesktopIntegrationTestJobBuilder(
+      enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
+      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
+      javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
+      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+      buildRunner: inputContext(WorkflowInputs.buildRunner),
+      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+      removePubspecOverrides:
+          inputContext(WorkflowInputs.removePubspecOverrides),
+      integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
+      integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
+      integrationTestProject:
+          inputContext(WorkflowInputs.integrationTestProject),
+      integrationTestCacheConfig:
+          inputContext(WorkflowInputs.integrationTestCacheConfig),
+    );
+
+    final webIntegrationTestBuilder = WebIntegrationTestJobBuilder(
+      enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
+      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
+      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+      buildRunner: inputContext(WorkflowInputs.buildRunner),
+      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+      removePubspecOverrides:
+          inputContext(WorkflowInputs.removePubspecOverrides),
+      integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
+      integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
+      integrationTestProject:
+          inputContext(WorkflowInputs.integrationTestProject),
+      integrationTestCacheConfig:
+          inputContext(WorkflowInputs.integrationTestCacheConfig),
+    );
+
     return Workflow(
       on: On(
         workflowCall: WorkflowCall(
@@ -139,9 +157,10 @@ class FlutterWorkflow implements WorkflowBuilder {
         analyzeJobBuilder.id: analyzeJobBuilder.build(),
         unitTestBuilder.id: unitTestBuilder.build(),
         validateCoverageBuilder.id: validateCoverageBuilder.build(),
-        integrationTestBuilder.id: integrationTestBuilder.build(),
         androidIntegrationTestBuilder.id: androidIntegrationTestBuilder.build(),
         iosIntegrationTestBuilder.id: iosIntegrationTestBuilder.build(),
+        desktopIntegrationTestBuilder.id: desktopIntegrationTestBuilder.build(),
+        webIntegrationTestBuilder.id: webIntegrationTestBuilder.build(),
       },
     );
   }

@@ -1,45 +1,17 @@
-import '../../common/api/matrix_job_builder_mixin.dart';
 import '../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../common/jobs/sdk_job_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
 import '../flutter_platform.dart';
-import '../steps/flutter_integration_test_builder.dart';
+import '../steps/web_integration_test_builder.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-final class FlutterIntegrationTestMatrix extends PlatformMatrix {
-  const FlutterIntegrationTestMatrix()
-      : super(const [
-          FlutterPlatform.linux,
-          FlutterPlatform.macos,
-          FlutterPlatform.windows,
-          FlutterPlatform.web,
-        ]);
-
-  TestArgsMatrixProperty get testArgs => const TestArgsMatrixProperty();
-
-  RunPrefixMatrixProperty get runPrefix => const RunPrefixMatrixProperty();
-
-  @override
-  List<IMatrixProperty<IPlatformMatrixSelector>> get includeProperties => [
-        ...super.includeProperties,
-        testArgs,
-        runPrefix,
-      ];
-}
-
-final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
-    with
-        FlutterSdkJobBuilderMixin,
-        MatrixJobBuilderMixin<FlutterIntegrationTestMatrix,
-            IPlatformMatrixSelector>,
-        PlatformJobBuilderMixin<FlutterIntegrationTestMatrix> {
+final class WebIntegrationTestJobBuilder extends SdkJobBuilder
+    with FlutterSdkJobBuilderMixin {
   final JobIdOutput enabledPlatformsOutput;
   @override
   final Expression flutterSdkChannel;
-  @override
-  final Expression javaJdkVersion;
   final Expression workingDirectory;
   final Expression artifactDependencies;
   final Expression buildRunner;
@@ -50,10 +22,9 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression integrationTestProject;
   final Expression integrationTestCacheConfig;
 
-  FlutterIntegrationTestJobBuilder({
+  WebIntegrationTestJobBuilder({
     required this.enabledPlatformsOutput,
     required this.flutterSdkChannel,
-    required this.javaJdkVersion,
     required this.workingDirectory,
     required this.artifactDependencies,
     required this.buildRunner,
@@ -63,31 +34,29 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
     required this.integrationTestPaths,
     required this.integrationTestProject,
     required this.integrationTestCacheConfig,
-  }) : matrix = const FlutterIntegrationTestMatrix();
+  });
 
   @override
-  JobId get id => const JobId('integration_tests');
+  JobId get id => const JobId('integration_tests_web');
 
   @override
-  Expression get enabledPlatforms => enabledPlatformsOutput.expression;
-
-  @override
-  final FlutterIntegrationTestMatrix matrix;
-
-  @override
-  Job buildGeneric(String runsOn) => Job(
-        name: 'Integration tests',
-        ifExpression: integrationTestPaths.ne(Expression.empty),
+  Job build() => Job(
+        name: 'Integration tests (web)',
+        ifExpression: integrationTestPaths.ne(Expression.empty) &
+            EnabledPlatforms.check(
+              enabledPlatformsOutput.expression,
+              Expression.literal(FlutterPlatform.web.platform),
+            ),
         needs: {
           enabledPlatformsOutput.jobId,
         },
-        runsOn: runsOn,
+        runsOn: FlutterPlatform.web.os.id,
         steps: [
           ...buildSetupSdkSteps(
             buildPlatform:
-                ExpressionOrValue.expression(matrix.platform.expression),
+                ExpressionOrValue.value(FlutterPlatform.web.platform),
           ),
-          ...FlutterIntegrationTestBuilder(
+          ...WebIntegrationTestBuilder(
             workingDirectory: workingDirectory,
             artifactDependencies: artifactDependencies,
             buildRunner: buildRunner,
@@ -97,9 +66,6 @@ final class FlutterIntegrationTestJobBuilder extends SdkJobBuilder
             integrationTestPaths: integrationTestPaths,
             integrationTestProject: integrationTestProject,
             integrationTestCacheConfig: integrationTestCacheConfig,
-            platform: matrix.platform,
-            testArgs: matrix.testArgs,
-            runPrefix: matrix.runPrefix,
             baseTool: baseTool,
             pubTool: pubTool,
             runTool: runTool,

@@ -15,7 +15,6 @@ final class TestArgsMatrixProperty extends IMatrixProperty<FlutterPlatform> {
 
   @override
   Object? valueFor(FlutterPlatform selector) => switch (selector) {
-        FlutterPlatform.android || FlutterPlatform.ios => '--timeout 3x',
         FlutterPlatform.linux => '-d linux',
         FlutterPlatform.macos => '-d macos',
         FlutterPlatform.windows => '-d windows',
@@ -36,7 +35,7 @@ final class RunPrefixMatrixProperty extends IMatrixProperty<FlutterPlatform> {
       };
 }
 
-class FlutterIntegrationTestBuilder implements StepBuilder {
+class DesktopIntegrationTestBuilder implements StepBuilder {
   static const testSetupCacheStepId = StepId('test-setup-cache');
 
   final Expression workingDirectory;
@@ -55,7 +54,7 @@ class FlutterIntegrationTestBuilder implements StepBuilder {
   final String pubTool;
   final String runTool;
 
-  const FlutterIntegrationTestBuilder({
+  const DesktopIntegrationTestBuilder({
     required this.workingDirectory,
     required this.artifactDependencies,
     required this.buildRunner,
@@ -100,24 +99,10 @@ sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
           runTool: runTool,
         ).build(),
         Step.run(
-          name: 'Run integration tests (dart-vm)',
-          ifExpression: platform.expression.ne(const Expression.literal('web')),
+          name: 'Run integration tests',
           run: '${runPrefix.expression} '
               '$baseTool test ${testArgs.expression} '
               '--reporter expanded $integrationTestPaths || [ \$? = 79 ]',
-          workingDirectory: '$workingDirectory/$integrationTestProject',
-          shell: 'bash',
-        ),
-        Step.run(
-          name: 'Run integration tests (web)',
-          ifExpression: platform.expression.eq(const Expression.literal('web')),
-          run: r'$ChromeWebDriver/chromedriver --port=4444 & '
-              '$baseTool drive '
-              '--driver test_driver/integration_test.dart '
-              '--target $integrationTestPaths '
-              '--release '
-              '-d chrome --browser-name chrome '
-              r'|| [ $? = 79 ]',
           workingDirectory: '$workingDirectory/$integrationTestProject',
           shell: 'bash',
         ),
