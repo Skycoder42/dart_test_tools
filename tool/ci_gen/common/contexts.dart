@@ -28,4 +28,7 @@ abstract base class Functions {
   const Functions._();
 
   static const always = Expression('always()');
+
+  static Expression format(String message, List<Expression> args) =>
+      Expression("format('$message', ${args.map((e) => e.value).join(', ')})");
 }

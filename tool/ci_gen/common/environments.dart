@@ -7,4 +7,5 @@ abstract base class Environments {
   static const packagecloud = 'packagecloud';
   static const dockerHub = 'docker-hub';
   static const homebrew = 'homebrew';
+  static const msstore = 'msstore';
 }

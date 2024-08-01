@@ -500,4 +500,23 @@ Example:
       description: 'The devices to be used for iOS with BrowserStack.',
     ),
   );
+
+  static const isDraft = WorkflowInput(
+    name: 'isDraft',
+    input: Input(
+      type: Type.boolean,
+      required: false,
+      defaultValue: false,
+      description: 'Whether to upload the MSIX package as a draft.',
+    ),
+  );
+
+  static const flightId = WorkflowInput(
+    name: 'flightId',
+    input: Input(
+      type: Type.string,
+      required: false,
+      description: 'An optional FlightId to publish the MSIX installer to.',
+    ),
+  );
 }

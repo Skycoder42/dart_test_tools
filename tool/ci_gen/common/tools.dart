@@ -56,6 +56,9 @@ abstract class Tools {
   /// https://github.com/actions/setup-node/releases
   static const actionsSetupNode = 'actions/setup-node@v4';
 
+  /// https://github.com/microsoft/setup-msstore-cli/releases
+  static const microsoftSetupMsstoreCli = 'microsoft/setup-msstore-cli@v1';
+
   static const installHurl =
       'Skycoder42/dart_test_tools/.github/actions/install-hurl@main';
 

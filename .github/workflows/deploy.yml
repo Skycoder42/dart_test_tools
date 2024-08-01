@@ -49,6 +49,20 @@ on:
         type: string
         required: false
         description: The repository identifier (<owner>/<repo>) to which the cask should be published.
+      flutterSdkChannel:
+        type: string
+        required: false
+        default: stable
+        description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action".
+      isDraft:
+        type: boolean
+        required: false
+        default: false
+        description: Whether to upload the MSIX package as a draft.
+      flightId:
+        type: string
+        required: false
+        description: An optional FlightId to publish the MSIX installer to.
     outputs:
       releaseCreated:
         value: ${{ jobs.release.outputs.update }}
@@ -69,6 +83,18 @@ on:
       targetRepoToken:
         required: false
         description: A GitHub PAT that has the permission to push commits to the targetRepo.
+      tenantId:
+        required: false
+        description: The tenantId of the EntraID Tenant used by the msstore cli.
+      sellerId:
+        required: false
+        description: The sellerId of the Microsoft Store used by the msstore cli.
+      clientId:
+        required: false
+        description: The clientId of the EntraID Tenant used by the msstore cli.
+      clientSecret:
+        required: false
+        description: The clientSecret of the EntraID Tenant used by the msstore cli.
 jobs:
   release:
     name: Create release if needed
@@ -297,3 +323,59 @@ jobs:
       - name: Push tap update to remote
         run: git push origin
         working-directory: tap
+  deploy_windows:
+    name: Publish MSIX installer to Microsoft Store
+    needs:
+      - release
+    if: needs.release.outputs.update == 'true' && (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), 'windows'))
+    environment: msstore
+    runs-on: windows-latest
+    steps:
+      - name: '[Validate Inputs] Ensure tenantId is set'
+        run: |
+          if [[ '${{ secrets.tenantId }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input tenantId is not set'
+            exit 1
+          fi
+      - name: '[Validate Inputs] Ensure sellerId is set'
+        run: |
+          if [[ '${{ secrets.sellerId }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input sellerId is not set'
+            exit 1
+          fi
+      - name: '[Validate Inputs] Ensure clientId is set'
+        run: |
+          if [[ '${{ secrets.clientId }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input clientId is not set'
+            exit 1
+          fi
+      - name: '[Validate Inputs] Ensure clientSecret is set'
+        run: |
+          if [[ '${{ secrets.clientSecret }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input clientSecret is not set'
+            exit 1
+          fi
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
+      - name: Download flutter binary artifacts
+        run: flutter precache --universal --windows
+      - name: Install msstore cli
+        uses: microsoft/setup-msstore-cli@v1
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Download windows app artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-deployment-windows
+          path: ${{ inputs.workingDirectory }}/build/windows/msix
+      - name: Configure msstore cli
+        run: msstore reconfigure --tenantId '${{ secrets.tenantId }}' --sellerId '${{ secrets.sellerId }}' --clientId '${{ secrets.clientId }}' --clientSecret '${{ secrets.clientSecret }}'
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Publish MSIX to the Microsoft Store
+        run: msstore publish ${{ inputs.isDraft == 'true' && '--noCommit' || '' }} ${{ inputs.flightId != '' && format('--flightId ''{0}''', inputs.flightId) || '' }}
+        working-directory: ${{ inputs.workingDirectory }}

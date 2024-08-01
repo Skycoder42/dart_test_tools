@@ -12,6 +12,7 @@ import '../types/workflow_call.dart';
 import 'android/jobs/deploy_android_job_builder.dart';
 import 'linux/jobs/deploy_linux_job_builder.dart';
 import 'macos/jobs/deploy_macos_job_builder.dart';
+import 'windows/jobs/deploy_windows_job_builder.dart';
 
 class DeployWorkflow implements WorkflowBuilder {
   const DeployWorkflow();
@@ -65,6 +66,19 @@ class DeployWorkflow implements WorkflowBuilder {
       targetRepoToken: secretContext(WorkflowSecrets.targetRepoToken),
     );
 
+    final deployWindowsJobBuilder = DeployWindowsJobBuilder(
+      releaseCreated: releaseJobBuilder.updateOutput,
+      enabledPlatforms: inputContext(WorkflowInputs.enabledPlatforms),
+      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
+      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      isDraft: inputContext(WorkflowInputs.isDraft),
+      flightId: inputContext(WorkflowInputs.flightId),
+      tenantId: secretContext(WorkflowSecrets.tenantId),
+      sellerId: secretContext(WorkflowSecrets.sellerId),
+      clientId: secretContext(WorkflowSecrets.clientId),
+      clientSecret: secretContext(WorkflowSecrets.clientSecret),
+    );
+
     return Workflow(
       on: On(
         workflowCall: WorkflowCall(
@@ -78,6 +92,7 @@ class DeployWorkflow implements WorkflowBuilder {
         deployAndroidJobBuilder.id: deployAndroidJobBuilder.build(),
         deployLinuxJobBuilder.id: deployLinuxJobBuilder.build(),
         deployMacosJobBuilder.id: deployMacosJobBuilder.build(),
+        deployWindowsJobBuilder.id: deployWindowsJobBuilder.build(),
       },
     );
   }

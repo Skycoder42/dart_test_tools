@@ -150,4 +150,40 @@ VARIABLE2=value2
           'in the form of "<username>:<accessKey>"',
     ),
   );
+
+  static const tenantId = WorkflowSecret(
+    name: 'tenantId',
+    secret: Secret(
+      required: false,
+      description:
+          'The tenantId of the EntraID Tenant used by the msstore cli.',
+    ),
+  );
+
+  static const sellerId = WorkflowSecret(
+    name: 'sellerId',
+    secret: Secret(
+      required: false,
+      description:
+          'The sellerId of the Microsoft Store used by the msstore cli.',
+    ),
+  );
+
+  static const clientId = WorkflowSecret(
+    name: 'clientId',
+    secret: Secret(
+      required: false,
+      description:
+          'The clientId of the EntraID Tenant used by the msstore cli.',
+    ),
+  );
+
+  static const clientSecret = WorkflowSecret(
+    name: 'clientSecret',
+    secret: Secret(
+      required: false,
+      description:
+          'The clientSecret of the EntraID Tenant used by the msstore cli.',
+    ),
+  );
 }
