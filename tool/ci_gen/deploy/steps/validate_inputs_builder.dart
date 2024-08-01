@@ -18,6 +18,7 @@ if [[ '$input' == '' ]]; then
   exit 1
 fi
 ''',
+            shell: 'bash',
           ),
       ];
 }

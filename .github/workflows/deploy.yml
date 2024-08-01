@@ -183,6 +183,7 @@ jobs:
             echo '::error::Platform is enabled, but required input googlePlayKey is not set'
             exit 1
           fi
+        shell: bash
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -225,12 +226,14 @@ jobs:
             echo '::error::Platform is enabled, but required input gpgKeyId is not set'
             exit 1
           fi
+        shell: bash
       - name: '[Validate Inputs] Ensure gpgKey is set'
         run: |
           if [[ '${{ secrets.gpgKey }}' == '' ]]; then
             echo '::error::Platform is enabled, but required input gpgKey is not set'
             exit 1
           fi
+        shell: bash
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -281,12 +284,14 @@ jobs:
             echo '::error::Platform is enabled, but required input targetRepo is not set'
             exit 1
           fi
+        shell: bash
       - name: '[Validate Inputs] Ensure targetRepoToken is set'
         run: |
           if [[ '${{ secrets.targetRepoToken }}' == '' ]]; then
             echo '::error::Platform is enabled, but required input targetRepoToken is not set'
             exit 1
           fi
+        shell: bash
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         uses: dart-lang/setup-dart@v1
         with:
@@ -337,24 +342,28 @@ jobs:
             echo '::error::Platform is enabled, but required input tenantId is not set'
             exit 1
           fi
+        shell: bash
       - name: '[Validate Inputs] Ensure sellerId is set'
         run: |
           if [[ '${{ secrets.sellerId }}' == '' ]]; then
             echo '::error::Platform is enabled, but required input sellerId is not set'
             exit 1
           fi
+        shell: bash
       - name: '[Validate Inputs] Ensure clientId is set'
         run: |
           if [[ '${{ secrets.clientId }}' == '' ]]; then
             echo '::error::Platform is enabled, but required input clientId is not set'
             exit 1
           fi
+        shell: bash
       - name: '[Validate Inputs] Ensure clientSecret is set'
         run: |
           if [[ '${{ secrets.clientSecret }}' == '' ]]; then
             echo '::error::Platform is enabled, but required input clientSecret is not set'
             exit 1
           fi
+        shell: bash
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
         uses: subosito/flutter-action@v2
         with:
