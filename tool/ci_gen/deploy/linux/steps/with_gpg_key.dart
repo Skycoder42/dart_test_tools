@@ -23,7 +23,7 @@ class WithGpgKey implements StepBuilder {
         ...steps,
         Step.run(
           name: 'Delete GPG key',
-          ifExpression: Functions.always, // TODO extract
+          ifExpression: Functions.always,
           continueOnError: true,
           run: "gpg --batch --yes --delete-secret-keys '$gpgKeyId'",
         ),
