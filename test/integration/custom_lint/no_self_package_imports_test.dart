@@ -6,7 +6,10 @@ import 'package:test/test.dart';
 import 'custom_lint_test_helper.dart';
 
 void main() {
-  group('no_self_package_imports', () {
+  group('no_self_package_imports',
+      skip:
+          'Disabled until https://github.com/invertase/dart_custom_lint/issues/261 is fixed',
+      () {
     customLintTest(
       'succeeds by default',
       files: const {
