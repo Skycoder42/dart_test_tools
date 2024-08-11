@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import '../../dart_test_tools.dart';
+import 'io.dart';
 
 class _GithubEnv {
   const _GithubEnv();
