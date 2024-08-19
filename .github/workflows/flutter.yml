@@ -197,7 +197,6 @@ jobs:
         run: flutter analyze
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run custom_lint
-        if: false
         run: flutter pub run custom_lint
         working-directory: ${{ inputs.workingDirectory }}
       - name: Validate correct formatting

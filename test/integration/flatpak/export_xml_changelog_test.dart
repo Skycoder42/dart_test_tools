@@ -1,5 +1,5 @@
 @TestOn('dart-vm')
-library export_xml_changelog_test;
+library;
 
 import 'dart:io';
 

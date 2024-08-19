@@ -1,5 +1,5 @@
 @TestOn('dart-vm')
-library build_number_generator_test;
+library;
 
 import 'dart:io';
 

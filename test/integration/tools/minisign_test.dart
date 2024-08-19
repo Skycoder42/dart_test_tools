@@ -1,5 +1,5 @@
 @TestOn('dart-vm')
-library minisign_test;
+library;
 
 import 'dart:io';
 

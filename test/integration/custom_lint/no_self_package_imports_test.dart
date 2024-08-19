@@ -1,5 +1,5 @@
 @TestOn('dart-vm')
-library no_self_package_imports_test;
+library;
 
 import 'package:test/test.dart';
 

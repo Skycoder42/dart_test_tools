@@ -1,9 +1,9 @@
 include: package:lint/strict.yaml
-analyzer: 
-  plugins: 
+analyzer:
+  plugins:
     - custom_lint
-linter: 
-  rules: 
+linter:
+  rules:
     # rules from package:lints/recommended.yaml
     avoid_renaming_method_parameters: true
     library_private_types_in_public_api: true
@@ -17,14 +17,17 @@ linter:
     avoid_private_typedef_functions: false # overwritten
     avoid_catches_without_on_clauses: true
     avoid_js_rounded_ints: true
+    avoid_positional_boolean_parameters: true
     avoid_slow_async_io: true
     avoid_types_on_closure_parameters: true
     cascade_invocations: true
     close_sinks: true
     diagnostic_describe_all_properties: true
     discarded_futures: true
+    invalid_runtime_check_with_js_interop_types: true
     lines_longer_than_80_chars: true
     literal_only_boolean_expressions: true
+    missing_code_block_language_in_doc_comment: true
     no_default_cases: true
     omit_local_variable_types: true
     only_throw_errors: true
@@ -34,7 +37,10 @@ linter:
     prefer_relative_imports: true
     prefer_single_quotes: true
     unawaited_futures: true
+    unintended_html_in_doc_comment: true
     unnecessary_lambdas: true
+    unnecessary_library_name: true
+    use_decorated_box: true
     use_if_null_to_convert_nulls_to_bools: true
     use_raw_strings: true
     use_to_and_as_if_applicable: true

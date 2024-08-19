@@ -1,5 +1,5 @@
 @TestOn('dart-vm')
-library version_sync_test;
+library;
 
 import 'dart:io';
 
@@ -24,6 +24,7 @@ void main() {
   late CiderCli cider;
 
   late File buildGradle;
+  late File darwinPodspec;
   late File iosPodspec;
   late File macosPodspec;
   late File dartVersion;
@@ -34,6 +35,8 @@ void main() {
     await _createTestProject(testDir, testVersion);
 
     buildGradle = File.fromUri(testDir.uri.resolve('android/build.gradle'));
+    darwinPodspec =
+        File.fromUri(testDir.uri.resolve('darwin/version_sync_test.podspec'));
     iosPodspec =
         File.fromUri(testDir.uri.resolve('ios/version_sync_test.podspec'));
     macosPodspec =
@@ -63,6 +66,10 @@ void main() {
         contains("  s.version          = '0.0.1'"),
       );
       expect(
+        darwinPodspec.readAsLinesSync(),
+        contains("  s.version          = '0.0.1'"),
+      );
+      expect(
         macosPodspec.readAsLinesSync(),
         contains("  s.version          = '0.0.1'"),
       );
@@ -81,6 +88,10 @@ void main() {
       expect(
         buildGradle.readAsLinesSync(),
         contains('version = "$testVersion"'),
+      );
+      expect(
+        darwinPodspec.readAsLinesSync(),
+        contains("  s.version          = '$testVersion'"),
       );
       expect(
         iosPodspec.readAsLinesSync(),
@@ -118,6 +129,10 @@ void main() {
         contains('version = "1.0-SNAPSHOT"'),
       );
       expect(
+        darwinPodspec.readAsLinesSync(),
+        contains("  s.version          = '0.0.1'"),
+      );
+      expect(
         iosPodspec.readAsLinesSync(),
         contains("  s.version          = '0.0.1'"),
       );
@@ -137,6 +152,7 @@ void main() {
     timeout: const Timeout(Duration(minutes: 2)),
     () async {
       buildGradle.deleteSync();
+      darwinPodspec.deleteSync();
       iosPodspec.deleteSync();
       macosPodspec.deleteSync();
       dartVersion.deleteSync();
@@ -204,6 +220,10 @@ Future<void> _createTestProject(Directory pwd, String version) async {
 const version = '1.5.8';
 const name = 'version_sync_test';
 ''');
+
+  await Directory.fromUri(pwd.uri.resolve('darwin')).create();
+  await File.fromUri(pwd.uri.resolve('ios/version_sync_test.podspec'))
+      .copy(pwd.uri.resolve('darwin/version_sync_test.podspec').toFilePath());
 
   final pubspecFile = File.fromUri(pwd.uri.resolve('pubspec.yaml'));
   final pubspecEditor = YamlEditor(await pubspecFile.readAsString())

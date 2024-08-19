@@ -1,5 +1,5 @@
 @TestOn('dart-vm')
-library pkgbuild_generator_test;
+library;
 
 import 'dart:io';
 

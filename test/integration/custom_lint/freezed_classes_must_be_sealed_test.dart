@@ -1,5 +1,5 @@
 @TestOn('dart-vm')
-library freezed_classes_must_be_sealed_test;
+library;
 
 import 'package:test/test.dart';
 

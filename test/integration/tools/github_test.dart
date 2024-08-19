@@ -1,7 +1,7 @@
 // ignore_for_file: discarded_futures
 
 @TestOn('dart-vm')
-library github_test;
+library;
 
 import 'dart:io';
 

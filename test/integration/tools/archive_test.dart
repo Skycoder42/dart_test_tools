@@ -1,5 +1,5 @@
 @TestOn('dart-vm')
-library archive_test;
+library;
 
 import 'dart:io';
 

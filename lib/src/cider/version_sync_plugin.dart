@@ -43,6 +43,7 @@ class VersionSyncCommand extends CiderCommand {
     console.out.writeln('Syncing version $version to native packages...');
 
     await _updateAndroid(console.out, rootDir, pubspec);
+    await _updateDarwin(console.out, rootDir, pubspec, 'darwin');
     await _updateDarwin(console.out, rootDir, pubspec, 'ios');
     await _updateDarwin(console.out, rootDir, pubspec, 'macos');
     await _updateConfigured(

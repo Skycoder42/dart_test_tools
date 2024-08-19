@@ -1,5 +1,5 @@
 @TestOn('dart-vm')
-library src_library_not_exported_test;
+library;
 
 import 'package:test/test.dart';
 
