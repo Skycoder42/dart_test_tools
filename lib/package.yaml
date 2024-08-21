@@ -10,7 +10,6 @@ linter:
     avoid_equals_and_hash_code_on_mutable_classes: true
     comment_references: true
     do_not_use_environment: true
-    document_ignores: true
     prefer_asserts_with_message: true
     public_member_api_docs: true
     # new rules
