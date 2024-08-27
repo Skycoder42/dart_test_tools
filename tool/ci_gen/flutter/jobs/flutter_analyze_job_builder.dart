@@ -37,6 +37,7 @@ final class FlutterAnalyzeJobBuilder extends AnalyzeJobBuilder
 set -eo pipefail
 
 rm -rf windows/flutter/ephemeral/.plugin_symlinks
+rm -rf linux/flutter/ephemeral/.plugin_symlinks
 
 flutter_gen_dir=.dart_tool/flutter_gen
 if [ ! -d "\$flutter_gen_dir" ]; then
