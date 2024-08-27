@@ -200,6 +200,8 @@ jobs:
         run: |
           set -eo pipefail
 
+          rm -rf windows/flutter/ephemeral/.plugin_symlinks
+
           flutter_gen_dir=.dart_tool/flutter_gen
           if [ ! -d "$flutter_gen_dir" ]; then
             exit 0
@@ -207,7 +209,7 @@ jobs:
 
           echo "::debug::Applying workaround for https://github.com/invertase/dart_custom_lint/issues/268"
           cd "$flutter_gen_dir"
-          yq -i '.environment.sdk="^3.5.0"' pubspec.yaml
+          yq -i '.environment.sdk="^3.5.1"' pubspec.yaml
           dart pub get
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
