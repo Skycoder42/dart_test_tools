@@ -47,7 +47,8 @@ class CaskGenerator {
         {
           'app': '${options.appInfo.productName}.app',
         },
-        if (options.options.zap case final List zap when zap.isNotEmpty)
+        if (options.options.zap case final List<dynamic> zap
+            when zap.isNotEmpty)
           {
             'zap trash:': zap,
           }

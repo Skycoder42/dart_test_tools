@@ -41,7 +41,7 @@ sealed class CaskOptionsPubspecView with _$CaskOptionsPubspecView {
   factory CaskOptionsPubspecView.fromJson(Map<String, dynamic> json) =>
       _$CaskOptionsPubspecViewFromJson(json);
 
-  factory CaskOptionsPubspecView.fromYaml(Map? map) =>
+  factory CaskOptionsPubspecView.fromYaml(Map<dynamic, dynamic>? map) =>
       _$$CaskOptionsPubspecViewImplFromJson(map!);
 }
 

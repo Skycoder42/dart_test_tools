@@ -31,7 +31,7 @@ sealed class AurOptionsPubspecView with _$AurOptionsPubspecView {
   factory AurOptionsPubspecView.fromJson(Map<String, dynamic> json) =>
       _$AurOptionsPubspecViewFromJson(json);
 
-  factory AurOptionsPubspecView.fromYaml(Map? map) =>
+  factory AurOptionsPubspecView.fromYaml(Map<dynamic, dynamic>? map) =>
       AurOptionsPubspecView.fromJson(Map<String, dynamic>.from(map!));
 }
 

@@ -22,7 +22,7 @@ class AnalysisOptions with _$AnalysisOptions {
   factory AnalysisOptions.fromJson(Map<String, dynamic> json) =>
       _$AnalysisOptionsFromJson(json);
 
-  factory AnalysisOptions.fromYaml(Map? map) =>
+  factory AnalysisOptions.fromYaml(Map<dynamic, dynamic>? map) =>
       AnalysisOptions.fromJson(Map<String, dynamic>.from(map!));
 }
 

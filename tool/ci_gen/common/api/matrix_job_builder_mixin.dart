@@ -28,7 +28,8 @@ abstract base class Matrix<TMatrixSelector extends IMatrixSelector> {
 
   List<IMatrixProperty<TMatrixSelector>> get includeProperties;
 
-  MapEntry<String, List> _createSelector() => MapEntry(selectorProperty.name, [
+  MapEntry<String, List<dynamic>> _createSelector() =>
+      MapEntry(selectorProperty.name, [
         for (final selector in _selectors) selectorProperty.valueFor(selector),
       ]);
 

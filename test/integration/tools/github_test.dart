@@ -198,7 +198,7 @@ void main() {
     group('execLines', testOn: 'posix', () {
       test('invokes process', () {
         expect(
-          () => Github.execLines('bash', const ['-c', 'true']).drain(),
+          () => Github.execLines('bash', const ['-c', 'true']).drain<void>(),
           allOf(
             prints('[command] bash -c true\n'),
             returnsNormally,
