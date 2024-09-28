@@ -10,9 +10,11 @@ linter:
   rules:
     # rules from package:lints/recommended.yaml
     avoid_renaming_method_parameters: true
+    invalid_runtime_check_with_js_interop_types: true
     library_private_types_in_public_api: true
     prefer_adjacent_string_concatenation: true
     unnecessary_constructor_name: true
+    unnecessary_library_name: true
     # rules from package:flutter_lints/flutter.yaml
     use_key_in_widget_constructors: true
     # custom rules
@@ -28,7 +30,6 @@ linter:
     close_sinks: true
     diagnostic_describe_all_properties: true
     discarded_futures: true
-    invalid_runtime_check_with_js_interop_types: true
     lines_longer_than_80_chars: true
     literal_only_boolean_expressions: true
     missing_code_block_language_in_doc_comment: true
@@ -43,7 +44,6 @@ linter:
     unawaited_futures: true
     unintended_html_in_doc_comment: true
     unnecessary_lambdas: true
-    unnecessary_library_name: true
     use_decorated_box: true
     use_if_null_to_convert_nulls_to_bools: true
     use_raw_strings: true

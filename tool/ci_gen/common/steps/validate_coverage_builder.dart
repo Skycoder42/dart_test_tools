@@ -51,7 +51,8 @@ lcov $LCOV_ARGS --output-file coverage/combined.info
         ),
         Step.run(
           name: 'Remove excluded files from coverage data',
-          run: 'lcov --remove coverage/combined.info '
+          run: 'lcov --ignore-errors unused '
+              '--remove coverage/combined.info '
               '--output-file coverage/cleaned.info '
               '$coverageExclude',
           workingDirectory: workingDirectory.toString(),

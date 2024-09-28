@@ -336,7 +336,7 @@ jobs:
           lcov $LCOV_ARGS --output-file coverage/combined.info
         working-directory: ${{ inputs.workingDirectory }}
       - name: Remove excluded files from coverage data
-        run: lcov --remove coverage/combined.info --output-file coverage/cleaned.info ${{ inputs.coverageExclude }}
+        run: lcov --ignore-errors unused --remove coverage/combined.info --output-file coverage/cleaned.info ${{ inputs.coverageExclude }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Generate coverage report
         run: genhtml --no-function-coverage -o coverage/html coverage/cleaned.info

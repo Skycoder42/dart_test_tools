@@ -61,7 +61,7 @@ jobs:
       - name: Download flutter binary artifacts
         run: flutter precache --universal --web
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^5.11.6
+        run: dart pub global activate dart_test_tools ^5.11.7
       - name: Install scoop
         if: runner.os == 'Windows'
         run: |
