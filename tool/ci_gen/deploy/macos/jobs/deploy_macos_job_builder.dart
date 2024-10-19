@@ -3,13 +3,13 @@ import '../../../common/environments.dart';
 import '../../../common/inputs.dart';
 import '../../../common/jobs/sdk_job_builder.dart';
 import '../../../common/secrets.dart';
+import '../../../common/steps/validate_inputs_builder.dart';
 import '../../../dart/jobs/dart_sdk_job_builder_mixin.dart';
 import '../../../flutter/flutter_platform.dart';
 import '../../../types/expression.dart';
 import '../../../types/id.dart';
 import '../../../types/job.dart';
 import '../../../types/runs_on.dart';
-import '../../steps/validate_inputs_builder.dart';
 import '../steps/deploy_to_tap_builder.dart';
 
 final class DeployMacosJobBuilder extends SdkJobBuilder

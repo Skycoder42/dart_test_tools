@@ -95,7 +95,7 @@ on:
           }
       firebaseProjectId:
         type: string
-        required: true
+        required: false
         description: The firebase project id to run the test on.
     outputs:
       enabledPlatforms:
@@ -103,16 +103,16 @@ on:
         description: A JSON-encoded list of all platforms that this project can build/run for.
     secrets:
       firebaseCredentials:
-        required: true
+        required: false
         description: The firebase credentials JSON.
       provisioningProfile:
-        required: true
+        required: false
         description: The base64 encoded provisioning profile to be used to sign the app.
       signingIdentity:
-        required: true
+        required: false
         description: The base64 encoded PKCS#12 container with the code signing certificate and private key to sign the app. Must be a certificate that is allowed by the provisioningProfile. Use the signingIdentityPassphrase secret to specify the passphrase that is needed to decrypt the PKCS#12 file.
       signingIdentityPassphrase:
-        required: true
+        required: false
         description: The passphrase to decrypt the signingIdentity PKCS#12 file.
 jobs:
   analyze:
@@ -396,6 +396,20 @@ jobs:
     if: inputs.integrationTestPaths != '' && (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), 'android'))
     runs-on: ubuntu-latest
     steps:
+      - name: '[Validate Inputs] Ensure firebaseProjectId is set'
+        run: |
+          if [[ '${{ inputs.firebaseProjectId }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input firebaseProjectId is not set'
+            exit 1
+          fi
+        shell: bash
+      - name: '[Validate Inputs] Ensure firebaseCredentials is set'
+        run: |
+          if [[ '${{ secrets.firebaseCredentials }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input firebaseCredentials is not set'
+            exit 1
+          fi
+        shell: bash
       - name: Install JDK Version ${{ inputs.javaJdkVersion }}
         uses: actions/setup-java@v4
         with:
@@ -515,6 +529,41 @@ jobs:
     if: inputs.integrationTestPaths != '' && (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), 'ios'))
     runs-on: macos-latest
     steps:
+      - name: '[Validate Inputs] Ensure provisioningProfile is set'
+        run: |
+          if [[ '${{ secrets.provisioningProfile }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input provisioningProfile is not set'
+            exit 1
+          fi
+        shell: bash
+      - name: '[Validate Inputs] Ensure signingIdentity is set'
+        run: |
+          if [[ '${{ secrets.signingIdentity }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input signingIdentity is not set'
+            exit 1
+          fi
+        shell: bash
+      - name: '[Validate Inputs] Ensure signingIdentityPassphrase is set'
+        run: |
+          if [[ '${{ secrets.signingIdentityPassphrase }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input signingIdentityPassphrase is not set'
+            exit 1
+          fi
+        shell: bash
+      - name: '[Validate Inputs] Ensure firebaseProjectId is set'
+        run: |
+          if [[ '${{ inputs.firebaseProjectId }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input firebaseProjectId is not set'
+            exit 1
+          fi
+        shell: bash
+      - name: '[Validate Inputs] Ensure firebaseCredentials is set'
+        run: |
+          if [[ '${{ secrets.firebaseCredentials }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input firebaseCredentials is not set'
+            exit 1
+          fi
+        shell: bash
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
         uses: subosito/flutter-action@v2
         with:

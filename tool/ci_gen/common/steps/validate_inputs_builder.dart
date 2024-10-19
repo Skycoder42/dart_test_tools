@@ -1,6 +1,6 @@
-import '../../common/api/step_builder.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
+import '../api/step_builder.dart';
 
 class ValidateInputsBuilder implements StepBuilder {
   final Map<String, Expression> inputs;

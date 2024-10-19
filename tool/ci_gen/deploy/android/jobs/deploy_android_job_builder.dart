@@ -2,12 +2,12 @@ import '../../../common/api/job_builder.dart';
 import '../../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../../common/environments.dart';
 import '../../../common/secrets.dart';
+import '../../../common/steps/validate_inputs_builder.dart';
 import '../../../flutter/flutter_platform.dart';
 import '../../../types/expression.dart';
 import '../../../types/id.dart';
 import '../../../types/job.dart';
 import '../../../types/runs_on.dart';
-import '../../steps/validate_inputs_builder.dart';
 import '../steps/deploy_android_app_builder.dart';
 
 final class DeployAndroidJobBuilder implements JobBuilder {

@@ -483,7 +483,7 @@ Example:
     name: 'firebaseProjectId',
     input: Input(
       type: Type.string,
-      required: true,
+      required: false,
       description: 'The firebase project id to run the test on.',
     ),
   );

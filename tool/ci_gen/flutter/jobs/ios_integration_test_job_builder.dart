@@ -1,5 +1,8 @@
 import '../../common/api/platform_matrix_job_builder_mixin.dart';
+import '../../common/inputs.dart';
 import '../../common/jobs/sdk_job_builder.dart';
+import '../../common/secrets.dart';
+import '../../common/steps/validate_inputs_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
@@ -62,6 +65,15 @@ final class IosIntegrationTestJobBuilder extends SdkJobBuilder
         },
         runsOn: FlutterPlatform.ios.os.id,
         steps: [
+          ...ValidateInputsBuilder({
+            WorkflowSecrets.provisioningProfile.name:
+                encodedProvisioningProfile,
+            WorkflowSecrets.signingIdentity.name: encodedSigningIdentity,
+            WorkflowSecrets.signingIdentityPassphrase.name:
+                signingIdentityPassphrase,
+            WorkflowInputs.firebaseProjectId.name: firebaseProjectId,
+            WorkflowSecrets.firebaseCredentials.name: firebaseCredentials,
+          }).build(),
           ...buildSetupSdkSteps(
             buildPlatform:
                 ExpressionOrValue.value(FlutterPlatform.ios.platform),
