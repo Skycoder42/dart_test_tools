@@ -188,4 +188,34 @@ VARIABLE2=value2
           'The clientSecret of the EntraID Tenant used by the msstore cli.',
     ),
   );
+
+  static const provisioningProfile = WorkflowSecret(
+    name: 'provisioningProfile',
+    secret: Secret(
+      required: true,
+      description:
+          'The base64 encoded provisioning profile to be used to sign the app.',
+    ),
+  );
+
+  static const signingIdentity = WorkflowSecret(
+    name: 'signingIdentity',
+    secret: Secret(
+      required: true,
+      description: 'The base64 encoded PKCS#12 container with the code signing '
+          'certificate and private key to sign the app. Must be a certificate '
+          'that is allowed by the provisioningProfile. Use the '
+          'signingIdentityPassphrase secret to specify the passphrase that is '
+          'needed to decrypt the PKCS#12 file.',
+    ),
+  );
+
+  static const signingIdentityPassphrase = WorkflowSecret(
+    name: 'signingIdentityPassphrase',
+    secret: Secret(
+      required: true,
+      description:
+          'The passphrase to decrypt the signingIdentity PKCS#12 file.',
+    ),
+  );
 }

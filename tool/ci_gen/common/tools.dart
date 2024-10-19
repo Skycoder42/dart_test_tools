@@ -59,6 +59,10 @@ abstract class Tools {
   /// https://github.com/microsoft/setup-msstore-cli/releases
   static const microsoftSetupMsstoreCli = 'microsoft/setup-msstore-cli@v1';
 
+  /// https://github.com/apple-actions/import-codesign-certs/releases
+  static const appleActionsImportCodesignCerts =
+      'apple-actions/import-codesign-certs@v3';
+
   static const installHurl =
       'Skycoder42/dart_test_tools/.github/actions/install-hurl@main';
 

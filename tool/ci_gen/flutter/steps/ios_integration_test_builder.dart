@@ -6,6 +6,7 @@ import '../../types/id.dart';
 import '../../types/step.dart';
 import '../flutter_platform.dart';
 import 'browser_stack_results_builder.dart';
+import 'install_xcode_signing_builder.dart';
 import 'prepare_integration_test_builder.dart';
 
 class IosIntegrationTestBuilder implements StepBuilder {
@@ -22,6 +23,9 @@ class IosIntegrationTestBuilder implements StepBuilder {
   final Expression integrationTestCacheConfig;
   final Expression browserStackIosDevices;
   final Expression browserStackCredentials;
+  final Expression encodedProvisioningProfile;
+  final Expression encodedSigningIdentity;
+  final Expression signingIdentityPassphrase;
   final String baseTool;
   final String pubTool;
   final String runTool;
@@ -38,6 +42,9 @@ class IosIntegrationTestBuilder implements StepBuilder {
     required this.integrationTestCacheConfig,
     required this.browserStackIosDevices,
     required this.browserStackCredentials,
+    required this.encodedProvisioningProfile,
+    required this.encodedSigningIdentity,
+    required this.signingIdentityPassphrase,
     required this.baseTool,
     required this.pubTool,
     required this.runTool,
@@ -63,25 +70,24 @@ class IosIntegrationTestBuilder implements StepBuilder {
           pubTool: pubTool,
           runTool: runTool,
         ).build(),
+        ...InstallXcodeSigningBuilder(
+          encodedProvisioningProfile: encodedProvisioningProfile,
+          encodedSigningIdentity: encodedSigningIdentity,
+          signingIdentityPassphrase: signingIdentityPassphrase,
+        ).build(),
         Step.run(
           name: 'Build integration test app',
-          run: '$baseTool build ios --release --no-codesign '
-              "'$integrationTestPaths'",
+          run: "$baseTool build ios --release '$integrationTestPaths'",
           workingDirectory: '$workingDirectory/$integrationTestProject',
         ),
         Step.run(
           name: 'Build test instrumentation app',
-          run: 'xcodebuild '
+          run: 'xcodebuild build-for-testing '
               '-workspace Runner.xcworkspace '
               '-scheme Runner '
-              '-config Flutter/Release.xcconfig '
-              '-derivedDataPath ../build/ios_integration '
+              '-configuration Release '
               '-sdk iphoneos '
-              'build-for-testing '
-              'CODE_SIGN_IDENTITY="" '
-              'CODE_SIGNING_REQUIRED="NO" '
-              'CODE_SIGN_ENTITLEMENTS="" '
-              'CODE_SIGNING_ALLOWED="NO"',
+              '-derivedDataPath ../build/ios_integration',
           workingDirectory: '$workingDirectory/$integrationTestProject/ios',
         ),
         Step.run(

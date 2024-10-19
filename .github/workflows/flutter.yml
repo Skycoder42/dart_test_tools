@@ -111,6 +111,15 @@ on:
       browserStackCredentials:
         required: false
         description: The BrowserStack access credentials in the form of "<username>:<accessKey>"
+      provisioningProfile:
+        required: true
+        description: The base64 encoded provisioning profile to be used to sign the app.
+      signingIdentity:
+        required: true
+        description: The base64 encoded PKCS#12 container with the code signing certificate and private key to sign the app. Must be a certificate that is allowed by the provisioningProfile. Use the signingIdentityPassphrase secret to specify the passphrase that is needed to decrypt the PKCS#12 file.
+      signingIdentityPassphrase:
+        required: true
+        description: The passphrase to decrypt the signingIdentity PKCS#12 file.
 jobs:
   analyze:
     name: Analyze
@@ -654,11 +663,24 @@ jobs:
           CACHE_HIT: ${{ steps.test-setup-cache.outputs.cache-hit }}
         run: ${{ fromJSON(inputs.integrationTestSetup)['ios'] }}
         working-directory: ${{ inputs.workingDirectory }}
+      - name: Install Signing Identity
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.signingIdentity }}
+          p12-password: ${{ secrets.signingIdentityPassphrase }}
+      - name: Install Provisioning Profile
+        run: |
+          set -eo pipefail
+          new_dir="$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
+          old_dir="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$new_dir" "$old_dir"
+          echo -n '${{ secrets.provisioningProfile }}' | base64 --decode -o "$new_dir/app.mobileprovision"
+          ln -s "$new_dir/app.mobileprovision" "$old_dir/app.mobileprovision"
       - name: Build integration test app
-        run: flutter build ios --release --no-codesign '${{ inputs.integrationTestPaths }}'
+        run: flutter build ios --release '${{ inputs.integrationTestPaths }}'
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
       - name: Build test instrumentation app
-        run: xcodebuild -workspace Runner.xcworkspace -scheme Runner -config Flutter/Release.xcconfig -derivedDataPath ../build/ios_integration -sdk iphoneos build-for-testing CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED="NO" CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED="NO"
+        run: xcodebuild build-for-testing -workspace Runner.xcworkspace -scheme Runner -configuration Release -sdk iphoneos -derivedDataPath ../build/ios_integration
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}/ios
       - name: Create integration test package
         run: zip -r --must-match app-release.zip Release-iphoneos *.xctestrun

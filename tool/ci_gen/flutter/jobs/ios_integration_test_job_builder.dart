@@ -23,6 +23,9 @@ final class IosIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression integrationTestCacheConfig;
   final Expression browserStackIosDevices;
   final Expression browserStackCredentials;
+  final Expression encodedProvisioningProfile;
+  final Expression encodedSigningIdentity;
+  final Expression signingIdentityPassphrase;
 
   IosIntegrationTestJobBuilder({
     required this.enabledPlatformsOutput,
@@ -38,6 +41,9 @@ final class IosIntegrationTestJobBuilder extends SdkJobBuilder
     required this.integrationTestCacheConfig,
     required this.browserStackIosDevices,
     required this.browserStackCredentials,
+    required this.encodedProvisioningProfile,
+    required this.encodedSigningIdentity,
+    required this.signingIdentityPassphrase,
   });
 
   @override
@@ -72,6 +78,9 @@ final class IosIntegrationTestJobBuilder extends SdkJobBuilder
             integrationTestCacheConfig: integrationTestCacheConfig,
             browserStackIosDevices: browserStackIosDevices,
             browserStackCredentials: browserStackCredentials,
+            encodedProvisioningProfile: encodedProvisioningProfile,
+            encodedSigningIdentity: encodedSigningIdentity,
+            signingIdentityPassphrase: signingIdentityPassphrase,
             baseTool: baseTool,
             pubTool: pubTool,
             runTool: runTool,

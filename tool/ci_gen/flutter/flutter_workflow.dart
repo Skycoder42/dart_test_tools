@@ -108,6 +108,11 @@ class FlutterWorkflow implements WorkflowBuilder {
           inputContext(WorkflowInputs.browserStackIosDevices),
       browserStackCredentials:
           secretContext(WorkflowSecrets.browserStackCredentials),
+      encodedProvisioningProfile:
+          secretContext(WorkflowSecrets.provisioningProfile),
+      encodedSigningIdentity: secretContext(WorkflowSecrets.signingIdentity),
+      signingIdentityPassphrase:
+          secretContext(WorkflowSecrets.signingIdentityPassphrase),
     );
 
     final desktopIntegrationTestBuilder = DesktopIntegrationTestJobBuilder(
