@@ -63,6 +63,13 @@ abstract class Tools {
   static const appleActionsImportCodesignCerts =
       'apple-actions/import-codesign-certs@v3';
 
+  /// https://github.com/google-github-actions/auth/releases
+  static const googleGithubActionsAuth = 'google-github-actions/auth@v2';
+
+  /// https://github.com/google-github-actions/setup-gcloud/releases
+  static const googleGithubActionsSetupGcloud =
+      'google-github-actions/setup-gcloud@v2';
+
   static const installHurl =
       'Skycoder42/dart_test_tools/.github/actions/install-hurl@main';
 

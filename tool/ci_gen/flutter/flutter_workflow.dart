@@ -83,10 +83,8 @@ class FlutterWorkflow implements WorkflowBuilder {
           inputContext(WorkflowInputs.integrationTestProject),
       integrationTestCacheConfig:
           inputContext(WorkflowInputs.integrationTestCacheConfig),
-      browserStackAndroidDevices:
-          inputContext(WorkflowInputs.browserStackAndroidDevices),
-      browserStackCredentials:
-          secretContext(WorkflowSecrets.browserStackCredentials),
+      firebaseProjectId: inputContext(WorkflowInputs.firebaseProjectId),
+      firebaseCredentials: secretContext(WorkflowSecrets.firebaseCredentials),
     );
 
     final iosIntegrationTestBuilder = IosIntegrationTestJobBuilder(
@@ -104,15 +102,13 @@ class FlutterWorkflow implements WorkflowBuilder {
           inputContext(WorkflowInputs.integrationTestProject),
       integrationTestCacheConfig:
           inputContext(WorkflowInputs.integrationTestCacheConfig),
-      browserStackIosDevices:
-          inputContext(WorkflowInputs.browserStackIosDevices),
-      browserStackCredentials:
-          secretContext(WorkflowSecrets.browserStackCredentials),
       encodedProvisioningProfile:
           secretContext(WorkflowSecrets.provisioningProfile),
       encodedSigningIdentity: secretContext(WorkflowSecrets.signingIdentity),
       signingIdentityPassphrase:
           secretContext(WorkflowSecrets.signingIdentityPassphrase),
+      firebaseProjectId: inputContext(WorkflowInputs.firebaseProjectId),
+      firebaseCredentials: secretContext(WorkflowSecrets.firebaseCredentials),
     );
 
     final desktopIntegrationTestBuilder = DesktopIntegrationTestJobBuilder(

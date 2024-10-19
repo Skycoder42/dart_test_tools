@@ -1,12 +1,10 @@
 import '../../common/api/step_builder.dart';
-import '../../common/contexts.dart';
-import '../../common/tools.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 import '../flutter_platform.dart';
-import 'browser_stack_results_builder.dart';
 import 'prepare_integration_test_builder.dart';
+import 'setup_gcloud_builder.dart';
 
 class AndroidIntegrationTestBuilder implements StepBuilder {
   static const testSetupCacheStepId = StepId('test-setup-cache');
@@ -20,8 +18,8 @@ class AndroidIntegrationTestBuilder implements StepBuilder {
   final Expression integrationTestPaths;
   final Expression integrationTestProject;
   final Expression integrationTestCacheConfig;
-  final Expression browserStackAndroidDevices;
-  final Expression browserStackCredentials;
+  final Expression firebaseProjectId;
+  final Expression firebaseCredentials;
   final String baseTool;
   final String pubTool;
   final String runTool;
@@ -36,8 +34,8 @@ class AndroidIntegrationTestBuilder implements StepBuilder {
     required this.integrationTestPaths,
     required this.integrationTestProject,
     required this.integrationTestCacheConfig,
-    required this.browserStackAndroidDevices,
-    required this.browserStackCredentials,
+    required this.firebaseProjectId,
+    required this.firebaseCredentials,
     required this.baseTool,
     required this.pubTool,
     required this.runTool,
@@ -45,10 +43,6 @@ class AndroidIntegrationTestBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        const Step.uses(
-          name: 'Install hurl',
-          uses: Tools.installHurl,
-        ),
         ...PrepareIntegrationTestBuilder(
           workingDirectory: workingDirectory,
           artifactDependencies: artifactDependencies,
@@ -73,64 +67,17 @@ class AndroidIntegrationTestBuilder implements StepBuilder {
           run: './gradlew app:assembleAndroidTest',
           workingDirectory: '$workingDirectory/$integrationTestProject/android',
         ),
-        Step.uses(
-          name: 'Run integration tests',
-          uses: Tools.hurl,
-          withArgs: {
-            'verbose': true,
-            'fileRoot': '$workingDirectory/$integrationTestProject',
-            'user': browserStackCredentials.toString(),
-            'script': '''
-POST {{baseUrl}}/app
-[MultipartFormData]
-file: file,build/app/outputs/apk/debug/app-debug.apk;
-[Options]
-variable: baseUrl=https://api-cloud.browserstack.com/app-automate/flutter-integration-tests/v2/android
-HTTP 200
-[Captures]
-appUrl: jsonpath "\$['app_url']"
-
-POST {{baseUrl}}/test-suite
-[MultipartFormData]
-file: file,build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk;
-HTTP 200
-[Captures]
-testSuiteUrl: jsonpath "\$['test_suite_url']"
-
-POST {{baseUrl}}/build
-{
-  "app": "{{appUrl}}",
-  "testSuite": "{{testSuiteUrl}}",
-  "project": "${Github.repository}",
-  "buildTag": "${Github.sha}",
-  "devices": $browserStackAndroidDevices,
-  "autoGrantPermissions": true
-}
-HTTP 200
-[Captures]
-buildId: jsonpath "\$['build_id']"
-[Asserts]
-jsonpath "\$.message" == "Success"
-
-GET {{baseUrl}}/builds/{{buildId}}
-[Options]
-retry: 120
-retry-interval: 30000
-output: build/test-results.json
-HTTP 200
-[Asserts]
-jsonpath "\$.status" not matches /(running|queued)/
-
-GET {{baseUrl}}/builds/{{buildId}}
-HTTP 200
-[Asserts]
-jsonpath "\$.status" == "passed"
-''',
-          },
-        ),
-        ...BrowserStackResultsBuilder(
-          workingDirectory: workingDirectory,
-          integrationTestProject: integrationTestProject,
+        ...SetupGCloudBuilder(
+          firebaseProjectId: firebaseProjectId,
+          firebaseCredentials: firebaseCredentials,
         ).build(),
+        Step.run(
+          name: 'Run integration tests',
+          run: 'gcloud firebase test android run '
+              '--type instrumentation '
+              '--app build/app/outputs/apk/debug/app-debug.apk '
+              '--test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk',
+          workingDirectory: '$workingDirectory/$integrationTestProject',
+        ),
       ];
 }

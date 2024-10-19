@@ -93,24 +93,18 @@ on:
             "key": "test-cache-key",
             "path": "path/to/cache-dir"
           }
-      browserStackAndroidDevices:
+      firebaseProjectId:
         type: string
-        required: false
-        default: '[{"device":".*"}]'
-        description: The devices to be used for android with BrowserStack.
-      browserStackIosDevices:
-        type: string
-        required: false
-        default: '[{"device":".*"}]'
-        description: The devices to be used for iOS with BrowserStack.
+        required: true
+        description: The firebase project id to run the test on.
     outputs:
       enabledPlatforms:
         value: ${{ jobs.analyze.outputs.platforms }}
         description: A JSON-encoded list of all platforms that this project can build/run for.
     secrets:
-      browserStackCredentials:
-        required: false
-        description: The BrowserStack access credentials in the form of "<username>:<accessKey>"
+      firebaseCredentials:
+        required: true
+        description: The firebase credentials JSON.
       provisioningProfile:
         required: true
         description: The base64 encoded provisioning profile to be used to sign the app.
@@ -414,8 +408,6 @@ jobs:
           cache: true
       - name: Download flutter binary artifacts
         run: flutter precache --universal --android
-      - name: Install hurl
-        uses: Skycoder42/dart_test_tools/.github/actions/install-hurl@main
       - name: Install scoop
         if: runner.os == 'Windows'
         run: |
@@ -505,64 +497,16 @@ jobs:
       - name: Build test instrumentation app
         run: ./gradlew app:assembleAndroidTest
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}/android
-      - name: Run integration tests
-        uses: Skycoder42/dart_test_tools/.github/actions/hurl@main
+      - name: Google Cloud Sign In
+        uses: google-github-actions/auth@v2
         with:
-          verbose: true
-          fileRoot: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
-          user: ${{ secrets.browserStackCredentials }}
-          script: |
-            POST {{baseUrl}}/app
-            [MultipartFormData]
-            file: file,build/app/outputs/apk/debug/app-debug.apk;
-            [Options]
-            variable: baseUrl=https://api-cloud.browserstack.com/app-automate/flutter-integration-tests/v2/android
-            HTTP 200
-            [Captures]
-            appUrl: jsonpath "$['app_url']"
-
-            POST {{baseUrl}}/test-suite
-            [MultipartFormData]
-            file: file,build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk;
-            HTTP 200
-            [Captures]
-            testSuiteUrl: jsonpath "$['test_suite_url']"
-
-            POST {{baseUrl}}/build
-            {
-              "app": "{{appUrl}}",
-              "testSuite": "{{testSuiteUrl}}",
-              "project": "${{ github.repository }}",
-              "buildTag": "${{ github.sha }}",
-              "devices": ${{ inputs.browserStackAndroidDevices }},
-              "autoGrantPermissions": true
-            }
-            HTTP 200
-            [Captures]
-            buildId: jsonpath "$['build_id']"
-            [Asserts]
-            jsonpath "$.message" == "Success"
-
-            GET {{baseUrl}}/builds/{{buildId}}
-            [Options]
-            retry: 120
-            retry-interval: 30000
-            output: build/test-results.json
-            HTTP 200
-            [Asserts]
-            jsonpath "$.status" not matches /(running|queued)/
-
-            GET {{baseUrl}}/builds/{{buildId}}
-            HTTP 200
-            [Asserts]
-            jsonpath "$.status" == "passed"
-      - name: Process integration tests results
-        if: always()
-        run: |
-          set -eo pipefail
-          result_file=build/test-results.json
-          echo "Completed BrowserStack test run with status: $(jq -r '.status' "$result_file")"
-          echo "See results at: https://app-automate.browserstack.com/dashboard/v2/builds/$(jq -r '.id' "$result_file")"
+          credentials_json: ${{ secrets.firebaseCredentials }}
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ inputs.firebaseProjectId }}
+      - name: Run integration tests
+        run: gcloud firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
   integration_tests_ios:
     name: Integration tests (ios)
@@ -578,8 +522,6 @@ jobs:
           cache: true
       - name: Download flutter binary artifacts
         run: flutter precache --universal --ios
-      - name: Install hurl
-        uses: Skycoder42/dart_test_tools/.github/actions/install-hurl@main
       - name: Install scoop
         if: runner.os == 'Windows'
         run: |
@@ -685,56 +627,16 @@ jobs:
       - name: Create integration test package
         run: zip -r --must-match app-release.zip Release-iphoneos *.xctestrun
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}/build/ios_integration/Build/Products
-      - name: Run integration tests
-        uses: Skycoder42/dart_test_tools/.github/actions/hurl@main
+      - name: Google Cloud Sign In
+        uses: google-github-actions/auth@v2
         with:
-          verbose: true
-          fileRoot: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
-          user: ${{ secrets.browserStackCredentials }}
-          script: |
-            POST {{baseUrl}}/test-package
-            [MultipartFormData]
-            file: file,build/ios_integration/Build/Products/app-release.zip;
-            [Options]
-            variable: baseUrl=https://api-cloud.browserstack.com/app-automate/flutter-integration-tests/v2/ios
-            HTTP 200
-            [Captures]
-            testPackageUrl: jsonpath "$['test_package_url']"
-
-            POST {{baseUrl}}/build
-            {
-              "testPackage": "{{testPackageUrl}}",
-              "project": "${{ github.repository }}",
-              "buildTag": "${{ github.sha }}",
-              "devices": ${{ inputs.browserStackIosDevices }},
-              "deviceLogs": true
-            }
-            HTTP 200
-            [Captures]
-            buildId: jsonpath "$['build_id']"
-            [Asserts]
-            jsonpath "$.message" == "Success"
-
-            GET {{baseUrl}}/builds/{{buildId}}
-            [Options]
-            retry: 120
-            retry-interval: 30000
-            output: build/test-results.json
-            HTTP 200
-            [Asserts]
-            jsonpath "$.status" not matches /(running|queued)/
-
-            GET {{baseUrl}}/builds/{{buildId}}
-            HTTP 200
-            [Asserts]
-            jsonpath "$.status" == "passed"
-      - name: Process integration tests results
-        if: always()
-        run: |
-          set -eo pipefail
-          result_file=build/test-results.json
-          echo "Completed BrowserStack test run with status: $(jq -r '.status' "$result_file")"
-          echo "See results at: https://app-automate.browserstack.com/dashboard/v2/builds/$(jq -r '.id' "$result_file")"
+          credentials_json: ${{ secrets.firebaseCredentials }}
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ inputs.firebaseProjectId }}
+      - name: Run integration tests
+        run: gcloud firebase test ios run --type xctest --test build/ios_integration/Build/Products/app-release.zip
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
   integration_tests_desktop:
     name: Integration tests (desktop)

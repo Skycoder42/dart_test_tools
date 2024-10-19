@@ -479,25 +479,12 @@ Example:
     ),
   );
 
-  static final browserStackAndroidDevices = WorkflowInput(
-    name: 'browserStackAndroidDevices',
-    input: Input.json(
-      required: false,
-      defaultValue: const [
-        {'device': '.*'},
-      ],
-      description: 'The devices to be used for android with BrowserStack.',
-    ),
-  );
-
-  static final browserStackIosDevices = WorkflowInput(
-    name: 'browserStackIosDevices',
-    input: Input.json(
-      required: false,
-      defaultValue: const [
-        {'device': '.*'},
-      ],
-      description: 'The devices to be used for iOS with BrowserStack.',
+  static const firebaseProjectId = WorkflowInput(
+    name: 'firebaseProjectId',
+    input: Input(
+      type: Type.string,
+      required: true,
+      description: 'The firebase project id to run the test on.',
     ),
   );
 

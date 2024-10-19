@@ -144,12 +144,11 @@ VARIABLE2=value2
     ),
   );
 
-  static const browserStackCredentials = WorkflowSecret(
-    name: 'browserStackCredentials',
+  static const firebaseCredentials = WorkflowSecret(
+    name: 'firebaseCredentials',
     secret: Secret(
-      required: false,
-      description: 'The BrowserStack access credentials '
-          'in the form of "<username>:<accessKey>"',
+      required: true,
+      description: 'The firebase credentials JSON.',
     ),
   );
 

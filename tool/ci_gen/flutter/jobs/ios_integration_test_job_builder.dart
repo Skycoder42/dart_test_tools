@@ -21,11 +21,11 @@ final class IosIntegrationTestJobBuilder extends SdkJobBuilder
   final Expression integrationTestPaths;
   final Expression integrationTestProject;
   final Expression integrationTestCacheConfig;
-  final Expression browserStackIosDevices;
-  final Expression browserStackCredentials;
   final Expression encodedProvisioningProfile;
   final Expression encodedSigningIdentity;
   final Expression signingIdentityPassphrase;
+  final Expression firebaseProjectId;
+  final Expression firebaseCredentials;
 
   IosIntegrationTestJobBuilder({
     required this.enabledPlatformsOutput,
@@ -39,11 +39,11 @@ final class IosIntegrationTestJobBuilder extends SdkJobBuilder
     required this.integrationTestPaths,
     required this.integrationTestProject,
     required this.integrationTestCacheConfig,
-    required this.browserStackIosDevices,
-    required this.browserStackCredentials,
     required this.encodedProvisioningProfile,
     required this.encodedSigningIdentity,
     required this.signingIdentityPassphrase,
+    required this.firebaseProjectId,
+    required this.firebaseCredentials,
   });
 
   @override
@@ -76,11 +76,11 @@ final class IosIntegrationTestJobBuilder extends SdkJobBuilder
             integrationTestPaths: integrationTestPaths,
             integrationTestProject: integrationTestProject,
             integrationTestCacheConfig: integrationTestCacheConfig,
-            browserStackIosDevices: browserStackIosDevices,
-            browserStackCredentials: browserStackCredentials,
             encodedProvisioningProfile: encodedProvisioningProfile,
             encodedSigningIdentity: encodedSigningIdentity,
             signingIdentityPassphrase: signingIdentityPassphrase,
+            firebaseProjectId: firebaseProjectId,
+            firebaseCredentials: firebaseCredentials,
             baseTool: baseTool,
             pubTool: pubTool,
             runTool: runTool,

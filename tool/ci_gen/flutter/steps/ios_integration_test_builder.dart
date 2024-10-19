@@ -1,13 +1,11 @@
 import '../../common/api/step_builder.dart';
-import '../../common/contexts.dart';
-import '../../common/tools.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 import '../flutter_platform.dart';
-import 'browser_stack_results_builder.dart';
 import 'install_xcode_signing_builder.dart';
 import 'prepare_integration_test_builder.dart';
+import 'setup_gcloud_builder.dart';
 
 class IosIntegrationTestBuilder implements StepBuilder {
   static const testSetupCacheStepId = StepId('test-setup-cache');
@@ -21,11 +19,11 @@ class IosIntegrationTestBuilder implements StepBuilder {
   final Expression integrationTestPaths;
   final Expression integrationTestProject;
   final Expression integrationTestCacheConfig;
-  final Expression browserStackIosDevices;
-  final Expression browserStackCredentials;
   final Expression encodedProvisioningProfile;
   final Expression encodedSigningIdentity;
   final Expression signingIdentityPassphrase;
+  final Expression firebaseProjectId;
+  final Expression firebaseCredentials;
   final String baseTool;
   final String pubTool;
   final String runTool;
@@ -40,11 +38,11 @@ class IosIntegrationTestBuilder implements StepBuilder {
     required this.integrationTestPaths,
     required this.integrationTestProject,
     required this.integrationTestCacheConfig,
-    required this.browserStackIosDevices,
-    required this.browserStackCredentials,
     required this.encodedProvisioningProfile,
     required this.encodedSigningIdentity,
     required this.signingIdentityPassphrase,
+    required this.firebaseProjectId,
+    required this.firebaseCredentials,
     required this.baseTool,
     required this.pubTool,
     required this.runTool,
@@ -52,10 +50,6 @@ class IosIntegrationTestBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        const Step.uses(
-          name: 'Install hurl',
-          uses: Tools.installHurl,
-        ),
         ...PrepareIntegrationTestBuilder(
           workingDirectory: workingDirectory,
           artifactDependencies: artifactDependencies,
@@ -97,56 +91,16 @@ class IosIntegrationTestBuilder implements StepBuilder {
           workingDirectory:
               '$workingDirectory/$integrationTestProject/build/ios_integration/Build/Products',
         ),
-        Step.uses(
-          name: 'Run integration tests',
-          uses: Tools.hurl,
-          withArgs: {
-            'verbose': true,
-            'fileRoot': '$workingDirectory/$integrationTestProject',
-            'user': browserStackCredentials.toString(),
-            'script': '''
-POST {{baseUrl}}/test-package
-[MultipartFormData]
-file: file,build/ios_integration/Build/Products/app-release.zip;
-[Options]
-variable: baseUrl=https://api-cloud.browserstack.com/app-automate/flutter-integration-tests/v2/ios
-HTTP 200
-[Captures]
-testPackageUrl: jsonpath "\$['test_package_url']"
-
-POST {{baseUrl}}/build
-{
-  "testPackage": "{{testPackageUrl}}",
-  "project": "${Github.repository}",
-  "buildTag": "${Github.sha}",
-  "devices": $browserStackIosDevices,
-  "deviceLogs": true
-}
-HTTP 200
-[Captures]
-buildId: jsonpath "\$['build_id']"
-[Asserts]
-jsonpath "\$.message" == "Success"
-
-GET {{baseUrl}}/builds/{{buildId}}
-[Options]
-retry: 120
-retry-interval: 30000
-output: build/test-results.json
-HTTP 200
-[Asserts]
-jsonpath "\$.status" not matches /(running|queued)/
-
-GET {{baseUrl}}/builds/{{buildId}}
-HTTP 200
-[Asserts]
-jsonpath "\$.status" == "passed"
-''',
-          },
-        ),
-        ...BrowserStackResultsBuilder(
-          workingDirectory: workingDirectory,
-          integrationTestProject: integrationTestProject,
+        ...SetupGCloudBuilder(
+          firebaseProjectId: firebaseProjectId,
+          firebaseCredentials: firebaseCredentials,
         ).build(),
+        Step.run(
+          name: 'Run integration tests',
+          run: 'gcloud firebase test ios run '
+              '--type xctest '
+              '--test build/ios_integration/Build/Products/app-release.zip',
+          workingDirectory: '$workingDirectory/$integrationTestProject',
+        ),
       ];
 }
