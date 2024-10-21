@@ -31,7 +31,7 @@ set -eo pipefail
 new_dir="\$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
 old_dir="\$HOME/Library/MobileDevice/Provisioning Profiles"
 mkdir -p "\$new_dir" "\$old_dir"
-echo -n '$encodedProvisioningProfile' | base64 --decode -o "\$new_dir/app.mobileprovision"
+echo -n '$encodedProvisioningProfile' | base64 --decode > "\$new_dir/app.mobileprovision"
 ln -s "\$new_dir/app.mobileprovision" "\$old_dir/app.mobileprovision"
 ''',
         ),
