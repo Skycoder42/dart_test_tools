@@ -9,12 +9,12 @@ on:
       flatpakPlatformImage:
         type: string
         required: false
-        default: flatpak-github-actions:gnome-46
+        default: flatpak-github-actions:gnome-47
         description: The docker image to be used to build the bundle with
       flatpakSdkVersion:
         type: string
         required: false
-        default: "23.08"
+        default: "24.08"
         description: The version of the freedesktop sdk and runtime being used.
       bundleName:
         type: string

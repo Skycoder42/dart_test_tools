@@ -43,7 +43,7 @@ on:
       flatpakPlatformImage:
         type: string
         required: false
-        default: flatpak-github-actions:gnome-46
+        default: flatpak-github-actions:gnome-47
         description: The docker image to be used to build the bundle with
       targetRepo:
         type: string

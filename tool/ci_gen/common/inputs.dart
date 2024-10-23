@@ -416,7 +416,7 @@ Example:
     input: Input(
       type: Type.string,
       required: false,
-      defaultValue: '23.08',
+      defaultValue: '24.08',
       description: 'The version of the freedesktop sdk and runtime being used.',
     ),
   );
@@ -426,7 +426,7 @@ Example:
     input: Input(
       type: Type.string,
       required: false,
-      defaultValue: 'flatpak-github-actions:gnome-46',
+      defaultValue: 'flatpak-github-actions:gnome-47',
       description: 'The docker image to be used to build the bundle with',
     ),
   );

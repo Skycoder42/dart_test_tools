@@ -12,14 +12,14 @@ on:
     - cron: "17 5 * * 6"
 
 env:
-  SDK_VERSION: "23.08"
+  SDK_VERSION: "24.08"
 
 jobs:
   build_extension:
     name: Build flatpak runtime extension
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/flatpak-github-actions:freedesktop-23.08
+      image: bilelmoussaoui/flatpak-github-actions:freedesktop-24.08
       options: --privileged
     environment: flatpak
     strategy:
