@@ -63,9 +63,10 @@ jobs:
         include:
           - arch: aarch64
             qemuArch: arm64
+            imageSuffix: -aarch64
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/${{ inputs.flatpakPlatformImage }}
+      image: skycoder42/${{ inputs.flatpakPlatformImage }}${{ matrix.imageSuffix }}
       options: --privileged
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})

@@ -18,9 +18,6 @@ jobs:
   build_extension:
     name: Build flatpak runtime extension
     runs-on: ubuntu-latest
-    container:
-      image: bilelmoussaoui/flatpak-github-actions:freedesktop-24.08
-      options: --privileged
     environment: flatpak
     strategy:
       fail-fast: false
@@ -32,6 +29,10 @@ jobs:
         include:
           - arch: aarch64
             qemuArch: arm64
+            imageSuffix: -aarch64
+    container:
+      image: skycoder42/flatpak-github-actions:freedesktop-24.08${{ matrix.imageSuffix }}
+      options: --privileged
     steps:
       - name: Install docker # Docker is required by the docker/setup-qemu-action which enables emulation
         if: ${{ matrix.qemuArch }}
