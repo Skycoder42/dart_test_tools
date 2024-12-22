@@ -1,3 +1,4 @@
+import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../common/steps/run_publish_builder.dart';
@@ -6,25 +7,29 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 
+base mixin PublishConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
+  late Expression prePublish;
+  late Expression extraArtifacts;
+
+  @override
+  void expand() {
+    skipYqInstall = true;
+    releaseMode = true;
+    pubTool = PublishBuilder.toolsPub.expression.toString();
+    runTool = PublishBuilder.toolsPubRun.expression.toString();
+    super.expand();
+  }
+}
+
 class PublishBuilder implements StepBuilder {
   static const toolsStepId = StepId('tools');
   static final toolsPub = toolsStepId.output('pub');
   static final toolsPubRun = toolsStepId.output('pubRun');
 
-  final Expression flutter;
-  final Expression workingDirectory;
-  final Expression buildRunner;
-  final Expression buildRunnerArgs;
-  final Expression prePublish;
-  final Expression extraArtifacts;
+  final PublishConfig config;
 
   PublishBuilder({
-    required this.flutter,
-    required this.workingDirectory,
-    required this.buildRunner,
-    required this.buildRunnerArgs,
-    required this.prePublish,
-    required this.extraArtifacts,
+    required this.config,
   });
 
   @override
@@ -33,7 +38,7 @@ class PublishBuilder implements StepBuilder {
           id: toolsStepId,
           name: 'Prepare build tools',
           run: '''
-if $flutter; then
+if ${config.isFlutter.asExpression}; then
   ${toolsPub.bashSetter('flutter pub')}
   ${toolsPubRun.bashSetter('flutter pub run')}
 else
@@ -42,19 +47,10 @@ else
 fi
 ''',
         ),
-        ...ProjectSetupBuilder(
-          workingDirectory: workingDirectory,
-          buildRunner: buildRunner,
-          buildRunnerArgs: buildRunnerArgs,
-          releaseMode: true,
-          isFlutter: ExpressionOrValue.expression(flutter),
-          pubTool: toolsPub.expression.toString(),
-          runTool: toolsPubRun.expression.toString(),
-          skipYqInstall: true,
-        ).build(),
+        ...ProjectSetupBuilder(config: config).build(),
         Step.uses(
           name: 'Download additional artifacts',
-          ifExpression: extraArtifacts.ne(Expression.empty),
+          ifExpression: config.extraArtifacts.ne(Expression.empty),
           uses: Tools.actionsDownloadArtifact,
           withArgs: <String, dynamic>{
             for (final key in ['name', 'path']) key: _artifactConfig(key),
@@ -62,19 +58,18 @@ fi
         ),
         Step.run(
           name: 'Run pre publish script',
-          ifExpression: prePublish.ne(Expression.empty),
-          run: prePublish.toString(),
-          workingDirectory: workingDirectory.toString(),
+          ifExpression: config.prePublish.ne(Expression.empty),
+          run: config.prePublish.toString(),
+          workingDirectory: config.workingDirectory.toString(),
         ),
         ...RunPublishBuilder(
-          workingDirectory: workingDirectory,
-          pubTool: toolsPub.expression.toString(),
+          config: config,
           publishStepName: 'Publish package',
           publishArgs: '--force',
         ).build(),
       ];
 
   String _artifactConfig(String key) => Expression(
-        "fromJSON(${extraArtifacts.value})['$key']",
+        "fromJSON(${config.extraArtifacts.value})['$key']",
       ).toString();
 }

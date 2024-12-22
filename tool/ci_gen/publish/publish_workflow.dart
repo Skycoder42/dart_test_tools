@@ -17,16 +17,18 @@ class PublishWorkflow implements WorkflowBuilder {
     final inputContext = WorkflowInputContext();
 
     final publishJobBuilder = PublishJobBuilder(
-      flutter: inputContext(WorkflowInputs.flutter),
-      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
-      javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
-      tagPrefix: inputContext(WorkflowInputs.tagPrefix),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      buildRunner: inputContext(WorkflowInputs.buildRunner),
-      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-      prePublish: inputContext(WorkflowInputs.prePublish),
-      extraArtifacts: inputContext(WorkflowInputs.extraArtifacts),
+      config: PublishJobConfig(
+        flutter: inputContext(WorkflowInputs.flutter),
+        dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+        flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
+        javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
+        tagPrefix: inputContext(WorkflowInputs.tagPrefix),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        buildRunner: inputContext(WorkflowInputs.buildRunner),
+        buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+        prePublish: inputContext(WorkflowInputs.prePublish),
+        extraArtifacts: inputContext(WorkflowInputs.extraArtifacts),
+      ),
     );
 
     return Workflow(

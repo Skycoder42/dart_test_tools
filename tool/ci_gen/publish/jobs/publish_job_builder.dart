@@ -1,6 +1,11 @@
 import '../../common/api/job_builder.dart';
+import '../../common/api/job_config.dart';
 import '../../common/contexts.dart';
 import '../../common/environments.dart';
+import '../../common/steps/project_prepare_builder.dart';
+import '../../common/steps/project_setup_builder.dart';
+import '../../common/steps/run_publish_builder.dart';
+import '../../common/steps/update_overrides_builder.dart';
 import '../../dart/steps/dart_sdk_builder.dart';
 import '../../flutter/steps/flutter_sdk_builder.dart';
 import '../../types/expression.dart';
@@ -9,29 +14,46 @@ import '../../types/job.dart';
 import '../steps/flutter_auth_builder.dart';
 import '../steps/publish_builder.dart';
 
-class PublishJobBuilder implements JobBuilder {
-  final Expression flutter;
+final class PublishJobConfig extends JobConfig
+    with
+        UpdateOverridesConfig,
+        ProjectPrepareConfig,
+        ProjectSetupConfig,
+        RunPublishConfig,
+        PublishConfig {
   final Expression dartSdkVersion;
   final Expression flutterSdkChannel;
   final Expression javaJdkVersion;
   final Expression tagPrefix;
-  final Expression workingDirectory;
-  final Expression buildRunner;
-  final Expression buildRunnerArgs;
-  final Expression prePublish;
-  final Expression extraArtifacts;
 
-  PublishJobBuilder({
-    required this.flutter,
+  PublishJobConfig({
+    required Expression flutter,
     required this.dartSdkVersion,
     required this.flutterSdkChannel,
     required this.javaJdkVersion,
     required this.tagPrefix,
-    required this.workingDirectory,
-    required this.buildRunner,
-    required this.buildRunnerArgs,
-    required this.prePublish,
-    required this.extraArtifacts,
+    required Expression workingDirectory,
+    required Expression buildRunner,
+    required Expression buildRunnerArgs,
+    required Expression prePublish,
+    required Expression extraArtifacts,
+  }) {
+    isFlutter = ExpressionOrValue.expression(flutter);
+    this.workingDirectory = workingDirectory;
+    this.buildRunner = buildRunner;
+    this.buildRunnerArgs = buildRunnerArgs;
+    this.prePublish = prePublish;
+    this.extraArtifacts = extraArtifacts;
+    localResolution = const ExpressionOrValue.value(false);
+    expand();
+  }
+}
+
+class PublishJobBuilder implements JobBuilder {
+  final PublishJobConfig config;
+
+  PublishJobBuilder({
+    required this.config,
   });
 
   @override
@@ -45,7 +67,7 @@ class PublishJobBuilder implements JobBuilder {
           Github.ref,
           const Expression('format')([
             const Expression.literal('refs/tags/{0}'),
-            tagPrefix,
+            config.tagPrefix,
           ]),
         ]),
         permissions: const {
@@ -54,25 +76,18 @@ class PublishJobBuilder implements JobBuilder {
         runsOn: 'ubuntu-latest',
         steps: [
           ...DartSdkBuilder(
-            dartSdkVersion: dartSdkVersion,
-            ifExpression: flutter.not,
+            dartSdkVersion: config.dartSdkVersion,
+            ifExpression: config.isFlutter.asExpression.not,
           ).build(),
           ...FlutterSdkBuilder(
-            flutterSdkChannel: flutterSdkChannel,
-            javaJdkVersion: javaJdkVersion,
-            ifExpression: flutter,
+            flutterSdkChannel: config.flutterSdkChannel,
+            javaJdkVersion: config.javaJdkVersion,
+            ifExpression: config.isFlutter.asExpression,
           ).build(),
           ...FlutterAuthBuilder(
-            ifExpression: flutter,
+            ifExpression: config.isFlutter.asExpression,
           ).build(),
-          ...PublishBuilder(
-            flutter: flutter,
-            workingDirectory: workingDirectory,
-            buildRunner: buildRunner,
-            buildRunnerArgs: buildRunnerArgs,
-            prePublish: prePublish,
-            extraArtifacts: extraArtifacts,
-          ).build(),
+          ...PublishBuilder(config: config).build(),
         ],
       );
 }
