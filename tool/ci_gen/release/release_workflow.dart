@@ -23,11 +23,13 @@ class ReleaseWorkflow implements WorkflowBuilder {
     final outputContext = WorkflowOutputContext();
 
     final releaseJobBuilder = ReleaseJobBuilder(
-      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      releaseRef: inputContext(WorkflowInputs.releaseRef),
-      tagPrefix: inputContext(WorkflowInputs.tagPrefix),
-      githubToken: secretContext(WorkflowSecrets.githubToken),
+      config: ReleaseJobConfig(
+        dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        releaseRef: inputContext(WorkflowInputs.releaseRef),
+        tagPrefix: inputContext(WorkflowInputs.tagPrefix),
+        githubToken: secretContext(WorkflowSecrets.githubToken),
+      ),
     );
     outputContext
       ..add(WorkflowOutputs.releaseCreated, releaseJobBuilder.updateOutput)

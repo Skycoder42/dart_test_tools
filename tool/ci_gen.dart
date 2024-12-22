@@ -7,12 +7,13 @@ import 'ci_gen/common/api/workflow_builder.dart';
 import 'ci_gen/compile/compile_workflow.dart';
 import 'ci_gen/dart/dart_workflow.dart';
 import 'ci_gen/publish/publish_workflow.dart';
+import 'ci_gen/release/release_workflow.dart';
 
 Future<void> main() async {
   const workflows = [
     DartWorkflow(),
     // FlutterWorkflow(),
-    // ReleaseWorkflow(),
+    ReleaseWorkflow(),
     PublishWorkflow(),
     CompileWorkflow(),
     // PackageWorkflow(),

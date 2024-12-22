@@ -1,23 +1,36 @@
 import '../../common/api/job_builder.dart';
+import '../../common/api/job_config.dart';
 import '../../common/contexts.dart';
+import '../../common/steps/release_entry_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
 import '../steps/release_builder.dart';
 
-class ReleaseJobBuilder implements JobBuilder {
+final class ReleaseJobConfig extends JobConfig
+    with ReleaseEntryConfig, ReleaseConfig {
   final Expression releaseRef;
-  final Expression dartSdkVersion;
-  final Expression workingDirectory;
-  final Expression tagPrefix;
-  final Expression githubToken;
+
+  ReleaseJobConfig({
+    required this.releaseRef,
+    required Expression dartSdkVersion,
+    required Expression workingDirectory,
+    required Expression tagPrefix,
+    required Expression githubToken,
+  }) {
+    this.dartSdkVersion = dartSdkVersion;
+    this.workingDirectory = workingDirectory;
+    this.tagPrefix = tagPrefix;
+    this.githubToken = githubToken;
+    expand();
+  }
+}
+
+class ReleaseJobBuilder implements JobBuilder {
+  final ReleaseJobConfig config;
 
   ReleaseJobBuilder({
-    required this.releaseRef,
-    required this.dartSdkVersion,
-    required this.workingDirectory,
-    required this.tagPrefix,
-    required this.githubToken,
+    required this.config,
   });
 
   @override
@@ -31,18 +44,13 @@ class ReleaseJobBuilder implements JobBuilder {
   Job build() => Job(
         name: 'Create release if needed',
         runsOn: 'ubuntu-latest',
-        ifExpression: Github.ref.eq(releaseRef),
+        ifExpression: Github.ref.eq(config.releaseRef),
         outputs: {
           updateOutput: ReleaseBuilder.versionUpdate,
           versionOutput: ReleaseBuilder.versionOutput,
         },
         steps: [
-          ...ReleaseBuilder(
-            dartSdkVersion: dartSdkVersion,
-            workingDirectory: workingDirectory,
-            tagPrefix: tagPrefix,
-            githubToken: githubToken,
-          ).build(),
+          ...ReleaseBuilder(config: config).build(),
         ],
       );
 }

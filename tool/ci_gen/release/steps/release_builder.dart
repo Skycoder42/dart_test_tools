@@ -6,27 +6,25 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 
+base mixin ReleaseConfig on ReleaseEntryConfig {
+  late Expression dartSdkVersion;
+}
+
 class ReleaseBuilder implements StepBuilder {
   static const versionStepId = StepId('version');
   static final versionUpdate = versionStepId.output('update');
   static final versionOutput = versionStepId.output('version');
 
-  final Expression dartSdkVersion;
-  final Expression workingDirectory;
-  final Expression tagPrefix;
-  final Expression githubToken;
+  final ReleaseConfig config;
 
   ReleaseBuilder({
-    required this.dartSdkVersion,
-    required this.workingDirectory,
-    required this.tagPrefix,
-    required this.githubToken,
+    required this.config,
   });
 
   @override
   Iterable<Step> build() => [
         ...DartSdkBuilder(
-          dartSdkVersion: dartSdkVersion,
+          dartSdkVersion: config.dartSdkVersion,
         ).build(),
         ...const CheckoutBuilder().build(),
         Step.run(
@@ -54,12 +52,10 @@ else
   ${versionOutput.bashSetter(r'$package_version')}
 fi
 ''',
-          workingDirectory: workingDirectory.toString(),
+          workingDirectory: config.workingDirectory.toString(),
         ),
         ...ReleaseEntryBuilder(
-          githubToken: githubToken,
-          workingDirectory: workingDirectory,
-          tagPrefix: tagPrefix,
+          config: config,
           versionUpdate: versionUpdate.expression,
           changelogExtra: "The package and it's documentation are available at "
               r'[pub.dev](https://pub.dev/packages/$package_name/versions/$package_version).',
