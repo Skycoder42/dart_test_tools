@@ -22,24 +22,30 @@ class CompileWorkflow implements WorkflowBuilder {
 
     final compileJobBuilder = CompileJobBuilder(
       enabledPlatforms: inputContext(WorkflowInputs.enabledPlatforms),
-      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
-      buildRunner: inputContext(WorkflowInputs.buildRunner),
-      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-      removePubspecOverrides:
-          inputContext(WorkflowInputs.removePubspecOverrides),
-      archivePrefix: inputContext(WorkflowInputs.archivePrefix),
+      config: CompileJobConfig(
+        dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+        buildRunner: inputContext(WorkflowInputs.buildRunner),
+        buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+        removePubspecOverrides:
+            inputContext(WorkflowInputs.removePubspecOverrides),
+        localResolution: inputContext(WorkflowInputs.localResolution),
+        archivePrefix: inputContext(WorkflowInputs.archivePrefix),
+      ),
     );
 
     final releaseJobBuilder = TagReleaseJobBuilder(
       compileJobIds: {compileJobBuilder.id},
-      releaseRef: inputContext(WorkflowInputs.releaseRef),
-      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      tagPrefix: inputContext(WorkflowInputs.tagPrefix),
-      persistCredentials: inputContext(WorkflowInputs.persistCredentials),
-      binaryArtifactsPattern: '${inputContext(WorkflowInputs.archivePrefix)}-*',
+      config: TagReleaseJobConfig(
+        releaseRef: inputContext(WorkflowInputs.releaseRef),
+        dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        tagPrefix: inputContext(WorkflowInputs.tagPrefix),
+        persistCredentials: inputContext(WorkflowInputs.persistCredentials),
+        binaryArtifactsPattern:
+            '${inputContext(WorkflowInputs.archivePrefix)}-*',
+      ),
     );
     outputContext
       ..add(WorkflowOutputs.releaseCreated, releaseJobBuilder.updateOutput)

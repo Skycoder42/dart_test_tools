@@ -1,3 +1,4 @@
+import '../../common/api/job_config.dart';
 import '../../common/api/matrix_job_builder_mixin.dart';
 import '../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../common/api/step_builder.dart';
@@ -21,6 +22,16 @@ enum ArchiveType {
   Expression get expression => Expression.literal(name);
 
   String toJson() => name;
+}
+
+base mixin CompileConfig on JobConfig, ProjectSetupConfig {
+  late Expression archivePrefix;
+
+  @override
+  void expand() {
+    releaseMode = true;
+    super.expand();
+  }
 }
 
 final class BinaryTypeMatrixProperty extends IMatrixProperty<DartPlatform> {
@@ -75,50 +86,24 @@ abstract interface class ICompileMatrix {
 }
 
 class CompileBuilder implements StepBuilder {
-  final Expression workingDirectory;
-  final Expression artifactDependencies;
-  final Expression buildRunner;
-  final Expression buildRunnerArgs;
-  final Expression removePubspecOverrides;
-  final Expression localResolution;
-  final Expression archivePrefix;
+  final CompileConfig config;
   final PlatformMatrixProperty platform;
   final BinaryTypeMatrixProperty binaryType;
   final CompileArgsMatrixProperty compileArgs;
   final ArchiveTypeMatrixProperty archiveType;
-  final String pubTool;
-  final String runTool;
 
   CompileBuilder({
-    required this.workingDirectory,
-    required this.artifactDependencies,
-    required this.buildRunner,
-    required this.buildRunnerArgs,
-    required this.removePubspecOverrides,
-    required this.localResolution,
-    required this.archivePrefix,
+    required this.config,
     required this.platform,
     required this.binaryType,
     required this.compileArgs,
     required this.archiveType,
-    required this.pubTool,
-    required this.runTool,
   });
 
   @override
   Iterable<Step> build() => [
         ...ProjectSetupBuilder(
-          workingDirectory: workingDirectory,
-          artifactDependencies: artifactDependencies,
-          buildRunner: buildRunner,
-          buildRunnerArgs: buildRunnerArgs,
-          removePubspecOverrides:
-              ExpressionOrValue.expression(removePubspecOverrides),
-          localResolution: ExpressionOrValue.expression(localResolution),
-          releaseMode: true,
-          isFlutter: const ExpressionOrValue.value(false),
-          pubTool: pubTool,
-          runTool: runTool,
+          config: config,
         ).build(),
         Step.run(
           name: 'Compile executables',
@@ -130,7 +115,7 @@ yq ".executables.[] | key" pubspec.yaml | while read executableName; do
   dart compile ${binaryType.expression} ${compileArgs.expression} "bin/\$dartScript.dart"
 done
 ''',
-          workingDirectory: workingDirectory.toString(),
+          workingDirectory: config.workingDirectory.toString(),
           shell: 'bash',
         ),
         Step.run(
@@ -140,10 +125,10 @@ done
 set -eo pipefail
 shopt -s extglob
 mkdir -p ../artifacts
-tar -cavf '../artifacts/$archivePrefix-${platform.expression}.tar.xz' !(*.*)
-tar -cavf '../artifacts/$archivePrefix-${platform.expression}-debug-symbols.tar.xz' *.sym
+tar -cavf '../artifacts/${config.archivePrefix}-${platform.expression}.tar.xz' !(*.*)
+tar -cavf '../artifacts/${config.archivePrefix}-${platform.expression}-debug-symbols.tar.xz' *.sym
 ''',
-          workingDirectory: '$workingDirectory/build/bin',
+          workingDirectory: '${config.workingDirectory}/build/bin',
           shell: 'bash',
         ),
         Step.run(
@@ -153,18 +138,18 @@ tar -cavf '../artifacts/$archivePrefix-${platform.expression}-debug-symbols.tar.
 set -eo pipefail
 shopt -s nullglob
 mkdir -p ../artifacts
-7z a -y '../artifacts/$archivePrefix-${platform.expression}.zip' *.exe *.js
-7z a -y '../artifacts/$archivePrefix-${platform.expression}-debug-symbols.zip' *.sym *.js.*
+7z a -y '../artifacts/${config.archivePrefix}-${platform.expression}.zip' *.exe *.js
+7z a -y '../artifacts/${config.archivePrefix}-${platform.expression}-debug-symbols.zip' *.sym *.js.*
 ''',
-          workingDirectory: '$workingDirectory/build/bin',
+          workingDirectory: '${config.workingDirectory}/build/bin',
           shell: 'bash',
         ),
         Step.uses(
           name: 'Upload compiled binaries artifact',
           uses: Tools.actionsUploadArtifact,
           withArgs: <String, dynamic>{
-            'name': '$archivePrefix-${platform.expression}',
-            'path': '$workingDirectory/build/artifacts/*',
+            'name': '${config.archivePrefix}-${platform.expression}',
+            'path': '${config.workingDirectory}/build/artifacts/*',
             'retention-days': 3,
             'if-no-files-found': 'error',
           },
