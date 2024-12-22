@@ -1,17 +1,20 @@
+import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/tools.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
+base mixin InstallXcodeSigningConfig on JobConfig {
+  late Expression encodedProvisioningProfile;
+  late Expression encodedSigningIdentity;
+  late Expression signingIdentityPassphrase;
+}
+
 class InstallXcodeSigningBuilder implements StepBuilder {
-  final Expression encodedProvisioningProfile;
-  final Expression encodedSigningIdentity;
-  final Expression signingIdentityPassphrase;
+  final InstallXcodeSigningConfig config;
 
   const InstallXcodeSigningBuilder({
-    required this.encodedProvisioningProfile,
-    required this.encodedSigningIdentity,
-    required this.signingIdentityPassphrase,
+    required this.config,
   });
 
   @override
@@ -20,8 +23,8 @@ class InstallXcodeSigningBuilder implements StepBuilder {
           name: 'Install Signing Identity',
           uses: Tools.appleActionsImportCodesignCerts,
           withArgs: {
-            'p12-file-base64': encodedSigningIdentity.toString(),
-            'p12-password': signingIdentityPassphrase.toString(),
+            'p12-file-base64': config.encodedSigningIdentity.toString(),
+            'p12-password': config.signingIdentityPassphrase.toString(),
           },
         ),
         Step.run(
@@ -31,7 +34,7 @@ set -eo pipefail
 new_dir="\$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
 old_dir="\$HOME/Library/MobileDevice/Provisioning Profiles"
 mkdir -p "\$new_dir" "\$old_dir"
-echo -n '$encodedProvisioningProfile' | base64 --decode > "\$new_dir/app.mobileprovision"
+echo -n '${config.encodedProvisioningProfile}' | base64 --decode > "\$new_dir/app.mobileprovision"
 ln -s "\$new_dir/app.mobileprovision" "\$old_dir/app.mobileprovision"
 ''',
         ),

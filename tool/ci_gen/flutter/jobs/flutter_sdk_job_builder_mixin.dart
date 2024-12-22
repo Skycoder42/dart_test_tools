@@ -3,25 +3,28 @@ import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../steps/flutter_sdk_builder.dart';
 
-base mixin FlutterSdkJobBuilderMixin on SdkJobBuilder {
-  Expression get flutterSdkChannel;
-
-  Expression? get javaJdkVersion => null;
-
-  @override
-  bool get isFlutter => true;
+base mixin FlutterSdkJobConfig on SdkJobConfig {
+  late Expression flutterSdkChannel;
+  Expression? javaJdkVersion;
 
   @override
-  String get baseTool => 'flutter';
+  void expand() {
+    baseTool = 'flutter';
+    isFlutter = const ExpressionOrValue.value(true);
+    super.expand();
+  }
+}
 
+base mixin FlutterSdkJobBuilderMixin<TConfig extends FlutterSdkJobConfig>
+    on SdkJobBuilder<TConfig> {
   @override
   Iterable<Step> buildSetupSdkSteps({
     ExpressionOrValue? buildPlatform,
   }) =>
       [
         ...FlutterSdkBuilder(
-          flutterSdkChannel: flutterSdkChannel,
-          javaJdkVersion: javaJdkVersion,
+          flutterSdkChannel: config.flutterSdkChannel,
+          javaJdkVersion: config.javaJdkVersion,
           buildPlatform: buildPlatform,
         ).build(),
       ];

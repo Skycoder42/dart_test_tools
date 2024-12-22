@@ -8,42 +8,41 @@ import '../../types/id.dart';
 import '../../types/job.dart';
 import '../flutter_platform.dart';
 import '../steps/android_integration_test_builder.dart';
+import '../steps/setup_gcloud_builder.dart';
+import 'common_integration_test_config.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-final class AndroidIntegrationTestJobBuilder extends SdkJobBuilder
-    with FlutterSdkJobBuilderMixin {
+final class AndroidIntegrationTestJobConfig extends CommonIntegrationTestConfig
+    with SetupGCloudConfig, AndroidIntegrationTestConfig {
+  AndroidIntegrationTestJobConfig({
+    required super.flutterSdkChannel,
+    required super.javaJdkVersion,
+    required super.workingDirectory,
+    required super.artifactDependencies,
+    required super.buildRunner,
+    required super.buildRunnerArgs,
+    required super.removePubspecOverrides,
+    required super.localResolution,
+    required super.integrationTestSetup,
+    required super.integrationTestPaths,
+    required super.integrationTestProject,
+    required super.integrationTestCacheConfig,
+    required Expression firebaseProjectId,
+    required Expression firebaseCredentials,
+  }) {
+    this.firebaseProjectId = firebaseProjectId;
+    this.firebaseCredentials = firebaseCredentials;
+  }
+}
+
+final class AndroidIntegrationTestJobBuilder
+    extends SdkJobBuilder<AndroidIntegrationTestJobConfig>
+    with FlutterSdkJobBuilderMixin<AndroidIntegrationTestJobConfig> {
   final JobIdOutput enabledPlatformsOutput;
-  @override
-  final Expression flutterSdkChannel;
-  @override
-  final Expression javaJdkVersion;
-  final Expression workingDirectory;
-  final Expression artifactDependencies;
-  final Expression buildRunner;
-  final Expression buildRunnerArgs;
-  final Expression removePubspecOverrides;
-  final Expression integrationTestSetup;
-  final Expression integrationTestPaths;
-  final Expression integrationTestProject;
-  final Expression integrationTestCacheConfig;
-  final Expression firebaseProjectId;
-  final Expression firebaseCredentials;
 
   AndroidIntegrationTestJobBuilder({
     required this.enabledPlatformsOutput,
-    required this.flutterSdkChannel,
-    required this.javaJdkVersion,
-    required this.workingDirectory,
-    required this.artifactDependencies,
-    required this.buildRunner,
-    required this.buildRunnerArgs,
-    required this.removePubspecOverrides,
-    required this.integrationTestSetup,
-    required this.integrationTestPaths,
-    required this.integrationTestProject,
-    required this.integrationTestCacheConfig,
-    required this.firebaseProjectId,
-    required this.firebaseCredentials,
+    required super.config,
   });
 
   @override
@@ -52,7 +51,7 @@ final class AndroidIntegrationTestJobBuilder extends SdkJobBuilder
   @override
   Job build() => Job(
         name: 'Integration tests (android)',
-        ifExpression: integrationTestPaths.ne(Expression.empty) &
+        ifExpression: config.integrationTestPaths.ne(Expression.empty) &
             EnabledPlatforms.check(
               enabledPlatformsOutput.expression,
               Expression.literal(FlutterPlatform.android.platform),
@@ -63,28 +62,16 @@ final class AndroidIntegrationTestJobBuilder extends SdkJobBuilder
         runsOn: FlutterPlatform.android.os.id,
         steps: [
           ...ValidateInputsBuilder({
-            WorkflowInputs.firebaseProjectId.name: firebaseProjectId,
-            WorkflowSecrets.firebaseCredentials.name: firebaseCredentials,
+            WorkflowInputs.firebaseProjectId.name: config.firebaseProjectId,
+            WorkflowSecrets.firebaseCredentials.name:
+                config.firebaseCredentials,
           }).build(),
           ...buildSetupSdkSteps(
             buildPlatform:
                 ExpressionOrValue.value(FlutterPlatform.android.platform),
           ),
           ...AndroidIntegrationTestBuilder(
-            workingDirectory: workingDirectory,
-            artifactDependencies: artifactDependencies,
-            buildRunner: buildRunner,
-            buildRunnerArgs: buildRunnerArgs,
-            removePubspecOverrides: removePubspecOverrides,
-            integrationTestSetup: integrationTestSetup,
-            integrationTestPaths: integrationTestPaths,
-            integrationTestProject: integrationTestProject,
-            integrationTestCacheConfig: integrationTestCacheConfig,
-            firebaseProjectId: firebaseProjectId,
-            firebaseCredentials: firebaseCredentials,
-            baseTool: baseTool,
-            pubTool: pubTool,
-            runTool: runTool,
+            config: config,
           ).build(),
         ],
       );
