@@ -4,26 +4,18 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
 import '../../types/step.dart';
+import '../api/job_config.dart';
 import '../steps/analyze_builder.dart';
 import 'sdk_job_builder.dart';
 
-abstract base class AnalyzeJobBuilder extends SdkJobBuilder {
-  final Expression workingDirectory;
-  final Expression artifactDependencies;
-  final Expression buildRunner;
-  final Expression buildRunnerArgs;
-  final Expression removePubspecOverrides;
-  final Expression analyzeImage;
-  final Expression panaScoreThreshold;
+base mixin AnalyzeJobConfig on JobConfig, AnalyzeConfig, SdkJobConfig {
+  late Expression analyzeImage;
+}
 
+abstract base class AnalyzeJobBuilder<TConfig extends AnalyzeJobConfig>
+    extends SdkJobBuilder<TConfig> {
   const AnalyzeJobBuilder({
-    required this.workingDirectory,
-    required this.artifactDependencies,
-    required this.buildRunner,
-    required this.buildRunnerArgs,
-    required this.removePubspecOverrides,
-    required this.analyzeImage,
-    required this.panaScoreThreshold,
+    required super.config,
   });
 
   @override
@@ -34,24 +26,14 @@ abstract base class AnalyzeJobBuilder extends SdkJobBuilder {
   @override
   Job build() => Job(
         name: 'Analyze',
-        runsOn: analyzeImage.toString(),
+        runsOn: config.analyzeImage.toString(),
         outputs: {
           platformsOutput: AnalyzeBuilder.platformsOutput,
         },
         steps: [
           ...buildSetupSdkSteps(),
           ...AnalyzeBuilder(
-            workingDirectory: workingDirectory,
-            artifactDependencies: artifactDependencies,
-            buildRunner: buildRunner,
-            buildRunnerArgs: buildRunnerArgs,
-            removePubspecOverrides: removePubspecOverrides,
-            analyzeImage: analyzeImage,
-            panaScoreThreshold: panaScoreThreshold,
-            isFlutter: isFlutter,
-            baseTool: baseTool,
-            pubTool: pubTool,
-            runTool: runTool,
+            config: config,
             buildAnalyzeStep: buildAnalyzeSteps,
           ).build(),
         ],

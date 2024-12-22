@@ -1,42 +1,47 @@
 import '../../types/expression.dart';
 import '../../types/step.dart';
+import '../api/job_config.dart';
 import '../api/step_builder.dart';
 import '../tools.dart';
 
+base mixin UpdateOverridesConfig on JobConfig {
+  late Expression workingDirectory;
+  ExpressionOrValue removePubspecOverrides =
+      const ExpressionOrValue.value(true);
+  Expression? artifactDependencies;
+  ExpressionOrValue localResolution = const ExpressionOrValue.value(true);
+  Expression? ifExpression;
+}
+
 class UpdateOverridesBuilder implements StepBuilder {
   final String titleSuffix;
-  final Expression workingDirectory;
-  final ExpressionOrValue removePubspecOverrides;
-  final Expression? artifactDependencies;
-  final ExpressionOrValue artifactTargetDir;
-  final Expression? ifExpression;
+  final String artifactTargetDir;
+  final UpdateOverridesConfig config;
 
   UpdateOverridesBuilder({
     this.titleSuffix = '',
-    required this.workingDirectory,
-    required this.removePubspecOverrides,
-    required this.artifactDependencies,
     required this.artifactTargetDir,
-    this.ifExpression,
+    required this.config,
   });
 
   @override
   Iterable<Step> build() => [
-        if (removePubspecOverrides.rawValueOr(true))
+        if (config.removePubspecOverrides.rawValueOr(true))
           Step.run(
             name: 'Remove pubspec_overrides.yaml$titleSuffix',
-            ifExpression: removePubspecOverrides.isExpression
-                ? (removePubspecOverrides.asExpression & ifExpression)
-                : ifExpression,
+            ifExpression: config.removePubspecOverrides.isExpression
+                ? (config.removePubspecOverrides.asExpression &
+                    config.ifExpression)
+                : config.ifExpression,
             run: 'find . -type f -name "pubspec_overrides.yaml" '
                 r'-exec git rm -f {} \;',
-            workingDirectory: workingDirectory.toString(),
+            workingDirectory: config.workingDirectory.toString(),
             shell: 'bash',
           ),
-        if (artifactDependencies != null) ...[
+        if (config.artifactDependencies case final Expression artDeps) ...[
           Step.uses(
             name: 'Download artifacts',
-            ifExpression: artifactDependencies!.ne(Expression.empty),
+            ifExpression: artDeps.ne(Expression.empty) & config.ifExpression,
             uses: Tools.actionsDownloadArtifact,
             withArgs: {
               'pattern': 'package-*',
@@ -46,20 +51,34 @@ class UpdateOverridesBuilder implements StepBuilder {
           Step.run(
             name: 'Create pubspec_overrides.yaml for artifact packages'
                 '$titleSuffix',
-            ifExpression:
-                artifactDependencies!.ne(Expression.empty) & ifExpression,
+            ifExpression: config.artifactDependencies!.ne(Expression.empty) &
+                config.ifExpression,
             shell: 'bash',
             run: '''
 set -eo pipefail
 if [[ ! -f pubspec_overrides.yaml ]]; then
   yq '{"dependency_overrides": .dependency_overrides}' pubspec.yaml > pubspec_overrides.yaml
 fi
-for package in $artifactDependencies; do
+for package in ${config.artifactDependencies}; do
   yq -i ".dependency_overrides.\$package.path=\\"$artifactTargetDir/.artifacts/package-\$package\\"" pubspec_overrides.yaml
 done
 ''',
-            workingDirectory: workingDirectory.toString(),
+            workingDirectory: config.workingDirectory.toString(),
           ),
         ],
+        if (config.localResolution.rawValueOr(true))
+          Step.run(
+            name: 'Switch to local resolution',
+            ifExpression: config.localResolution.isExpression
+                ? config.localResolution.asExpression & config.ifExpression
+                : config.ifExpression,
+            run: '''
+set -eo pipefail
+touch pubspec_overrides.yaml
+yq -i '.resolution=null' pubspec_overrides.yaml
+''',
+            workingDirectory: config.workingDirectory.toString(),
+            shell: 'bash',
+          ),
       ];
 }

@@ -1,10 +1,18 @@
 import '../../types/expression.dart';
 import '../../types/step.dart';
+import '../api/job_config.dart';
 import '../api/matrix_job_builder_mixin.dart';
 import '../api/platform_matrix_job_builder_mixin.dart';
 import '../api/step_builder.dart';
 import 'coverage_collector_builder.dart';
 import 'project_setup_builder.dart';
+
+base mixin UnitTestConfig
+    on JobConfig, ProjectSetupConfig, CoverageCollectorConfig {
+  late Expression unitTestPaths;
+  late String baseTool;
+  late String coverageArgs;
+}
 
 final class DartTestArgsMatrixProperty
     extends IMatrixProperty<IPlatformMatrixSelector> {
@@ -21,69 +29,33 @@ final class DartTestArgsMatrixProperty
 }
 
 class UnitTestBuilder implements StepBuilder {
-  final Expression workingDirectory;
-  final Expression artifactDependencies;
-  final Expression buildRunner;
-  final Expression buildRunnerArgs;
-  final Expression removePubspecOverrides;
-  final Expression unitTestPaths;
-  final Expression minCoverage;
+  final UnitTestConfig config;
   final PlatformMatrixProperty platform;
   final DartTestArgsMatrixProperty dartTestArgs;
   final LcovCleanCommandMatrixProperty lcovCleanCommand;
-  final bool isFlutter;
-  final String baseTool;
-  final String pubTool;
-  final String runTool;
-  final String coverageArgs;
-  final bool needsFormatting;
 
   const UnitTestBuilder({
-    required this.workingDirectory,
-    required this.artifactDependencies,
-    required this.buildRunner,
-    required this.buildRunnerArgs,
-    required this.removePubspecOverrides,
-    required this.unitTestPaths,
-    required this.minCoverage,
-    required this.isFlutter,
-    required this.baseTool,
-    required this.pubTool,
-    required this.runTool,
+    required this.config,
+    required this.platform,
     required this.dartTestArgs,
     required this.lcovCleanCommand,
-    required this.platform,
-    required this.coverageArgs,
-    required this.needsFormatting,
   });
 
   @override
   Iterable<Step> build() => [
-        ...ProjectSetupBuilder(
-          workingDirectory: workingDirectory,
-          artifactDependencies: artifactDependencies,
-          buildRunner: buildRunner,
-          buildRunnerArgs: buildRunnerArgs,
-          removePubspecOverrides:
-              ExpressionOrValue.expression(removePubspecOverrides),
-          isFlutter: ExpressionOrValue.value(isFlutter),
-          pubTool: pubTool,
-          runTool: runTool,
-        ).build(),
+        ...ProjectSetupBuilder(config: config).build(),
         Step.run(
           name: 'Run unit tests',
-          run: '$baseTool test ${dartTestArgs.expression} $coverageArgs '
-              '--reporter github $unitTestPaths || [ \$? = 79 ]',
-          workingDirectory: workingDirectory.toString(),
+          run: '${config.baseTool} test ${dartTestArgs.expression} '
+              '${config.coverageArgs} '
+              '--reporter github ${config.unitTestPaths} || [ \$? = 79 ]',
+          workingDirectory: config.workingDirectory.toString(),
           shell: 'bash',
         ),
         ...CoverageCollectorBuilder(
-          workingDirectory: workingDirectory,
-          minCoverage: minCoverage,
-          runTool: runTool,
+          config: config,
           platform: platform,
           lcovCleanCommand: lcovCleanCommand,
-          needsFormatting: needsFormatting,
         ).build(),
       ];
 }

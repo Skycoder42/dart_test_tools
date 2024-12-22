@@ -1,12 +1,9 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-
 import '../../types/expression.dart';
+import '../api/job_config.dart';
 
-mixin CoverageBuilderMixin {
-  Expression get minCoverage;
-
-  @protected
-  Expression get runCoverageExpression =>
+base mixin CoverageBuilderConfig on JobConfig {
+  late Expression minCoverage;
+  late final Expression runCoverageExpression =
       createRunCoverageExpression(minCoverage);
 
   static Expression createRunCoverageExpression(Expression minCoverage) =>

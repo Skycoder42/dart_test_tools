@@ -1,97 +1,86 @@
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
+import '../api/job_config.dart';
 import '../api/step_builder.dart';
 import '../contexts.dart';
 import 'update_overrides_builder.dart';
+
+base mixin ProjectPrepareConfig on JobConfig, UpdateOverridesConfig {
+  Expression? buildRunner;
+  Expression? buildRunnerArgs;
+  late ExpressionOrValue isFlutter;
+  bool releaseMode = false;
+  late String pubTool;
+  late String runTool;
+}
 
 class ProjectPrepareBuilder implements StepBuilder {
   static const checkGenerateStepId = StepId('checkGenerate');
   static final generateOutput = checkGenerateStepId.output('generate');
 
   final String? titleSuffix;
-  final Expression workingDirectory;
-  final Expression? artifactDependencies;
-  final Expression? buildRunner;
-  final Expression? buildRunnerArgs;
-  final ExpressionOrValue removePubspecOverrides;
-  final ExpressionOrValue isFlutter;
-  final bool releaseMode;
-  final String pubTool;
-  final String runTool;
-  final Expression? ifExpression;
+  final ProjectPrepareConfig config;
 
   const ProjectPrepareBuilder({
     this.titleSuffix,
-    required this.workingDirectory,
-    this.artifactDependencies,
-    this.buildRunner,
-    this.buildRunnerArgs,
-    this.removePubspecOverrides = const ExpressionOrValue.value(true),
-    required this.isFlutter,
-    this.releaseMode = false,
-    required this.pubTool,
-    required this.runTool,
-    this.ifExpression,
+    required this.config,
   });
 
   @override
   Iterable<Step> build() => [
         ...UpdateOverridesBuilder(
           titleSuffix: _titleSuffix,
-          workingDirectory: workingDirectory,
-          removePubspecOverrides: removePubspecOverrides,
-          artifactDependencies: artifactDependencies,
-          artifactTargetDir: const ExpressionOrValue.expression(Runner.temp),
-          ifExpression: ifExpression,
+          config: config,
+          artifactTargetDir: Runner.temp.toString(),
         ).build(),
         Step.run(
           name: 'Restore dart packages$_titleSuffix',
-          ifExpression: ifExpression,
-          run: '$pubTool get',
-          workingDirectory: workingDirectory.toString(),
+          ifExpression: config.ifExpression,
+          run: '${config.pubTool} get',
+          workingDirectory: config.workingDirectory.toString(),
         ),
         if (_couldBeFlutter) ...[
           Step.run(
             id: checkGenerateStepId,
             name: 'Check if localizations generation is required',
-            ifExpression: ifExpression != null
-                ? ifExpression! & _onlyIfFlutter
+            ifExpression: config.ifExpression != null
+                ? config.ifExpression! & _onlyIfFlutter
                 : _onlyIfFlutter,
             run: generateOutput.bashSetter(
               "yq -r '.flutter.generate // false' pubspec.yaml",
               isCommand: true,
             ),
-            workingDirectory: workingDirectory.toString(),
+            workingDirectory: config.workingDirectory.toString(),
             shell: 'bash',
           ),
           Step.run(
             name: 'Generate localization files',
             ifExpression:
                 generateOutput.expression.eq(const Expression.literal('true')) &
-                    ifExpression &
+                    config.ifExpression &
                     _onlyIfFlutter,
             run: 'flutter gen-l10n',
-            workingDirectory: workingDirectory.toString(),
+            workingDirectory: config.workingDirectory.toString(),
           ),
         ],
-        if (buildRunner != null)
+        if (config.buildRunner case final Expression buildRunner)
           Step.run(
             name: 'Create build files$_titleSuffix',
-            ifExpression: buildRunner! & ifExpression,
-            run: '$runTool build_runner build '
+            ifExpression: buildRunner & config.ifExpression,
+            run: '${config.runTool} build_runner build '
                 '$_releaseArg'
-                '${buildRunnerArgs ?? ''}',
-            workingDirectory: workingDirectory.toString(),
+                '${config.buildRunnerArgs ?? ''}',
+            workingDirectory: config.workingDirectory.toString(),
           ),
       ];
 
   String get _titleSuffix => titleSuffix != null ? ' $titleSuffix' : '';
 
-  String get _releaseArg => releaseMode ? '--release ' : '';
+  String get _releaseArg => config.releaseMode ? '--release ' : '';
 
-  bool get _couldBeFlutter => isFlutter.rawValueOr(true);
+  bool get _couldBeFlutter => config.isFlutter.rawValueOr(true);
 
   Expression? get _onlyIfFlutter =>
-      isFlutter.isExpression ? isFlutter.asExpression : null;
+      config.isFlutter.isExpression ? config.isFlutter.asExpression : null;
 }

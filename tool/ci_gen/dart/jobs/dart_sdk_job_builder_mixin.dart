@@ -3,17 +3,21 @@ import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../steps/dart_sdk_builder.dart';
 
-base mixin DartSdkJobBuilderMixin on SdkJobBuilder {
-  Expression get dartSdkVersion;
+base mixin DartSdkJobConfig on SdkJobConfig {
+  late Expression dartSdkVersion;
 
   @override
-  String get baseTool => 'dart';
+  void expand() {
+    baseTool = 'dart';
+    runTool = '$baseTool run';
+    super.expand();
+  }
+}
 
-  @override
-  String get runTool => '$baseTool run';
-
+base mixin DartSdkJobBuilderMixin<TConfig extends DartSdkJobConfig>
+    on SdkJobBuilder<TConfig> {
   @override
   Iterable<Step> buildSetupSdkSteps() => [
-        ...DartSdkBuilder(dartSdkVersion: dartSdkVersion).build(),
+        ...DartSdkBuilder(dartSdkVersion: config.dartSdkVersion).build(),
       ];
 }

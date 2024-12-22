@@ -1,17 +1,21 @@
 import '../../types/expression.dart';
 import '../../types/step.dart';
+import '../api/job_config.dart';
 import '../api/step_builder.dart';
 
+base mixin RunPublishConfig on JobConfig {
+  late Expression workingDirectory;
+  late String pubTool;
+}
+
 class RunPublishBuilder implements StepBuilder {
-  final Expression workingDirectory;
-  final String pubTool;
+  final RunPublishConfig config;
   final String publishStepName;
-  final String publishArgs;
-  final Expression? ifExpression;
+  late String publishArgs;
+  Expression? ifExpression;
 
   RunPublishBuilder({
-    required this.workingDirectory,
-    required this.pubTool,
+    required this.config,
     required this.publishStepName,
     required this.publishArgs,
     this.ifExpression,
@@ -22,8 +26,8 @@ class RunPublishBuilder implements StepBuilder {
         Step.run(
           name: publishStepName,
           ifExpression: ifExpression,
-          run: '$pubTool publish $publishArgs',
-          workingDirectory: workingDirectory.toString(),
+          run: '${config.pubTool} publish $publishArgs',
+          workingDirectory: config.workingDirectory.toString(),
         ),
       ];
 }

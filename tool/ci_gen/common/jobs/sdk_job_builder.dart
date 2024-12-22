@@ -1,22 +1,23 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../api/job_builder.dart';
+import '../api/job_config.dart';
 
-abstract base class SdkJobBuilder implements JobBuilder {
-  const SdkJobBuilder();
+base mixin SdkJobConfig on JobConfig {
+  ExpressionOrValue isFlutter = const ExpressionOrValue.value(false);
+  late String baseTool;
+  late String pubTool = '$baseTool pub';
+  late String runTool = '$pubTool run';
+}
 
+abstract base class SdkJobBuilder<TConfig extends SdkJobConfig>
+    implements JobBuilder {
   @protected
-  bool get isFlutter => false;
+  final TConfig config;
 
-  @protected
-  String get baseTool;
-
-  @protected
-  String get pubTool => '$baseTool pub';
-
-  @protected
-  String get runTool => '$pubTool run';
+  const SdkJobBuilder({required this.config});
 
   @protected
   Iterable<Step> buildSetupSdkSteps();

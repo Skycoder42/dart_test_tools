@@ -338,6 +338,16 @@ Example:
     ),
   );
 
+  static const localResolution = WorkflowInput(
+    name: 'localResolution',
+    input: Input(
+      type: Type.boolean,
+      required: false,
+      defaultValue: true,
+      description: 'Disables workspaces if set to true (the default).',
+    ),
+  );
+
   static const enabledPlatforms = WorkflowInput(
     name: 'enabledPlatforms',
     input: Input(

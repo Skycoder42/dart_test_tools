@@ -3,40 +3,26 @@ import 'dart:io';
 
 import 'package:yaml_writer/yaml_writer.dart';
 
-import 'ci_gen/aur/aur_workflow.dart';
 import 'ci_gen/common/api/workflow_builder.dart';
-import 'ci_gen/compile/compile_workflow.dart';
 import 'ci_gen/dart/dart_workflow.dart';
-import 'ci_gen/deb/deb_workflow.dart';
-import 'ci_gen/deploy/android/build_android_workflow.dart';
-import 'ci_gen/deploy/deploy_workflow.dart';
-import 'ci_gen/deploy/linux/build_linux_workflow.dart';
-import 'ci_gen/deploy/macos/build_macos_workflow.dart';
-import 'ci_gen/deploy/web/build_web_workflow.dart';
-import 'ci_gen/deploy/windows/build_windows_workflow.dart';
-import 'ci_gen/docker/docker_workflow.dart';
-import 'ci_gen/flutter/flutter_workflow.dart';
-import 'ci_gen/package/package_workflow.dart';
-import 'ci_gen/publish/publish_workflow.dart';
-import 'ci_gen/release/release_workflow.dart';
 
 Future<void> main() async {
   const workflows = [
     DartWorkflow(),
-    FlutterWorkflow(),
-    ReleaseWorkflow(),
-    PublishWorkflow(),
-    CompileWorkflow(),
-    PackageWorkflow(),
-    AurWorkflow(),
-    DebWorkflow(),
-    DockerWorkflow(),
-    DeployWorkflow(),
-    BuildAndroidWorkflow(),
-    BuildLinuxWorkflow(),
-    BuildMacosWorkflow(),
-    BuildWindowsWorkflow(),
-    BuildWebWorkflow(),
+    // FlutterWorkflow(),
+    // ReleaseWorkflow(),
+    // PublishWorkflow(),
+    // CompileWorkflow(),
+    // PackageWorkflow(),
+    // AurWorkflow(),
+    // DebWorkflow(),
+    // DockerWorkflow(),
+    // DeployWorkflow(),
+    // BuildAndroidWorkflow(),
+    // BuildLinuxWorkflow(),
+    // BuildMacosWorkflow(),
+    // BuildWindowsWorkflow(),
+    // BuildWebWorkflow(),
   ];
 
   for (final workflow in workflows) {

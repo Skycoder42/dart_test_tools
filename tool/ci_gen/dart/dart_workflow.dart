@@ -26,15 +26,18 @@ class DartWorkflow implements WorkflowBuilder {
     final outputContext = WorkflowOutputContext();
 
     final analyzeJobBuilder = DartAnalyzeJobBuilder(
-      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
-      buildRunner: inputContext(WorkflowInputs.buildRunner),
-      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-      removePubspecOverrides:
-          inputContext(WorkflowInputs.removePubspecOverrides),
-      analyzeImage: inputContext(WorkflowInputs.analyzeImage),
-      panaScoreThreshold: inputContext(WorkflowInputs.panaScoreThreshold),
+      config: DartAnalyzeJobConfig(
+        dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+        buildRunner: inputContext(WorkflowInputs.buildRunner),
+        buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+        removePubspecOverrides:
+            inputContext(WorkflowInputs.removePubspecOverrides),
+        localResolution: inputContext(WorkflowInputs.localResolution),
+        analyzeImage: inputContext(WorkflowInputs.analyzeImage),
+        panaScoreThreshold: inputContext(WorkflowInputs.panaScoreThreshold),
+      ),
     );
     outputContext.add(
       WorkflowOutputs.enabledPlatforms,
@@ -43,40 +46,48 @@ class DartWorkflow implements WorkflowBuilder {
 
     final unitTestBuilder = DartUnitTestJobBuilder(
       enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
-      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
-      buildRunner: inputContext(WorkflowInputs.buildRunner),
-      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-      removePubspecOverrides:
-          inputContext(WorkflowInputs.removePubspecOverrides),
-      unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
-      minCoverage: inputContext(WorkflowInputs.minCoverage),
+      config: DartUnitTestJobConfig(
+        dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+        buildRunner: inputContext(WorkflowInputs.buildRunner),
+        buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+        removePubspecOverrides:
+            inputContext(WorkflowInputs.removePubspecOverrides),
+        localResolution: inputContext(WorkflowInputs.localResolution),
+        unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
+        minCoverage: inputContext(WorkflowInputs.minCoverage),
+      ),
     );
 
     final validateCoverageBuilder = ValidateCoverageJobBuilder(
       unitTestJobId: unitTestBuilder.id,
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
-      minCoverage: inputContext(WorkflowInputs.minCoverage),
-      coverageExclude: inputContext(WorkflowInputs.coverageExclude),
+      config: ValidateCoverageJobConfig(
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
+        minCoverage: inputContext(WorkflowInputs.minCoverage),
+        coverageExclude: inputContext(WorkflowInputs.coverageExclude),
+      ),
     );
 
     final integrationTestBuilder = DartIntegrationTestJobBuilder(
       enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
-      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
-      buildRunner: inputContext(WorkflowInputs.buildRunner),
-      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-      removePubspecOverrides:
-          inputContext(WorkflowInputs.removePubspecOverrides),
-      integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
-      integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
-      integrationTestEnvVars:
-          secretContext(WorkflowSecrets.integrationTestEnvVars),
-      integrationTestCacheConfig:
-          inputContext(WorkflowInputs.integrationTestCacheConfig),
+      config: DartIntegrationTestJobConfig(
+        dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+        buildRunner: inputContext(WorkflowInputs.buildRunner),
+        buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+        removePubspecOverrides:
+            inputContext(WorkflowInputs.removePubspecOverrides),
+        localResolution: inputContext(WorkflowInputs.localResolution),
+        integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
+        integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
+        integrationTestEnvVars:
+            secretContext(WorkflowSecrets.integrationTestEnvVars),
+        integrationTestCacheConfig:
+            inputContext(WorkflowInputs.integrationTestCacheConfig),
+      ),
     );
 
     return Workflow(

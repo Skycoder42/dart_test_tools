@@ -2,37 +2,37 @@ import '../../dart/steps/dart_sdk_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
+import '../api/job_config.dart';
 import '../api/step_builder.dart';
 import '../tools.dart';
 import 'checkout_builder.dart';
 import 'release_entry_builder.dart';
+
+base mixin TagReleaseConfig on JobConfig, ReleaseEntryConfig {
+  late Expression dartSdkVersion;
+  late Expression persistCredentials;
+  String? binaryArtifactsPattern;
+}
 
 class TagReleaseBuilder implements StepBuilder {
   static const versionStepId = StepId('version');
   static final updateOutput = versionStepId.output('update');
   static final versionOutput = versionStepId.output('version');
 
-  final Expression dartSdkVersion;
-  final Expression workingDirectory;
-  final Expression tagPrefix;
-  final Expression persistCredentials;
-  final String? binaryArtifactsPattern;
+  final TagReleaseConfig config;
 
   const TagReleaseBuilder({
-    required this.dartSdkVersion,
-    required this.workingDirectory,
-    required this.tagPrefix,
-    required this.persistCredentials,
-    required this.binaryArtifactsPattern,
+    required this.config,
   });
 
   @override
   Iterable<Step> build() => [
         ...DartSdkBuilder(
-          dartSdkVersion: dartSdkVersion,
+          dartSdkVersion: config.dartSdkVersion,
         ).build(),
         ...CheckoutBuilder(
-          persistCredentials: ExpressionOrValue.expression(persistCredentials),
+          persistCredentials:
+              ExpressionOrValue.expression(config.persistCredentials),
         ).build(),
         Step.run(
           id: versionStepId,
@@ -41,7 +41,7 @@ class TagReleaseBuilder implements StepBuilder {
 set -eo pipefail
 package_version=\$(cat pubspec.yaml | yq e ".version" -)
 git fetch --tags > /dev/null
-tag_exists=\$(git tag -l "$tagPrefix\$package_version")
+tag_exists=\$(git tag -l "${config.tagPrefix}\$package_version")
 
 if [[ -z "\$tag_exists" ]]; then
   echo Release does not exist yet - creating release
@@ -52,9 +52,10 @@ else
   ${updateOutput.bashSetter('false')}
 fi
 ''',
-          workingDirectory: workingDirectory.toString(),
+          workingDirectory: config.workingDirectory.toString(),
         ),
-        if (binaryArtifactsPattern != null)
+        if (config.binaryArtifactsPattern
+            case final String binaryArtifactsPattern)
           Step.uses(
             name: 'Download all binary artifacts',
             ifExpression:
@@ -66,11 +67,10 @@ fi
             },
           ),
         ...ReleaseEntryBuilder(
-          workingDirectory: workingDirectory,
-          tagPrefix: tagPrefix,
+          config: config,
           versionUpdate: updateOutput.expression,
-          files: binaryArtifactsPattern != null
-              ? 'artifacts/$binaryArtifactsPattern/*'
+          files: config.binaryArtifactsPattern != null
+              ? 'artifacts/${config.binaryArtifactsPattern}/*'
               : null,
         ).build(),
       ];

@@ -80,6 +80,7 @@ class CompileBuilder implements StepBuilder {
   final Expression buildRunner;
   final Expression buildRunnerArgs;
   final Expression removePubspecOverrides;
+  final Expression localResolution;
   final Expression archivePrefix;
   final PlatformMatrixProperty platform;
   final BinaryTypeMatrixProperty binaryType;
@@ -94,6 +95,7 @@ class CompileBuilder implements StepBuilder {
     required this.buildRunner,
     required this.buildRunnerArgs,
     required this.removePubspecOverrides,
+    required this.localResolution,
     required this.archivePrefix,
     required this.platform,
     required this.binaryType,
@@ -112,6 +114,7 @@ class CompileBuilder implements StepBuilder {
           buildRunnerArgs: buildRunnerArgs,
           removePubspecOverrides:
               ExpressionOrValue.expression(removePubspecOverrides),
+          localResolution: ExpressionOrValue.expression(localResolution),
           releaseMode: true,
           isFlutter: const ExpressionOrValue.value(false),
           pubTool: pubTool,

@@ -1,9 +1,16 @@
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
+import '../api/job_config.dart';
 import '../api/step_builder.dart';
 import '../contexts.dart';
 import '../tools.dart';
+
+base mixin ReleaseEntryConfig on JobConfig {
+  late Expression workingDirectory;
+  late Expression tagPrefix;
+  Expression? githubToken;
+}
 
 class ReleaseEntryBuilder implements StepBuilder {
   static const releaseContentStepId = StepId('release_content');
@@ -13,18 +20,14 @@ class ReleaseEntryBuilder implements StepBuilder {
   static final releaseContentBodyPath =
       releaseContentStepId.output('body_path');
 
-  final Expression workingDirectory;
-  final Expression tagPrefix;
+  final ReleaseEntryConfig config;
   final Expression versionUpdate;
-  final Expression? githubToken;
   final String? changelogExtra;
   final String? files;
 
   const ReleaseEntryBuilder({
-    required this.workingDirectory,
-    required this.tagPrefix,
+    required this.config,
     required this.versionUpdate,
-    this.githubToken,
     this.changelogExtra,
     this.files,
   });
@@ -45,7 +48,7 @@ set -e
 package_name=\$(cat pubspec.yaml | yq e ".name" -)
 package_version=\$(cat pubspec.yaml | yq e ".version" -)
 
-tag_name="$tagPrefix\$package_version"
+tag_name="${config.tagPrefix}\$package_version"
 ${releaseContentTagName.bashSetter(r'$tag_name')}
 
 release_name="Release of package \$package_name - Version \$package_version"
@@ -57,14 +60,15 @@ dart pub global run cider describe "\$package_version" >> \$version_changelog_fi
 echo "" >> \$version_changelog_file${changelogExtra != null ? '\necho "$changelogExtra" >> \$version_changelog_file' : ''}
 ${releaseContentBodyPath.bashSetter(r'$version_changelog_file')}
 ''',
-          workingDirectory: workingDirectory.toString(),
+          workingDirectory: config.workingDirectory.toString(),
         ),
         Step.uses(
           name: 'Create Release',
           ifExpression: versionUpdate.eq(const Expression.literal('true')),
           uses: Tools.softpropsActionGhRelease,
           withArgs: <String, dynamic>{
-            if (githubToken != null) 'token': githubToken.toString(),
+            if (config.githubToken case final Expression token)
+              'token': token.toString(),
             'tag_name': releaseContentTagName.expression.toString(),
             'name': releaseContentReleaseName.expression.toString(),
             'body_path': releaseContentBodyPath.expression.toString(),

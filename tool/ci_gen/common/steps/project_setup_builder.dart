@@ -1,33 +1,20 @@
 import '../../types/expression.dart';
 import '../../types/step.dart';
+import '../api/job_config.dart';
 import '../api/step_builder.dart';
 import '../contexts.dart';
 import 'checkout_builder.dart';
 import 'project_prepare_builder.dart';
 
+base mixin ProjectSetupConfig on JobConfig, ProjectPrepareConfig {
+  bool skipYqInstall = false;
+}
+
 class ProjectSetupBuilder implements StepBuilder {
-  final Expression workingDirectory;
-  final Expression? artifactDependencies;
-  final Expression buildRunner;
-  final Expression buildRunnerArgs;
-  final ExpressionOrValue removePubspecOverrides;
-  final ExpressionOrValue isFlutter;
-  final bool releaseMode;
-  final String pubTool;
-  final String runTool;
-  final bool skipYqInstall;
+  final ProjectSetupConfig config;
 
   const ProjectSetupBuilder({
-    required this.workingDirectory,
-    this.artifactDependencies,
-    required this.buildRunner,
-    required this.buildRunnerArgs,
-    this.removePubspecOverrides = const ExpressionOrValue.value(true),
-    required this.isFlutter,
-    this.releaseMode = false,
-    required this.pubTool,
-    required this.runTool,
-    this.skipYqInstall = false,
+    required this.config,
   });
 
   @override
@@ -41,7 +28,7 @@ iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
 Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
 ''',
         ),
-        if (!skipYqInstall) ...[
+        if (!config.skipYqInstall) ...[
           Step.run(
             name: 'Install yq (Windows)',
             ifExpression: Runner.os.eq(const Expression.literal('Windows')),
@@ -57,16 +44,6 @@ echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
           ),
         ],
         ...const CheckoutBuilder().build(),
-        ...ProjectPrepareBuilder(
-          workingDirectory: workingDirectory,
-          artifactDependencies: artifactDependencies,
-          buildRunner: buildRunner,
-          buildRunnerArgs: buildRunnerArgs,
-          removePubspecOverrides: removePubspecOverrides,
-          isFlutter: isFlutter,
-          releaseMode: releaseMode,
-          pubTool: pubTool,
-          runTool: runTool,
-        ).build(),
+        ...ProjectPrepareBuilder(config: config).build(),
       ];
 }

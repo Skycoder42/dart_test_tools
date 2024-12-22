@@ -2,22 +2,34 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
 import '../api/job_builder.dart';
+import '../api/job_config.dart';
 import '../steps/coverage_builder_mixin.dart';
 import '../steps/validate_coverage_builder.dart';
 
+final class ValidateCoverageJobConfig extends JobConfig
+    with CoverageBuilderConfig, ValidateCoverageConfig {
+  final Expression unitTestPaths;
+
+  ValidateCoverageJobConfig({
+    required Expression workingDirectory,
+    required this.unitTestPaths,
+    required Expression minCoverage,
+    required Expression coverageExclude,
+  }) {
+    this.workingDirectory = workingDirectory;
+    this.minCoverage = minCoverage;
+    this.coverageExclude = coverageExclude;
+    expand();
+  }
+}
+
 class ValidateCoverageJobBuilder implements JobBuilder {
   final JobId unitTestJobId;
-  final Expression workingDirectory;
-  final Expression unitTestPaths;
-  final Expression minCoverage;
-  final Expression coverageExclude;
+  final ValidateCoverageJobConfig config;
 
   ValidateCoverageJobBuilder({
     required this.unitTestJobId,
-    required this.workingDirectory,
-    required this.unitTestPaths,
-    required this.minCoverage,
-    required this.coverageExclude,
+    required this.config,
   });
 
   @override
@@ -26,20 +38,16 @@ class ValidateCoverageJobBuilder implements JobBuilder {
   @override
   Job build() => Job(
         name: 'Validate coverage',
-        ifExpression: CoverageBuilderMixin.createRunCoverageExpression(
-              minCoverage,
+        ifExpression: CoverageBuilderConfig.createRunCoverageExpression(
+              config.minCoverage,
             ) &
-            (unitTestPaths.ne(Expression.empty)),
+            (config.unitTestPaths.ne(Expression.empty)),
         needs: {
           unitTestJobId,
         },
         runsOn: 'ubuntu-latest',
         steps: [
-          ...ValidateCoverageBuilder(
-            workingDirectory: workingDirectory,
-            minCoverage: minCoverage,
-            coverageExclude: coverageExclude,
-          ).build(),
+          ...ValidateCoverageBuilder(config: config).build(),
         ],
       );
 }
