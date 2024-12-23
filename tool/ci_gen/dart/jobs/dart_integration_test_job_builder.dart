@@ -14,11 +14,11 @@ import 'dart_sdk_job_builder_mixin.dart';
 
 final class DartIntegrationTestJobConfig extends JobConfig
     with
+        SdkJobConfig,
         UpdateOverridesConfig,
         ProjectPrepareConfig,
         ProjectSetupConfig,
         DartIntegrationTestConfig,
-        SdkJobConfig,
         DartSdkJobConfig {
   DartIntegrationTestJobConfig({
     required Expression dartSdkVersion,

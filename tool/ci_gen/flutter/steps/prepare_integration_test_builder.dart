@@ -1,5 +1,6 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/jobs/sdk_job_builder.dart';
 import '../../common/steps/cache_builder.dart';
 import '../../common/steps/project_prepare_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
@@ -12,7 +13,6 @@ base mixin PrepareIntegrationTestConfig on ProjectSetupConfig {
   late Expression integrationTestSetup;
   late Expression integrationTestProject;
   late Expression integrationTestCacheConfig;
-  late String baseTool;
 
   String get integrationTestWorkingDirectory =>
       '$workingDirectory/$integrationTestProject';
@@ -25,7 +25,7 @@ base mixin PrepareIntegrationTestConfig on ProjectSetupConfig {
 }
 
 final class _TestProjectConfig extends JobConfig
-    with UpdateOverridesConfig, ProjectPrepareConfig {
+    with SdkJobConfig, UpdateOverridesConfig, ProjectPrepareConfig {
   _TestProjectConfig(PrepareIntegrationTestConfig baseConfig) {
     workingDirectory = Expression.fake(
       '${baseConfig.workingDirectory}/${baseConfig.integrationTestProject}',
@@ -33,6 +33,7 @@ final class _TestProjectConfig extends JobConfig
     removePubspecOverrides = baseConfig.removePubspecOverrides;
     localResolution = const ExpressionOrValue.value(false);
     isFlutter = const ExpressionOrValue.value(false);
+    baseTool = baseConfig.baseTool;
     pubTool = baseConfig.pubTool;
     runTool = baseConfig.runTool;
     ifExpression = baseConfig.integrationTestProject.ne(Expression.empty);

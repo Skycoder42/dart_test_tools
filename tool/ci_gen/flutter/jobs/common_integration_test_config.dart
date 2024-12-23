@@ -14,12 +14,12 @@ base mixin CommonIntegrationTestConfig
 
 base class CommonIntegrationTestJobConfig extends JobConfig
     with
+        SdkJobConfig,
         UpdateOverridesConfig,
         ProjectPrepareConfig,
         ProjectSetupConfig,
         PrepareIntegrationTestConfig,
         CommonIntegrationTestConfig,
-        SdkJobConfig,
         FlutterSdkJobConfig {
   CommonIntegrationTestJobConfig({
     required Expression flutterSdkChannel,

@@ -4,15 +4,14 @@ import '../../types/step.dart';
 import '../api/job_config.dart';
 import '../api/step_builder.dart';
 import '../contexts.dart';
+import '../jobs/sdk_job_builder.dart';
 import 'update_overrides_builder.dart';
 
-base mixin ProjectPrepareConfig on JobConfig, UpdateOverridesConfig {
+base mixin ProjectPrepareConfig
+    on JobConfig, SdkJobConfig, UpdateOverridesConfig {
   Expression? buildRunner;
   Expression? buildRunnerArgs;
-  late ExpressionOrValue isFlutter;
   bool releaseMode = false;
-  late String pubTool;
-  late String runTool;
 }
 
 class ProjectPrepareBuilder implements StepBuilder {

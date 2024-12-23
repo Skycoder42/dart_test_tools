@@ -14,12 +14,12 @@ import 'sdk_job_builder.dart';
 
 base class AnalyzeJobConfig extends JobConfig
     with
+        SdkJobConfig,
         UpdateOverridesConfig,
         ProjectPrepareConfig,
         ProjectSetupConfig,
         RunPublishConfig,
-        AnalyzeConfig,
-        SdkJobConfig {
+        AnalyzeConfig {
   final Expression analyzeImage;
 
   AnalyzeJobConfig({

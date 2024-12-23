@@ -5,13 +5,14 @@ import '../api/job_config.dart';
 import '../api/matrix_job_builder_mixin.dart';
 import '../api/platform_matrix_job_builder_mixin.dart';
 import '../api/step_builder.dart';
+import '../jobs/sdk_job_builder.dart';
 import '../tools.dart';
 import 'coverage_builder_mixin.dart';
 
-base mixin CoverageCollectorConfig on JobConfig, CoverageBuilderConfig {
+base mixin CoverageCollectorConfig
+    on JobConfig, SdkJobConfig, CoverageBuilderConfig {
   late Expression workingDirectory;
   late bool needsFormatting;
-  late String runTool;
 }
 
 final class LcovCleanCommandMatrixProperty

@@ -14,7 +14,6 @@ base mixin DartIntegrationTestConfig on JobConfig, ProjectSetupConfig {
   late Expression integrationTestPaths;
   late Expression integrationTestEnvVars;
   late Expression integrationTestCacheConfig;
-  late String baseTool;
 }
 
 final class DartTestArgsMatrixProperty

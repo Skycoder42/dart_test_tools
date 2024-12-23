@@ -10,7 +10,6 @@ import 'project_setup_builder.dart';
 base mixin UnitTestConfig
     on JobConfig, ProjectSetupConfig, CoverageCollectorConfig {
   late Expression unitTestPaths;
-  late String baseTool;
   late String coverageArgs;
 }
 

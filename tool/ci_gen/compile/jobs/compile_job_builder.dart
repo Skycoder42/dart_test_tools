@@ -14,11 +14,11 @@ import '../steps/compile_builder.dart';
 
 final class CompileJobConfig extends JobConfig
     with
+        SdkJobConfig,
         UpdateOverridesConfig,
         ProjectPrepareConfig,
         ProjectSetupConfig,
         CompileConfig,
-        SdkJobConfig,
         DartSdkJobConfig {
   CompileJobConfig({
     required Expression dartSdkVersion,

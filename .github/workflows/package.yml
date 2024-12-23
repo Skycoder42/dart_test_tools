@@ -80,6 +80,13 @@ jobs:
           done
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
+      - name: Switch to local resolution
+        run: |
+          set -eo pipefail
+          touch pubspec_overrides.yaml
+          yq -i '.resolution=null' pubspec_overrides.yaml
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Restore dart packages
         run: dart pub get
         working-directory: ${{ inputs.workingDirectory }}

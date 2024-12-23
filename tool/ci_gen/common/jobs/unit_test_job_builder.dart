@@ -14,13 +14,13 @@ import 'sdk_job_builder.dart';
 
 base class UnitTestJobConfig extends JobConfig
     with
+        SdkJobConfig,
         UpdateOverridesConfig,
         ProjectPrepareConfig,
         ProjectSetupConfig,
         CoverageBuilderConfig,
         CoverageCollectorConfig,
-        UnitTestConfig,
-        SdkJobConfig {
+        UnitTestConfig {
   UnitTestJobConfig({
     required Expression workingDirectory,
     required Expression artifactDependencies,

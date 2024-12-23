@@ -8,7 +8,6 @@ import 'run_publish_builder.dart';
 
 base mixin AnalyzeConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
   late Expression panaScoreThreshold;
-  late String baseTool;
 }
 
 class AnalyzeBuilder implements StepBuilder {

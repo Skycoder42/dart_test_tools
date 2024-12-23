@@ -17,13 +17,15 @@ class PackageWorkflow implements WorkflowBuilder {
     final inputContext = WorkflowInputContext();
 
     final packageJobBuilder = PackageJobBuilder(
-      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
-      buildRunner: inputContext(WorkflowInputs.buildRunner),
-      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-      removePubspecOverrides:
-          inputContext(WorkflowInputs.removePubspecOverrides),
+      config: PackageJobConfig(
+        dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+        buildRunner: inputContext(WorkflowInputs.buildRunner),
+        buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+        removePubspecOverrides:
+            inputContext(WorkflowInputs.removePubspecOverrides),
+      ),
     );
 
     return Workflow(
