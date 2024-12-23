@@ -1,15 +1,19 @@
+import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/tools.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
+base mixin PackagecloudUploadConfig on JobConfig {
+  late Expression repository;
+  late Expression packagecloudToken;
+}
+
 class PackagecloudUploadBuilder implements StepBuilder {
-  final Expression repository;
-  final Expression packagecloudToken;
+  final PackagecloudUploadConfig config;
 
   const PackagecloudUploadBuilder({
-    required this.repository,
-    required this.packagecloudToken,
+    required this.config,
   });
 
   @override
@@ -26,10 +30,10 @@ class PackagecloudUploadBuilder implements StepBuilder {
           name: 'Upload debian package to packagecloud',
           uses: Tools.lpenzGhactionPackagecloud,
           withArgs: {
-            'repository': repository.toString(),
+            'repository': config.repository.toString(),
           },
           env: {
-            'PACKAGECLOUD_TOKEN': packagecloudToken.toString(),
+            'PACKAGECLOUD_TOKEN': config.packagecloudToken.toString(),
           },
         ),
       ];

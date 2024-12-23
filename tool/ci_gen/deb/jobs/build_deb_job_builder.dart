@@ -1,4 +1,5 @@
 import '../../common/api/job_builder.dart';
+import '../../common/api/job_config.dart';
 import '../../common/steps/checkout_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
@@ -6,11 +7,20 @@ import '../../types/job.dart';
 import '../steps/makedeb_builder.dart';
 import '../steps/prepare_deb_builder.dart';
 
+final class BuildDebJobConfig extends JobConfig with MakedebConfig {
+  BuildDebJobConfig({
+    required Expression workingDirectory,
+  }) {
+    this.workingDirectory = workingDirectory;
+    expand();
+  }
+}
+
 class BuildDebJobBuilder implements JobBuilder {
-  final Expression workingDirectory;
+  final BuildDebJobConfig config;
 
   const BuildDebJobBuilder({
-    required this.workingDirectory,
+    required this.config,
   });
 
   @override
@@ -25,9 +35,7 @@ class BuildDebJobBuilder implements JobBuilder {
           ...const CheckoutBuilder(
             path: 'src',
           ).build(),
-          ...MakedebBuilder(
-            workingDirectory: workingDirectory,
-          ).build(),
+          ...MakedebBuilder(config: config).build(),
         ],
       );
 }

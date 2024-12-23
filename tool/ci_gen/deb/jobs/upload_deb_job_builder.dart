@@ -1,19 +1,29 @@
 import '../../common/api/job_builder.dart';
+import '../../common/api/job_config.dart';
 import '../../common/environments.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
 import '../steps/packagecloud_upload_builder.dart';
 
+final class UploadDebJobConfig extends JobConfig with PackagecloudUploadConfig {
+  UploadDebJobConfig({
+    required Expression repository,
+    required Expression packagecloudToken,
+  }) {
+    this.repository = repository;
+    this.packagecloudToken = packagecloudToken;
+    expand();
+  }
+}
+
 class UploadDebJobBuilder implements JobBuilder {
   final JobId packageJobId;
-  final Expression repository;
-  final Expression packagecloudToken;
+  final UploadDebJobConfig config;
 
   const UploadDebJobBuilder({
     required this.packageJobId,
-    required this.repository,
-    required this.packagecloudToken,
+    required this.config,
   });
 
   @override
@@ -28,10 +38,7 @@ class UploadDebJobBuilder implements JobBuilder {
         },
         environment: Environments.packagecloud,
         steps: [
-          ...PackagecloudUploadBuilder(
-            repository: repository,
-            packagecloudToken: packagecloudToken,
-          ).build(),
+          ...PackagecloudUploadBuilder(config: config).build(),
         ],
       );
 }

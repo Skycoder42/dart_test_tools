@@ -1,8 +1,19 @@
+import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/tools.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
+
+base mixin DockerImageConfig on JobConfig {
+  late Expression imageName;
+  late Expression version;
+  late Expression extraTags;
+  late Expression dockerPlatforms;
+  late Expression dockerBuildArgs;
+  late Expression dockerHubUsername;
+  late Expression dockerHubToken;
+}
 
 class DockerImageBuilder implements StepBuilder {
   static const _setupBuildxId = StepId('setup-docker-buildx');
@@ -11,22 +22,10 @@ class DockerImageBuilder implements StepBuilder {
   static const _generateTags = StepId('generate-tags');
   static final _generateTagsOutput = _generateTags.output('tags');
 
-  final Expression imageName;
-  final Expression version;
-  final Expression extraTags;
-  final Expression dockerPlatforms;
-  final Expression dockerBuildArgs;
-  final Expression dockerHubUsername;
-  final Expression dockerHubToken;
+  final DockerImageConfig config;
 
   DockerImageBuilder({
-    required this.imageName,
-    required this.version,
-    required this.extraTags,
-    required this.dockerPlatforms,
-    required this.dockerBuildArgs,
-    required this.dockerHubUsername,
-    required this.dockerHubToken,
+    required this.config,
   });
 
   @override
@@ -46,37 +45,37 @@ class DockerImageBuilder implements StepBuilder {
           run: '''
 set -eo pipefail
 
-major_version=\$(cut -d. -f1 <<< '$version')
-minor_version=\$(cut -d. -f1-2 <<< '$version')
-patch_version=\$(cut -d. -f1-3 <<< '$version')
+major_version=\$(cut -d. -f1 <<< '${config.version}')
+minor_version=\$(cut -d. -f1-2 <<< '${config.version}')
+patch_version=\$(cut -d. -f1-3 <<< '${config.version}')
 
 image_versions+=( latest "v\${major_version}" "v\${minor_version}" "v\${patch_version}" )
-if [ '$version' != "\$patch_version"  ]; then
-  image_versions+=( 'v$version' )
+if [ '${config.version}' != "\$patch_version"  ]; then
+  image_versions+=( 'v${config.version}' )
 fi
 
-image_versions+=( $extraTags )
+image_versions+=( ${config.extraTags} )
 
-${_generateTagsOutput.bashSetterMultiLine('''printf '$imageName:%s\\n' "\${image_versions[@]}"''', isCommand: true)}
+${_generateTagsOutput.bashSetterMultiLine('''printf '${config.imageName}:%s\\n' "\${image_versions[@]}"''', isCommand: true)}
 ''',
         ),
         Step.uses(
           name: 'Login to Docker Hub',
           uses: Tools.dockerLoginAction,
           withArgs: <String, dynamic>{
-            'username': dockerHubUsername.toString(),
-            'password': dockerHubToken.toString(),
+            'username': config.dockerHubUsername.toString(),
+            'password': config.dockerHubToken.toString(),
           },
         ),
         Step.uses(
           name: 'Build and push image',
           uses: Tools.dockerBuildAndPushAction,
           withArgs: <String, dynamic>{
-            'platforms':
-                (dockerPlatforms.ne(Expression.empty) & dockerPlatforms |
-                        _buildxPlatformsOutput.expression)
-                    .toString(),
-            'build-args': dockerBuildArgs.toString(),
+            'platforms': (config.dockerPlatforms.ne(Expression.empty) &
+                        config.dockerPlatforms |
+                    _buildxPlatformsOutput.expression)
+                .toString(),
+            'build-args': config.dockerBuildArgs.toString(),
             'tags': _generateTagsOutput.expression.toString(),
             'pull': true,
             'sbom': true,

@@ -1,13 +1,18 @@
+import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/tools.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
+base mixin MakedebConfig on JobConfig {
+  late Expression workingDirectory;
+}
+
 class MakedebBuilder implements StepBuilder {
-  final Expression workingDirectory;
+  final MakedebConfig config;
 
   const MakedebBuilder({
-    required this.workingDirectory,
+    required this.config,
   });
 
   @override
@@ -19,7 +24,7 @@ class MakedebBuilder implements StepBuilder {
         Step.run(
           name: 'Generate PKGBUILD from dart package',
           run: 'dart pub global run dart_test_tools:generate_pkgbuild '
-              '--input src/$workingDirectory --output deb --makedeb',
+              '--input src/${config.workingDirectory} --output deb --makedeb',
         ),
         const Step.run(
           name: 'Update source checksums',

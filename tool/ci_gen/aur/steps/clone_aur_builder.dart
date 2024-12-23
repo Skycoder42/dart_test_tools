@@ -1,7 +1,12 @@
+import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/contexts.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
+
+base mixin CloneAurConfig on JobConfig {
+  late Expression aurSshPrivateKey;
+}
 
 class CloneAurBuilder implements StepBuilder {
   static const aurHostKeys = {
@@ -13,10 +18,10 @@ class CloneAurBuilder implements StepBuilder {
         'AAAAB3NzaC1yc2EAAAADAQABAAABgQDKF9vAFWdgm9Bi8uc+tYRBmXASBb5cB5iZsB7LOWWFeBrLp3r14w0/9S2vozjgqY5sJLDPONWoTTaVTbhe3vwO8CBKZTEt1AcWxuXNlRnk9FliR1/eNB9uz/7y1R0+c1Md+P98AJJSJWKN12nqIDIhjl2S1vOUvm7FNY43fU2knIhEbHybhwWeg+0wxpKwcAd/JeL5i92Uv03MYftOToUijd1pqyVFdJvQFhqD4v3M157jxS5FTOBrccAEjT+zYmFyD8WvKUa9vUclRddNllmBJdy4NyLB8SvVZULUPrP3QOlmzemeKracTlVOUG1wsDbxknF1BwSCU7CmU6UFP90kpWIyz66bP0bl67QAvlIc52Yix7pKJPbw85+zykvnfl2mdROsaT8p8R9nwCdFsBc9IiD0NhPEHcyHRwB8fokXTajk2QnGhL+zP5KnkmXnyQYOCUYo3EKMXIlVOVbPDgRYYT/XqvBuzq5S9rrU70KoI/S5lDnFfx/+lPLdtcnnEPk=',
   };
 
-  final Expression aurSshPrivateKey;
+  final CloneAurConfig config;
 
   const CloneAurBuilder({
-    required this.aurSshPrivateKey,
+    required this.config,
   });
 
   @override
@@ -51,7 +56,7 @@ git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
 set -eo pipefail
 
 mkdir -p '${Runner.temp}'
-echo '$aurSshPrivateKey' > '${Runner.temp}/ssh-key'
+echo '${config.aurSshPrivateKey}' > '${Runner.temp}/ssh-key'
 chmod 600 '${Runner.temp}/ssh-key'
 
 echo 'Host aur.archlinux.org' > /etc/ssh/ssh_config

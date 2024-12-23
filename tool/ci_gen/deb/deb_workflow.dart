@@ -21,13 +21,17 @@ class DebWorkflow implements WorkflowBuilder {
     final secretContext = WorkflowSecretContext();
 
     final debDeployJobBuilder = BuildDebJobBuilder(
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      config: BuildDebJobConfig(
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+      ),
     );
 
     final packagecloudUploadJobBuilder = UploadDebJobBuilder(
       packageJobId: debDeployJobBuilder.id,
-      repository: inputContext(WorkflowInputs.packagecloudRepository),
-      packagecloudToken: secretContext(WorkflowSecrets.packagecloudToken),
+      config: UploadDebJobConfig(
+        repository: inputContext(WorkflowInputs.packagecloudRepository),
+        packagecloudToken: secretContext(WorkflowSecrets.packagecloudToken),
+      ),
     );
 
     return Workflow(

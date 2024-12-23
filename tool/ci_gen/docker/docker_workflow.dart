@@ -20,13 +20,15 @@ class DockerWorkflow implements WorkflowBuilder {
     final secretContext = WorkflowSecretContext();
 
     final dockerJobBuilder = DockerJobBuilder(
-      imageName: inputContext(WorkflowInputs.imageName),
-      version: inputContext(WorkflowInputs.version),
-      extraTags: inputContext(WorkflowInputs.extraTags),
-      dockerPlatforms: inputContext(WorkflowInputs.dockerPlatforms),
-      dockerBuildArgs: inputContext(WorkflowInputs.dockerBuildArgs),
-      dockerHubUsername: secretContext(WorkflowSecrets.dockerHubUsername),
-      dockerHubToken: secretContext(WorkflowSecrets.dockerHubToken),
+      config: DockerJobConfig(
+        imageName: inputContext(WorkflowInputs.imageName),
+        version: inputContext(WorkflowInputs.version),
+        extraTags: inputContext(WorkflowInputs.extraTags),
+        dockerPlatforms: inputContext(WorkflowInputs.dockerPlatforms),
+        dockerBuildArgs: inputContext(WorkflowInputs.dockerBuildArgs),
+        dockerHubUsername: secretContext(WorkflowSecrets.dockerHubUsername),
+        dockerHubToken: secretContext(WorkflowSecrets.dockerHubToken),
+      ),
     );
 
     return Workflow(

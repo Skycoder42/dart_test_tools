@@ -4,6 +4,7 @@
     "jedisct",
     "makedeb",
     "minisign",
+    "packagecloud",
     "pana",
     "pkgbuild"
   ]

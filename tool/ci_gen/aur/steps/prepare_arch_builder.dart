@@ -1,14 +1,19 @@
+import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/steps/install_dart_test_tools_builder.dart';
 import '../../dart/steps/dart_sdk_builder.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
+base mixin PrepareArchConfig on JobConfig {
+  late Expression dartSdkVersion;
+}
+
 class PrepareArchBuilder implements StepBuilder {
-  final Expression dartSdkVersion;
+  final PrepareArchConfig config;
 
   const PrepareArchBuilder({
-    required this.dartSdkVersion,
+    required this.config,
   });
 
   @override
@@ -19,7 +24,7 @@ class PrepareArchBuilder implements StepBuilder {
               'git openssh go-yq pacman-contrib namcap unzip',
         ),
         ...DartSdkBuilder(
-          dartSdkVersion: dartSdkVersion,
+          dartSdkVersion: config.dartSdkVersion,
         ).build(),
         ...const InstallDartTestToolsBuilder().build(),
         const Step.run(

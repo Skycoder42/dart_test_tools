@@ -20,8 +20,10 @@ class AurWorkflow implements WorkflowBuilder {
     final secretContext = WorkflowSecretContext();
 
     final aurDeployJobBuilder = AurDeployJobBuilder(
-      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-      aurSshPrivateKey: secretContext(WorkflowSecrets.aurSshPrivateKey),
+      config: AurDeployJobConfig(
+        dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+        aurSshPrivateKey: secretContext(WorkflowSecrets.aurSshPrivateKey),
+      ),
     );
 
     return Workflow(

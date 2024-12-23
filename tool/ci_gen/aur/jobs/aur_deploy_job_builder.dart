@@ -1,4 +1,5 @@
 import '../../common/api/job_builder.dart';
+import '../../common/api/job_config.dart';
 import '../../common/steps/checkout_builder.dart';
 import '../../types/container.dart';
 import '../../types/expression.dart';
@@ -9,13 +10,23 @@ import '../steps/create_aur_package_builder.dart';
 import '../steps/prepare_arch_builder.dart';
 import '../steps/push_aur_builder.dart';
 
+final class AurDeployJobConfig extends JobConfig
+    with CloneAurConfig, PrepareArchConfig {
+  AurDeployJobConfig({
+    required Expression dartSdkVersion,
+    required Expression aurSshPrivateKey,
+  }) {
+    this.dartSdkVersion = dartSdkVersion;
+    this.aurSshPrivateKey = aurSshPrivateKey;
+    expand();
+  }
+}
+
 class AurDeployJobBuilder implements JobBuilder {
-  final Expression dartSdkVersion;
-  final Expression aurSshPrivateKey;
+  final AurDeployJobConfig config;
 
   const AurDeployJobBuilder({
-    required this.dartSdkVersion,
-    required this.aurSshPrivateKey,
+    required this.config,
   });
 
   @override
@@ -27,15 +38,11 @@ class AurDeployJobBuilder implements JobBuilder {
         runsOn: 'ubuntu-latest',
         container: const Container(image: 'archlinux:base-devel'),
         steps: [
-          ...PrepareArchBuilder(
-            dartSdkVersion: dartSdkVersion,
-          ).build(),
+          ...PrepareArchBuilder(config: config).build(),
           ...const CheckoutBuilder(
             path: 'src',
           ).build(),
-          ...CloneAurBuilder(
-            aurSshPrivateKey: aurSshPrivateKey,
-          ).build(),
+          ...CloneAurBuilder(config: config).build(),
           ...const CreateAurPackageBuilder().build(),
           ...const PushAurBuilder().build(),
         ],
