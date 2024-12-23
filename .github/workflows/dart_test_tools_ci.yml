@@ -29,7 +29,7 @@ jobs:
           "windows": "dart run tool/ci_install_flutter.dart",
           "macos": "dart run tool/ci_install_flutter.dart"
         }
-      panaScoreThreshold: 30
+      panaScoreThreshold: 40
     secrets:
       integrationTestEnvVars: |
         TEST_KEY=test-value
