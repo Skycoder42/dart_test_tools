@@ -1,31 +1,26 @@
 on:
   workflow_call:
     inputs:
-      flutter:
-        type: boolean
-        required: false
-        default: false
-        description: Specifies, whether the package is a dart or a flutter package.
-      dartSdkVersion:
-        type: string
-        required: false
-        default: stable
-        description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
-      flutterSdkChannel:
-        type: string
-        required: false
-        default: stable
-        description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action".
-      javaJdkVersion:
-        type: number
-        required: false
-        default: 21
-        description: The Java-SDK version (mayor only). Passed as "java-version" to "actions/setup-java".
       tagPrefix:
         type: string
         required: false
         default: v
         description: The prefix of git tags. The tag is the prefix, followed by the package version.
+      dartSdkVersion:
+        type: string
+        required: false
+        default: stable
+        description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
+      flutter:
+        type: boolean
+        required: false
+        default: false
+        description: Specifies, whether the package is a dart or a flutter package.
+      flutterSdkChannel:
+        type: string
+        required: false
+        default: stable
+        description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action".
       workingDirectory:
         type: string
         required: false
@@ -40,10 +35,6 @@ on:
         type: string
         required: false
         description: Optional additional arguments to be passed to the build runner.
-      prePublish:
-        type: string
-        required: false
-        description: A command to be run before publishing the package
       extraArtifacts:
         type: string
         required: false
@@ -57,6 +48,10 @@ on:
             "name": "test-artifact",
             "path": "path/to/artifact-dir"
           }
+      prePublish:
+        type: string
+        required: false
+        description: A command to be run before publishing the package
 jobs:
   publish:
     name: Publish to pub.dev

@@ -1,13 +1,13 @@
 import '../../common/api/step_builder.dart';
+import '../../common/inputs.dart';
 import '../../common/steps/checkout_builder.dart';
 import '../../common/steps/release_entry_builder.dart';
 import '../../dart/steps/dart_sdk_builder.dart';
-import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 
 base mixin ReleaseConfig on ReleaseEntryConfig {
-  late Expression dartSdkVersion;
+  late final dartSdkVersion = inputContext(WorkflowInputs.dartSdkVersion);
 }
 
 class ReleaseBuilder implements StepBuilder {

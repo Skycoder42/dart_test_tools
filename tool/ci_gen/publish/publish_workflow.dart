@@ -1,6 +1,6 @@
 import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
-import '../common/inputs.dart';
+import '../common/api/workflow_secret.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
@@ -15,31 +15,22 @@ class PublishWorkflow implements WorkflowBuilder {
   @override
   Workflow build() {
     final inputContext = WorkflowInputContext();
+    final secretContext = WorkflowSecretContext();
 
     final publishJobBuilder = PublishJobBuilder(
-      config: PublishJobConfig(
-        flutter: inputContext(WorkflowInputs.flutter),
-        dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-        flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
-        javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
-        tagPrefix: inputContext(WorkflowInputs.tagPrefix),
-        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-        buildRunner: inputContext(WorkflowInputs.buildRunner),
-        buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-        prePublish: inputContext(WorkflowInputs.prePublish),
-        extraArtifacts: inputContext(WorkflowInputs.extraArtifacts),
-      ),
+      config: PublishJobConfig(inputContext, secretContext),
     );
 
     return Workflow(
-      on: On(
-        workflowCall: WorkflowCall(
-          inputs: inputContext.createInputs(),
-        ),
-      ),
       jobs: {
         publishJobBuilder.id: publishJobBuilder.build(),
       },
+      on: On(
+        workflowCall: WorkflowCall(
+          inputs: inputContext.createInputs(),
+          secrets: secretContext.createSecrets(),
+        ),
+      ),
     );
   }
 }

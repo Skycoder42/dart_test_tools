@@ -26,7 +26,7 @@ class WorkflowInputContext {
     return Expression('inputs.${input.name}');
   }
 
-  Inputs createInputs() => {
-        for (final input in _inputs) input.name: input.input,
-      };
+  Inputs? createInputs() => _inputs.isEmpty
+      ? null
+      : {for (final input in _inputs) input.name: input.input};
 }

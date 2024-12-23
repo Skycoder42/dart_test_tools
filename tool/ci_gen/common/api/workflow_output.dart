@@ -27,5 +27,6 @@ class WorkflowOutputContext {
         ),
       );
 
-  Outputs createOutputs() => UnmodifiableMapView(_outputs);
+  Outputs? createOutputs() =>
+      _outputs.isEmpty ? null : UnmodifiableMapView(_outputs);
 }

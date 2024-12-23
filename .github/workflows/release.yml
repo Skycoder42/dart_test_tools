@@ -1,6 +1,11 @@
 on:
   workflow_call:
     inputs:
+      releaseRef:
+        type: string
+        required: false
+        default: refs/heads/main
+        description: The git ref that is allowed to publish releases.
       dartSdkVersion:
         type: string
         required: false
@@ -11,11 +16,6 @@ on:
         required: false
         default: .
         description: The root directory of the dart package to build and test.
-      releaseRef:
-        type: string
-        required: false
-        default: refs/heads/main
-        description: The git ref that is allowed to publish releases.
       tagPrefix:
         type: string
         required: false

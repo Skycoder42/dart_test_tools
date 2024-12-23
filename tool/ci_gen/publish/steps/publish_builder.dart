@@ -1,5 +1,6 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/inputs.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../common/steps/run_publish_builder.dart';
 import '../../common/tools.dart';
@@ -8,17 +9,34 @@ import '../../types/id.dart';
 import '../../types/step.dart';
 
 base mixin PublishConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
-  late Expression prePublish;
-  late Expression extraArtifacts;
+  late final prePublish = inputContext(WorkflowInputs.prePublish);
+  late final extraArtifacts = inputContext(WorkflowInputs.extraArtifacts);
 
   @override
-  void expand() {
-    skipYqInstall = true;
-    releaseMode = true;
-    pubTool = PublishBuilder.toolsPub.expression.toString();
-    runTool = PublishBuilder.toolsPubRun.expression.toString();
-    super.expand();
-  }
+  late final isFlutter =
+      ExpressionOrValue.expression(inputContext(WorkflowInputs.flutter));
+
+  @override
+  String get baseTool =>
+      throw UnsupportedError('baseTool cannot be accessed in publish workflow');
+
+  @override
+  late final pubTool = PublishBuilder.toolsPub.expression.toString();
+
+  @override
+  late final runTool = PublishBuilder.toolsPubRun.expression.toString();
+
+  @override
+  bool get skipYqInstall => true;
+
+  @override
+  ExpressionOrValue get localResolution => const ExpressionOrValue.value(false);
+
+  @override
+  bool get withBuildRunner => true;
+
+  @override
+  bool get releaseMode => true;
 }
 
 class PublishBuilder implements StepBuilder {

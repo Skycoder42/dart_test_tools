@@ -2,9 +2,7 @@ import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
 import '../common/api/workflow_output.dart';
 import '../common/api/workflow_secret.dart';
-import '../common/inputs.dart';
 import '../common/outputs.dart';
-import '../common/secrets.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
@@ -23,19 +21,16 @@ class ReleaseWorkflow implements WorkflowBuilder {
     final outputContext = WorkflowOutputContext();
 
     final releaseJobBuilder = ReleaseJobBuilder(
-      config: ReleaseJobConfig(
-        dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-        releaseRef: inputContext(WorkflowInputs.releaseRef),
-        tagPrefix: inputContext(WorkflowInputs.tagPrefix),
-        githubToken: secretContext(WorkflowSecrets.githubToken),
-      ),
+      config: ReleaseJobConfig(inputContext, secretContext),
     );
     outputContext
       ..add(WorkflowOutputs.releaseCreated, releaseJobBuilder.updateOutput)
       ..add(WorkflowOutputs.releaseVersion, releaseJobBuilder.versionOutput);
 
     return Workflow(
+      jobs: {
+        releaseJobBuilder.id: releaseJobBuilder.build(),
+      },
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
@@ -43,9 +38,6 @@ class ReleaseWorkflow implements WorkflowBuilder {
           outputs: outputContext.createOutputs(),
         ),
       ),
-      jobs: {
-        releaseJobBuilder.id: releaseJobBuilder.build(),
-      },
     );
   }
 }
