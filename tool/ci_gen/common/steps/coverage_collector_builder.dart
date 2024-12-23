@@ -50,9 +50,11 @@ class CoverageCollectorBuilder implements StepBuilder {
           Step.run(
             name: 'Convert coverage data to lcov format',
             ifExpression: config.runCoverageExpression,
-            run:
-                '${config.runTool} coverage:format_coverage --lcov --check-ignore '
-                '--in=coverage --out=coverage/lcov.info '
+            run: '${config.runTool} coverage:format_coverage '
+                '--lcov '
+                '--check-ignore '
+                '--in=coverage '
+                '--out=coverage/lcov.info '
                 '--report-on=lib',
             workingDirectory: config.workingDirectory.toString(),
           ),

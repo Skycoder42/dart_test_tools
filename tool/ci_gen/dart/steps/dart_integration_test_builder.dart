@@ -88,7 +88,8 @@ class DartIntegrationTestBuilder implements StepBuilder {
         Step.run(
           name: 'Run integration tests',
           run: '${config.baseTool} test ${dartTestArgs.expression} '
-              '--reporter github ${config.integrationTestPaths} || [ \$? = 79 ]',
+              '--reporter github ${config.integrationTestPaths} '
+              r'|| [ $? = 79 ]',
           workingDirectory: config.workingDirectory.toString(),
           shell: 'bash',
         ),
@@ -101,6 +102,7 @@ class DartIntegrationTestBuilder implements StepBuilder {
       ];
 
   Expression get _platformTestSetup => Expression(
-        'fromJSON(${config.integrationTestSetup.value})[${platform.expression.value}]',
+        'fromJSON(${config.integrationTestSetup.value})'
+        '[${platform.expression.value}]',
       );
 }
