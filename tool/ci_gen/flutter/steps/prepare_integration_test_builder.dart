@@ -20,9 +20,6 @@ base mixin PrepareIntegrationTestConfig on ProjectSetupConfig {
       inputContext(WorkflowInputs.integrationTestCacheConfig);
 
   @override
-  bool get withBuildRunner => true;
-
-  @override
   late final removePubspecOverrides = ExpressionOrValue.expression(
     inputContext(WorkflowInputs.removePubspecOverrides),
   );

@@ -1,6 +1,7 @@
 import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
 import '../common/api/workflow_output.dart';
+import '../common/api/workflow_secret.dart';
 import '../common/inputs.dart';
 import '../common/jobs/tag_release_job_builder.dart';
 import '../common/outputs.dart';
@@ -18,31 +19,19 @@ class CompileWorkflow implements WorkflowBuilder {
   @override
   Workflow build() {
     final inputContext = WorkflowInputContext();
+    final secretContext = WorkflowSecretContext();
     final outputContext = WorkflowOutputContext();
 
     final compileJobBuilder = CompileJobBuilder(
       enabledPlatforms: inputContext(WorkflowInputs.enabledPlatforms),
-      config: CompileJobConfig(
-        dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-        artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
-        buildRunner: inputContext(WorkflowInputs.buildRunner),
-        buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-        removePubspecOverrides:
-            inputContext(WorkflowInputs.removePubspecOverrides),
-        localResolution: inputContext(WorkflowInputs.localResolution),
-        archivePrefix: inputContext(WorkflowInputs.archivePrefix),
-      ),
+      config: CompileJobConfig(inputContext, secretContext),
     );
 
     final releaseJobBuilder = TagReleaseJobBuilder(
       compileJobIds: {compileJobBuilder.id},
       config: TagReleaseJobConfig(
-        releaseRef: inputContext(WorkflowInputs.releaseRef),
-        dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-        tagPrefix: inputContext(WorkflowInputs.tagPrefix),
-        persistCredentials: inputContext(WorkflowInputs.persistCredentials),
+        inputContext,
+        secretContext,
         binaryArtifactsPattern:
             '${inputContext(WorkflowInputs.archivePrefix)}-*',
       ),
@@ -52,16 +41,17 @@ class CompileWorkflow implements WorkflowBuilder {
       ..add(WorkflowOutputs.releaseVersion, releaseJobBuilder.versionOutput);
 
     return Workflow(
-      on: On(
-        workflowCall: WorkflowCall(
-          inputs: inputContext.createInputs(),
-          outputs: outputContext.createOutputs(),
-        ),
-      ),
       jobs: {
         compileJobBuilder.id: compileJobBuilder.build(),
         releaseJobBuilder.id: releaseJobBuilder.build(),
       },
+      on: On(
+        workflowCall: WorkflowCall(
+          inputs: inputContext.createInputs(),
+          secrets: secretContext.createSecrets(),
+          outputs: outputContext.createOutputs(),
+        ),
+      ),
     );
   }
 }

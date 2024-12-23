@@ -10,7 +10,7 @@ import 'update_overrides_builder.dart';
 
 base mixin ProjectPrepareConfig
     on JobConfig, SdkJobConfig, UpdateOverridesConfig {
-  bool get withBuildRunner;
+  bool get withBuildRunner => true;
 
   late final buildRunner =
       withBuildRunner ? inputContext(WorkflowInputs.buildRunner) : null;

@@ -14,9 +14,6 @@ base mixin UnitTestConfig
   String get coverageArgs;
 
   @override
-  bool get withBuildRunner => true;
-
-  @override
   late final removePubspecOverrides = ExpressionOrValue.expression(
     inputContext(WorkflowInputs.removePubspecOverrides),
   );

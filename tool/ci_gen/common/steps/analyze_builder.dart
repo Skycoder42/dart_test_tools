@@ -12,9 +12,6 @@ base mixin AnalyzeConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
       inputContext(WorkflowInputs.panaScoreThreshold);
 
   @override
-  bool get withBuildRunner => true;
-
-  @override
   late final removePubspecOverrides = ExpressionOrValue.expression(
     inputContext(WorkflowInputs.removePubspecOverrides),
   );

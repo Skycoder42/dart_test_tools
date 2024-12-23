@@ -2,6 +2,7 @@ import '../../common/api/job_config.dart';
 import '../../common/api/matrix_job_builder_mixin.dart';
 import '../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/inputs.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../common/tools.dart';
 import '../../dart/dart_platform.dart';
@@ -25,13 +26,24 @@ enum ArchiveType {
 }
 
 base mixin CompileConfig on JobConfig, ProjectSetupConfig {
-  late Expression archivePrefix;
+  late final archivePrefix = inputContext(WorkflowInputs.archivePrefix);
 
   @override
-  void expand() {
-    releaseMode = true;
-    super.expand();
-  }
+  late final removePubspecOverrides = ExpressionOrValue.expression(
+    inputContext(WorkflowInputs.removePubspecOverrides),
+  );
+
+  @override
+  late final localResolution = ExpressionOrValue.expression(
+    inputContext(WorkflowInputs.localResolution),
+  );
+
+  @override
+  late final artifactDependencies =
+      inputContext(WorkflowInputs.artifactDependencies);
+
+  @override
+  bool get releaseMode => true;
 }
 
 final class BinaryTypeMatrixProperty extends IMatrixProperty<DartPlatform> {

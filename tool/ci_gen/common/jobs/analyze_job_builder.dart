@@ -24,9 +24,6 @@ abstract base class AnalyzeJobConfig extends JobConfig
         AnalyzeConfig {
   late final analyzeImage = inputContext(WorkflowInputs.analyzeImage);
 
-  @override
-  bool get withBuildRunner => true;
-
   AnalyzeJobConfig(super.inputContext, super.secretContext);
 }
 

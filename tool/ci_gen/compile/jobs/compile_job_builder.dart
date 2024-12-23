@@ -1,6 +1,7 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/matrix_job_builder_mixin.dart';
 import '../../common/api/platform_matrix_job_builder_mixin.dart';
+import '../../common/api/working_directory_config.dart';
 import '../../common/jobs/sdk_job_builder.dart';
 import '../../common/steps/project_prepare_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
@@ -15,32 +16,13 @@ import '../steps/compile_builder.dart';
 final class CompileJobConfig extends JobConfig
     with
         SdkJobConfig,
+        WorkingDirectoryConfig,
         UpdateOverridesConfig,
         ProjectPrepareConfig,
         ProjectSetupConfig,
         CompileConfig,
         DartSdkJobConfig {
-  CompileJobConfig({
-    required Expression dartSdkVersion,
-    required Expression workingDirectory,
-    required Expression artifactDependencies,
-    required Expression buildRunner,
-    required Expression buildRunnerArgs,
-    required Expression removePubspecOverrides,
-    required Expression localResolution,
-    required Expression archivePrefix,
-  }) {
-    this.dartSdkVersion = dartSdkVersion;
-    this.workingDirectory = workingDirectory;
-    this.artifactDependencies = artifactDependencies;
-    this.buildRunner = buildRunner;
-    this.buildRunnerArgs = buildRunnerArgs;
-    this.removePubspecOverrides =
-        ExpressionOrValue.expression(removePubspecOverrides);
-    this.localResolution = ExpressionOrValue.expression(localResolution);
-    this.archivePrefix = archivePrefix;
-    expand();
-  }
+  CompileJobConfig(super.inputContext, super.secretContext);
 }
 
 final class CompileMatrix extends PlatformMatrix {

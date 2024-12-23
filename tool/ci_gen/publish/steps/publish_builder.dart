@@ -33,9 +33,6 @@ base mixin PublishConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
   ExpressionOrValue get localResolution => const ExpressionOrValue.value(false);
 
   @override
-  bool get withBuildRunner => true;
-
-  @override
   bool get releaseMode => true;
 }
 

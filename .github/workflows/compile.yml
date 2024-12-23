@@ -5,11 +5,21 @@ on:
         type: string
         required: true
         description: A JSON-encoded list of all platforms that this project can build/run for.
+      archivePrefix:
+        type: string
+        required: false
+        default: binaries
+        description: The prefix of the binary archive files that contain the actual binaries. Will be suffixed with the platform name.
       dartSdkVersion:
         type: string
         required: false
         default: stable
         description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
+      removePubspecOverrides:
+        type: boolean
+        required: false
+        default: true
+        description: Disables pubspec_overrides.yaml cleanup if set to false.
       workingDirectory:
         type: string
         required: false
@@ -20,6 +30,11 @@ on:
         required: false
         default: ""
         description: A space-separated list of package names that should be downloaded from the artifacts and overwritten for the workflow. The packages should be space separated and placed in a single line. You can use the YAML ">-" for that.
+      localResolution:
+        type: boolean
+        required: false
+        default: true
+        description: Disables workspaces if set to true (the default).
       buildRunner:
         type: boolean
         required: false
@@ -29,36 +44,21 @@ on:
         type: string
         required: false
         description: Optional additional arguments to be passed to the build runner.
-      removePubspecOverrides:
-        type: boolean
-        required: false
-        default: true
-        description: Disables pubspec_overrides.yaml cleanup if set to false.
-      localResolution:
-        type: boolean
-        required: false
-        default: true
-        description: Disables workspaces if set to true (the default).
-      archivePrefix:
-        type: string
-        required: false
-        default: binaries
-        description: The prefix of the binary archive files that contain the actual binaries. Will be suffixed with the platform name.
       releaseRef:
         type: string
         required: false
         default: refs/heads/main
         description: The git ref that is allowed to publish releases.
-      tagPrefix:
-        type: string
-        required: false
-        default: v
-        description: The prefix of git tags. The tag is the prefix, followed by the package version.
       persistCredentials:
         type: boolean
         required: false
         default: false
         description: Specifies, whether git credentials should be persisted for the run. Might be needed in case the repository is a private repository to figure out whether a new release is required or not.
+      tagPrefix:
+        type: string
+        required: false
+        default: v
+        description: The prefix of git tags. The tag is the prefix, followed by the package version.
     outputs:
       releaseCreated:
         value: ${{ jobs.release.outputs.update }}
