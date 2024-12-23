@@ -20,18 +20,21 @@ class BuildLinuxWorkflow implements WorkflowBuilder {
     final secretContext = WorkflowSecretContext();
 
     final buildLinuxJobBuilder = BuildLinuxJobBuilder(
-      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-      flatpakPlatformImage: inputContext(WorkflowInputs.flatpakPlatformImage),
-      flatpakSdkVersion: inputContext(WorkflowInputs.flatpakSdkVersion),
-      bundleName: inputContext(WorkflowInputs.bundleName),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      removePubspecOverrides:
-          inputContext(WorkflowInputs.removePubspecOverrides),
-      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
-      buildNumberArgs: inputContext(WorkflowInputs.buildNumberArgs),
-      manifestPath: inputContext(WorkflowInputs.manifestPath),
-      gpgKey: secretContext(WorkflowSecrets.gpgKey(true)),
-      gpgKeyId: secretContext(WorkflowSecrets.gpgKeyId(true)),
+      config: BuildLinuxJobConfig(
+        dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+        flatpakPlatformImage: inputContext(WorkflowInputs.flatpakPlatformImage),
+        flatpakSdkVersion: inputContext(WorkflowInputs.flatpakSdkVersion),
+        bundleName: inputContext(WorkflowInputs.bundleName),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        removePubspecOverrides:
+            inputContext(WorkflowInputs.removePubspecOverrides),
+        localResolution: inputContext(WorkflowInputs.localResolution),
+        artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+        buildNumberArgs: inputContext(WorkflowInputs.buildNumberArgs),
+        manifestPath: inputContext(WorkflowInputs.manifestPath),
+        gpgKey: secretContext(WorkflowSecrets.gpgKey(true)),
+        gpgKeyId: secretContext(WorkflowSecrets.gpgKeyId(true)),
+      ),
     );
 
     return Workflow(

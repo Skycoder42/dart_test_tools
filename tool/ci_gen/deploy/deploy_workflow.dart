@@ -27,12 +27,14 @@ class DeployWorkflow implements WorkflowBuilder {
     final outputContext = WorkflowOutputContext();
 
     final releaseJobBuilder = TagReleaseJobBuilder(
-      releaseRef: inputContext(WorkflowInputs.releaseRef),
-      dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      tagPrefix: inputContext(WorkflowInputs.tagPrefix),
-      persistCredentials: inputContext(WorkflowInputs.persistCredentials),
-      binaryArtifactsPattern: 'app-deployment-*',
+      config: TagReleaseJobConfig(
+        releaseRef: inputContext(WorkflowInputs.releaseRef),
+        dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        tagPrefix: inputContext(WorkflowInputs.tagPrefix),
+        persistCredentials: inputContext(WorkflowInputs.persistCredentials),
+        binaryArtifactsPattern: 'app-deployment-*',
+      ),
     );
     outputContext
       ..add(WorkflowOutputs.releaseCreated, releaseJobBuilder.updateOutput)
@@ -40,20 +42,24 @@ class DeployWorkflow implements WorkflowBuilder {
 
     final deployAndroidJobBuilder = DeployAndroidJobBuilder(
       releaseCreated: releaseJobBuilder.updateOutput,
-      enabledPlatforms: inputContext(WorkflowInputs.enabledPlatforms),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      googlePlayTrack: inputContext(WorkflowInputs.googlePlayTrack),
-      googlePlayReleaseStatus:
-          inputContext(WorkflowInputs.googlePlayReleaseStatus),
-      googlePlayKey: secretContext(WorkflowSecrets.googlePlayKey),
+      config: DeployAndroidJobConfig(
+        enabledPlatforms: inputContext(WorkflowInputs.enabledPlatforms),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        googlePlayTrack: inputContext(WorkflowInputs.googlePlayTrack),
+        googlePlayReleaseStatus:
+            inputContext(WorkflowInputs.googlePlayReleaseStatus),
+        googlePlayKey: secretContext(WorkflowSecrets.googlePlayKey),
+      ),
     );
 
     final deployLinuxJobBuilder = DeployLinuxJobBuilder(
       releaseCreated: releaseJobBuilder.updateOutput,
-      enabledPlatforms: inputContext(WorkflowInputs.enabledPlatforms),
-      flatpakPlatformImage: inputContext(WorkflowInputs.flatpakPlatformImage),
-      gpgKey: secretContext(WorkflowSecrets.gpgKey(false)),
-      gpgKeyId: secretContext(WorkflowSecrets.gpgKeyId(false)),
+      config: DeployLinuxJobConfig(
+        enabledPlatforms: inputContext(WorkflowInputs.enabledPlatforms),
+        flatpakPlatformImage: inputContext(WorkflowInputs.flatpakPlatformImage),
+        gpgKey: secretContext(WorkflowSecrets.gpgKey(false)),
+        gpgKeyId: secretContext(WorkflowSecrets.gpgKeyId(false)),
+      ),
     );
 
     final deployMacosJobBuilder = DeployMacosJobBuilder(

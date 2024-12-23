@@ -1,3 +1,4 @@
+import '../../../common/api/job_config.dart';
 import '../../../common/api/step_builder.dart';
 import '../../../common/steps/checkout_builder.dart';
 import '../../../common/tools.dart';
@@ -5,15 +6,15 @@ import '../../../types/expression.dart';
 import '../../../types/step.dart';
 import 'with_gpg_key.dart';
 
+base mixin DeployToPagesConfig on JobConfig, WithGpgKeyConfig {}
+
 class DeployToPagesBuilder implements StepBuilder {
   static const _gpPagesBranch = 'gh-pages';
 
-  final Expression gpgKeyId;
-  final Expression gpgKey;
+  final DeployToPagesConfig config;
 
   DeployToPagesBuilder({
-    required this.gpgKeyId,
-    required this.gpgKey,
+    required this.config,
   });
 
   @override
@@ -32,8 +33,7 @@ class DeployToPagesBuilder implements StepBuilder {
           },
         ),
         ...WithGpgKey(
-          gpgKey: gpgKey,
-          gpgKeyId: gpgKeyId,
+          config: config,
           steps: [
             Step.run(
               name: 'Import bundles into repository',
@@ -43,7 +43,7 @@ for bundle in bundles/*/*.flatpak; do
   echo "Importing \$bundle..."
   flatpak build-import-bundle \\
     --update-appstream \\
-    --gpg-sign='$gpgKeyId' \\
+    --gpg-sign='${config.gpgKeyId}' \\
     repo \\
     "\$bundle"
 done
@@ -54,7 +54,7 @@ done
               run: 'flatpak build-update-repo '
                   '--generate-static-deltas '
                   '--prune '
-                  "--gpg-sign='$gpgKeyId' "
+                  "--gpg-sign='${config.gpgKeyId}' "
                   'repo',
             ),
           ],

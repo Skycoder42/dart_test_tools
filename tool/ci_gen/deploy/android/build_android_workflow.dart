@@ -20,19 +20,22 @@ class BuildAndroidWorkflow implements WorkflowBuilder {
     final secretContext = WorkflowSecretContext();
 
     final buildAndroidJobBuilder = BuildAndroidJobBuilder(
-      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
-      javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      removePubspecOverrides:
-          inputContext(WorkflowInputs.removePubspecOverrides),
-      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
-      buildRunner: inputContext(WorkflowInputs.buildRunner),
-      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-      buildNumberArgs: inputContext(WorkflowInputs.buildNumberArgs),
-      primaryLocale: inputContext(WorkflowInputs.primaryLocale),
-      dartDefines: secretContext(WorkflowSecrets.dartDefines),
-      keystore: secretContext(WorkflowSecrets.keystore),
-      keystorePassword: secretContext(WorkflowSecrets.keystorePassword),
+      config: BuildAndroidJobConfig(
+        flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
+        javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        removePubspecOverrides:
+            inputContext(WorkflowInputs.removePubspecOverrides),
+        localResolution: inputContext(WorkflowInputs.localResolution),
+        artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+        buildRunner: inputContext(WorkflowInputs.buildRunner),
+        buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+        buildNumberArgs: inputContext(WorkflowInputs.buildNumberArgs),
+        primaryLocale: inputContext(WorkflowInputs.primaryLocale),
+        dartDefines: secretContext(WorkflowSecrets.dartDefines),
+        keystore: secretContext(WorkflowSecrets.keystore),
+        keystorePassword: secretContext(WorkflowSecrets.keystorePassword),
+      ),
     );
 
     return Workflow(

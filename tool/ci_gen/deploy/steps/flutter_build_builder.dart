@@ -1,25 +1,27 @@
+import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/contexts.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
+base mixin FlutterBuildConfig on JobConfig {
+  late Expression workingDirectory;
+  late Expression dartDefines;
+  late String buildTarget;
+  String? buildArgs;
+}
+
 class FlutterBuildBuilder implements StepBuilder {
   static final _dartDefinesPath = '${Runner.temp}/dart-defines.env';
 
   final Expression buildNumber;
-  final Expression workingDirectory;
-  final Expression dartDefines;
-  final String buildTarget;
-  final String? buildArgs;
+  final FlutterBuildConfig config;
   final List<Step> preBuildSteps;
   final List<String> cleanupPaths;
 
   const FlutterBuildBuilder({
     required this.buildNumber,
-    required this.workingDirectory,
-    required this.dartDefines,
-    required this.buildTarget,
-    this.buildArgs,
+    required this.config,
     this.preBuildSteps = const [],
     this.cleanupPaths = const [],
   });
@@ -35,18 +37,18 @@ class FlutterBuildBuilder implements StepBuilder {
     return [
       Step.run(
         name: 'Prepare dart defines',
-        run: "echo '$dartDefines' > '$_dartDefinesPath'",
+        run: "echo '${config.dartDefines}' > '$_dartDefinesPath'",
         shell: 'bash',
       ),
       ...preBuildSteps,
       Step.run(
-        name: 'Build $buildTarget',
-        run: 'flutter build $buildTarget '
+        name: 'Build ${config.buildTarget}',
+        run: 'flutter build ${config.buildTarget} '
             '--release '
             '--build-number=$buildNumber '
             "--dart-define-from-file='$_dartDefinesPath'"
-            '${buildArgs != null ? ' $buildArgs' : ''}',
-        workingDirectory: workingDirectory.toString(),
+            '${config.buildArgs != null ? ' ${config.buildArgs}' : ''}',
+        workingDirectory: config.workingDirectory.toString(),
       ),
       Step.run(
         name: 'Cleanup secure files',

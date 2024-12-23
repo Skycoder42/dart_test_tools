@@ -1,3 +1,4 @@
+import '../../../common/api/job_config.dart';
 import '../../../common/api/step_builder.dart';
 import '../../../common/contexts.dart';
 import '../../../common/steps/checkout_builder.dart';
@@ -6,21 +7,22 @@ import '../../../types/expression.dart';
 import '../../../types/id.dart';
 import '../../../types/step.dart';
 
+base mixin DeployAndroidConfig on JobConfig {
+  late Expression workingDirectory;
+  late Expression googlePlayTrack;
+  late Expression googlePlayReleaseStatus;
+  late Expression googlePlayKey;
+}
+
 class DeployAndroidAppBuilder implements StepBuilder {
   static const detectPackageNameStepId = StepId('detectPackageName');
   static final packageNameOutput =
       detectPackageNameStepId.output('packageName');
 
-  final Expression workingDirectory;
-  final Expression googlePlayTrack;
-  final Expression googlePlayReleaseStatus;
-  final Expression googlePlayKey;
+  final DeployAndroidConfig config;
 
   const DeployAndroidAppBuilder({
-    required this.workingDirectory,
-    required this.googlePlayTrack,
-    required this.googlePlayReleaseStatus,
-    required this.googlePlayKey,
+    required this.config,
   });
 
   @override
@@ -41,21 +43,21 @@ class DeployAndroidAppBuilder implements StepBuilder {
             'cat android/app/build.gradle | grep \'applicationId = "\' | cut -d \'"\' -f2',
             isCommand: true,
           ),
-          workingDirectory: workingDirectory.toString(),
+          workingDirectory: config.workingDirectory.toString(),
           shell: 'bash',
         ),
         Step.run(
           name: 'Prepare Google Play key',
           run:
-              "echo '$googlePlayKey' > '${Runner.temp}/fastlane-key-file.json'",
+              "echo '${config.googlePlayKey}' > '${Runner.temp}/fastlane-key-file.json'",
         ),
         Step.run(
           name: 'Deploy to Google Play',
           run: 'fastlane upload_to_play_store '
               "--json_key '${Runner.temp}/fastlane-key-file.json' "
               "--package_name '${packageNameOutput.expression}' "
-              "--track '$googlePlayTrack' "
-              "--release_status '$googlePlayReleaseStatus' "
+              "--track '${config.googlePlayTrack}' "
+              "--release_status '${config.googlePlayReleaseStatus}' "
               '--aab build/bundle/release/app-release.aab '
               '--mapping build/mapping/release/mapping.txt '
               '--metadata_path build/metadata',

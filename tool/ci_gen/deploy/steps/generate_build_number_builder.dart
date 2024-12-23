@@ -1,19 +1,23 @@
+import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 
+base mixin GenerateBuildNumberConfig on JobConfig {
+  late Expression buildNumberArgs;
+  late Expression workingDirectory;
+}
+
 class GenerateBuildNumberBuilder implements StepBuilder {
   static const stepId = StepId('generateBuildNumber');
   static final buildNumberOutput = stepId.output('buildNumber');
 
-  final Expression buildNumberArgs;
-  final Expression workingDirectory;
+  final GenerateBuildNumberConfig config;
   final bool asEnv;
 
   const GenerateBuildNumberBuilder({
-    required this.buildNumberArgs,
-    required this.workingDirectory,
+    required this.config,
     this.asEnv = false,
   });
 
@@ -23,8 +27,8 @@ class GenerateBuildNumberBuilder implements StepBuilder {
           id: stepId,
           name: 'Generate build number',
           run: 'dart pub global run dart_test_tools:generate_build_number '
-              '$buildNumberArgs${asEnv ? ' --env' : ''}',
-          workingDirectory: workingDirectory.toString(),
+              '${config.buildNumberArgs}${asEnv ? ' --env' : ''}',
+          workingDirectory: config.workingDirectory.toString(),
         ),
       ];
 }

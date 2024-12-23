@@ -1,3 +1,4 @@
+import '../../../common/api/job_config.dart';
 import '../../../common/api/matrix_job_builder_mixin.dart';
 import '../../../common/api/step_builder.dart';
 import '../../../common/contexts.dart';
@@ -8,6 +9,17 @@ import '../../../types/expression.dart';
 import '../../../types/step.dart';
 import '../../steps/generate_build_number_builder.dart';
 import 'with_gpg_key.dart';
+
+base mixin BuildFlatpakBundleConfig
+    on
+        JobConfig,
+        UpdateOverridesConfig,
+        GenerateBuildNumberConfig,
+        WithGpgKeyConfig {
+  late Expression sdkVersion;
+  late Expression bundleName;
+  late Expression manifestPath;
+}
 
 enum FlatpakArchMatrixSelector implements IMatrixSelector {
   x86_64,
@@ -37,28 +49,12 @@ final class QEmuArchProperty
 }
 
 class BuildFlatpakBundleBuilder implements StepBuilder {
-  final Expression sdkVersion;
-  final Expression bundleName;
-  final Expression workingDirectory;
-  final Expression removePubspecOverrides;
-  final Expression artifactDependencies;
-  final Expression buildNumberArgs;
-  final Expression manifestPath;
-  final Expression gpgKeyId;
-  final Expression gpgKey;
+  final BuildFlatpakBundleConfig config;
   final ArchMatrixProperty arch;
   final QEmuArchProperty qemuArch;
 
   const BuildFlatpakBundleBuilder({
-    required this.sdkVersion,
-    required this.bundleName,
-    required this.workingDirectory,
-    required this.removePubspecOverrides,
-    required this.artifactDependencies,
-    required this.buildNumberArgs,
-    required this.manifestPath,
-    required this.gpgKeyId,
-    required this.gpgKey,
+    required this.config,
     required this.arch,
     required this.qemuArch,
   });
@@ -89,7 +85,7 @@ chmod +x /usr/bin/yq
         Step.run(
           name: 'Download flatpak flutter SDK',
           run: 'curl --fail-with-body -L -o /tmp/flutter.flatpak '
-              "'https://github.com/Skycoder42/dart_test_tools/releases/download/flatpak-flutter-extension%2F$sdkVersion/org.freedesktop.Sdk.Extension.flutter_${sdkVersion}_${arch.expression}.flatpak'",
+              "'https://github.com/Skycoder42/dart_test_tools/releases/download/flatpak-flutter-extension%2F${config.sdkVersion}/org.freedesktop.Sdk.Extension.flutter_${config.sdkVersion}_${arch.expression}.flatpak'",
         ),
         const Step.run(
           name: 'Install flatpak flutter SDK',
@@ -98,15 +94,11 @@ chmod +x /usr/bin/yq
         ),
         ...const CheckoutBuilder().build(),
         ...UpdateOverridesBuilder(
-          workingDirectory: workingDirectory,
-          removePubspecOverrides:
-              ExpressionOrValue.expression(removePubspecOverrides),
-          artifactDependencies: artifactDependencies,
-          artifactTargetDir: const ExpressionOrValue.value('.'),
+          config: config,
+          artifactTargetDir: '.',
         ).build(),
         ...GenerateBuildNumberBuilder(
-          buildNumberArgs: buildNumberArgs,
-          workingDirectory: workingDirectory,
+          config: config,
           asEnv: true,
         ).build(),
         const Step.run(
@@ -118,18 +110,18 @@ ostree --repo=repo config set core.min-free-space-size "1MB"
 ''',
         ),
         ...WithGpgKey(
-          gpgKey: gpgKey,
-          gpgKeyId: gpgKeyId,
+          config: config,
           steps: [
             Step.uses(
               name: 'Build flatpak bundle',
               uses: Tools.bilelmoussaouiFlatpakGithubActionsFlatpakBuilder,
               withArgs: {
-                'bundle': bundleName.toString(),
-                'manifest-path': '$workingDirectory/$manifestPath',
+                'bundle': config.bundleName.toString(),
+                'manifest-path':
+                    '${config.workingDirectory}/${config.manifestPath}',
                 'branch': Github.refName.toString(),
                 'arch': arch.expression.toString(),
-                'gpg-sign': gpgKeyId.toString(),
+                'gpg-sign': config.gpgKeyId.toString(),
                 'cache': false,
                 'upload-artifact': false,
               },
@@ -141,7 +133,7 @@ ostree --repo=repo config set core.min-free-space-size "1MB"
           uses: Tools.actionsUploadArtifact,
           withArgs: {
             'name': 'flatpak-bundle-${arch.expression}',
-            'path': bundleName.toString(),
+            'path': config.bundleName.toString(),
             'compression-level': 0,
             'if-no-files-found': 'error',
             'retention-days': 1,

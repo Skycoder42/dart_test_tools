@@ -1,4 +1,5 @@
 import '../../../common/api/job_builder.dart';
+import '../../../common/api/job_config.dart';
 import '../../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../../common/environments.dart';
 import '../../../common/secrets.dart';
@@ -10,20 +11,32 @@ import '../../../types/id.dart';
 import '../../../types/job.dart';
 import '../../../types/runs_on.dart';
 import '../steps/deploy_to_pages_builder.dart';
+import '../steps/with_gpg_key.dart';
+
+final class DeployLinuxJobConfig extends JobConfig
+    with WithGpgKeyConfig, DeployToPagesConfig {
+  final Expression enabledPlatforms;
+  final Expression flatpakPlatformImage;
+
+  DeployLinuxJobConfig({
+    required this.enabledPlatforms,
+    required this.flatpakPlatformImage,
+    required Expression gpgKeyId,
+    required Expression gpgKey,
+  }) {
+    this.gpgKeyId = gpgKeyId;
+    this.gpgKey = gpgKey;
+    expand();
+  }
+}
 
 class DeployLinuxJobBuilder implements JobBuilder {
   final JobIdOutput releaseCreated;
-  final Expression enabledPlatforms;
-  final Expression flatpakPlatformImage;
-  final Expression gpgKeyId;
-  final Expression gpgKey;
+  final DeployLinuxJobConfig config;
 
   DeployLinuxJobBuilder({
     required this.releaseCreated,
-    required this.enabledPlatforms,
-    required this.flatpakPlatformImage,
-    required this.gpgKeyId,
-    required this.gpgKey,
+    required this.config,
   });
 
   @override
@@ -35,13 +48,13 @@ class DeployLinuxJobBuilder implements JobBuilder {
         needs: {releaseCreated.jobId},
         runsOn: RunsOn.ubuntuLatest.id,
         container: Container(
-          image: 'bilelmoussaoui/$flatpakPlatformImage',
+          image: 'bilelmoussaoui/${config.flatpakPlatformImage}',
           options: '--privileged',
         ),
         ifExpression:
             releaseCreated.expression.eq(const Expression.literal('true')) &
                 EnabledPlatforms.check(
-                  enabledPlatforms,
+                  config.enabledPlatforms,
                   Expression.literal(FlutterPlatform.linux.platform),
                 ),
         environment: Environments.flatpak,
@@ -50,13 +63,10 @@ class DeployLinuxJobBuilder implements JobBuilder {
         },
         steps: [
           ...ValidateInputsBuilder({
-            WorkflowSecrets.gpgKeyId(false).name: gpgKeyId,
-            WorkflowSecrets.gpgKey(false).name: gpgKey,
+            WorkflowSecrets.gpgKeyId(false).name: config.gpgKeyId,
+            WorkflowSecrets.gpgKey(false).name: config.gpgKey,
           }).build(),
-          ...DeployToPagesBuilder(
-            gpgKeyId: gpgKeyId,
-            gpgKey: gpgKey,
-          ).build(),
+          ...DeployToPagesBuilder(config: config).build(),
         ],
       );
 }

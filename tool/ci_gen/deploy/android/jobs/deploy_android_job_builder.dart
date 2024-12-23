@@ -1,4 +1,5 @@
 import '../../../common/api/job_builder.dart';
+import '../../../common/api/job_config.dart';
 import '../../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../../common/environments.dart';
 import '../../../common/secrets.dart';
@@ -10,21 +11,31 @@ import '../../../types/job.dart';
 import '../../../types/runs_on.dart';
 import '../steps/deploy_android_app_builder.dart';
 
+final class DeployAndroidJobConfig extends JobConfig with DeployAndroidConfig {
+  final Expression enabledPlatforms;
+
+  DeployAndroidJobConfig({
+    required this.enabledPlatforms,
+    required Expression workingDirectory,
+    required Expression googlePlayTrack,
+    required Expression googlePlayReleaseStatus,
+    required Expression googlePlayKey,
+  }) {
+    this.workingDirectory = workingDirectory;
+    this.googlePlayTrack = googlePlayTrack;
+    this.googlePlayReleaseStatus = googlePlayReleaseStatus;
+    this.googlePlayKey = googlePlayKey;
+    expand();
+  }
+}
+
 final class DeployAndroidJobBuilder implements JobBuilder {
   final JobIdOutput releaseCreated;
-  final Expression enabledPlatforms;
-  final Expression workingDirectory;
-  final Expression googlePlayTrack;
-  final Expression googlePlayReleaseStatus;
-  final Expression googlePlayKey;
+  final DeployAndroidJobConfig config;
 
   const DeployAndroidJobBuilder({
     required this.releaseCreated,
-    required this.enabledPlatforms,
-    required this.workingDirectory,
-    required this.googlePlayTrack,
-    required this.googlePlayReleaseStatus,
-    required this.googlePlayKey,
+    required this.config,
   });
 
   @override
@@ -38,20 +49,15 @@ final class DeployAndroidJobBuilder implements JobBuilder {
         ifExpression:
             releaseCreated.expression.eq(const Expression.literal('true')) &
                 EnabledPlatforms.check(
-                  enabledPlatforms,
+                  config.enabledPlatforms,
                   Expression.literal(FlutterPlatform.android.platform),
                 ),
         environment: Environments.googlePlay,
         steps: [
           ...ValidateInputsBuilder({
-            WorkflowSecrets.googlePlayKey.name: googlePlayKey,
+            WorkflowSecrets.googlePlayKey.name: config.googlePlayKey,
           }).build(),
-          ...DeployAndroidAppBuilder(
-            workingDirectory: workingDirectory,
-            googlePlayTrack: googlePlayTrack,
-            googlePlayReleaseStatus: googlePlayReleaseStatus,
-            googlePlayKey: googlePlayKey,
-          ).build(),
+          ...DeployAndroidAppBuilder(config: config).build(),
         ],
       );
 }
