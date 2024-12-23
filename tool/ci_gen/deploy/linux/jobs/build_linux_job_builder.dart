@@ -1,5 +1,7 @@
 import '../../../common/api/job_config.dart';
 import '../../../common/api/matrix_job_builder_mixin.dart';
+import '../../../common/api/working_directory_config.dart';
+import '../../../common/inputs.dart';
 import '../../../common/jobs/sdk_job_builder.dart';
 import '../../../common/steps/install_dart_test_tools_builder.dart';
 import '../../../common/steps/update_overrides_builder.dart';
@@ -16,41 +18,30 @@ import '../steps/with_gpg_key.dart';
 final class BuildLinuxJobConfig extends JobConfig
     with
         SdkJobConfig,
+        WorkingDirectoryConfig,
         UpdateOverridesConfig,
         GenerateBuildNumberConfig,
         WithGpgKeyConfig,
         BuildFlatpakBundleConfig,
         DartSdkJobConfig {
-  final Expression flatpakPlatformImage;
+  late final flatpakPlatformImage =
+      inputContext(WorkflowInputs.flatpakPlatformImage);
 
-  BuildLinuxJobConfig({
-    required Expression dartSdkVersion,
-    required this.flatpakPlatformImage,
-    required Expression flatpakSdkVersion,
-    required Expression bundleName,
-    required Expression workingDirectory,
-    required Expression removePubspecOverrides,
-    required Expression localResolution,
-    required Expression artifactDependencies,
-    required Expression buildNumberArgs,
-    required Expression manifestPath,
-    required Expression gpgKeyId,
-    required Expression gpgKey,
-  }) {
-    this.dartSdkVersion = dartSdkVersion;
-    sdkVersion = flatpakSdkVersion;
-    this.bundleName = bundleName;
-    this.workingDirectory = workingDirectory;
-    this.removePubspecOverrides =
-        ExpressionOrValue.expression(removePubspecOverrides);
-    this.localResolution = ExpressionOrValue.expression(localResolution);
-    this.artifactDependencies = artifactDependencies;
-    this.buildNumberArgs = buildNumberArgs;
-    this.manifestPath = manifestPath;
-    this.gpgKeyId = gpgKeyId;
-    this.gpgKey = gpgKey;
-    expand();
-  }
+  @override
+  late final removePubspecOverrides = ExpressionOrValue.expression(
+    inputContext(WorkflowInputs.removePubspecOverrides),
+  );
+
+  @override
+  late final localResolution = ExpressionOrValue.expression(
+    inputContext(WorkflowInputs.localResolution),
+  );
+
+  @override
+  late final artifactDependencies =
+      inputContext(WorkflowInputs.artifactDependencies);
+
+  BuildLinuxJobConfig(super.inputContext, super.secretContext);
 }
 
 final class FlatpakMatrix extends Matrix<FlatpakArchMatrixSelector> {

@@ -1,5 +1,6 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/inputs.dart';
 import '../../common/steps/install_dart_test_tools_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../common/tools.dart';
@@ -14,14 +15,24 @@ base mixin BuildAppConfig
         ProjectSetupConfig,
         GenerateBuildNumberConfig,
         FlutterBuildConfig {
-  late String artifactDir;
+  String get artifactDir;
 
   @override
-  void expand() {
-    releaseMode = true;
-    isFlutter = const ExpressionOrValue.value(true);
-    super.expand();
-  }
+  bool get releaseMode => true;
+
+  @override
+  late final removePubspecOverrides = ExpressionOrValue.expression(
+    inputContext(WorkflowInputs.removePubspecOverrides),
+  );
+
+  @override
+  late final localResolution = ExpressionOrValue.expression(
+    inputContext(WorkflowInputs.localResolution),
+  );
+
+  @override
+  late final artifactDependencies =
+      inputContext(WorkflowInputs.artifactDependencies);
 }
 
 class BuildAppBuilder implements StepBuilder {

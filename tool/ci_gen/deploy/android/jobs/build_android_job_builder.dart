@@ -1,4 +1,6 @@
 import '../../../common/api/job_config.dart';
+import '../../../common/api/working_directory_config.dart';
+import '../../../common/inputs.dart';
 import '../../../common/jobs/sdk_job_builder.dart';
 import '../../../common/steps/project_prepare_builder.dart';
 import '../../../common/steps/project_setup_builder.dart';
@@ -17,6 +19,7 @@ import '../steps/build_android_app_builder.dart';
 final class BuildAndroidJobConfig extends JobConfig
     with
         SdkJobConfig,
+        WorkingDirectoryConfig,
         UpdateOverridesConfig,
         ProjectPrepareConfig,
         ProjectSetupConfig,
@@ -25,37 +28,10 @@ final class BuildAndroidJobConfig extends JobConfig
         BuildAppConfig,
         BuildAndroidAppConfig,
         FlutterSdkJobConfig {
-  BuildAndroidJobConfig({
-    required Expression flutterSdkChannel,
-    required Expression javaJdkVersion,
-    required Expression workingDirectory,
-    required Expression removePubspecOverrides,
-    required Expression localResolution,
-    required Expression artifactDependencies,
-    required Expression buildRunner,
-    required Expression buildRunnerArgs,
-    required Expression buildNumberArgs,
-    required Expression primaryLocale,
-    required Expression dartDefines,
-    required Expression keystore,
-    required Expression keystorePassword,
-  }) {
-    this.flutterSdkChannel = flutterSdkChannel;
-    this.javaJdkVersion = javaJdkVersion;
-    this.workingDirectory = workingDirectory;
-    this.removePubspecOverrides =
-        ExpressionOrValue.expression(removePubspecOverrides);
-    this.localResolution = ExpressionOrValue.expression(localResolution);
-    this.artifactDependencies = artifactDependencies;
-    this.buildRunner = buildRunner;
-    this.buildRunnerArgs = buildRunnerArgs;
-    this.buildNumberArgs = buildNumberArgs;
-    this.primaryLocale = primaryLocale;
-    this.dartDefines = dartDefines;
-    this.keystore = keystore;
-    this.keystorePassword = keystorePassword;
-    expand();
-  }
+  @override
+  late final javaJdkVersion = inputContext(WorkflowInputs.javaJdkVersion);
+
+  BuildAndroidJobConfig(super.inputContext, super.secretContext);
 }
 
 final class BuildAndroidJobBuilder extends SdkJobBuilder<BuildAndroidJobConfig>

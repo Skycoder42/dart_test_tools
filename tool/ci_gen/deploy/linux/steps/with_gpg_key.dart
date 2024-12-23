@@ -1,12 +1,14 @@
 import '../../../common/api/job_config.dart';
 import '../../../common/api/step_builder.dart';
 import '../../../common/contexts.dart';
-import '../../../types/expression.dart';
+import '../../../common/secrets.dart';
 import '../../../types/step.dart';
 
 base mixin WithGpgKeyConfig on JobConfig {
-  late Expression gpgKey;
-  late Expression gpgKeyId;
+  bool get requireGpgKey;
+
+  late final gpgKey = secretContext(WorkflowSecrets.gpgKey(requireGpgKey));
+  late final gpgKeyId = secretContext(WorkflowSecrets.gpgKeyId(requireGpgKey));
 }
 
 class WithGpgKey implements StepBuilder {

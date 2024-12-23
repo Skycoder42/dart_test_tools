@@ -1,5 +1,10 @@
+import '../../../common/api/job_config.dart';
 import '../../../common/api/step_builder.dart';
+import '../../../common/api/working_directory_config.dart';
 import '../../../common/contexts.dart';
+import '../../../common/inputs.dart';
+import '../../../common/jobs/sdk_job_builder.dart';
+import '../../../common/secrets.dart';
 import '../../../common/steps/checkout_builder.dart';
 import '../../../common/steps/install_dart_test_tools_builder.dart';
 import '../../../types/env.dart';
@@ -7,22 +12,22 @@ import '../../../types/expression.dart';
 import '../../../types/id.dart';
 import '../../../types/step.dart';
 
+base mixin DeployToTapConfig
+    on JobConfig, SdkJobConfig, WorkingDirectoryConfig {
+  late final targetRepo = inputContext(WorkflowInputs.targetRepo);
+  late final targetRepoToken = secretContext(WorkflowSecrets.targetRepoToken);
+}
+
 class DeployToTapBuilder implements StepBuilder {
   static const generateCaskStepId = StepId('generate-cask');
   static final caskNameOutput = generateCaskStepId.output('caskName');
 
-  final Expression targetRepo;
-  final Expression workingDirectory;
+  final DeployToTapConfig config;
   final Expression releaseVersion;
-  final Expression targetRepoToken;
-  final String pubTool;
 
   const DeployToTapBuilder({
-    required this.targetRepo,
-    required this.workingDirectory,
+    required this.config,
     required this.releaseVersion,
-    required this.targetRepoToken,
-    required this.pubTool,
   });
 
   @override
@@ -32,16 +37,16 @@ class DeployToTapBuilder implements StepBuilder {
           path: 'src',
         ).build(),
         ...CheckoutBuilder(
-          repository: targetRepo,
+          repository: config.targetRepo,
           path: 'tap',
-          token: targetRepoToken,
+          token: config.targetRepoToken,
           persistCredentials: const ExpressionOrValue.value(true),
         ).build(),
         Step.run(
           id: generateCaskStepId,
           name: 'Generate cask formula',
-          run: '$pubTool global run dart_test_tools:generate_cask '
-              "--input 'src/$workingDirectory' --output tap",
+          run: '${config.pubTool} global run dart_test_tools:generate_cask '
+              "--input 'src/${config.workingDirectory}' --output tap",
         ),
         Step.run(
           name: 'Stage cask update',
@@ -62,14 +67,14 @@ class DeployToTapBuilder implements StepBuilder {
         ),
         Step.run(
           name: 'Tap local repository',
-          run: 'brew tap $targetRepo tap',
+          run: 'brew tap ${config.targetRepo} tap',
         ),
         Step.run(
           name: 'Audit generated cask',
           run: 'brew audit --arch all --strict --git --online --no-signing '
-              "--token-conflicts --cask '$targetRepo/${caskNameOutput.expression}'",
+              "--token-conflicts --cask '${config.targetRepo}/${caskNameOutput.expression}'",
           env: Env({
-            'HOMEBREW_GITHUB_API_TOKEN': targetRepoToken.toString(),
+            'HOMEBREW_GITHUB_API_TOKEN': config.targetRepoToken.toString(),
           }),
         ),
         const Step.run(

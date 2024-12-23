@@ -1,14 +1,16 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/api/working_directory_config.dart';
 import '../../common/jobs/sdk_job_builder.dart';
+import '../../common/secrets.dart';
 import '../../types/env.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
-base mixin UploadSentrySymbolsConfig on JobConfig, SdkJobConfig {
-  late Expression workingDirectory;
-  late Expression sentryAuthToken;
-  late Expression sentryDist;
+base mixin UploadSentrySymbolsConfig
+    on JobConfig, WorkingDirectoryConfig, SdkJobConfig {
+  late final sentryAuthToken = secretContext(WorkflowSecrets.sentryAuthToken);
+  // late final sentryDist = secretContext(WorkflowSecrets.sentryDist);
 }
 
 class UploadSentrySymbolsBuilder implements StepBuilder {
@@ -31,7 +33,7 @@ class UploadSentrySymbolsBuilder implements StepBuilder {
           run: '${config.pubTool} global run sentry_dart_plugin',
           env: Env({
             'SENTRY_AUTH_TOKEN': config.sentryAuthToken.toString(),
-            'SENTRY_DIST': config.sentryDist.toString(),
+            // 'SENTRY_DIST': config.sentryDist.toString(),
           }),
           workingDirectory: config.workingDirectory.toString(),
         ),

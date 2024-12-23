@@ -1,32 +1,25 @@
+import '../../../common/api/job_config.dart';
 import '../../../common/api/step_builder.dart';
+import '../../../common/inputs.dart';
 import '../../../common/tools.dart';
-import '../../../types/expression.dart';
 import '../../../types/step.dart';
 import '../../steps/build_app_builder.dart';
 
+base mixin BuildMacosDmgConfig on JobConfig, BuildAppConfig {
+  late final dmgConfigPath = inputContext(WorkflowInputs.dmgConfigPath);
+
+  @override
+  String get buildTarget => 'macos';
+
+  @override
+  String get artifactDir => 'build/macos/dmg';
+}
+
 class BuildMacosDmgBuilder implements StepBuilder {
-  final Expression workingDirectory;
-  final Expression removePubspecOverrides;
-  final Expression artifactDependencies;
-  final Expression buildRunner;
-  final Expression buildRunnerArgs;
-  final Expression buildNumberArgs;
-  final Expression dmgConfigPath;
-  final Expression dartDefines;
-  final String pubTool;
-  final String runTool;
+  final BuildMacosDmgConfig config;
 
   const BuildMacosDmgBuilder({
-    required this.workingDirectory,
-    required this.removePubspecOverrides,
-    required this.artifactDependencies,
-    required this.buildRunner,
-    required this.buildRunnerArgs,
-    required this.buildNumberArgs,
-    required this.dmgConfigPath,
-    required this.dartDefines,
-    required this.pubTool,
-    required this.runTool,
+    required this.config,
   });
 
   @override
@@ -40,28 +33,17 @@ class BuildMacosDmgBuilder implements StepBuilder {
           run: 'npm install -g appdmg',
         ),
         ...BuildAppBuilder(
-          workingDirectory: workingDirectory,
-          removePubspecOverrides:
-              ExpressionOrValue.expression(removePubspecOverrides),
-          artifactDependencies: artifactDependencies,
-          buildRunner: buildRunner,
-          buildRunnerArgs: buildRunnerArgs,
-          buildNumberArgs: buildNumberArgs,
-          dartDefines: dartDefines,
-          pubTool: pubTool,
-          runTool: runTool,
-          buildTarget: 'macos',
-          artifactDir: 'build/macos/dmg',
+          config: config,
           packageSteps: [
             Step.run(
               name: 'Generate DMG image',
               run: '''
 set -eo pipefail
-title=\$(jq -r '.title' '$dmgConfigPath')
+title=\$(jq -r '.title' '${config.dmgConfigPath}')
 mkdir -p build/macos/dmg
-appdmg '$dmgConfigPath' "build/macos/dmg/\$title.dmg"
+appdmg '${config.dmgConfigPath}' "build/macos/dmg/\$title.dmg"
 ''',
-              workingDirectory: workingDirectory.toString(),
+              workingDirectory: config.workingDirectory.toString(),
             ),
           ],
         ).build(),

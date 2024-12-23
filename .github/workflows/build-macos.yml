@@ -6,6 +6,10 @@ on:
         required: false
         default: stable
         description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action".
+      dmgConfigPath:
+        type: string
+        required: true
+        description: Path to the configuration file for the appdmg tool.
       workingDirectory:
         type: string
         required: false
@@ -21,6 +25,11 @@ on:
         required: false
         default: ""
         description: A space-separated list of package names that should be downloaded from the artifacts and overwritten for the workflow. The packages should be space separated and placed in a single line. You can use the YAML ">-" for that.
+      localResolution:
+        type: boolean
+        required: false
+        default: true
+        description: Disables workspaces if set to true (the default).
       buildRunner:
         type: boolean
         required: false
@@ -35,10 +44,6 @@ on:
         required: false
         default: ""
         description: Additional args for the build number generator.
-      dmgConfigPath:
-        type: string
-        required: true
-        description: Path to the configuration file for the appdmg tool.
     secrets:
       dartDefines:
         required: false
@@ -104,6 +109,14 @@ jobs:
           for package in ${{ inputs.artifactDependencies }}; do
             yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
           done
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Switch to local resolution
+        if: inputs.localResolution
+        run: |
+          set -eo pipefail
+          touch pubspec_overrides.yaml
+          yq -i '.resolution=null' pubspec_overrides.yaml
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages

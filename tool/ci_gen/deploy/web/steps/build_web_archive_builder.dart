@@ -1,53 +1,37 @@
+import '../../../common/api/job_config.dart';
 import '../../../common/api/step_builder.dart';
-import '../../../types/expression.dart';
+import '../../../common/inputs.dart';
 import '../../../types/step.dart';
 import '../../steps/build_app_builder.dart';
 
+base mixin BuildWebArchiveConfig on JobConfig, BuildAppConfig {
+  late final baseHref = inputContext(WorkflowInputs.baseHref);
+
+  @override
+  String get buildTarget => 'web';
+
+  @override
+  String get buildArgs => '--no-web-resources-cdn '
+      '--csp '
+      '--source-maps '
+      '--dump-info '
+      "--base-href='$baseHref'";
+
+  @override
+  String get artifactDir => 'build/web-archive';
+}
+
 class BuildWebArchiveBuilder implements StepBuilder {
-  final Expression workingDirectory;
-  final Expression removePubspecOverrides;
-  final Expression artifactDependencies;
-  final Expression buildRunner;
-  final Expression buildRunnerArgs;
-  final Expression buildNumberArgs;
-  final Expression baseHref;
-  final Expression dartDefines;
-  final String pubTool;
-  final String runTool;
+  final BuildWebArchiveConfig config;
 
   const BuildWebArchiveBuilder({
-    required this.workingDirectory,
-    required this.removePubspecOverrides,
-    required this.artifactDependencies,
-    required this.buildRunner,
-    required this.buildRunnerArgs,
-    required this.buildNumberArgs,
-    required this.dartDefines,
-    required this.baseHref,
-    required this.pubTool,
-    required this.runTool,
+    required this.config,
   });
 
   @override
   Iterable<Step> build() => [
         ...BuildAppBuilder(
-          workingDirectory: workingDirectory,
-          removePubspecOverrides:
-              ExpressionOrValue.expression(removePubspecOverrides),
-          artifactDependencies: artifactDependencies,
-          buildRunner: buildRunner,
-          buildRunnerArgs: buildRunnerArgs,
-          buildNumberArgs: buildNumberArgs,
-          dartDefines: dartDefines,
-          pubTool: pubTool,
-          runTool: runTool,
-          buildTarget: 'web',
-          buildArgs: '--no-web-resources-cdn '
-              '--csp '
-              '--source-maps '
-              '--dump-info '
-              "--base-href='$baseHref'",
-          artifactDir: 'build/web-archive',
+          config: config,
           packageSteps: [
             Step.run(
               name: 'Create archive',
@@ -58,7 +42,7 @@ archive_name=$(jq -r '.short_name' ../web/manifest.json)
 mkdir web-archive
 tar -cJvf "web-archive/$archive_name Web.tar.xz" web
 ''',
-              workingDirectory: '$workingDirectory/build',
+              workingDirectory: '${config.workingDirectory}/build',
             ),
           ],
         ).build(),

@@ -2,10 +2,10 @@ import '../../../common/api/job_config.dart';
 import '../../../common/api/matrix_job_builder_mixin.dart';
 import '../../../common/api/step_builder.dart';
 import '../../../common/contexts.dart';
+import '../../../common/inputs.dart';
 import '../../../common/steps/checkout_builder.dart';
 import '../../../common/steps/update_overrides_builder.dart';
 import '../../../common/tools.dart';
-import '../../../types/expression.dart';
 import '../../../types/step.dart';
 import '../../steps/generate_build_number_builder.dart';
 import 'with_gpg_key.dart';
@@ -16,9 +16,12 @@ base mixin BuildFlatpakBundleConfig
         UpdateOverridesConfig,
         GenerateBuildNumberConfig,
         WithGpgKeyConfig {
-  late Expression sdkVersion;
-  late Expression bundleName;
-  late Expression manifestPath;
+  late final sdkVersion = inputContext(WorkflowInputs.flatpakSdkVersion);
+  late final bundleName = inputContext(WorkflowInputs.bundleName);
+  late final manifestPath = inputContext(WorkflowInputs.manifestPath);
+
+  @override
+  bool get requireGpgKey => true;
 }
 
 enum FlatpakArchMatrixSelector implements IMatrixSelector {

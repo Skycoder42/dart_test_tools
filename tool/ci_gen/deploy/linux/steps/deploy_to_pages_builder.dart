@@ -6,7 +6,10 @@ import '../../../types/expression.dart';
 import '../../../types/step.dart';
 import 'with_gpg_key.dart';
 
-base mixin DeployToPagesConfig on JobConfig, WithGpgKeyConfig {}
+base mixin DeployToPagesConfig on JobConfig, WithGpgKeyConfig {
+  @override
+  bool get requireGpgKey => false;
+}
 
 class DeployToPagesBuilder implements StepBuilder {
   static const _gpPagesBranch = 'gh-pages';

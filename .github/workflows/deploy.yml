@@ -11,21 +11,21 @@ on:
         required: false
         default: stable
         description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
-      workingDirectory:
-        type: string
-        required: false
-        default: .
-        description: The root directory of the dart package to build and test.
-      tagPrefix:
-        type: string
-        required: false
-        default: v
-        description: The prefix of git tags. The tag is the prefix, followed by the package version.
       persistCredentials:
         type: boolean
         required: false
         default: false
         description: Specifies, whether git credentials should be persisted for the run. Might be needed in case the repository is a private repository to figure out whether a new release is required or not.
+      tagPrefix:
+        type: string
+        required: false
+        default: v
+        description: The prefix of git tags. The tag is the prefix, followed by the package version.
+      workingDirectory:
+        type: string
+        required: false
+        default: .
+        description: The root directory of the dart package to build and test.
       enabledPlatforms:
         type: string
         required: true
@@ -74,12 +74,12 @@ on:
       googlePlayKey:
         required: false
         description: The google play api upload JSON key. Needed by fastlane to actually publish the app.
-      gpgKey:
-        required: false
-        description: The GPG key to sign the flatpak bundle and repository with.
       gpgKeyId:
         required: false
         description: The id of the gpgKey
+      gpgKey:
+        required: false
+        description: The GPG key to sign the flatpak bundle and repository with.
       targetRepoToken:
         required: false
         description: A GitHub PAT that has the permission to push commits to the targetRepo.

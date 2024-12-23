@@ -1,27 +1,28 @@
+import '../../../common/api/job_config.dart';
 import '../../../common/api/step_builder.dart';
+import '../../../common/api/working_directory_config.dart';
 import '../../../common/contexts.dart';
+import '../../../common/inputs.dart';
+import '../../../common/secrets.dart';
 import '../../../common/steps/checkout_builder.dart';
 import '../../../common/tools.dart';
 import '../../../types/expression.dart';
 import '../../../types/step.dart';
 
+base mixin DeployWindowsInstallerConfig on JobConfig, WorkingDirectoryConfig {
+  late final isDraft = inputContext(WorkflowInputs.isDraft);
+  late final flightId = inputContext(WorkflowInputs.flightId);
+  late final tenantId = secretContext(WorkflowSecrets.tenantId);
+  late final sellerId = secretContext(WorkflowSecrets.sellerId);
+  late final clientId = secretContext(WorkflowSecrets.clientId);
+  late final clientSecret = secretContext(WorkflowSecrets.clientSecret);
+}
+
 class DeployWindowsInstallerBuilder implements StepBuilder {
-  final Expression workingDirectory;
-  final Expression isDraft;
-  final Expression flightId;
-  final Expression tenantId;
-  final Expression sellerId;
-  final Expression clientId;
-  final Expression clientSecret;
+  final DeployWindowsInstallerConfig config;
 
   const DeployWindowsInstallerBuilder({
-    required this.workingDirectory,
-    required this.isDraft,
-    required this.flightId,
-    required this.tenantId,
-    required this.clientId,
-    required this.clientSecret,
-    required this.sellerId,
+    required this.config,
   });
 
   @override
@@ -36,32 +37,32 @@ class DeployWindowsInstallerBuilder implements StepBuilder {
           uses: Tools.actionsDownloadArtifact,
           withArgs: {
             'name': 'app-deployment-windows',
-            'path': '$workingDirectory/build/windows/msix',
+            'path': '${config.workingDirectory}/build/windows/msix',
           },
         ),
         Step.run(
           name: 'Configure msstore cli',
           run: 'msstore reconfigure '
-              "--tenantId '$tenantId' "
-              "--sellerId '$sellerId' "
-              "--clientId '$clientId' "
-              "--clientSecret '$clientSecret'",
-          workingDirectory: workingDirectory.toString(),
+              "--tenantId '${config.tenantId}' "
+              "--sellerId '${config.sellerId}' "
+              "--clientId '${config.clientId}' "
+              "--clientSecret '${config.clientSecret}'",
+          workingDirectory: config.workingDirectory.toString(),
         ),
         Step.run(
           name: 'Publish MSIX to the Microsoft Store',
           run: 'msstore publish $_draftArgs $_flightIdArgs',
-          workingDirectory: workingDirectory.toString(),
+          workingDirectory: config.workingDirectory.toString(),
         ),
       ];
 
   Expression get _draftArgs =>
-      isDraft.eq(const Expression.literal('true')) &
+      config.isDraft.eq(const Expression.literal('true')) &
           const Expression.literal('--noCommit') |
       Expression.empty;
 
   Expression get _flightIdArgs =>
-      flightId.ne(Expression.empty) &
-          Functions.format("--flightId ''{0}''", [flightId]) |
+      config.flightId.ne(Expression.empty) &
+          Functions.format("--flightId ''{0}''", [config.flightId]) |
       Expression.empty;
 }

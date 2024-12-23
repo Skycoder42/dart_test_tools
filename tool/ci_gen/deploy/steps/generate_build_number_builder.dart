@@ -1,12 +1,12 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
-import '../../types/expression.dart';
+import '../../common/api/working_directory_config.dart';
+import '../../common/inputs.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 
-base mixin GenerateBuildNumberConfig on JobConfig {
-  late Expression buildNumberArgs;
-  late Expression workingDirectory;
+base mixin GenerateBuildNumberConfig on JobConfig, WorkingDirectoryConfig {
+  late final buildNumberArgs = inputContext(WorkflowInputs.buildNumberArgs);
 }
 
 class GenerateBuildNumberBuilder implements StepBuilder {

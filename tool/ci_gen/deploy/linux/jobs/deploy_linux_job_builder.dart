@@ -2,6 +2,7 @@ import '../../../common/api/job_builder.dart';
 import '../../../common/api/job_config.dart';
 import '../../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../../common/environments.dart';
+import '../../../common/inputs.dart';
 import '../../../common/secrets.dart';
 import '../../../common/steps/validate_inputs_builder.dart';
 import '../../../flutter/flutter_platform.dart';
@@ -15,19 +16,11 @@ import '../steps/with_gpg_key.dart';
 
 final class DeployLinuxJobConfig extends JobConfig
     with WithGpgKeyConfig, DeployToPagesConfig {
-  final Expression enabledPlatforms;
-  final Expression flatpakPlatformImage;
+  late final enabledPlatforms = inputContext(WorkflowInputs.enabledPlatforms);
+  late final flatpakPlatformImage =
+      inputContext(WorkflowInputs.flatpakPlatformImage);
 
-  DeployLinuxJobConfig({
-    required this.enabledPlatforms,
-    required this.flatpakPlatformImage,
-    required Expression gpgKeyId,
-    required Expression gpgKey,
-  }) {
-    this.gpgKeyId = gpgKeyId;
-    this.gpgKey = gpgKey;
-    expand();
-  }
+  DeployLinuxJobConfig(super.inputContext, super.secretContext);
 }
 
 class DeployLinuxJobBuilder implements JobBuilder {

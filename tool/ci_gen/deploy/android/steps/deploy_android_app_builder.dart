@@ -1,17 +1,19 @@
 import '../../../common/api/job_config.dart';
 import '../../../common/api/step_builder.dart';
+import '../../../common/api/working_directory_config.dart';
 import '../../../common/contexts.dart';
+import '../../../common/inputs.dart';
+import '../../../common/secrets.dart';
 import '../../../common/steps/checkout_builder.dart';
 import '../../../common/tools.dart';
-import '../../../types/expression.dart';
 import '../../../types/id.dart';
 import '../../../types/step.dart';
 
-base mixin DeployAndroidConfig on JobConfig {
-  late Expression workingDirectory;
-  late Expression googlePlayTrack;
-  late Expression googlePlayReleaseStatus;
-  late Expression googlePlayKey;
+base mixin DeployAndroidConfig on JobConfig, WorkingDirectoryConfig {
+  late final googlePlayTrack = inputContext(WorkflowInputs.googlePlayTrack);
+  late final googlePlayReleaseStatus =
+      inputContext(WorkflowInputs.googlePlayReleaseStatus);
+  late final googlePlayKey = secretContext(WorkflowSecrets.googlePlayKey);
 }
 
 class DeployAndroidAppBuilder implements StepBuilder {

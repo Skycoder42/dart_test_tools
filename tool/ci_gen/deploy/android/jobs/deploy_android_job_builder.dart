@@ -1,7 +1,9 @@
 import '../../../common/api/job_builder.dart';
 import '../../../common/api/job_config.dart';
 import '../../../common/api/platform_matrix_job_builder_mixin.dart';
+import '../../../common/api/working_directory_config.dart';
 import '../../../common/environments.dart';
+import '../../../common/inputs.dart';
 import '../../../common/secrets.dart';
 import '../../../common/steps/validate_inputs_builder.dart';
 import '../../../flutter/flutter_platform.dart';
@@ -11,22 +13,11 @@ import '../../../types/job.dart';
 import '../../../types/runs_on.dart';
 import '../steps/deploy_android_app_builder.dart';
 
-final class DeployAndroidJobConfig extends JobConfig with DeployAndroidConfig {
-  final Expression enabledPlatforms;
+final class DeployAndroidJobConfig extends JobConfig
+    with WorkingDirectoryConfig, DeployAndroidConfig {
+  late final enabledPlatforms = inputContext(WorkflowInputs.enabledPlatforms);
 
-  DeployAndroidJobConfig({
-    required this.enabledPlatforms,
-    required Expression workingDirectory,
-    required Expression googlePlayTrack,
-    required Expression googlePlayReleaseStatus,
-    required Expression googlePlayKey,
-  }) {
-    this.workingDirectory = workingDirectory;
-    this.googlePlayTrack = googlePlayTrack;
-    this.googlePlayReleaseStatus = googlePlayReleaseStatus;
-    this.googlePlayKey = googlePlayKey;
-    expand();
-  }
+  DeployAndroidJobConfig(super.inputContext, super.secretContext);
 }
 
 final class DeployAndroidJobBuilder implements JobBuilder {

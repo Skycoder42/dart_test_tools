@@ -1,53 +1,34 @@
+import '../../../common/api/job_config.dart';
 import '../../../common/api/step_builder.dart';
-import '../../../types/expression.dart';
 import '../../../types/step.dart';
 import '../../steps/build_app_builder.dart';
 
+base mixin BuildWindowsInstallerConfig on JobConfig, BuildAppConfig {
+  @override
+  String get buildTarget => 'windows';
+
+  @override
+  String get artifactDir => 'build/windows/msix';
+}
+
 class BuildWindowsInstallerBuilder implements StepBuilder {
-  final Expression workingDirectory;
-  final Expression removePubspecOverrides;
-  final Expression artifactDependencies;
-  final Expression buildRunner;
-  final Expression buildRunnerArgs;
-  final Expression buildNumberArgs;
-  final Expression dartDefines;
-  final String pubTool;
-  final String runTool;
+  final BuildWindowsInstallerConfig config;
 
   const BuildWindowsInstallerBuilder({
-    required this.workingDirectory,
-    required this.removePubspecOverrides,
-    required this.artifactDependencies,
-    required this.buildRunner,
-    required this.buildRunnerArgs,
-    required this.buildNumberArgs,
-    required this.dartDefines,
-    required this.pubTool,
-    required this.runTool,
+    required this.config,
   });
 
   @override
   Iterable<Step> build() => [
         ...BuildAppBuilder(
-          workingDirectory: workingDirectory,
-          removePubspecOverrides:
-              ExpressionOrValue.expression(removePubspecOverrides),
-          artifactDependencies: artifactDependencies,
-          buildRunner: buildRunner,
-          buildRunnerArgs: buildRunnerArgs,
-          buildNumberArgs: buildNumberArgs,
-          dartDefines: dartDefines,
-          pubTool: pubTool,
-          runTool: runTool,
-          buildTarget: 'windows',
-          artifactDir: 'build/windows/msix',
+          config: config,
           packageSteps: [
             Step.run(
               name: 'Create msix package',
               run: 'dart run msix:create --release --store '
                   '--build-windows false '
                   r'--output-path build\windows\msix',
-              workingDirectory: workingDirectory.toString(),
+              workingDirectory: config.workingDirectory.toString(),
             ),
           ],
         ).build(),

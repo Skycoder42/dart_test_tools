@@ -1,4 +1,6 @@
+import '../../../common/api/job_config.dart';
 import '../../../common/api/platform_matrix_job_builder_mixin.dart';
+import '../../../common/api/working_directory_config.dart';
 import '../../../common/environments.dart';
 import '../../../common/inputs.dart';
 import '../../../common/jobs/sdk_job_builder.dart';
@@ -12,25 +14,26 @@ import '../../../types/job.dart';
 import '../../../types/runs_on.dart';
 import '../steps/deploy_to_tap_builder.dart';
 
-final class DeployMacosJobBuilder extends SdkJobBuilder
-    with DartSdkJobBuilderMixin {
+final class DeployMacosJobConfig extends JobConfig
+    with
+        SdkJobConfig,
+        WorkingDirectoryConfig,
+        DeployToTapConfig,
+        DartSdkJobConfig {
+  late final enabledPlatforms = inputContext(WorkflowInputs.enabledPlatforms);
+
+  DeployMacosJobConfig(super.inputContext, super.secretContext);
+}
+
+final class DeployMacosJobBuilder extends SdkJobBuilder<DeployMacosJobConfig>
+    with DartSdkJobBuilderMixin<DeployMacosJobConfig> {
   final JobIdOutput releaseCreated;
   final JobIdOutput releaseVersion;
-  final Expression enabledPlatforms;
-  @override
-  final Expression dartSdkVersion;
-  final Expression targetRepo;
-  final Expression workingDirectory;
-  final Expression targetRepoToken;
 
   const DeployMacosJobBuilder({
     required this.releaseCreated,
     required this.releaseVersion,
-    required this.enabledPlatforms,
-    required this.dartSdkVersion,
-    required this.targetRepo,
-    required this.workingDirectory,
-    required this.targetRepoToken,
+    required super.config,
   });
 
   @override
@@ -44,22 +47,19 @@ final class DeployMacosJobBuilder extends SdkJobBuilder
         ifExpression:
             releaseCreated.expression.eq(const Expression.literal('true')) &
                 EnabledPlatforms.check(
-                  enabledPlatforms,
+                  config.enabledPlatforms,
                   Expression.literal(FlutterPlatform.macos.platform),
                 ),
         environment: Environments.homebrew,
         steps: [
           ...ValidateInputsBuilder({
-            WorkflowInputs.targetRepo.name: targetRepo,
-            WorkflowSecrets.targetRepoToken.name: targetRepoToken,
+            WorkflowInputs.targetRepo.name: config.targetRepo,
+            WorkflowSecrets.targetRepoToken.name: config.targetRepoToken,
           }).build(),
           ...buildSetupSdkSteps(),
           ...DeployToTapBuilder(
-            targetRepo: targetRepo,
-            workingDirectory: workingDirectory,
+            config: config,
             releaseVersion: releaseVersion.expression,
-            targetRepoToken: targetRepoToken,
-            pubTool: pubTool,
           ).build(),
         ],
       );

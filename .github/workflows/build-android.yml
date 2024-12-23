@@ -16,21 +16,26 @@ on:
         required: false
         default: .
         description: The root directory of the dart package to build and test.
+      primaryLocale:
+        type: string
+        required: false
+        default: en-US
+        description: The default locale of the app. This is used to set the language of the generated changelogs
       removePubspecOverrides:
         type: boolean
         required: false
         default: true
         description: Disables pubspec_overrides.yaml cleanup if set to false.
-      localResolution:
-        type: boolean
-        required: false
-        default: true
-        description: Disables workspaces if set to true (the default).
       artifactDependencies:
         type: string
         required: false
         default: ""
         description: A space-separated list of package names that should be downloaded from the artifacts and overwritten for the workflow. The packages should be space separated and placed in a single line. You can use the YAML ">-" for that.
+      localResolution:
+        type: boolean
+        required: false
+        default: true
+        description: Disables workspaces if set to true (the default).
       buildRunner:
         type: boolean
         required: false
@@ -45,12 +50,13 @@ on:
         required: false
         default: ""
         description: Additional args for the build number generator.
-      primaryLocale:
-        type: string
-        required: false
-        default: en-US
-        description: The default locale of the app. This is used to set the language of the generated changelogs
     secrets:
+      keystore:
+        required: true
+        description: A base64 encoded java keystore used for signing the android app. Use "cat keystore.jks | openssl base64" to encode it.
+      keystorePassword:
+        required: true
+        description: The primary password for the signing keystore. Must be the password for both, keystore and signing key.
       dartDefines:
         required: false
         description: |
@@ -58,12 +64,6 @@ on:
 
           VARIABLE1=value1
           VARIABLE2=value2
-      keystore:
-        required: true
-        description: A base64 encoded java keystore used for signing the android app. Use "cat keystore.jks | openssl base64" to encode it.
-      keystorePassword:
-        required: true
-        description: The primary password for the signing keystore. Must be the password for both, keystore and signing key.
 jobs:
   build_android:
     name: Build android app bundle

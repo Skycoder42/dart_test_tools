@@ -1,8 +1,6 @@
 import '../../common/api/workflow_builder.dart';
 import '../../common/api/workflow_input.dart';
 import '../../common/api/workflow_secret.dart';
-import '../../common/inputs.dart';
-import '../../common/secrets.dart';
 import '../../types/on.dart';
 import '../../types/workflow.dart';
 import '../../types/workflow_call.dart';
@@ -20,27 +18,19 @@ class BuildWindowsWorkflow implements WorkflowBuilder {
     final secretContext = WorkflowSecretContext();
 
     final buildWindowsJobBuilder = BuildWindowsJobBuilder(
-      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      removePubspecOverrides:
-          inputContext(WorkflowInputs.removePubspecOverrides),
-      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
-      buildRunner: inputContext(WorkflowInputs.buildRunner),
-      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-      buildNumberArgs: inputContext(WorkflowInputs.buildNumberArgs),
-      dartDefines: secretContext(WorkflowSecrets.dartDefines),
+      config: BuildWindowsJobConfig(inputContext, secretContext),
     );
 
     return Workflow(
+      jobs: {
+        buildWindowsJobBuilder.id: buildWindowsJobBuilder.build(),
+      },
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
           secrets: secretContext.createSecrets(),
         ),
       ),
-      jobs: {
-        buildWindowsJobBuilder.id: buildWindowsJobBuilder.build(),
-      },
     );
   }
 }

@@ -1,14 +1,15 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/api/working_directory_config.dart';
 import '../../common/contexts.dart';
+import '../../common/secrets.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
-base mixin FlutterBuildConfig on JobConfig {
-  late Expression workingDirectory;
-  late Expression dartDefines;
-  late String buildTarget;
-  String? buildArgs;
+base mixin FlutterBuildConfig on JobConfig, WorkingDirectoryConfig {
+  late final dartDefines = secretContext(WorkflowSecrets.dartDefines);
+  String get buildTarget;
+  String? get buildArgs => null;
 }
 
 class FlutterBuildBuilder implements StepBuilder {

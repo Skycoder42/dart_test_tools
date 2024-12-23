@@ -1,61 +1,61 @@
 on:
   workflow_call:
     inputs:
-      dartSdkVersion:
-        type: string
-        required: false
-        default: stable
-        description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
       flatpakPlatformImage:
         type: string
         required: false
         default: flatpak-github-actions:gnome-47
         description: The docker image to be used to build the bundle with
+      dartSdkVersion:
+        type: string
+        required: false
+        default: stable
+        description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
       flatpakSdkVersion:
         type: string
         required: false
         default: "24.08"
         description: The version of the freedesktop sdk and runtime being used.
-      bundleName:
-        type: string
-        required: true
-        description: The output flatpak bundle name.
-      workingDirectory:
-        type: string
-        required: false
-        default: .
-        description: The root directory of the dart package to build and test.
       removePubspecOverrides:
         type: boolean
         required: false
         default: true
         description: Disables pubspec_overrides.yaml cleanup if set to false.
-      localResolution:
-        type: boolean
+      workingDirectory:
+        type: string
         required: false
-        default: true
-        description: Disables workspaces if set to true (the default).
+        default: .
+        description: The root directory of the dart package to build and test.
       artifactDependencies:
         type: string
         required: false
         default: ""
         description: A space-separated list of package names that should be downloaded from the artifacts and overwritten for the workflow. The packages should be space separated and placed in a single line. You can use the YAML ">-" for that.
+      localResolution:
+        type: boolean
+        required: false
+        default: true
+        description: Disables workspaces if set to true (the default).
       buildNumberArgs:
         type: string
         required: false
         default: ""
         description: Additional args for the build number generator.
+      bundleName:
+        type: string
+        required: true
+        description: The output flatpak bundle name.
       manifestPath:
         type: string
         required: true
         description: The path to the flatpak manifest to be built.
     secrets:
-      gpgKey:
-        required: true
-        description: The GPG key to sign the flatpak bundle and repository with.
       gpgKeyId:
         required: true
         description: The id of the gpgKey
+      gpgKey:
+        required: true
+        description: The GPG key to sign the flatpak bundle and repository with.
 jobs:
   build_linux:
     name: Build linux flatpak bundle

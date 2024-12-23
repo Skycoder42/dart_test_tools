@@ -1,22 +1,22 @@
 import '../../../common/api/job_config.dart';
 import '../../../common/api/step_builder.dart';
 import '../../../common/contexts.dart';
-import '../../../types/expression.dart';
+import '../../../common/inputs.dart';
+import '../../../common/secrets.dart';
 import '../../../types/step.dart';
 import '../../steps/build_app_builder.dart';
 import '../../steps/generate_build_number_builder.dart';
 
 base mixin BuildAndroidAppConfig on JobConfig, BuildAppConfig {
-  late Expression primaryLocale;
-  late Expression keystore;
-  late Expression keystorePassword;
+  late final primaryLocale = inputContext(WorkflowInputs.primaryLocale);
+  late final keystore = secretContext(WorkflowSecrets.keystore);
+  late final keystorePassword = secretContext(WorkflowSecrets.keystorePassword);
 
   @override
-  void expand() {
-    buildTarget = 'appbundle';
-    artifactDir = 'build/app/outputs';
-    super.expand();
-  }
+  String get buildTarget => 'appbundle';
+
+  @override
+  String get artifactDir => 'build/app/outputs';
 }
 
 class BuildAndroidAppBuilder implements StepBuilder {
