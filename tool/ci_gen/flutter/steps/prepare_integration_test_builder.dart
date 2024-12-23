@@ -1,5 +1,7 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/api/working_directory_config.dart';
+import '../../common/inputs.dart';
 import '../../common/jobs/sdk_job_builder.dart';
 import '../../common/steps/cache_builder.dart';
 import '../../common/steps/project_prepare_builder.dart';
@@ -10,34 +12,75 @@ import '../../types/id.dart';
 import '../../types/step.dart';
 
 base mixin PrepareIntegrationTestConfig on ProjectSetupConfig {
-  late Expression integrationTestSetup;
-  late Expression integrationTestProject;
-  late Expression integrationTestCacheConfig;
+  late final integrationTestSetup =
+      inputContext(WorkflowInputs.integrationTestSetup);
+  late final integrationTestProject =
+      inputContext(WorkflowInputs.integrationTestProject);
+  late final integrationTestCacheConfig =
+      inputContext(WorkflowInputs.integrationTestCacheConfig);
+
+  @override
+  bool get withBuildRunner => true;
+
+  @override
+  late final removePubspecOverrides = ExpressionOrValue.expression(
+    inputContext(WorkflowInputs.removePubspecOverrides),
+  );
+
+  @override
+  late final localResolution = ExpressionOrValue.expression(
+    inputContext(WorkflowInputs.localResolution),
+  );
+
+  @override
+  late final artifactDependencies =
+      inputContext(WorkflowInputs.artifactDependencies);
 
   String get integrationTestWorkingDirectory =>
       '$workingDirectory/$integrationTestProject';
-
-  @override
-  void expand() {
-    isFlutter = const ExpressionOrValue.value(true);
-    super.expand();
-  }
 }
 
 final class _TestProjectConfig extends JobConfig
-    with SdkJobConfig, UpdateOverridesConfig, ProjectPrepareConfig {
-  _TestProjectConfig(PrepareIntegrationTestConfig baseConfig) {
-    workingDirectory = Expression.fake(
-      '${baseConfig.workingDirectory}/${baseConfig.integrationTestProject}',
-    );
-    removePubspecOverrides = baseConfig.removePubspecOverrides;
-    localResolution = const ExpressionOrValue.value(false);
-    isFlutter = const ExpressionOrValue.value(false);
-    baseTool = baseConfig.baseTool;
-    pubTool = baseConfig.pubTool;
-    runTool = baseConfig.runTool;
-    ifExpression = baseConfig.integrationTestProject.ne(Expression.empty);
-  }
+    with
+        SdkJobConfig,
+        WorkingDirectoryConfig,
+        UpdateOverridesConfig,
+        ProjectPrepareConfig {
+  final PrepareIntegrationTestConfig baseConfig;
+
+  @override
+  late final isFlutter = const ExpressionOrValue.value(false);
+
+  @override
+  String get baseTool => baseConfig.baseTool;
+
+  @override
+  String get pubTool => baseConfig.pubTool;
+
+  @override
+  String get runTool => baseConfig.runTool;
+
+  @override
+  // ignore: overridden_fields
+  late final workingDirectory = Expression.fake(
+    '${baseConfig.workingDirectory}/${baseConfig.integrationTestProject}',
+  );
+
+  @override
+  bool get withBuildRunner => false;
+
+  @override
+  late final removePubspecOverrides = baseConfig.removePubspecOverrides;
+
+  @override
+  late final localResolution = const ExpressionOrValue.value(false);
+
+  @override
+  late final ifExpression =
+      baseConfig.integrationTestProject.ne(Expression.empty);
+
+  _TestProjectConfig(this.baseConfig)
+      : super(baseConfig.inputContext, baseConfig.secretContext);
 }
 
 class PrepareIntegrationTestBuilder implements StepBuilder {

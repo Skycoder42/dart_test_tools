@@ -15,25 +15,10 @@ import 'flutter_sdk_job_builder_mixin.dart';
 final class AndroidIntegrationTestJobConfig
     extends CommonIntegrationTestJobConfig
     with SetupGCloudConfig, AndroidIntegrationTestConfig {
-  AndroidIntegrationTestJobConfig({
-    required super.flutterSdkChannel,
-    required Expression super.javaJdkVersion,
-    required super.workingDirectory,
-    required super.artifactDependencies,
-    required super.buildRunner,
-    required super.buildRunnerArgs,
-    required super.removePubspecOverrides,
-    required super.localResolution,
-    required super.integrationTestSetup,
-    required super.integrationTestPaths,
-    required super.integrationTestProject,
-    required super.integrationTestCacheConfig,
-    required Expression firebaseProjectId,
-    required Expression firebaseCredentials,
-  }) {
-    this.firebaseProjectId = firebaseProjectId;
-    this.firebaseCredentials = firebaseCredentials;
-  }
+  @override
+  late final javaJdkVersion = inputContext(WorkflowInputs.javaJdkVersion);
+
+  AndroidIntegrationTestJobConfig(super.inputContext, super.secretContext);
 }
 
 final class AndroidIntegrationTestJobBuilder

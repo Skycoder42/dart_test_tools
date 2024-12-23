@@ -5,11 +5,12 @@ import 'package:yaml_writer/yaml_writer.dart';
 
 import 'ci_gen/common/api/workflow_builder.dart';
 import 'ci_gen/dart/dart_workflow.dart';
+import 'ci_gen/flutter/flutter_workflow.dart';
 
 Future<void> main() async {
   const workflows = [
     DartWorkflow(),
-    // FlutterWorkflow(),
+    FlutterWorkflow(),
     // ReleaseWorkflow(),
     // PublishWorkflow(),
     // CompileWorkflow(),

@@ -1,12 +1,14 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/inputs.dart';
+import '../../common/secrets.dart';
 import '../../common/tools.dart';
-import '../../types/expression.dart';
 import '../../types/step.dart';
 
 base mixin SetupGCloudConfig on JobConfig {
-  late Expression firebaseProjectId;
-  late Expression firebaseCredentials;
+  late final firebaseProjectId = inputContext(WorkflowInputs.firebaseProjectId);
+  late final firebaseCredentials =
+      secretContext(WorkflowSecrets.firebaseCredentials);
 }
 
 class SetupGCloudBuilder implements StepBuilder {

@@ -1,6 +1,11 @@
 on:
   workflow_call:
     inputs:
+      analyzeImage:
+        type: string
+        required: false
+        default: ubuntu-latest
+        description: The Runner-Image to use for the analyze step. Uses ubuntu-latest by default.
       flutterSdkChannel:
         type: string
         required: false
@@ -11,6 +16,11 @@ on:
         required: false
         default: 21
         description: The Java-SDK version (mayor only). Passed as "java-version" to "actions/setup-java".
+      removePubspecOverrides:
+        type: boolean
+        required: false
+        default: true
+        description: Disables pubspec_overrides.yaml cleanup if set to false.
       workingDirectory:
         type: string
         required: false
@@ -21,6 +31,11 @@ on:
         required: false
         default: ""
         description: A space-separated list of package names that should be downloaded from the artifacts and overwritten for the workflow. The packages should be space separated and placed in a single line. You can use the YAML ">-" for that.
+      localResolution:
+        type: boolean
+        required: false
+        default: true
+        description: Disables workspaces if set to true (the default).
       buildRunner:
         type: boolean
         required: false
@@ -30,21 +45,6 @@ on:
         type: string
         required: false
         description: Optional additional arguments to be passed to the build runner.
-      removePubspecOverrides:
-        type: boolean
-        required: false
-        default: true
-        description: Disables pubspec_overrides.yaml cleanup if set to false.
-      localResolution:
-        type: boolean
-        required: false
-        default: true
-        description: Disables workspaces if set to true (the default).
-      analyzeImage:
-        type: string
-        required: false
-        default: ubuntu-latest
-        description: The Runner-Image to use for the analyze step. Uses ubuntu-latest by default.
       panaScoreThreshold:
         type: number
         required: false
@@ -64,24 +64,14 @@ on:
         type: string
         required: false
         description: Files to exclude from test coverage. Passed as command line arguments to a bash script. Excludes should be properly escaped, e.g. 'config.dart "**/*.g.dart"'.
-      integrationTestSetup:
-        type: string
-        required: false
-        default: '{}'
-        description: |
-          A JSON-Matrix with extra setup steps for each platform.
-          contains key-value pairs for each platform with a command to be invoked.
-          The possible keys are the same as the platforms defined in 'platforms'.
-
-          Example:
-          {
-            "linux": "dart run tools/install-deps.dart",
-            "web": "./setup-web.sh"
-          }
       integrationTestPaths:
         type: string
         required: false
         description: Specify directories or paths of integration tests to run. By default, no integration test are run.
+      firebaseProjectId:
+        type: string
+        required: false
+        description: The firebase project id to run the test on.
       integrationTestProject:
         type: string
         required: false
@@ -98,10 +88,20 @@ on:
             "key": "test-cache-key",
             "path": "path/to/cache-dir"
           }
-      firebaseProjectId:
+      integrationTestSetup:
         type: string
         required: false
-        description: The firebase project id to run the test on.
+        default: '{}'
+        description: |
+          A JSON-Matrix with extra setup steps for each platform.
+          contains key-value pairs for each platform with a command to be invoked.
+          The possible keys are the same as the platforms defined in 'platforms'.
+
+          Example:
+          {
+            "linux": "dart run tools/install-deps.dart",
+            "web": "./setup-web.sh"
+          }
     outputs:
       enabledPlatforms:
         value: ${{ jobs.analyze.outputs.platforms }}

@@ -11,19 +11,7 @@ import 'flutter_sdk_job_builder_mixin.dart';
 
 final class DesktopIntegrationTestJobConfig
     extends CommonIntegrationTestJobConfig with DesktopIntegrationTestConfig {
-  DesktopIntegrationTestJobConfig({
-    required super.flutterSdkChannel,
-    required super.workingDirectory,
-    required super.artifactDependencies,
-    required super.buildRunner,
-    required super.buildRunnerArgs,
-    required super.removePubspecOverrides,
-    required super.localResolution,
-    required super.integrationTestSetup,
-    required super.integrationTestPaths,
-    required super.integrationTestProject,
-    required super.integrationTestCacheConfig,
-  });
+  DesktopIntegrationTestJobConfig(super.inputContext, super.secretContext);
 }
 
 final class FlutterIntegrationTestMatrix extends PlatformMatrix {

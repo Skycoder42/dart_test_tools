@@ -1,13 +1,16 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/secrets.dart';
 import '../../common/tools.dart';
-import '../../types/expression.dart';
 import '../../types/step.dart';
 
 base mixin InstallXcodeSigningConfig on JobConfig {
-  late Expression encodedProvisioningProfile;
-  late Expression encodedSigningIdentity;
-  late Expression signingIdentityPassphrase;
+  late final encodedProvisioningProfile =
+      secretContext(WorkflowSecrets.provisioningProfile);
+  late final encodedSigningIdentity =
+      secretContext(WorkflowSecrets.signingIdentity);
+  late final signingIdentityPassphrase =
+      secretContext(WorkflowSecrets.signingIdentityPassphrase);
 }
 
 class InstallXcodeSigningBuilder implements StepBuilder {

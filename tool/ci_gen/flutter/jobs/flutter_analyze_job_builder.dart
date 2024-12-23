@@ -1,25 +1,14 @@
+import '../../common/inputs.dart';
 import '../../common/jobs/analyze_job_builder.dart';
-import '../../types/expression.dart';
 import '../../types/step.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
 final class FlutterAnalyzeJobConfig extends AnalyzeJobConfig
     with FlutterSdkJobConfig {
-  FlutterAnalyzeJobConfig({
-    required super.workingDirectory,
-    required super.artifactDependencies,
-    required super.buildRunner,
-    required super.buildRunnerArgs,
-    required super.removePubspecOverrides,
-    required super.analyzeImage,
-    required super.localResolution,
-    required super.panaScoreThreshold,
-    required Expression flutterSdkChannel,
-    required Expression javaJdkVersion,
-  }) {
-    this.flutterSdkChannel = flutterSdkChannel;
-    this.javaJdkVersion = javaJdkVersion;
-  }
+  @override
+  late final javaJdkVersion = inputContext(WorkflowInputs.javaJdkVersion);
+
+  FlutterAnalyzeJobConfig(super.inputContext, super.secretContext);
 }
 
 final class FlutterAnalyzeJobBuilder

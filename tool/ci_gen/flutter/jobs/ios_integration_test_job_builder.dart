@@ -18,30 +18,7 @@ final class IosIntegrationTestJobConfig extends CommonIntegrationTestJobConfig
         InstallXcodeSigningConfig,
         SetupGCloudConfig,
         IosIntegrationTestConfig {
-  IosIntegrationTestJobConfig({
-    required super.flutterSdkChannel,
-    required super.workingDirectory,
-    required super.artifactDependencies,
-    required super.buildRunner,
-    required super.buildRunnerArgs,
-    required super.removePubspecOverrides,
-    required super.localResolution,
-    required super.integrationTestSetup,
-    required super.integrationTestPaths,
-    required super.integrationTestProject,
-    required super.integrationTestCacheConfig,
-    required Expression encodedProvisioningProfile,
-    required Expression encodedSigningIdentity,
-    required Expression signingIdentityPassphrase,
-    required Expression firebaseProjectId,
-    required Expression firebaseCredentials,
-  }) {
-    this.encodedProvisioningProfile = encodedProvisioningProfile;
-    this.encodedSigningIdentity = encodedSigningIdentity;
-    this.signingIdentityPassphrase = signingIdentityPassphrase;
-    this.firebaseProjectId = firebaseProjectId;
-    this.firebaseCredentials = firebaseCredentials;
-  }
+  IosIntegrationTestJobConfig(super.inputContext, super.secretContext);
 }
 
 final class IosIntegrationTestJobBuilder
