@@ -1,20 +1,12 @@
 import '../../common/api/job_builder.dart';
 import '../../common/api/job_config.dart';
 import '../../common/environments.dart';
-import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
 import '../steps/packagecloud_upload_builder.dart';
 
 final class UploadDebJobConfig extends JobConfig with PackagecloudUploadConfig {
-  UploadDebJobConfig({
-    required Expression repository,
-    required Expression packagecloudToken,
-  }) {
-    this.repository = repository;
-    this.packagecloudToken = packagecloudToken;
-    expand();
-  }
+  UploadDebJobConfig(super.inputContext, super.secretContext);
 }
 
 class UploadDebJobBuilder implements JobBuilder {

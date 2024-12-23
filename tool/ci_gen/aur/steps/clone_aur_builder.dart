@@ -1,11 +1,11 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/contexts.dart';
-import '../../types/expression.dart';
+import '../../common/secrets.dart';
 import '../../types/step.dart';
 
 base mixin CloneAurConfig on JobConfig {
-  late Expression aurSshPrivateKey;
+  late final aurSshPrivateKey = secretContext(WorkflowSecrets.aurSshPrivateKey);
 }
 
 class CloneAurBuilder implements StepBuilder {

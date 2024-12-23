@@ -1,6 +1,6 @@
 import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
-import '../common/inputs.dart';
+import '../common/api/workflow_secret.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
@@ -15,28 +15,22 @@ class PackageWorkflow implements WorkflowBuilder {
   @override
   Workflow build() {
     final inputContext = WorkflowInputContext();
+    final secretContext = WorkflowSecretContext();
 
     final packageJobBuilder = PackageJobBuilder(
-      config: PackageJobConfig(
-        dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-        artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
-        buildRunner: inputContext(WorkflowInputs.buildRunner),
-        buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-        removePubspecOverrides:
-            inputContext(WorkflowInputs.removePubspecOverrides),
-      ),
+      config: PackageJobConfig(inputContext, secretContext),
     );
 
     return Workflow(
-      on: On(
-        workflowCall: WorkflowCall(
-          inputs: inputContext.createInputs(),
-        ),
-      ),
       jobs: {
         packageJobBuilder.id: packageJobBuilder.build(),
       },
+      on: On(
+        workflowCall: WorkflowCall(
+          inputs: inputContext.createInputs(),
+          secrets: secretContext.createSecrets(),
+        ),
+      ),
     );
   }
 }

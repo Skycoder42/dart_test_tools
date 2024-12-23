@@ -1,12 +1,10 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/api/working_directory_config.dart';
 import '../../common/tools.dart';
-import '../../types/expression.dart';
 import '../../types/step.dart';
 
-base mixin MakedebConfig on JobConfig {
-  late Expression workingDirectory;
-}
+base mixin MakedebConfig on JobConfig, WorkingDirectoryConfig {}
 
 class MakedebBuilder implements StepBuilder {
   final MakedebConfig config;

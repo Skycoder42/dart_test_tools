@@ -1,8 +1,6 @@
 import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
 import '../common/api/workflow_secret.dart';
-import '../common/inputs.dart';
-import '../common/secrets.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
@@ -20,27 +18,19 @@ class DockerWorkflow implements WorkflowBuilder {
     final secretContext = WorkflowSecretContext();
 
     final dockerJobBuilder = DockerJobBuilder(
-      config: DockerJobConfig(
-        imageName: inputContext(WorkflowInputs.imageName),
-        version: inputContext(WorkflowInputs.version),
-        extraTags: inputContext(WorkflowInputs.extraTags),
-        dockerPlatforms: inputContext(WorkflowInputs.dockerPlatforms),
-        dockerBuildArgs: inputContext(WorkflowInputs.dockerBuildArgs),
-        dockerHubUsername: secretContext(WorkflowSecrets.dockerHubUsername),
-        dockerHubToken: secretContext(WorkflowSecrets.dockerHubToken),
-      ),
+      config: DockerJobConfig(inputContext, secretContext),
     );
 
     return Workflow(
+      jobs: {
+        dockerJobBuilder.id: dockerJobBuilder.build(),
+      },
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
           secrets: secretContext.createSecrets(),
         ),
       ),
-      jobs: {
-        dockerJobBuilder.id: dockerJobBuilder.build(),
-      },
     );
   }
 }

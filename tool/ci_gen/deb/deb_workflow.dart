@@ -1,8 +1,6 @@
 import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
 import '../common/api/workflow_secret.dart';
-import '../common/inputs.dart';
-import '../common/secrets.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
@@ -21,30 +19,25 @@ class DebWorkflow implements WorkflowBuilder {
     final secretContext = WorkflowSecretContext();
 
     final debDeployJobBuilder = BuildDebJobBuilder(
-      config: BuildDebJobConfig(
-        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      ),
+      config: BuildDebJobConfig(inputContext, secretContext),
     );
 
     final packagecloudUploadJobBuilder = UploadDebJobBuilder(
       packageJobId: debDeployJobBuilder.id,
-      config: UploadDebJobConfig(
-        repository: inputContext(WorkflowInputs.packagecloudRepository),
-        packagecloudToken: secretContext(WorkflowSecrets.packagecloudToken),
-      ),
+      config: UploadDebJobConfig(inputContext, secretContext),
     );
 
     return Workflow(
+      jobs: {
+        debDeployJobBuilder.id: debDeployJobBuilder.build(),
+        packagecloudUploadJobBuilder.id: packagecloudUploadJobBuilder.build(),
+      },
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
           secrets: secretContext.createSecrets(),
         ),
       ),
-      jobs: {
-        debDeployJobBuilder.id: debDeployJobBuilder.build(),
-        packagecloudUploadJobBuilder.id: packagecloudUploadJobBuilder.build(),
-      },
     );
   }
 }

@@ -1,12 +1,12 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/inputs.dart';
 import '../../common/steps/install_dart_test_tools_builder.dart';
 import '../../dart/steps/dart_sdk_builder.dart';
-import '../../types/expression.dart';
 import '../../types/step.dart';
 
 base mixin PrepareArchConfig on JobConfig {
-  late Expression dartSdkVersion;
+  late final dartSdkVersion = inputContext(WorkflowInputs.dartSdkVersion);
 }
 
 class PrepareArchBuilder implements StepBuilder {

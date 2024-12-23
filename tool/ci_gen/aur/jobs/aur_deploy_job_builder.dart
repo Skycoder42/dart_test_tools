@@ -2,7 +2,6 @@ import '../../common/api/job_builder.dart';
 import '../../common/api/job_config.dart';
 import '../../common/steps/checkout_builder.dart';
 import '../../types/container.dart';
-import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
 import '../steps/clone_aur_builder.dart';
@@ -12,14 +11,7 @@ import '../steps/push_aur_builder.dart';
 
 final class AurDeployJobConfig extends JobConfig
     with CloneAurConfig, PrepareArchConfig {
-  AurDeployJobConfig({
-    required Expression dartSdkVersion,
-    required Expression aurSshPrivateKey,
-  }) {
-    this.dartSdkVersion = dartSdkVersion;
-    this.aurSshPrivateKey = aurSshPrivateKey;
-    expand();
-  }
+  AurDeployJobConfig(super.inputContext, super.secretContext);
 }
 
 class AurDeployJobBuilder implements JobBuilder {

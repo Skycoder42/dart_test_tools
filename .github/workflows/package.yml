@@ -6,6 +6,11 @@ on:
         required: false
         default: stable
         description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
+      removePubspecOverrides:
+        type: boolean
+        required: false
+        default: true
+        description: Disables pubspec_overrides.yaml cleanup if set to false.
       workingDirectory:
         type: string
         required: false
@@ -25,11 +30,6 @@ on:
         type: string
         required: false
         description: Optional additional arguments to be passed to the build runner.
-      removePubspecOverrides:
-        type: boolean
-        required: false
-        default: true
-        description: Disables pubspec_overrides.yaml cleanup if set to false.
 jobs:
   package:
     name: Create dart package artifact

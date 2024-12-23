@@ -1,8 +1,6 @@
 import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
 import '../common/api/workflow_secret.dart';
-import '../common/inputs.dart';
-import '../common/secrets.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
@@ -20,22 +18,19 @@ class AurWorkflow implements WorkflowBuilder {
     final secretContext = WorkflowSecretContext();
 
     final aurDeployJobBuilder = AurDeployJobBuilder(
-      config: AurDeployJobConfig(
-        dartSdkVersion: inputContext(WorkflowInputs.dartSdkVersion),
-        aurSshPrivateKey: secretContext(WorkflowSecrets.aurSshPrivateKey),
-      ),
+      config: AurDeployJobConfig(inputContext, secretContext),
     );
 
     return Workflow(
+      jobs: {
+        aurDeployJobBuilder.id: aurDeployJobBuilder.build(),
+      },
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
           secrets: secretContext.createSecrets(),
         ),
       ),
-      jobs: {
-        aurDeployJobBuilder.id: aurDeployJobBuilder.build(),
-      },
     );
   }
 }

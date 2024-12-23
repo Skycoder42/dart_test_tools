@@ -1,18 +1,21 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/inputs.dart';
+import '../../common/secrets.dart';
 import '../../common/tools.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 
 base mixin DockerImageConfig on JobConfig {
-  late Expression imageName;
-  late Expression version;
-  late Expression extraTags;
-  late Expression dockerPlatforms;
-  late Expression dockerBuildArgs;
-  late Expression dockerHubUsername;
-  late Expression dockerHubToken;
+  late final imageName = inputContext(WorkflowInputs.imageName);
+  late final version = inputContext(WorkflowInputs.version);
+  late final extraTags = inputContext(WorkflowInputs.extraTags);
+  late final dockerPlatforms = inputContext(WorkflowInputs.dockerPlatforms);
+  late final dockerBuildArgs = inputContext(WorkflowInputs.dockerBuildArgs);
+  late final dockerHubUsername =
+      secretContext(WorkflowSecrets.dockerHubUsername);
+  late final dockerHubToken = secretContext(WorkflowSecrets.dockerHubToken);
 }
 
 class DockerImageBuilder implements StepBuilder {

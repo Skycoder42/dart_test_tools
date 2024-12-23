@@ -3,10 +3,14 @@ import 'dart:io';
 
 import 'package:yaml_writer/yaml_writer.dart';
 
+import 'ci_gen/aur/aur_workflow.dart';
 import 'ci_gen/common/api/workflow_builder.dart';
 import 'ci_gen/compile/compile_workflow.dart';
 import 'ci_gen/dart/dart_workflow.dart';
+import 'ci_gen/deb/deb_workflow.dart';
+import 'ci_gen/docker/docker_workflow.dart';
 import 'ci_gen/flutter/flutter_workflow.dart';
+import 'ci_gen/package/package_workflow.dart';
 import 'ci_gen/publish/publish_workflow.dart';
 import 'ci_gen/release/release_workflow.dart';
 
@@ -17,10 +21,10 @@ Future<void> main() async {
     ReleaseWorkflow(),
     PublishWorkflow(),
     CompileWorkflow(),
-    // PackageWorkflow(),
-    // AurWorkflow(),
-    // DebWorkflow(),
-    // DockerWorkflow(),
+    PackageWorkflow(),
+    AurWorkflow(),
+    DebWorkflow(),
+    DockerWorkflow(),
     // DeployWorkflow(),
     // BuildAndroidWorkflow(),
     // BuildLinuxWorkflow(),

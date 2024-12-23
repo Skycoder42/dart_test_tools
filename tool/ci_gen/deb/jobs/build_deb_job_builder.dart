@@ -1,19 +1,15 @@
 import '../../common/api/job_builder.dart';
 import '../../common/api/job_config.dart';
+import '../../common/api/working_directory_config.dart';
 import '../../common/steps/checkout_builder.dart';
-import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
 import '../steps/makedeb_builder.dart';
 import '../steps/prepare_deb_builder.dart';
 
-final class BuildDebJobConfig extends JobConfig with MakedebConfig {
-  BuildDebJobConfig({
-    required Expression workingDirectory,
-  }) {
-    this.workingDirectory = workingDirectory;
-    expand();
-  }
+final class BuildDebJobConfig extends JobConfig
+    with WorkingDirectoryConfig, MakedebConfig {
+  BuildDebJobConfig(super.inputContext, super.secretContext);
 }
 
 class BuildDebJobBuilder implements JobBuilder {

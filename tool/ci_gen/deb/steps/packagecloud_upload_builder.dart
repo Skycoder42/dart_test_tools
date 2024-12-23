@@ -1,12 +1,14 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/inputs.dart';
+import '../../common/secrets.dart';
 import '../../common/tools.dart';
-import '../../types/expression.dart';
 import '../../types/step.dart';
 
 base mixin PackagecloudUploadConfig on JobConfig {
-  late Expression repository;
-  late Expression packagecloudToken;
+  late final repository = inputContext(WorkflowInputs.packagecloudRepository);
+  late final packagecloudToken =
+      secretContext(WorkflowSecrets.packagecloudToken);
 }
 
 class PackagecloudUploadBuilder implements StepBuilder {

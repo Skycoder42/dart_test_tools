@@ -1,10 +1,6 @@
 on:
   workflow_call:
     inputs:
-      imageName:
-        type: string
-        required: true
-        description: The name (e.g. owner/image) of the image to be built and published. The name is combined with generated version tags - See version for details.
       version:
         type: string
         required: true
@@ -13,6 +9,10 @@ on:
         type: string
         required: false
         description: A newline separated list of additional docker tags to be published.
+      imageName:
+        type: string
+        required: true
+        description: The name (e.g. owner/image) of the image to be built and published. The name is combined with generated version tags - See version for details.
       dockerPlatforms:
         type: string
         required: false
