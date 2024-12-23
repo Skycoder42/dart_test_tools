@@ -2,11 +2,11 @@ import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../api/job_config.dart';
 import '../api/step_builder.dart';
+import '../api/working_directory_config.dart';
 import '../jobs/sdk_job_builder.dart';
 
-base mixin RunPublishConfig on JobConfig, SdkJobConfig {
-  late Expression workingDirectory;
-}
+base mixin RunPublishConfig
+    on JobConfig, SdkJobConfig, WorkingDirectoryConfig {}
 
 class RunPublishBuilder implements StepBuilder {
   final RunPublishConfig config;

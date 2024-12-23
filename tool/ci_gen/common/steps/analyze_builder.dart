@@ -3,11 +3,30 @@ import '../../types/id.dart';
 import '../../types/step.dart';
 import '../api/job_config.dart';
 import '../api/step_builder.dart';
+import '../inputs.dart';
 import 'project_setup_builder.dart';
 import 'run_publish_builder.dart';
 
 base mixin AnalyzeConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
-  late Expression panaScoreThreshold;
+  late final panaScoreThreshold =
+      inputContext(WorkflowInputs.panaScoreThreshold);
+
+  @override
+  bool get withBuildRunner => true;
+
+  @override
+  late final removePubspecOverrides = ExpressionOrValue.expression(
+    inputContext(WorkflowInputs.removePubspecOverrides),
+  );
+
+  @override
+  late final localResolution = ExpressionOrValue.expression(
+    inputContext(WorkflowInputs.localResolution),
+  );
+
+  @override
+  late final artifactDependencies =
+      inputContext(WorkflowInputs.artifactDependencies);
 }
 
 class AnalyzeBuilder implements StepBuilder {

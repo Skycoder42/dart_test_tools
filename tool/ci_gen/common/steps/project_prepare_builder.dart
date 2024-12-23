@@ -4,14 +4,19 @@ import '../../types/step.dart';
 import '../api/job_config.dart';
 import '../api/step_builder.dart';
 import '../contexts.dart';
+import '../inputs.dart';
 import '../jobs/sdk_job_builder.dart';
 import 'update_overrides_builder.dart';
 
 base mixin ProjectPrepareConfig
     on JobConfig, SdkJobConfig, UpdateOverridesConfig {
-  Expression? buildRunner;
-  Expression? buildRunnerArgs;
-  bool releaseMode = false;
+  bool get withBuildRunner;
+
+  late final buildRunner =
+      withBuildRunner ? inputContext(WorkflowInputs.buildRunner) : null;
+  late final buildRunnerArgs =
+      withBuildRunner ? inputContext(WorkflowInputs.buildRunnerArgs) : null;
+  bool get releaseMode => false;
 }
 
 class ProjectPrepareBuilder implements StepBuilder {

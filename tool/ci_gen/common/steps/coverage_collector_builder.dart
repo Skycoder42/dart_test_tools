@@ -1,18 +1,17 @@
-import '../../types/expression.dart';
 import '../../types/runs_on.dart';
 import '../../types/step.dart';
 import '../api/job_config.dart';
 import '../api/matrix_job_builder_mixin.dart';
 import '../api/platform_matrix_job_builder_mixin.dart';
 import '../api/step_builder.dart';
+import '../api/working_directory_config.dart';
 import '../jobs/sdk_job_builder.dart';
 import '../tools.dart';
 import 'coverage_builder_mixin.dart';
 
 base mixin CoverageCollectorConfig
-    on JobConfig, SdkJobConfig, CoverageBuilderConfig {
-  late Expression workingDirectory;
-  late bool needsFormatting;
+    on JobConfig, SdkJobConfig, WorkingDirectoryConfig, CoverageBuilderConfig {
+  bool get needsFormatting;
 }
 
 final class LcovCleanCommandMatrixProperty

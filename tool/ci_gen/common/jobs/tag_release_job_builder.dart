@@ -1,31 +1,25 @@
-import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
 import '../api/job_builder.dart';
 import '../api/job_config.dart';
+import '../api/working_directory_config.dart';
 import '../contexts.dart';
+import '../inputs.dart';
 import '../steps/release_entry_builder.dart';
 import '../steps/tag_release_builder.dart';
 
 final class TagReleaseJobConfig extends JobConfig
-    with ReleaseEntryConfig, TagReleaseConfig {
-  final Expression releaseRef;
+    with WorkingDirectoryConfig, ReleaseEntryConfig, TagReleaseConfig {
+  late final releaseRef = inputContext(WorkflowInputs.releaseRef);
 
-  TagReleaseJobConfig({
-    required this.releaseRef,
-    required Expression dartSdkVersion,
-    required Expression workingDirectory,
-    required Expression tagPrefix,
-    required Expression persistCredentials,
-    String? binaryArtifactsPattern,
-  }) {
-    this.dartSdkVersion = dartSdkVersion;
-    this.workingDirectory = workingDirectory;
-    this.tagPrefix = tagPrefix;
-    this.persistCredentials = persistCredentials;
-    this.binaryArtifactsPattern = binaryArtifactsPattern;
-    expand();
-  }
+  @override
+  final String? binaryArtifactsPattern;
+
+  TagReleaseJobConfig(
+    super.inputContext,
+    super.secretContext, {
+    required this.binaryArtifactsPattern,
+  });
 }
 
 class TagReleaseJobBuilder implements JobBuilder {

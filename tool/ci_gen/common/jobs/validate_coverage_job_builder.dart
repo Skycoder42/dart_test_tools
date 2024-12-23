@@ -3,24 +3,16 @@ import '../../types/id.dart';
 import '../../types/job.dart';
 import '../api/job_builder.dart';
 import '../api/job_config.dart';
+import '../api/working_directory_config.dart';
+import '../inputs.dart';
 import '../steps/coverage_builder_mixin.dart';
 import '../steps/validate_coverage_builder.dart';
 
 final class ValidateCoverageJobConfig extends JobConfig
-    with CoverageBuilderConfig, ValidateCoverageConfig {
-  final Expression unitTestPaths;
+    with WorkingDirectoryConfig, CoverageBuilderConfig, ValidateCoverageConfig {
+  late final unitTestPaths = inputContext(WorkflowInputs.unitTestPaths);
 
-  ValidateCoverageJobConfig({
-    required Expression workingDirectory,
-    required this.unitTestPaths,
-    required Expression minCoverage,
-    required Expression coverageExclude,
-  }) {
-    this.workingDirectory = workingDirectory;
-    this.minCoverage = minCoverage;
-    this.coverageExclude = coverageExclude;
-    expand();
-  }
+  ValidateCoverageJobConfig(super.inputContext, super.secretContext);
 }
 
 class ValidateCoverageJobBuilder implements JobBuilder {

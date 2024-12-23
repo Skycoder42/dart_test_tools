@@ -1,14 +1,15 @@
-import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../api/job_config.dart';
 import '../api/step_builder.dart';
+import '../api/working_directory_config.dart';
+import '../inputs.dart';
 import '../tools.dart';
 import 'checkout_builder.dart';
 import 'coverage_builder_mixin.dart';
 
-base mixin ValidateCoverageConfig on JobConfig, CoverageBuilderConfig {
-  late Expression workingDirectory;
-  late Expression coverageExclude;
+base mixin ValidateCoverageConfig
+    on JobConfig, WorkingDirectoryConfig, CoverageBuilderConfig {
+  late final coverageExclude = inputContext(WorkflowInputs.coverageExclude);
 }
 
 class ValidateCoverageBuilder implements StepBuilder {

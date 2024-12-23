@@ -2,15 +2,15 @@ import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../api/job_config.dart';
 import '../api/step_builder.dart';
+import '../api/working_directory_config.dart';
 import '../tools.dart';
 
-base mixin UpdateOverridesConfig on JobConfig {
-  late Expression workingDirectory;
-  ExpressionOrValue removePubspecOverrides =
+base mixin UpdateOverridesConfig on JobConfig, WorkingDirectoryConfig {
+  ExpressionOrValue get removePubspecOverrides =>
       const ExpressionOrValue.value(true);
-  Expression? artifactDependencies;
-  ExpressionOrValue localResolution = const ExpressionOrValue.value(true);
-  Expression? ifExpression;
+  Expression? get artifactDependencies => null;
+  ExpressionOrValue get localResolution => const ExpressionOrValue.value(true);
+  Expression? get ifExpression => null;
 }
 
 class UpdateOverridesBuilder implements StepBuilder {

@@ -6,10 +6,10 @@ import '../api/job_builder.dart';
 import '../api/job_config.dart';
 
 base mixin SdkJobConfig on JobConfig {
-  ExpressionOrValue isFlutter = const ExpressionOrValue.value(false);
-  late String baseTool;
-  late String pubTool = '$baseTool pub';
-  late String runTool = '$pubTool run';
+  ExpressionOrValue get isFlutter => const ExpressionOrValue.value(false);
+  String get baseTool;
+  String get pubTool => '$baseTool pub';
+  String get runTool => '$pubTool run';
 }
 
 abstract base class SdkJobBuilder<TConfig extends SdkJobConfig>

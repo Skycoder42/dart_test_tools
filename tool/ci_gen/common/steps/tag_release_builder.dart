@@ -4,14 +4,16 @@ import '../../types/id.dart';
 import '../../types/step.dart';
 import '../api/job_config.dart';
 import '../api/step_builder.dart';
+import '../inputs.dart';
 import '../tools.dart';
 import 'checkout_builder.dart';
 import 'release_entry_builder.dart';
 
 base mixin TagReleaseConfig on JobConfig, ReleaseEntryConfig {
-  late Expression dartSdkVersion;
-  late Expression persistCredentials;
-  String? binaryArtifactsPattern;
+  late final dartSdkVersion = inputContext(WorkflowInputs.dartSdkVersion);
+  late final persistCredentials =
+      inputContext(WorkflowInputs.persistCredentials);
+  String? get binaryArtifactsPattern;
 }
 
 class TagReleaseBuilder implements StepBuilder {

@@ -4,13 +4,31 @@ import '../api/job_config.dart';
 import '../api/matrix_job_builder_mixin.dart';
 import '../api/platform_matrix_job_builder_mixin.dart';
 import '../api/step_builder.dart';
+import '../inputs.dart';
 import 'coverage_collector_builder.dart';
 import 'project_setup_builder.dart';
 
 base mixin UnitTestConfig
     on JobConfig, ProjectSetupConfig, CoverageCollectorConfig {
-  late Expression unitTestPaths;
-  late String coverageArgs;
+  late final unitTestPaths = inputContext(WorkflowInputs.unitTestPaths);
+  String get coverageArgs;
+
+  @override
+  bool get withBuildRunner => true;
+
+  @override
+  late final removePubspecOverrides = ExpressionOrValue.expression(
+    inputContext(WorkflowInputs.removePubspecOverrides),
+  );
+
+  @override
+  late final localResolution = ExpressionOrValue.expression(
+    inputContext(WorkflowInputs.localResolution),
+  );
+
+  @override
+  late final artifactDependencies =
+      inputContext(WorkflowInputs.artifactDependencies);
 }
 
 final class DartTestArgsMatrixProperty

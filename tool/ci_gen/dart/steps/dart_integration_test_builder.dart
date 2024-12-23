@@ -3,6 +3,8 @@ import '../../common/api/matrix_job_builder_mixin.dart';
 import '../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/contexts.dart';
+import '../../common/inputs.dart';
+import '../../common/secrets.dart';
 import '../../common/steps/cache_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../types/expression.dart';
@@ -10,10 +12,31 @@ import '../../types/id.dart';
 import '../../types/step.dart';
 
 base mixin DartIntegrationTestConfig on JobConfig, ProjectSetupConfig {
-  late Expression integrationTestSetup;
-  late Expression integrationTestPaths;
-  late Expression integrationTestEnvVars;
-  late Expression integrationTestCacheConfig;
+  late final integrationTestSetup =
+      inputContext(WorkflowInputs.integrationTestSetup);
+  late final integrationTestPaths =
+      inputContext(WorkflowInputs.integrationTestPaths);
+  late final integrationTestEnvVars =
+      secretContext(WorkflowSecrets.integrationTestEnvVars);
+  late final integrationTestCacheConfig =
+      inputContext(WorkflowInputs.integrationTestCacheConfig);
+
+  @override
+  bool get withBuildRunner => true;
+
+  @override
+  late final removePubspecOverrides = ExpressionOrValue.expression(
+    inputContext(WorkflowInputs.removePubspecOverrides),
+  );
+
+  @override
+  late final localResolution = ExpressionOrValue.expression(
+    inputContext(WorkflowInputs.localResolution),
+  );
+
+  @override
+  late final artifactDependencies =
+      inputContext(WorkflowInputs.artifactDependencies);
 }
 
 final class DartTestArgsMatrixProperty

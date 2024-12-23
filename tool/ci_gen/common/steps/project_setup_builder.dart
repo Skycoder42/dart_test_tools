@@ -7,7 +7,7 @@ import 'checkout_builder.dart';
 import 'project_prepare_builder.dart';
 
 base mixin ProjectSetupConfig on JobConfig, ProjectPrepareConfig {
-  bool skipYqInstall = false;
+  bool get skipYqInstall => false;
 }
 
 class ProjectSetupBuilder implements StepBuilder {

@@ -3,13 +3,18 @@ import '../../types/id.dart';
 import '../../types/step.dart';
 import '../api/job_config.dart';
 import '../api/step_builder.dart';
+import '../api/working_directory_config.dart';
 import '../contexts.dart';
+import '../inputs.dart';
+import '../secrets.dart';
 import '../tools.dart';
 
-base mixin ReleaseEntryConfig on JobConfig {
-  late Expression workingDirectory;
-  late Expression tagPrefix;
-  Expression? githubToken;
+base mixin ReleaseEntryConfig on JobConfig, WorkingDirectoryConfig {
+  bool get withToken => false;
+
+  late final tagPrefix = inputContext(WorkflowInputs.tagPrefix);
+  late final githubToken =
+      withToken ? secretContext(WorkflowSecrets.githubToken) : null;
 }
 
 class ReleaseEntryBuilder implements StepBuilder {
