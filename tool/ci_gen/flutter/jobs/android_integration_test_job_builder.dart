@@ -12,11 +12,12 @@ import '../steps/setup_gcloud_builder.dart';
 import 'common_integration_test_config.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-final class AndroidIntegrationTestJobConfig extends CommonIntegrationTestConfig
+final class AndroidIntegrationTestJobConfig
+    extends CommonIntegrationTestJobConfig
     with SetupGCloudConfig, AndroidIntegrationTestConfig {
   AndroidIntegrationTestJobConfig({
     required super.flutterSdkChannel,
-    required super.javaJdkVersion,
+    required Expression super.javaJdkVersion,
     required super.workingDirectory,
     required super.artifactDependencies,
     required super.buildRunner,

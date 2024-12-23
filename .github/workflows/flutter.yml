@@ -9,7 +9,7 @@ on:
       javaJdkVersion:
         type: number
         required: false
-        default: 17
+        default: 21
         description: The Java-SDK version (mayor only). Passed as "java-version" to "actions/setup-java".
       workingDirectory:
         type: string
@@ -35,6 +35,11 @@ on:
         required: false
         default: true
         description: Disables pubspec_overrides.yaml cleanup if set to false.
+      localResolution:
+        type: boolean
+        required: false
+        default: true
+        description: Disables workspaces if set to true (the default).
       analyzeImage:
         type: string
         required: false
@@ -171,6 +176,14 @@ jobs:
           done
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
+      - name: Switch to local resolution
+        if: inputs.localResolution
+        run: |
+          set -eo pipefail
+          touch pubspec_overrides.yaml
+          yq -i '.resolution=null' pubspec_overrides.yaml
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Restore dart packages
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}
@@ -303,6 +316,14 @@ jobs:
           for package in ${{ inputs.artifactDependencies }}; do
             yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
           done
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Switch to local resolution
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.localResolution
+        run: |
+          set -eo pipefail
+          touch pubspec_overrides.yaml
+          yq -i '.resolution=null' pubspec_overrides.yaml
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
@@ -463,6 +484,14 @@ jobs:
           done
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
+      - name: Switch to local resolution
+        if: inputs.localResolution
+        run: |
+          set -eo pipefail
+          touch pubspec_overrides.yaml
+          yq -i '.resolution=null' pubspec_overrides.yaml
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Restore dart packages
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}
@@ -612,6 +641,14 @@ jobs:
           done
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
+      - name: Switch to local resolution
+        if: inputs.localResolution
+        run: |
+          set -eo pipefail
+          touch pubspec_overrides.yaml
+          yq -i '.resolution=null' pubspec_overrides.yaml
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Restore dart packages
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}
@@ -712,12 +749,6 @@ jobs:
             testArgs: -d windows
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Install JDK Version ${{ inputs.javaJdkVersion }}
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.platform == 'android'
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: ${{ inputs.javaJdkVersion }}
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         uses: subosito/flutter-action@v2
@@ -773,6 +804,14 @@ jobs:
           for package in ${{ inputs.artifactDependencies }}; do
             yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
           done
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Switch to local resolution
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.localResolution
+        run: |
+          set -eo pipefail
+          touch pubspec_overrides.yaml
+          yq -i '.resolution=null' pubspec_overrides.yaml
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
@@ -878,6 +917,14 @@ jobs:
           for package in ${{ inputs.artifactDependencies }}; do
             yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
           done
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Switch to local resolution
+        if: inputs.localResolution
+        run: |
+          set -eo pipefail
+          touch pubspec_overrides.yaml
+          yq -i '.resolution=null' pubspec_overrides.yaml
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages

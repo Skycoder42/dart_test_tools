@@ -4,11 +4,10 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 import '../flutter_platform.dart';
+import '../jobs/common_integration_test_config.dart';
 import 'prepare_integration_test_builder.dart';
 
-base mixin WebIntegrationTestConfig on JobConfig, PrepareIntegrationTestConfig {
-  late Expression integrationTestPaths;
-}
+base mixin WebIntegrationTestConfig on JobConfig, CommonIntegrationTestConfig {}
 
 class WebIntegrationTestBuilder implements StepBuilder {
   static const testSetupCacheStepId = StepId('test-setup-cache');

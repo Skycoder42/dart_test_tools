@@ -29,16 +29,19 @@ class FlutterWorkflow implements WorkflowBuilder {
     final outputContext = WorkflowOutputContext();
 
     final analyzeJobBuilder = FlutterAnalyzeJobBuilder(
-      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
-      javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
-      buildRunner: inputContext(WorkflowInputs.buildRunner),
-      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-      removePubspecOverrides:
-          inputContext(WorkflowInputs.removePubspecOverrides),
-      analyzeImage: inputContext(WorkflowInputs.analyzeImage),
-      panaScoreThreshold: inputContext(WorkflowInputs.panaScoreThreshold),
+      config: FlutterAnalyzeJobConfig(
+        flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
+        javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+        buildRunner: inputContext(WorkflowInputs.buildRunner),
+        buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+        removePubspecOverrides:
+            inputContext(WorkflowInputs.removePubspecOverrides),
+        localResolution: inputContext(WorkflowInputs.localResolution),
+        analyzeImage: inputContext(WorkflowInputs.analyzeImage),
+        panaScoreThreshold: inputContext(WorkflowInputs.panaScoreThreshold),
+      ),
     );
     outputContext.add(
       WorkflowOutputs.enabledPlatforms,
@@ -47,103 +50,119 @@ class FlutterWorkflow implements WorkflowBuilder {
 
     final unitTestBuilder = FlutterUnitTestJobBuilder(
       enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
-      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
-      javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
-      buildRunner: inputContext(WorkflowInputs.buildRunner),
-      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-      removePubspecOverrides:
-          inputContext(WorkflowInputs.removePubspecOverrides),
-      unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
-      minCoverage: inputContext(WorkflowInputs.minCoverage),
+      config: FlutterUnitTestJobConfig(
+        flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
+        javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+        buildRunner: inputContext(WorkflowInputs.buildRunner),
+        buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+        removePubspecOverrides:
+            inputContext(WorkflowInputs.removePubspecOverrides),
+        localResolution: inputContext(WorkflowInputs.localResolution),
+        unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
+        minCoverage: inputContext(WorkflowInputs.minCoverage),
+      ),
     );
 
     final validateCoverageBuilder = ValidateCoverageJobBuilder(
       unitTestJobId: unitTestBuilder.id,
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
-      minCoverage: inputContext(WorkflowInputs.minCoverage),
-      coverageExclude: inputContext(WorkflowInputs.coverageExclude),
+      config: ValidateCoverageJobConfig(
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        unitTestPaths: inputContext(WorkflowInputs.unitTestPaths),
+        minCoverage: inputContext(WorkflowInputs.minCoverage),
+        coverageExclude: inputContext(WorkflowInputs.coverageExclude),
+      ),
     );
 
     final androidIntegrationTestBuilder = AndroidIntegrationTestJobBuilder(
       enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
-      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
-      javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
-      buildRunner: inputContext(WorkflowInputs.buildRunner),
-      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-      removePubspecOverrides:
-          inputContext(WorkflowInputs.removePubspecOverrides),
-      integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
-      integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
-      integrationTestProject:
-          inputContext(WorkflowInputs.integrationTestProject),
-      integrationTestCacheConfig:
-          inputContext(WorkflowInputs.integrationTestCacheConfig),
-      firebaseProjectId: inputContext(WorkflowInputs.firebaseProjectId),
-      firebaseCredentials: secretContext(WorkflowSecrets.firebaseCredentials),
+      config: AndroidIntegrationTestJobConfig(
+        flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
+        javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+        buildRunner: inputContext(WorkflowInputs.buildRunner),
+        buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+        removePubspecOverrides:
+            inputContext(WorkflowInputs.removePubspecOverrides),
+        localResolution: inputContext(WorkflowInputs.localResolution),
+        integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
+        integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
+        integrationTestProject:
+            inputContext(WorkflowInputs.integrationTestProject),
+        integrationTestCacheConfig:
+            inputContext(WorkflowInputs.integrationTestCacheConfig),
+        firebaseProjectId: inputContext(WorkflowInputs.firebaseProjectId),
+        firebaseCredentials: secretContext(WorkflowSecrets.firebaseCredentials),
+      ),
     );
 
     final iosIntegrationTestBuilder = IosIntegrationTestJobBuilder(
       enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
-      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
-      buildRunner: inputContext(WorkflowInputs.buildRunner),
-      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-      removePubspecOverrides:
-          inputContext(WorkflowInputs.removePubspecOverrides),
-      integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
-      integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
-      integrationTestProject:
-          inputContext(WorkflowInputs.integrationTestProject),
-      integrationTestCacheConfig:
-          inputContext(WorkflowInputs.integrationTestCacheConfig),
-      encodedProvisioningProfile:
-          secretContext(WorkflowSecrets.provisioningProfile),
-      encodedSigningIdentity: secretContext(WorkflowSecrets.signingIdentity),
-      signingIdentityPassphrase:
-          secretContext(WorkflowSecrets.signingIdentityPassphrase),
-      firebaseProjectId: inputContext(WorkflowInputs.firebaseProjectId),
-      firebaseCredentials: secretContext(WorkflowSecrets.firebaseCredentials),
+      config: IosIntegrationTestJobConfig(
+        flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+        buildRunner: inputContext(WorkflowInputs.buildRunner),
+        buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+        removePubspecOverrides:
+            inputContext(WorkflowInputs.removePubspecOverrides),
+        localResolution: inputContext(WorkflowInputs.localResolution),
+        integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
+        integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
+        integrationTestProject:
+            inputContext(WorkflowInputs.integrationTestProject),
+        integrationTestCacheConfig:
+            inputContext(WorkflowInputs.integrationTestCacheConfig),
+        encodedProvisioningProfile:
+            secretContext(WorkflowSecrets.provisioningProfile),
+        encodedSigningIdentity: secretContext(WorkflowSecrets.signingIdentity),
+        signingIdentityPassphrase:
+            secretContext(WorkflowSecrets.signingIdentityPassphrase),
+        firebaseProjectId: inputContext(WorkflowInputs.firebaseProjectId),
+        firebaseCredentials: secretContext(WorkflowSecrets.firebaseCredentials),
+      ),
     );
 
     final desktopIntegrationTestBuilder = DesktopIntegrationTestJobBuilder(
       enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
-      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
-      javaJdkVersion: inputContext(WorkflowInputs.javaJdkVersion),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
-      buildRunner: inputContext(WorkflowInputs.buildRunner),
-      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-      removePubspecOverrides:
-          inputContext(WorkflowInputs.removePubspecOverrides),
-      integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
-      integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
-      integrationTestProject:
-          inputContext(WorkflowInputs.integrationTestProject),
-      integrationTestCacheConfig:
-          inputContext(WorkflowInputs.integrationTestCacheConfig),
+      config: DesktopIntegrationTestJobConfig(
+        flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+        buildRunner: inputContext(WorkflowInputs.buildRunner),
+        buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+        removePubspecOverrides:
+            inputContext(WorkflowInputs.removePubspecOverrides),
+        localResolution: inputContext(WorkflowInputs.localResolution),
+        integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
+        integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
+        integrationTestProject:
+            inputContext(WorkflowInputs.integrationTestProject),
+        integrationTestCacheConfig:
+            inputContext(WorkflowInputs.integrationTestCacheConfig),
+      ),
     );
 
     final webIntegrationTestBuilder = WebIntegrationTestJobBuilder(
       enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
-      flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
-      workingDirectory: inputContext(WorkflowInputs.workingDirectory),
-      artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
-      buildRunner: inputContext(WorkflowInputs.buildRunner),
-      buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
-      removePubspecOverrides:
-          inputContext(WorkflowInputs.removePubspecOverrides),
-      integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
-      integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
-      integrationTestProject:
-          inputContext(WorkflowInputs.integrationTestProject),
-      integrationTestCacheConfig:
-          inputContext(WorkflowInputs.integrationTestCacheConfig),
+      config: WebIntegrationTestJobConfig(
+        flutterSdkChannel: inputContext(WorkflowInputs.flutterSdkChannel),
+        workingDirectory: inputContext(WorkflowInputs.workingDirectory),
+        artifactDependencies: inputContext(WorkflowInputs.artifactDependencies),
+        buildRunner: inputContext(WorkflowInputs.buildRunner),
+        buildRunnerArgs: inputContext(WorkflowInputs.buildRunnerArgs),
+        removePubspecOverrides:
+            inputContext(WorkflowInputs.removePubspecOverrides),
+        localResolution: inputContext(WorkflowInputs.localResolution),
+        integrationTestSetup: inputContext(WorkflowInputs.integrationTestSetup),
+        integrationTestPaths: inputContext(WorkflowInputs.integrationTestPaths),
+        integrationTestProject:
+            inputContext(WorkflowInputs.integrationTestProject),
+        integrationTestCacheConfig:
+            inputContext(WorkflowInputs.integrationTestCacheConfig),
+      ),
     );
 
     return Workflow(

@@ -3,23 +3,30 @@ import '../../types/expression.dart';
 import '../../types/step.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-final class FlutterAnalyzeJobBuilder extends AnalyzeJobBuilder
-    with FlutterSdkJobBuilderMixin {
-  @override
-  final Expression flutterSdkChannel;
-  @override
-  final Expression javaJdkVersion;
-
-  const FlutterAnalyzeJobBuilder({
-    required this.flutterSdkChannel,
-    required this.javaJdkVersion,
+final class FlutterAnalyzeJobConfig extends AnalyzeJobConfig
+    with FlutterSdkJobConfig {
+  FlutterAnalyzeJobConfig({
     required super.workingDirectory,
     required super.artifactDependencies,
     required super.buildRunner,
     required super.buildRunnerArgs,
     required super.removePubspecOverrides,
     required super.analyzeImage,
+    required super.localResolution,
     required super.panaScoreThreshold,
+    required Expression flutterSdkChannel,
+    required Expression javaJdkVersion,
+  }) {
+    this.flutterSdkChannel = flutterSdkChannel;
+    this.javaJdkVersion = javaJdkVersion;
+  }
+}
+
+final class FlutterAnalyzeJobBuilder
+    extends AnalyzeJobBuilder<FlutterAnalyzeJobConfig>
+    with FlutterSdkJobBuilderMixin<FlutterAnalyzeJobConfig> {
+  const FlutterAnalyzeJobBuilder({
+    required super.config,
   });
 
   @override
@@ -27,7 +34,7 @@ final class FlutterAnalyzeJobBuilder extends AnalyzeJobBuilder
         Step.run(
           name: 'Static analysis',
           run: 'flutter analyze',
-          workingDirectory: workingDirectory.toString(),
+          workingDirectory: config.workingDirectory.toString(),
         ),
       ];
 }

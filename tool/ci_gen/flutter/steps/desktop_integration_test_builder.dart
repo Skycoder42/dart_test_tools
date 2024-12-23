@@ -6,12 +6,11 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 import '../flutter_platform.dart';
+import '../jobs/common_integration_test_config.dart';
 import 'prepare_integration_test_builder.dart';
 
 base mixin DesktopIntegrationTestConfig
-    on JobConfig, PrepareIntegrationTestConfig {
-  late Expression integrationTestPaths;
-}
+    on JobConfig, CommonIntegrationTestConfig {}
 
 final class TestArgsMatrixProperty extends IMatrixProperty<FlutterPlatform> {
   const TestArgsMatrixProperty();

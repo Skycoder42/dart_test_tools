@@ -3,29 +3,32 @@ import '../../dart/dart_platform.dart';
 import '../../types/expression.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-final class FlutterUnitTestJobBuilder extends UnitTestJobBuilder
-    with FlutterSdkJobBuilderMixin {
-  @override
-  final Expression flutterSdkChannel;
-  @override
-  final Expression javaJdkVersion;
-
-  FlutterUnitTestJobBuilder({
-    required super.enabledPlatformsOutput,
-    required this.flutterSdkChannel,
-    required this.javaJdkVersion,
+final class FlutterUnitTestJobConfig extends UnitTestJobConfig
+    with FlutterSdkJobConfig {
+  FlutterUnitTestJobConfig({
     required super.workingDirectory,
     required super.artifactDependencies,
     required super.buildRunner,
     required super.buildRunnerArgs,
     required super.removePubspecOverrides,
+    required super.localResolution,
     required super.unitTestPaths,
     required super.minCoverage,
+    required Expression flutterSdkChannel,
+    required Expression javaJdkVersion,
+  }) {
+    this.flutterSdkChannel = flutterSdkChannel;
+    this.javaJdkVersion = javaJdkVersion;
+    coverageArgs = '--coverage';
+    needsFormatting = false;
+  }
+}
+
+final class FlutterUnitTestJobBuilder
+    extends UnitTestJobBuilder<FlutterUnitTestJobConfig>
+    with FlutterSdkJobBuilderMixin<FlutterUnitTestJobConfig> {
+  FlutterUnitTestJobBuilder({
+    required super.enabledPlatformsOutput,
+    required super.config,
   }) : super(platformSelectors: DartPlatform.values);
-
-  @override
-  String get coverageArgs => '--coverage';
-
-  @override
-  bool get needsFormatting => false;
 }

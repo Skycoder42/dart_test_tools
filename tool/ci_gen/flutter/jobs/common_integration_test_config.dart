@@ -7,19 +7,23 @@ import '../../types/expression.dart';
 import '../steps/prepare_integration_test_builder.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-base class CommonIntegrationTestConfig extends JobConfig
+base mixin CommonIntegrationTestConfig
+    on JobConfig, PrepareIntegrationTestConfig {
+  late Expression integrationTestPaths;
+}
+
+base class CommonIntegrationTestJobConfig extends JobConfig
     with
         UpdateOverridesConfig,
         ProjectPrepareConfig,
         ProjectSetupConfig,
         PrepareIntegrationTestConfig,
+        CommonIntegrationTestConfig,
         SdkJobConfig,
         FlutterSdkJobConfig {
-  late Expression integrationTestPaths;
-
-  CommonIntegrationTestConfig({
+  CommonIntegrationTestJobConfig({
     required Expression flutterSdkChannel,
-    required Expression javaJdkVersion,
+    Expression? javaJdkVersion,
     required Expression workingDirectory,
     required Expression artifactDependencies,
     required Expression buildRunner,
@@ -27,7 +31,7 @@ base class CommonIntegrationTestConfig extends JobConfig
     required Expression removePubspecOverrides,
     required Expression localResolution,
     required Expression integrationTestSetup,
-    required this.integrationTestPaths,
+    required Expression integrationTestPaths,
     required Expression integrationTestProject,
     required Expression integrationTestCacheConfig,
   }) {
@@ -41,6 +45,7 @@ base class CommonIntegrationTestConfig extends JobConfig
         ExpressionOrValue.expression(removePubspecOverrides);
     this.localResolution = ExpressionOrValue.expression(localResolution);
     this.integrationTestSetup = integrationTestSetup;
+    this.integrationTestPaths = integrationTestPaths;
     this.integrationTestProject = integrationTestProject;
     this.integrationTestCacheConfig = integrationTestCacheConfig;
     expand();

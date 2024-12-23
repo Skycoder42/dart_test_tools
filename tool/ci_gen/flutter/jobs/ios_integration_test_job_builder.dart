@@ -7,46 +7,51 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
 import '../flutter_platform.dart';
+import '../steps/install_xcode_signing_builder.dart';
 import '../steps/ios_integration_test_builder.dart';
+import '../steps/setup_gcloud_builder.dart';
+import 'common_integration_test_config.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-final class IosIntegrationTestJobBuilder extends SdkJobBuilder
-    with FlutterSdkJobBuilderMixin {
+final class IosIntegrationTestJobConfig extends CommonIntegrationTestJobConfig
+    with
+        InstallXcodeSigningConfig,
+        SetupGCloudConfig,
+        IosIntegrationTestConfig {
+  IosIntegrationTestJobConfig({
+    required super.flutterSdkChannel,
+    required super.workingDirectory,
+    required super.artifactDependencies,
+    required super.buildRunner,
+    required super.buildRunnerArgs,
+    required super.removePubspecOverrides,
+    required super.localResolution,
+    required super.integrationTestSetup,
+    required super.integrationTestPaths,
+    required super.integrationTestProject,
+    required super.integrationTestCacheConfig,
+    required Expression encodedProvisioningProfile,
+    required Expression encodedSigningIdentity,
+    required Expression signingIdentityPassphrase,
+    required Expression firebaseProjectId,
+    required Expression firebaseCredentials,
+  }) {
+    this.encodedProvisioningProfile = encodedProvisioningProfile;
+    this.encodedSigningIdentity = encodedSigningIdentity;
+    this.signingIdentityPassphrase = signingIdentityPassphrase;
+    this.firebaseProjectId = firebaseProjectId;
+    this.firebaseCredentials = firebaseCredentials;
+  }
+}
+
+final class IosIntegrationTestJobBuilder
+    extends SdkJobBuilder<IosIntegrationTestJobConfig>
+    with FlutterSdkJobBuilderMixin<IosIntegrationTestJobConfig> {
   final JobIdOutput enabledPlatformsOutput;
-  @override
-  final Expression flutterSdkChannel;
-  final Expression workingDirectory;
-  final Expression artifactDependencies;
-  final Expression buildRunner;
-  final Expression buildRunnerArgs;
-  final Expression removePubspecOverrides;
-  final Expression integrationTestSetup;
-  final Expression integrationTestPaths;
-  final Expression integrationTestProject;
-  final Expression integrationTestCacheConfig;
-  final Expression encodedProvisioningProfile;
-  final Expression encodedSigningIdentity;
-  final Expression signingIdentityPassphrase;
-  final Expression firebaseProjectId;
-  final Expression firebaseCredentials;
 
   IosIntegrationTestJobBuilder({
     required this.enabledPlatformsOutput,
-    required this.flutterSdkChannel,
-    required this.workingDirectory,
-    required this.artifactDependencies,
-    required this.buildRunner,
-    required this.buildRunnerArgs,
-    required this.removePubspecOverrides,
-    required this.integrationTestSetup,
-    required this.integrationTestPaths,
-    required this.integrationTestProject,
-    required this.integrationTestCacheConfig,
-    required this.encodedProvisioningProfile,
-    required this.encodedSigningIdentity,
-    required this.signingIdentityPassphrase,
-    required this.firebaseProjectId,
-    required this.firebaseCredentials,
+    required super.config,
   });
 
   @override
@@ -55,7 +60,7 @@ final class IosIntegrationTestJobBuilder extends SdkJobBuilder
   @override
   Job build() => Job(
         name: 'Integration tests (ios)',
-        ifExpression: integrationTestPaths.ne(Expression.empty) &
+        ifExpression: config.integrationTestPaths.ne(Expression.empty) &
             EnabledPlatforms.check(
               enabledPlatformsOutput.expression,
               Expression.literal(FlutterPlatform.ios.platform),
@@ -67,36 +72,19 @@ final class IosIntegrationTestJobBuilder extends SdkJobBuilder
         steps: [
           ...ValidateInputsBuilder({
             WorkflowSecrets.provisioningProfile.name:
-                encodedProvisioningProfile,
-            WorkflowSecrets.signingIdentity.name: encodedSigningIdentity,
+                config.encodedProvisioningProfile,
+            WorkflowSecrets.signingIdentity.name: config.encodedSigningIdentity,
             WorkflowSecrets.signingIdentityPassphrase.name:
-                signingIdentityPassphrase,
-            WorkflowInputs.firebaseProjectId.name: firebaseProjectId,
-            WorkflowSecrets.firebaseCredentials.name: firebaseCredentials,
+                config.signingIdentityPassphrase,
+            WorkflowInputs.firebaseProjectId.name: config.firebaseProjectId,
+            WorkflowSecrets.firebaseCredentials.name:
+                config.firebaseCredentials,
           }).build(),
           ...buildSetupSdkSteps(
             buildPlatform:
                 ExpressionOrValue.value(FlutterPlatform.ios.platform),
           ),
-          ...IosIntegrationTestBuilder(
-            workingDirectory: workingDirectory,
-            artifactDependencies: artifactDependencies,
-            buildRunner: buildRunner,
-            buildRunnerArgs: buildRunnerArgs,
-            removePubspecOverrides: removePubspecOverrides,
-            integrationTestSetup: integrationTestSetup,
-            integrationTestPaths: integrationTestPaths,
-            integrationTestProject: integrationTestProject,
-            integrationTestCacheConfig: integrationTestCacheConfig,
-            encodedProvisioningProfile: encodedProvisioningProfile,
-            encodedSigningIdentity: encodedSigningIdentity,
-            signingIdentityPassphrase: signingIdentityPassphrase,
-            firebaseProjectId: firebaseProjectId,
-            firebaseCredentials: firebaseCredentials,
-            baseTool: baseTool,
-            pubTool: pubTool,
-            runTool: runTool,
-          ).build(),
+          ...IosIntegrationTestBuilder(config: config).build(),
         ],
       );
 }

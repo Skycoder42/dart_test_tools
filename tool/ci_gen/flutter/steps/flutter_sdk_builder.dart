@@ -39,27 +39,25 @@ class FlutterSdkBuilder implements StepBuilder {
   String get _preCachePlatformArgs =>
       buildPlatform != null ? ' --$buildPlatform' : '';
 
-  Step? _maybeSetupJdk() => buildPlatform?.when(
-        expression: (expression) => _setupJdk(
-          expression.eq(Expression.literal(FlutterPlatform.android.platform)),
-        ),
-        value: (value) =>
-            value == FlutterPlatform.android.platform ? _setupJdk(null) : null,
-      );
+  Step? _maybeSetupJdk() => javaJdkVersion == null
+      ? null
+      : buildPlatform?.when(
+          expression: (expression) => _setupJdk(
+            expression.eq(Expression.literal(FlutterPlatform.android.platform)),
+          ),
+          value: (value) => value == FlutterPlatform.android.platform
+              ? _setupJdk(null)
+              : null,
+        );
 
-  Step _setupJdk(Expression? condition) {
-    assert(
-      javaJdkVersion != null,
-      'javaJdkVersion must be set if platform is dynamic or android!',
-    );
-    return Step.uses(
-      name: 'Install JDK Version $javaJdkVersion',
-      ifExpression: condition != null ? condition & ifExpression : ifExpression,
-      uses: Tools.actionsSetupJava,
-      withArgs: <String, dynamic>{
-        'distribution': 'temurin',
-        'java-version': javaJdkVersion.toString(),
-      },
-    );
-  }
+  Step _setupJdk(Expression? condition) => Step.uses(
+        name: 'Install JDK Version $javaJdkVersion',
+        ifExpression:
+            condition != null ? condition & ifExpression : ifExpression,
+        uses: Tools.actionsSetupJava,
+        withArgs: <String, dynamic>{
+          'distribution': 'temurin',
+          'java-version': javaJdkVersion.toString(),
+        },
+      );
 }

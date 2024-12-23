@@ -6,7 +6,25 @@ import '../../types/id.dart';
 import '../../types/job.dart';
 import '../flutter_platform.dart';
 import '../steps/desktop_integration_test_builder.dart';
+import 'common_integration_test_config.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
+
+final class DesktopIntegrationTestJobConfig
+    extends CommonIntegrationTestJobConfig with DesktopIntegrationTestConfig {
+  DesktopIntegrationTestJobConfig({
+    required super.flutterSdkChannel,
+    required super.workingDirectory,
+    required super.artifactDependencies,
+    required super.buildRunner,
+    required super.buildRunnerArgs,
+    required super.removePubspecOverrides,
+    required super.localResolution,
+    required super.integrationTestSetup,
+    required super.integrationTestPaths,
+    required super.integrationTestProject,
+    required super.integrationTestCacheConfig,
+  });
+}
 
 final class FlutterIntegrationTestMatrix extends PlatformMatrix {
   const FlutterIntegrationTestMatrix() : super(FlutterPlatform.desktop);
@@ -23,40 +41,18 @@ final class FlutterIntegrationTestMatrix extends PlatformMatrix {
       ];
 }
 
-final class DesktopIntegrationTestJobBuilder extends SdkJobBuilder
+final class DesktopIntegrationTestJobBuilder
+    extends SdkJobBuilder<DesktopIntegrationTestJobConfig>
     with
-        FlutterSdkJobBuilderMixin,
+        FlutterSdkJobBuilderMixin<DesktopIntegrationTestJobConfig>,
         MatrixJobBuilderMixin<FlutterIntegrationTestMatrix,
             IPlatformMatrixSelector>,
         PlatformJobBuilderMixin<FlutterIntegrationTestMatrix> {
   final JobIdOutput enabledPlatformsOutput;
-  @override
-  final Expression flutterSdkChannel;
-  @override
-  final Expression javaJdkVersion;
-  final Expression workingDirectory;
-  final Expression artifactDependencies;
-  final Expression buildRunner;
-  final Expression buildRunnerArgs;
-  final Expression removePubspecOverrides;
-  final Expression integrationTestSetup;
-  final Expression integrationTestPaths;
-  final Expression integrationTestProject;
-  final Expression integrationTestCacheConfig;
 
   DesktopIntegrationTestJobBuilder({
     required this.enabledPlatformsOutput,
-    required this.flutterSdkChannel,
-    required this.javaJdkVersion,
-    required this.workingDirectory,
-    required this.artifactDependencies,
-    required this.buildRunner,
-    required this.buildRunnerArgs,
-    required this.removePubspecOverrides,
-    required this.integrationTestSetup,
-    required this.integrationTestPaths,
-    required this.integrationTestProject,
-    required this.integrationTestCacheConfig,
+    required super.config,
   }) : matrix = const FlutterIntegrationTestMatrix();
 
   @override
@@ -71,7 +67,7 @@ final class DesktopIntegrationTestJobBuilder extends SdkJobBuilder
   @override
   Job buildGeneric(String runsOn) => Job(
         name: 'Integration tests (desktop)',
-        ifExpression: integrationTestPaths.ne(Expression.empty),
+        ifExpression: config.integrationTestPaths.ne(Expression.empty),
         needs: {
           enabledPlatformsOutput.jobId,
         },
@@ -82,21 +78,10 @@ final class DesktopIntegrationTestJobBuilder extends SdkJobBuilder
                 ExpressionOrValue.expression(matrix.platform.expression),
           ),
           ...DesktopIntegrationTestBuilder(
-            workingDirectory: workingDirectory,
-            artifactDependencies: artifactDependencies,
-            buildRunner: buildRunner,
-            buildRunnerArgs: buildRunnerArgs,
-            removePubspecOverrides: removePubspecOverrides,
-            integrationTestSetup: integrationTestSetup,
-            integrationTestPaths: integrationTestPaths,
-            integrationTestProject: integrationTestProject,
-            integrationTestCacheConfig: integrationTestCacheConfig,
+            config: config,
             platform: matrix.platform,
             testArgs: matrix.testArgs,
             runPrefix: matrix.runPrefix,
-            baseTool: baseTool,
-            pubTool: pubTool,
-            runTool: runTool,
           ).build(),
         ],
       );
