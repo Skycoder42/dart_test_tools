@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.0.1] - 2024-12-24
+### Changed
+- Updated dependencies
+- Updated min required dart sdk to 3.6.0
+
 ## [6.0.0] - 2024-09-12
 ### Changed
 - Enable strict language checks
@@ -369,6 +374,7 @@ have been added:
 ### Added
 - Initial release
 
+[6.0.1]: https://github.com/Skycoder42/dart_test_tools/compare/v6.0.0...v6.0.1
 [6.0.0]: https://github.com/Skycoder42/dart_test_tools/compare/v5.11.7...v6.0.0
 [5.11.7]: https://github.com/Skycoder42/dart_test_tools/compare/v5.11.6...v5.11.7
 [5.11.6]: https://github.com/Skycoder42/dart_test_tools/compare/v5.11.5...v5.11.6

@@ -1,6 +1,6 @@
 name: dart_test_tools
 description: Additional tools and helpers for writing dart unit tests and GitHub Actions Workflows.
-version: 6.0.0
+version: 6.0.1
 homepage: https://github.com/Skycoder42/dart_test_tools
 
 environment:
@@ -20,7 +20,7 @@ dependencies:
   change: ^0.7.5
   checked_yaml: ^2.0.3
   cider: ^0.2.8
-  collection: ^1.19.1
+  collection: ^1.19.0
   crypto: ^3.0.6
   custom_lint_builder: ^0.7.0
   dotenv: ^4.2.0
@@ -29,15 +29,15 @@ dependencies:
   lint: ^2.3.0
   logging: ^1.3.0
   markdown: ^7.2.2
-  meta: ^1.16.0
+  meta: ^1.15.0
   mocktail: ^1.0.4
-  path: ^1.9.1
+  path: ^1.9.0
   pub_semver: ^2.1.5
   pubspec_parse: ^1.4.0
-  stack_trace: ^1.12.1
-  stream_channel: ^2.1.3
+  stack_trace: ^1.12.0
+  stream_channel: ^2.1.2
   synchronized: ^3.3.0+3
-  test: ^1.25.14
+  test: ^1.25.8
   xml: ^6.5.0
   yaml: ^3.1.3
   yaml_writer: ^2.0.1
@@ -66,4 +66,5 @@ dart_pre_commit:
       - meta
       - path
       - stack_trace
+      - stream_channel
       - test
