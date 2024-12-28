@@ -600,6 +600,8 @@ jobs:
           cache: true
       - name: Download flutter binary artifacts
         run: flutter precache --universal --ios
+      - name: Enable swift package manager
+        run: flutter config --enable-swift-package-manager
       - name: Install scoop
         if: runner.os == 'Windows'
         run: |
@@ -758,6 +760,9 @@ jobs:
       - name: Download flutter binary artifacts
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: flutter precache --universal --${{ matrix.platform }}
+      - name: Enable swift package manager
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && (matrix.platform == 'ios' || matrix.platform == 'macos')
+        run: flutter config --enable-swift-package-manager
       - name: Install test dependencies (linux)
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && matrix.platform == 'linux'
         run: |

@@ -64,6 +64,8 @@ jobs:
           cache: true
       - name: Download flutter binary artifacts
         run: flutter precache --universal --macos
+      - name: Enable swift package manager
+        run: flutter config --enable-swift-package-manager
       - name: Setup NodeJS
         uses: actions/setup-node@v4
       - name: Install appdmg

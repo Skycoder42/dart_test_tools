@@ -34,6 +34,7 @@ class FlutterSdkBuilder implements StepBuilder {
           ifExpression: ifExpression,
           run: 'flutter precache --universal$_preCachePlatformArgs',
         ),
+        if (_maybeEnableSwiftPackageManger() case final Step step) step,
       ];
 
   String get _preCachePlatformArgs =>
@@ -45,12 +46,11 @@ class FlutterSdkBuilder implements StepBuilder {
           expression: (expression) => _setupJdk(
             expression.eq(Expression.literal(FlutterPlatform.android.platform)),
           ),
-          value: (value) => value == FlutterPlatform.android.platform
-              ? _setupJdk(null)
-              : null,
+          value: (value) =>
+              value == FlutterPlatform.android.platform ? _setupJdk() : null,
         );
 
-  Step _setupJdk(Expression? condition) => Step.uses(
+  Step _setupJdk([Expression? condition]) => Step.uses(
         name: 'Install JDK Version $javaJdkVersion',
         ifExpression:
             condition != null ? condition & ifExpression : ifExpression,
@@ -59,5 +59,25 @@ class FlutterSdkBuilder implements StepBuilder {
           'distribution': 'temurin',
           'java-version': javaJdkVersion.toString(),
         },
+      );
+
+  Step? _maybeEnableSwiftPackageManger() => buildPlatform?.when(
+        expression: (expression) => _enableSwiftPackageManger(
+          (expression.eq(Expression.literal(FlutterPlatform.ios.platform)) |
+                  expression
+                      .eq(Expression.literal(FlutterPlatform.macos.platform)))
+              .parenthesized,
+        ),
+        value: (value) => value == FlutterPlatform.ios.platform ||
+                value == FlutterPlatform.macos.platform
+            ? _enableSwiftPackageManger()
+            : null,
+      );
+
+  Step _enableSwiftPackageManger([Expression? condition]) => Step.run(
+        name: 'Enable swift package manager',
+        ifExpression:
+            condition != null ? condition & ifExpression : ifExpression,
+        run: 'flutter config --enable-swift-package-manager',
       );
 }
