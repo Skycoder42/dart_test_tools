@@ -30,9 +30,6 @@ base mixin PublishConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
   bool get skipYqInstall => true;
 
   @override
-  ExpressionOrValue get localResolution => const ExpressionOrValue.value(false);
-
-  @override
   bool get releaseMode => true;
 }
 
