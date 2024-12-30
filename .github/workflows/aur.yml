@@ -59,6 +59,9 @@ jobs:
           echo 'Host aur.archlinux.org' > /etc/ssh/ssh_config
           echo '  IdentityFile ${{ runner.temp }}/ssh-key' >> /etc/ssh/ssh_config
           echo '  User aur' >> /etc/ssh/ssh_config
+
+          echo 'Imported SSH private key for public key:'
+          ssh-keygen -y -f '${{ runner.temp }}/ssh-key'
       - name: Clone AUR repository
         run: git clone "ssh://aur@aur.archlinux.org/$(yq ".name" src/pubspec.yaml).git" ./aur
       - name: Cleanup AUR repository

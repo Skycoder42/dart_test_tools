@@ -62,6 +62,9 @@ chmod 600 '${Runner.temp}/ssh-key'
 echo 'Host aur.archlinux.org' > /etc/ssh/ssh_config
 echo '  IdentityFile ${Runner.temp}/ssh-key' >> /etc/ssh/ssh_config
 echo '  User aur' >> /etc/ssh/ssh_config
+
+echo 'Imported SSH private key for public key:'
+ssh-keygen -y -f '${Runner.temp}/ssh-key'
 ''',
         ),
         const Step.run(
