@@ -61,7 +61,7 @@ lcov $LCOV_ARGS --output-file coverage/combined.info
         ),
         Step.run(
           name: 'Generate coverage report',
-          run: 'genhtml --no-function-coverage '
+          run: 'genhtml --no-function-coverage --synthesize-missing '
               '-o coverage/html coverage/cleaned.info',
           workingDirectory: config.workingDirectory.toString(),
         ),
