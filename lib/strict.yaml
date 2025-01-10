@@ -9,6 +9,7 @@ analyzer:
 linter:
   rules:
     # rules from package:lints/recommended.yaml
+    unintended_html_in_doc_comment: true
     avoid_renaming_method_parameters: true
     invalid_runtime_check_with_js_interop_types: true
     library_private_types_in_public_api: true
@@ -42,7 +43,6 @@ linter:
     prefer_relative_imports: true
     prefer_single_quotes: true
     unawaited_futures: true
-    unintended_html_in_doc_comment: true
     unnecessary_lambdas: true
     use_decorated_box: true
     use_if_null_to_convert_nulls_to_bools: true
@@ -53,4 +53,5 @@ linter:
     implicit_reopen: true
     matching_super_parameters: true
     no_literal_bool_comparisons: true
+    use_truncating_division: true
     # new rules
