@@ -20,8 +20,7 @@ class FreezedClassesMustBeSealed extends DartLintRule {
   ) {
     context.registry.addClassDeclaration((node) {
       if (node.isUnsealedFreezed) {
-        // ignore: deprecated_member_use
-        reporter.reportErrorForToken(_code, node.classKeyword);
+        reporter.atToken(node.classKeyword, _code);
       }
     });
   }

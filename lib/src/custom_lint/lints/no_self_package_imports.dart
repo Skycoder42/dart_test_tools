@@ -40,14 +40,12 @@ class NoSelfPackageImports extends DartLintRule {
       }
 
       if (!_directiveIsValid(contextRoot, node)) {
-        // ignore: deprecated_member_use
-        reporter.reportErrorForNode(_code, node.uri);
+        reporter.atNode(node.uri, _code);
       }
 
       for (final configuration in node.configurations) {
         if (!_configurationIsValid(contextRoot, configuration)) {
-          // ignore: deprecated_member_use
-          reporter.reportErrorForNode(_code, configuration.uri);
+          reporter.atNode(configuration.uri, _code);
         }
       }
     });

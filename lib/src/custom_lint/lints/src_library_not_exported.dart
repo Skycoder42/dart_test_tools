@@ -87,8 +87,7 @@ class SrcLibraryNotExported extends DartLintRule {
       }
 
       for (final element in exportableElements) {
-        // ignore: deprecated_member_use
-        reporter.reportErrorForElement(_code, element);
+        reporter.atElement(element, _code);
       }
     });
   }
