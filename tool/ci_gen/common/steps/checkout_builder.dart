@@ -9,6 +9,7 @@ class CheckoutBuilder implements StepBuilder {
   final Expression? gitRef;
   final ExpressionOrValue? persistCredentials;
   final int? fetchDepth;
+  final Expression? withSubmodules;
   final Expression? token;
 
   const CheckoutBuilder({
@@ -17,6 +18,7 @@ class CheckoutBuilder implements StepBuilder {
     this.gitRef,
     this.persistCredentials,
     this.fetchDepth,
+    this.withSubmodules,
     this.token,
   });
 
@@ -33,6 +35,7 @@ class CheckoutBuilder implements StepBuilder {
             if (repository != null) 'repository': repository.toString(),
             if (gitRef != null) 'ref': gitRef.toString(),
             if (fetchDepth != null) 'fetch-depth': fetchDepth,
+            if (withSubmodules != null) 'submodules': withSubmodules.toString(),
             if (token != null) 'token': token.toString(),
           },
         ),

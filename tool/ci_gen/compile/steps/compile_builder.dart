@@ -29,6 +29,9 @@ base mixin CompileConfig on JobConfig, ProjectSetupConfig {
   late final archivePrefix = inputContext(WorkflowInputs.archivePrefix);
 
   @override
+  late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
+
+  @override
   late final removePubspecOverrides = ExpressionOrValue.expression(
     inputContext(WorkflowInputs.removePubspecOverrides),
   );

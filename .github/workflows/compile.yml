@@ -15,6 +15,11 @@ on:
         required: false
         default: stable
         description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
+      withSubmodules:
+        type: boolean
+        required: false
+        default: false
+        description: Specify if submodules should be initialized or not.
       removePubspecOverrides:
         type: boolean
         required: false
@@ -126,6 +131,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+          submodules: ${{ inputs.withSubmodules }}
       - name: Remove pubspec_overrides.yaml
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && inputs.removePubspecOverrides
         run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;

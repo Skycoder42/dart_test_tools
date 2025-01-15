@@ -12,6 +12,9 @@ base mixin CommonIntegrationTestConfig
     on JobConfig, PrepareIntegrationTestConfig {
   late final integrationTestPaths =
       inputContext(WorkflowInputs.integrationTestPaths);
+
+  @override
+  late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
 }
 
 base class CommonIntegrationTestJobConfig extends JobConfig

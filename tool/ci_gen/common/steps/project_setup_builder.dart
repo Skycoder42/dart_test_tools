@@ -7,6 +7,8 @@ import 'checkout_builder.dart';
 import 'project_prepare_builder.dart';
 
 base mixin ProjectSetupConfig on JobConfig, ProjectPrepareConfig {
+  Expression? get withSubmodules => null;
+
   bool get skipYqInstall => false;
 }
 
@@ -43,7 +45,7 @@ echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
 ''',
           ),
         ],
-        ...const CheckoutBuilder().build(),
+        ...CheckoutBuilder(withSubmodules: config.withSubmodules).build(),
         ...ProjectPrepareBuilder(config: config).build(),
       ];
 }

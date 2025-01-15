@@ -516,4 +516,14 @@ Example:
       description: 'An optional FlightId to publish the MSIX installer to.',
     ),
   );
+
+  static const withSubmodules = WorkflowInput(
+    name: 'withSubmodules',
+    input: Input(
+      type: Type.boolean,
+      required: false,
+      defaultValue: false,
+      description: 'Specify if submodules should be initialized or not.',
+    ),
+  );
 }

@@ -22,6 +22,9 @@ base mixin DartIntegrationTestConfig on JobConfig, ProjectSetupConfig {
       inputContext(WorkflowInputs.integrationTestCacheConfig);
 
   @override
+  late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
+
+  @override
   late final removePubspecOverrides = ExpressionOrValue.expression(
     inputContext(WorkflowInputs.removePubspecOverrides),
   );

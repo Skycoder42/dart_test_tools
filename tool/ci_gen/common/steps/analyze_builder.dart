@@ -12,6 +12,9 @@ base mixin AnalyzeConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
       inputContext(WorkflowInputs.panaScoreThreshold);
 
   @override
+  late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
+
+  @override
   late final removePubspecOverrides = ExpressionOrValue.expression(
     inputContext(WorkflowInputs.removePubspecOverrides),
   );
