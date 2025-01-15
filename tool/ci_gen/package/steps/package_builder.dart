@@ -9,6 +9,9 @@ import '../../types/step.dart';
 
 base mixin PackageConfig on JobConfig, ProjectSetupConfig {
   @override
+  late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
+
+  @override
   late final removePubspecOverrides = ExpressionOrValue.expression(
     inputContext(WorkflowInputs.removePubspecOverrides),
   );

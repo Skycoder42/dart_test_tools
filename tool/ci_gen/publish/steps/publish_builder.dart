@@ -13,6 +13,9 @@ base mixin PublishConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
   late final extraArtifacts = inputContext(WorkflowInputs.extraArtifacts);
 
   @override
+  late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
+
+  @override
   late final isFlutter =
       ExpressionOrValue.expression(inputContext(WorkflowInputs.flutter));
 
