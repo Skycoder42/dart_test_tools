@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'archive.dart';
 import 'github.dart';
+import 'io.dart';
 
 abstract base class Minisign {
   static bool _forceDocker = false;
@@ -30,10 +32,21 @@ abstract base class Minisign {
     } else if (Platform.isMacOS) {
       await Github.exec('brew', const ['install', 'minisign']);
     } else if (Platform.isWindows) {
-      await Github.exec(
-        'scoop',
-        const ['install', 'minisign'],
-        runInShell: true,
+      final client = HttpClient();
+      final minisignZip = await client.download(
+        Github.env.runnerTemp,
+        Uri.parse(
+          'https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-win64.zip',
+        ),
+        withSignature: false,
+      );
+      await Archive.extract(
+        archive: minisignZip,
+        outDir: Github.env.runnerToolCache,
+      );
+
+      await Github.env.addPath(
+        Github.env.runnerToolCache.subDir('minisign-win64').subDir('x86_64'),
       );
     } else {
       throw Exception('Unsupported platform: ${Platform.operatingSystem}');
