@@ -65,11 +65,6 @@ Future<int> _runMinisign(Directory testDir, List<String> arguments) async {
       'jedisct1/minisign',
       ...arguments,
     ];
-  } else if (Platform.isWindows) {
-    final pathFile = File(Platform.environment['GITHUB_PATH']!);
-    final pathLines = await pathFile.readAsLines();
-    executable = Directory(pathLines.last).subFile('minisign.exe').path;
-    fullArgs = arguments;
   } else {
     executable = 'minisign';
     fullArgs = arguments;

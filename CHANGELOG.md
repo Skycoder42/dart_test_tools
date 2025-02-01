@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.0.2+2] - 2025-02-01
+### Fixed
+- Revert workaround for minisign on windows
+
 ## [6.0.2+1] - 2025-01-26
 ### Fixed
 - Applied workaround for minisign on windows (See https://github.com/ScoopInstaller/Main/pull/6461)
@@ -386,6 +390,7 @@ have been added:
 ### Added
 - Initial release
 
+[6.0.2+2]: https://github.com/Skycoder42/dart_test_tools/compare/v6.0.2+1...v6.0.2+2
 [6.0.2+1]: https://github.com/Skycoder42/dart_test_tools/compare/v6.0.2...v6.0.2+1
 [6.0.2]: https://github.com/Skycoder42/dart_test_tools/compare/v6.0.1...v6.0.2
 [6.0.1]: https://github.com/Skycoder42/dart_test_tools/compare/v6.0.0...v6.0.1
