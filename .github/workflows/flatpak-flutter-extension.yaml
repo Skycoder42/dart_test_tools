@@ -40,6 +40,7 @@ jobs:
         run: |
           set -eo pipefail
 
+          mkdir -p '${{ runner.temp }}'
           manifest='${{ runner.temp }}/manifest.json'
           curl -sSLo "$manifest" https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json
           version_hash=$(jq -r '.current_release.stable' "$manifest")
