@@ -4,8 +4,6 @@ analyzer:
     - custom_lint
 linter:
   rules:
-    # rules from package:lint/package.yaml
-    package_api_docs: true
     # custom rules
     avoid_equals_and_hash_code_on_mutable_classes: true
     comment_references: true

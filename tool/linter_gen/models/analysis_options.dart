@@ -27,6 +27,7 @@ class AnalysisOptions with _$AnalysisOptions {
 class AnalysisOptionsAnalyzer with _$AnalysisOptionsAnalyzer {
   @JsonSerializable(anyMap: true, checked: true)
   const factory AnalysisOptionsAnalyzer({
+    @JsonKey(includeIfNull: false) Map<String, dynamic>? language,
     @JsonKey(includeIfNull: false) List<String>? plugins,
   }) = _AnalysisOptionsAnalyzer;
 

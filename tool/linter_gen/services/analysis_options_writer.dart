@@ -16,7 +16,7 @@ class AnalysisOptionsWriter {
   ) async {
     final analysisOptionsPath = target.when(
       local: (path) => path,
-      package: (_, __) => throw Exception('Cannot save options to a package'),
+      package: (_, _) => throw Exception('Cannot save options to a package'),
     );
 
     final file = File(analysisOptionsPath);

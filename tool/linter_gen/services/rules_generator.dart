@@ -21,6 +21,7 @@ class RulesGenerator {
     AnalysisOptionsRef? relativeTo,
     List<AnalysisOptionsRef> mergeOptions = const [],
     AnalysisOptionsRef? customOptions,
+    bool withLanguageRules = false,
   }) async {
     final newRules = await knownRulesLoader.loadNewRules();
 
@@ -51,7 +52,17 @@ class RulesGenerator {
 
     return AnalysisOptions(
       include: baseOptions,
-      analyzer: const AnalysisOptionsAnalyzer(plugins: ['custom_lint']),
+      analyzer: AnalysisOptionsAnalyzer(
+        plugins: const ['custom_lint'],
+        language:
+            withLanguageRules
+                ? const {
+                  'strict-casts': true,
+                  'strict-inference': true,
+                  'strict-raw-types': true,
+                }
+                : null,
+      ),
       linter: AnalysisOptionsLinter(rules: appliedRules),
     );
   }

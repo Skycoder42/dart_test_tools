@@ -47,6 +47,7 @@ Future<void> _writeNormalOptions(
       ),
     ],
     customOptions: normalOptionsRef,
+    withLanguageRules: true,
   );
   await writer.saveAnalysisOptions(normalOptionsRef, normalOptions);
 }
@@ -91,6 +92,7 @@ Future<void> _writeSelfOptions(
       AnalysisOptionsRef.package(packageName: 'lint', path: 'package.yaml'),
     ],
     customOptions: normalOptionsRef,
+    withLanguageRules: true,
   );
   await writer.saveAnalysisOptions(normalOptionsRef, normalOptions);
 }
