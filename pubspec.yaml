@@ -1,6 +1,6 @@
 name: dart_test_tools
 description: Additional tools and helpers for writing dart unit tests and GitHub Actions Workflows.
-version: 6.0.2+2
+version: 6.0.3
 homepage: https://github.com/Skycoder42/dart_test_tools
 
 environment:
