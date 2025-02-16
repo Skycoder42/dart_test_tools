@@ -32,8 +32,7 @@ modules:
         commands:
           - /usr/bin/tar "$@" --no-same-owner
     build-commands:
-      - cp -a flutter/* "$FLATPAK_DEST/"
-      - cp -a flutter/.* "$FLATPAK_DEST/"
+      - cp -a flutter/. "$FLATPAK_DEST/"
       - mv scripts/tar "$FLATPAK_DEST/bin/"
       - dart --disable-analytics
       - flutter config --disable-analytics
