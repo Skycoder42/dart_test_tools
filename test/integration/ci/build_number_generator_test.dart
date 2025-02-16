@@ -41,59 +41,47 @@ void main() {
         ('1.2.3', 3, 4, '10020003'),
         ('1.234.5678', 3, 4, '12345678'),
       ],
-      (fixture) async => IOOverrides.runWithIOOverrides(
-        () async {
-          await File('pubspec.yaml').writeAsString('''
+      (fixture) async => IOOverrides.runWithIOOverrides(() async {
+        await File('pubspec.yaml').writeAsString('''
 name: test_package
 version: ${fixture.$1}
 ''');
 
-          await sut(minorWidth: fixture.$2, patchWidth: fixture.$3);
+        await sut(minorWidth: fixture.$2, patchWidth: fixture.$3);
 
-          final output =
-              await File(Platform.environment['GITHUB_OUTPUT']!).readAsLines();
-          expect(output.last, 'buildNumber=${fixture.$4}');
-        },
-        _TestOverrides(testDir),
-      ),
+        final output =
+            await File(Platform.environment['GITHUB_OUTPUT']!).readAsLines();
+        expect(output.last, 'buildNumber=${fixture.$4}');
+      }, _TestOverrides(testDir)),
     );
 
     testData<String>(
       'throws if version number exceeds padding limits',
       const ['1.234.5', '1.2.345', '1.234.567'],
-      (fixture) async => IOOverrides.runWithIOOverrides(
-        () async {
-          await File('pubspec.yaml').writeAsString('''
+      (fixture) async => IOOverrides.runWithIOOverrides(() async {
+        await File('pubspec.yaml').writeAsString('''
 name: test_package
 version: $fixture
 ''');
 
-          expect(
-            sut.call,
-            throwsException,
-          );
-        },
-        _TestOverrides(testDir),
-      ),
+        expect(sut.call, throwsException);
+      }, _TestOverrides(testDir)),
     );
 
     test(
       'write to env if specified',
-      () async => IOOverrides.runWithIOOverrides(
-        () async {
-          await File('pubspec.yaml').writeAsString('''
+      () async => IOOverrides.runWithIOOverrides(() async {
+        await File('pubspec.yaml').writeAsString('''
 name: test_package
 version: 1.2.3
 ''');
 
-          await sut(asEnv: true);
+        await sut(asEnv: true);
 
-          final output =
-              await File(Platform.environment['GITHUB_ENV']!).readAsLines();
-          expect(output.last, 'BUILD_NUMBER=10203');
-        },
-        _TestOverrides(testDir),
-      ),
+        final output =
+            await File(Platform.environment['GITHUB_ENV']!).readAsLines();
+        expect(output.last, 'BUILD_NUMBER=10203');
+      }, _TestOverrides(testDir)),
     );
   });
 }

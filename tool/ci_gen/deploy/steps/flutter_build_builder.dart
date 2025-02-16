@@ -44,7 +44,8 @@ class FlutterBuildBuilder implements StepBuilder {
       ...preBuildSteps,
       Step.run(
         name: 'Build ${config.buildTarget}',
-        run: 'flutter build ${config.buildTarget} '
+        run:
+            'flutter build ${config.buildTarget} '
             '--release '
             '--build-number=$buildNumber '
             "--dart-define-from-file='$_dartDefinesPath'"

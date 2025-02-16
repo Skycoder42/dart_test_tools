@@ -8,9 +8,7 @@ part 'pub_deps.g.dart';
 
 @freezed
 class PubDeps with _$PubDeps {
-  const factory PubDeps({
-    required List<PubDepsPackage> packages,
-  }) = _PubDeps;
+  const factory PubDeps({required List<PubDepsPackage> packages}) = _PubDeps;
 
   factory PubDeps.fromJson(Map<String, dynamic> json) =>
       _$PubDepsFromJson(json);

@@ -18,8 +18,6 @@ class Env with _$Env {
     return Env(json as Map<String, String>);
   }
 
-  dynamic toJson() => when(
-        (env) => env,
-        expression: (expression) => expression.toString(),
-      );
+  dynamic toJson() =>
+      when((env) => env, expression: (expression) => expression.toString());
 }

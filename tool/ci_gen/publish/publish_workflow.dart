@@ -22,9 +22,7 @@ class PublishWorkflow implements WorkflowBuilder {
     );
 
     return Workflow(
-      jobs: {
-        publishJobBuilder.id: publishJobBuilder.build(),
-      },
+      jobs: {publishJobBuilder.id: publishJobBuilder.build()},
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),

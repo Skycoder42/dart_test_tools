@@ -5,9 +5,10 @@ import 'package:dart_test_tools/src/ci/build_number_generator.dart';
 import 'package:dart_test_tools/src/tools/github.dart';
 
 Future<void> main(List<String> args) => Github.runZoned(() async {
-      final parser = ArgParser(
-        usageLineLength: stdout.hasTerminal ? stdout.terminalColumns : null,
-      )
+  final parser =
+      ArgParser(
+          usageLineLength: stdout.hasTerminal ? stdout.terminalColumns : null,
+        )
         ..addOption(
           'minor',
           abbr: 'm',
@@ -25,35 +26,31 @@ Future<void> main(List<String> args) => Github.runZoned(() async {
         ..addFlag(
           'env',
           abbr: 'E',
-          help: 'Set the BUILD_NUMBER environment variable '
+          help:
+              'Set the BUILD_NUMBER environment variable '
               'instead of the buildNumber output.',
         )
-        ..addFlag(
-          'help',
-          abbr: 'h',
-          negatable: false,
-          help: 'Show this help.',
-        );
+        ..addFlag('help', abbr: 'h', negatable: false, help: 'Show this help.');
 
-      try {
-        final options = parser.parse(args);
+  try {
+    final options = parser.parse(args);
 
-        if (options['help'] as bool) {
-          stdout.writeln(parser.usage);
-          return;
-        }
+    if (options['help'] as bool) {
+      stdout.writeln(parser.usage);
+      return;
+    }
 
-        const generator = BuildNumberGenerator();
-        await generator(
-          minorWidth: int.parse(options['minor'] as String),
-          patchWidth: int.parse(options['patch'] as String),
-          asEnv: options['env'] as bool,
-        );
-      } on FormatException catch (e) {
-        stderr
-          ..writeln('Error: ${e.message}\n')
-          ..writeln('Usage:')
-          ..writeln(parser.usage);
-        exitCode = 1;
-      }
-    });
+    const generator = BuildNumberGenerator();
+    await generator(
+      minorWidth: int.parse(options['minor'] as String),
+      patchWidth: int.parse(options['patch'] as String),
+      asEnv: options['env'] as bool,
+    );
+  } on FormatException catch (e) {
+    stderr
+      ..writeln('Error: ${e.message}\n')
+      ..writeln('Usage:')
+      ..writeln(parser.usage);
+    exitCode = 1;
+  }
+});

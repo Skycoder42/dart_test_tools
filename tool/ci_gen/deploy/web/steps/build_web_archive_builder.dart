@@ -11,7 +11,8 @@ base mixin BuildWebArchiveConfig on JobConfig, BuildAppConfig {
   String get buildTarget => 'web';
 
   @override
-  String get buildArgs => '--no-web-resources-cdn '
+  String get buildArgs =>
+      '--no-web-resources-cdn '
       '--csp '
       '--source-maps '
       '--dump-info '
@@ -24,27 +25,25 @@ base mixin BuildWebArchiveConfig on JobConfig, BuildAppConfig {
 class BuildWebArchiveBuilder implements StepBuilder {
   final BuildWebArchiveConfig config;
 
-  const BuildWebArchiveBuilder({
-    required this.config,
-  });
+  const BuildWebArchiveBuilder({required this.config});
 
   @override
   Iterable<Step> build() => [
-        ...BuildAppBuilder(
-          config: config,
-          packageSteps: [
-            Step.run(
-              name: 'Create archive',
-              run: r'''
+    ...BuildAppBuilder(
+      config: config,
+      packageSteps: [
+        Step.run(
+          name: 'Create archive',
+          run: r'''
 set -eo pipefail
 
 archive_name=$(jq -r '.short_name' ../web/manifest.json)
 mkdir web-archive
 tar -cJvf "web-archive/$archive_name Web.tar.xz" web
 ''',
-              workingDirectory: '${config.workingDirectory}/build',
-            ),
-          ],
-        ).build(),
-      ];
+          workingDirectory: '${config.workingDirectory}/build',
+        ),
+      ],
+    ).build(),
+  ];
 }

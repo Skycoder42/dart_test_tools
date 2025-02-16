@@ -9,10 +9,7 @@ part 'analysis_options.g.dart';
 
 @freezed
 class AnalysisOptions with _$AnalysisOptions {
-  @JsonSerializable(
-    anyMap: true,
-    checked: true,
-  )
+  @JsonSerializable(anyMap: true, checked: true)
   const factory AnalysisOptions({
     AnalysisOptionsRef? include,
     AnalysisOptionsAnalyzer? analyzer,
@@ -28,10 +25,7 @@ class AnalysisOptions with _$AnalysisOptions {
 
 @freezed
 class AnalysisOptionsAnalyzer with _$AnalysisOptionsAnalyzer {
-  @JsonSerializable(
-    anyMap: true,
-    checked: true,
-  )
+  @JsonSerializable(anyMap: true, checked: true)
   const factory AnalysisOptionsAnalyzer({
     @JsonKey(includeIfNull: false) List<String>? plugins,
   }) = _AnalysisOptionsAnalyzer;
@@ -42,14 +36,9 @@ class AnalysisOptionsAnalyzer with _$AnalysisOptionsAnalyzer {
 
 @freezed
 class AnalysisOptionsLinter with _$AnalysisOptionsLinter {
-  @JsonSerializable(
-    anyMap: true,
-    checked: true,
-    disallowUnrecognizedKeys: true,
-  )
-  const factory AnalysisOptionsLinter({
-    required dynamic rules,
-  }) = _AnalysisOptionsLinter;
+  @JsonSerializable(anyMap: true, checked: true, disallowUnrecognizedKeys: true)
+  const factory AnalysisOptionsLinter({required dynamic rules}) =
+      _AnalysisOptionsLinter;
 
   factory AnalysisOptionsLinter.fromJson(Map<String, dynamic> json) =>
       _$AnalysisOptionsLinterFromJson(json);

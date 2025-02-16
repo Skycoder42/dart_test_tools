@@ -14,23 +14,22 @@ base mixin BuildWindowsInstallerConfig on JobConfig, BuildAppConfig {
 class BuildWindowsInstallerBuilder implements StepBuilder {
   final BuildWindowsInstallerConfig config;
 
-  const BuildWindowsInstallerBuilder({
-    required this.config,
-  });
+  const BuildWindowsInstallerBuilder({required this.config});
 
   @override
   Iterable<Step> build() => [
-        ...BuildAppBuilder(
-          config: config,
-          packageSteps: [
-            Step.run(
-              name: 'Create msix package',
-              run: 'dart run msix:create --release --store '
-                  '--build-windows false '
-                  r'--output-path build\windows\msix',
-              workingDirectory: config.workingDirectory.toString(),
-            ),
-          ],
-        ).build(),
-      ];
+    ...BuildAppBuilder(
+      config: config,
+      packageSteps: [
+        Step.run(
+          name: 'Create msix package',
+          run:
+              'dart run msix:create --release --store '
+              '--build-windows false '
+              r'--output-path build\windows\msix',
+          workingDirectory: config.workingDirectory.toString(),
+        ),
+      ],
+    ).build(),
+  ];
 }

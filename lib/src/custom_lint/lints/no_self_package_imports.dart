@@ -12,7 +12,8 @@ import 'fixes/remove_directive.dart';
 class NoSelfPackageImports extends DartLintRule {
   static const _code = LintCode(
     name: 'no_self_package_imports',
-    problemMessage: 'Libraries in lib/src, test or tool should not '
+    problemMessage:
+        'Libraries in lib/src, test or tool should not '
         'import package library files from lib.',
     correctionMessage: 'Import the library from the src folder instead.',
   );
@@ -21,10 +22,10 @@ class NoSelfPackageImports extends DartLintRule {
 
   @override
   List<String> get filesToAnalyze => [
-        'lib/src/**.dart',
-        'test/**.dart',
-        'tool/**.dart',
-      ];
+    'lib/src/**.dart',
+    'test/**.dart',
+    'tool/**.dart',
+  ];
 
   @override
   void run(
@@ -52,9 +53,7 @@ class NoSelfPackageImports extends DartLintRule {
   }
 
   @override
-  List<Fix> getFixes() => [
-        RemoveDirective(),
-      ];
+  List<Fix> getFixes() => [RemoveDirective()];
 
   bool _directiveIsValid(
     ContextRoot contextRoot,

@@ -20,10 +20,7 @@ Future<void> hybridMain(StreamChannel channel, Object? message) async {
   TestEnv._();
 
   static Future<Map<String, String>> load([String path = defaultPath]) async {
-    final channel = spawnHybridCode(
-      _vmCode,
-      message: path,
-    );
+    final channel = spawnHybridCode(_vmCode, message: path);
     final dynamic env = await channel.stream.first;
     return env is Map ? Map.from(env) : const {};
   }

@@ -26,58 +26,57 @@ class ProjectPrepareBuilder implements StepBuilder {
   final String? titleSuffix;
   final ProjectPrepareConfig config;
 
-  const ProjectPrepareBuilder({
-    this.titleSuffix,
-    required this.config,
-  });
+  const ProjectPrepareBuilder({this.titleSuffix, required this.config});
 
   @override
   Iterable<Step> build() => [
-        ...UpdateOverridesBuilder(
-          titleSuffix: _titleSuffix,
-          config: config,
-          artifactTargetDir: Runner.temp.toString(),
-        ).build(),
-        Step.run(
-          name: 'Restore dart packages$_titleSuffix',
-          ifExpression: config.ifExpression,
-          run: '${config.pubTool} get',
-          workingDirectory: config.workingDirectory.toString(),
-        ),
-        if (_couldBeFlutter) ...[
-          Step.run(
-            id: checkGenerateStepId,
-            name: 'Check if localizations generation is required',
-            ifExpression: config.ifExpression != null
+    ...UpdateOverridesBuilder(
+      titleSuffix: _titleSuffix,
+      config: config,
+      artifactTargetDir: Runner.temp.toString(),
+    ).build(),
+    Step.run(
+      name: 'Restore dart packages$_titleSuffix',
+      ifExpression: config.ifExpression,
+      run: '${config.pubTool} get',
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+    if (_couldBeFlutter) ...[
+      Step.run(
+        id: checkGenerateStepId,
+        name: 'Check if localizations generation is required',
+        ifExpression:
+            config.ifExpression != null
                 ? config.ifExpression! & _onlyIfFlutter
                 : _onlyIfFlutter,
-            run: generateOutput.bashSetter(
-              "yq -r '.flutter.generate // false' pubspec.yaml",
-              isCommand: true,
-            ),
-            workingDirectory: config.workingDirectory.toString(),
-            shell: 'bash',
-          ),
-          Step.run(
-            name: 'Generate localization files',
-            ifExpression:
-                generateOutput.expression.eq(const Expression.literal('true')) &
-                    config.ifExpression &
-                    _onlyIfFlutter,
-            run: 'flutter gen-l10n',
-            workingDirectory: config.workingDirectory.toString(),
-          ),
-        ],
-        if (config.buildRunner case final Expression buildRunner)
-          Step.run(
-            name: 'Create build files$_titleSuffix',
-            ifExpression: buildRunner & config.ifExpression,
-            run: '${config.runTool} build_runner build '
-                '$_releaseArg'
-                '${config.buildRunnerArgs ?? ''}',
-            workingDirectory: config.workingDirectory.toString(),
-          ),
-      ];
+        run: generateOutput.bashSetter(
+          "yq -r '.flutter.generate // false' pubspec.yaml",
+          isCommand: true,
+        ),
+        workingDirectory: config.workingDirectory.toString(),
+        shell: 'bash',
+      ),
+      Step.run(
+        name: 'Generate localization files',
+        ifExpression:
+            generateOutput.expression.eq(const Expression.literal('true')) &
+            config.ifExpression &
+            _onlyIfFlutter,
+        run: 'flutter gen-l10n',
+        workingDirectory: config.workingDirectory.toString(),
+      ),
+    ],
+    if (config.buildRunner case final Expression buildRunner)
+      Step.run(
+        name: 'Create build files$_titleSuffix',
+        ifExpression: buildRunner & config.ifExpression,
+        run:
+            '${config.runTool} build_runner build '
+            '$_releaseArg'
+            '${config.buildRunnerArgs ?? ''}',
+        workingDirectory: config.workingDirectory.toString(),
+      ),
+  ];
 
   String get _titleSuffix => titleSuffix != null ? ' $titleSuffix' : '';
 

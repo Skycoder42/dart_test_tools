@@ -9,14 +9,8 @@ import 'aur_options.dart';
 
 @internal
 class AurOptionsLoader {
-  static final _changelogRegex = RegExp(
-    'change.*log',
-    caseSensitive: false,
-  );
-  static final _licenseRegexp = RegExp(
-    'license',
-    caseSensitive: false,
-  );
+  static final _changelogRegex = RegExp('change.*log', caseSensitive: false);
+  static final _licenseRegexp = RegExp('license', caseSensitive: false);
 
   const AurOptionsLoader();
 
@@ -31,10 +25,7 @@ class AurOptionsLoader {
 
     final pubspecYaml = await pubspecFile.readAsString();
 
-    final pubspec = Pubspec.parse(
-      pubspecYaml,
-      sourceUrl: pubspecFile.uri,
-    );
+    final pubspec = Pubspec.parse(pubspecYaml, sourceUrl: pubspecFile.uri);
 
     final aurOptionsPubspecView = checkedYamlDecode(
       pubspecYaml,
@@ -51,23 +42,17 @@ class AurOptionsLoader {
 
   File? findByName(Directory projectDirectory, String? name) {
     if (name != null) {
-      return File.fromUri(
-        projectDirectory.uri.resolve(name),
-      );
+      return File.fromUri(projectDirectory.uri.resolve(name));
     } else {
       return null;
     }
   }
 
-  Future<File?> findChangelog(Directory projectDirectory) => _findByPattern(
-        projectDirectory,
-        _changelogRegex,
-      );
+  Future<File?> findChangelog(Directory projectDirectory) =>
+      _findByPattern(projectDirectory, _changelogRegex);
 
-  Future<File?> findLicense(Directory projectDirectory) => _findByPattern(
-        projectDirectory,
-        _licenseRegexp,
-      );
+  Future<File?> findLicense(Directory projectDirectory) =>
+      _findByPattern(projectDirectory, _licenseRegexp);
 
   Future<File?> _findByPattern(Directory projectDirectory, Pattern pattern) {
     if (!projectDirectory.existsSync()) {

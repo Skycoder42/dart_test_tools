@@ -16,8 +16,9 @@ base mixin PublishConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
   late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
 
   @override
-  late final isFlutter =
-      ExpressionOrValue.expression(inputContext(WorkflowInputs.flutter));
+  late final isFlutter = ExpressionOrValue.expression(
+    inputContext(WorkflowInputs.flutter),
+  );
 
   @override
   String get baseTool =>
@@ -43,16 +44,14 @@ class PublishBuilder implements StepBuilder {
 
   final PublishConfig config;
 
-  PublishBuilder({
-    required this.config,
-  });
+  PublishBuilder({required this.config});
 
   @override
   Iterable<Step> build() => [
-        Step.run(
-          id: toolsStepId,
-          name: 'Prepare build tools',
-          run: '''
+    Step.run(
+      id: toolsStepId,
+      name: 'Prepare build tools',
+      run: '''
 if ${config.isFlutter.asExpression}; then
   ${toolsPub.bashSetter('flutter pub')}
   ${toolsPubRun.bashSetter('flutter pub run')}
@@ -61,30 +60,29 @@ else
   ${toolsPubRun.bashSetter('dart run')}
 fi
 ''',
-        ),
-        ...ProjectSetupBuilder(config: config).build(),
-        Step.uses(
-          name: 'Download additional artifacts',
-          ifExpression: config.extraArtifacts.ne(Expression.empty),
-          uses: Tools.actionsDownloadArtifact,
-          withArgs: <String, dynamic>{
-            for (final key in ['name', 'path']) key: _artifactConfig(key),
-          },
-        ),
-        Step.run(
-          name: 'Run pre publish script',
-          ifExpression: config.prePublish.ne(Expression.empty),
-          run: config.prePublish.toString(),
-          workingDirectory: config.workingDirectory.toString(),
-        ),
-        ...RunPublishBuilder(
-          config: config,
-          publishStepName: 'Publish package',
-          publishArgs: '--force',
-        ).build(),
-      ];
+    ),
+    ...ProjectSetupBuilder(config: config).build(),
+    Step.uses(
+      name: 'Download additional artifacts',
+      ifExpression: config.extraArtifacts.ne(Expression.empty),
+      uses: Tools.actionsDownloadArtifact,
+      withArgs: <String, dynamic>{
+        for (final key in ['name', 'path']) key: _artifactConfig(key),
+      },
+    ),
+    Step.run(
+      name: 'Run pre publish script',
+      ifExpression: config.prePublish.ne(Expression.empty),
+      run: config.prePublish.toString(),
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+    ...RunPublishBuilder(
+      config: config,
+      publishStepName: 'Publish package',
+      publishArgs: '--force',
+    ).build(),
+  ];
 
-  String _artifactConfig(String key) => Expression(
-        "fromJSON(${config.extraArtifacts.value})['$key']",
-      ).toString();
+  String _artifactConfig(String key) =>
+      Expression("fromJSON(${config.extraArtifacts.value})['$key']").toString();
 }

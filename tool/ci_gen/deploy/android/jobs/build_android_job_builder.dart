@@ -36,23 +36,22 @@ final class BuildAndroidJobConfig extends JobConfig
 
 final class BuildAndroidJobBuilder extends SdkJobBuilder<BuildAndroidJobConfig>
     with FlutterSdkJobBuilderMixin<BuildAndroidJobConfig> {
-  const BuildAndroidJobBuilder({
-    required super.config,
-  });
+  const BuildAndroidJobBuilder({required super.config});
 
   @override
   JobId get id => const JobId('build_android');
 
   @override
   Job build() => Job(
-        name: 'Build android app bundle',
-        runsOn: RunsOn.ubuntuLatest.id,
-        steps: [
-          ...buildSetupSdkSteps(
-            buildPlatform:
-                ExpressionOrValue.value(FlutterPlatform.android.platform),
-          ),
-          ...BuildAndroidAppBuilder(config: config).build(),
-        ],
-      );
+    name: 'Build android app bundle',
+    runsOn: RunsOn.ubuntuLatest.id,
+    steps: [
+      ...buildSetupSdkSteps(
+        buildPlatform: ExpressionOrValue.value(
+          FlutterPlatform.android.platform,
+        ),
+      ),
+      ...BuildAndroidAppBuilder(config: config).build(),
+    ],
+  );
 }

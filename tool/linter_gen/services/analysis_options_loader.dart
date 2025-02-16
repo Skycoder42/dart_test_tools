@@ -21,19 +21,17 @@ class AnalysisOptionsLoader {
   Future<AnalysisOptions> load(
     AnalysisOptionsRef analysisOptionsRef, {
     Directory? relativeTo,
-  }) =>
-      analysisOptionsRef.when(
-        package: _loadPackage,
-        local: (path) => _loadLocal(path, relativeTo),
-      );
+  }) => analysisOptionsRef.when(
+    package: _loadPackage,
+    local: (path) => _loadLocal(path, relativeTo),
+  );
 
   Directory? findDirectory(
     AnalysisOptionsRef analysisOptionsRef, {
     Directory? relativeTo,
-  }) =>
-      analysisOptionsRef.whenOrNull(
-        local: (path) => _resolveLocalFile(path, relativeTo).parent,
-      );
+  }) => analysisOptionsRef.whenOrNull(
+    local: (path) => _resolveLocalFile(path, relativeTo).parent,
+  );
 
   Future<AnalysisOptions> _loadLocal(String path, Directory? relativeTo) =>
       _parse(_resolveLocalFile(path, relativeTo));
@@ -88,12 +86,13 @@ class AnalysisOptionsLoader {
     ]);
     unawaited(stderr.addStream(pubDepsProcess.stderr));
 
-    final pubDeps = await pubDepsProcess.stdout
-        .transform(utf8.decoder)
-        .transform(json.decoder)
-        .cast<Map<String, dynamic>>()
-        .map(PubDeps.fromJson)
-        .single;
+    final pubDeps =
+        await pubDepsProcess.stdout
+            .transform(utf8.decoder)
+            .transform(json.decoder)
+            .cast<Map<String, dynamic>>()
+            .map(PubDeps.fromJson)
+            .single;
 
     final exitCode = await pubDepsProcess.exitCode;
     if (exitCode != 0) {

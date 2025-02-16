@@ -16,26 +16,24 @@ base mixin UploadSentrySymbolsConfig
 class UploadSentrySymbolsBuilder implements StepBuilder {
   final UploadSentrySymbolsConfig config;
 
-  const UploadSentrySymbolsBuilder({
-    required this.config,
-  });
+  const UploadSentrySymbolsBuilder({required this.config});
 
   @override
   Iterable<Step> build() => [
-        Step.run(
-          name: 'Install sentry_dart_plugin',
-          ifExpression: config.sentryAuthToken.ne(Expression.empty),
-          run: '${config.pubTool} global activate sentry_dart_plugin',
-        ),
-        Step.run(
-          name: 'Upload debug symbols',
-          ifExpression: config.sentryAuthToken.ne(Expression.empty),
-          run: '${config.pubTool} global run sentry_dart_plugin',
-          env: Env({
-            'SENTRY_AUTH_TOKEN': config.sentryAuthToken.toString(),
-            // 'SENTRY_DIST': config.sentryDist.toString(),
-          }),
-          workingDirectory: config.workingDirectory.toString(),
-        ),
-      ];
+    Step.run(
+      name: 'Install sentry_dart_plugin',
+      ifExpression: config.sentryAuthToken.ne(Expression.empty),
+      run: '${config.pubTool} global activate sentry_dart_plugin',
+    ),
+    Step.run(
+      name: 'Upload debug symbols',
+      ifExpression: config.sentryAuthToken.ne(Expression.empty),
+      run: '${config.pubTool} global run sentry_dart_plugin',
+      env: Env({
+        'SENTRY_AUTH_TOKEN': config.sentryAuthToken.toString(),
+        // 'SENTRY_DIST': config.sentryDist.toString(),
+      }),
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+  ];
 }

@@ -30,20 +30,16 @@ abstract base class Minisign {
     } else if (Platform.isMacOS) {
       await Github.exec('brew', const ['install', 'minisign']);
     } else if (Platform.isWindows) {
-      await Github.exec(
-        'scoop',
-        const ['install', 'minisign'],
-        runInShell: true,
-      );
+      await Github.exec('scoop', const [
+        'install',
+        'minisign',
+      ], runInShell: true);
     } else {
       throw Exception('Unsupported platform: ${Platform.operatingSystem}');
     }
   }
 
-  static Future<void> verify(
-    File file,
-    String publicKey,
-  ) async {
+  static Future<void> verify(File file, String publicKey) async {
     if (_useDocker) {
       final filename = file.uri.pathSegments.last;
       await Github.exec('docker', [
@@ -58,12 +54,7 @@ abstract base class Minisign {
         '/src/$filename',
       ]);
     } else {
-      await Github.exec('minisign', [
-        '-P',
-        publicKey,
-        '-Vm',
-        file.path,
-      ]);
+      await Github.exec('minisign', ['-P', publicKey, '-Vm', file.path]);
     }
   }
 
@@ -84,12 +75,7 @@ abstract base class Minisign {
         '/src/$filename',
       ]);
     } else {
-      await Github.exec('minisign', [
-        '-Ss',
-        secretKey.path,
-        '-m',
-        file.path,
-      ]);
+      await Github.exec('minisign', ['-Ss', secretKey.path, '-m', file.path]);
     }
   }
 }

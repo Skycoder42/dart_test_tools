@@ -34,21 +34,21 @@ final class DeployAndroidJobBuilder implements JobBuilder {
 
   @override
   Job build() => Job(
-        name: 'Deploy android app to Google Play',
-        runsOn: RunsOn.macosLatest.id,
-        needs: {releaseCreated.jobId},
-        ifExpression:
-            releaseCreated.expression.eq(const Expression.literal('true')) &
-                EnabledPlatforms.check(
-                  config.enabledPlatforms,
-                  Expression.literal(FlutterPlatform.android.platform),
-                ),
-        environment: Environments.googlePlay,
-        steps: [
-          ...ValidateInputsBuilder({
-            WorkflowSecrets.googlePlayKey.name: config.googlePlayKey,
-          }).build(),
-          ...DeployAndroidAppBuilder(config: config).build(),
-        ],
-      );
+    name: 'Deploy android app to Google Play',
+    runsOn: RunsOn.macosLatest.id,
+    needs: {releaseCreated.jobId},
+    ifExpression:
+        releaseCreated.expression.eq(const Expression.literal('true')) &
+        EnabledPlatforms.check(
+          config.enabledPlatforms,
+          Expression.literal(FlutterPlatform.android.platform),
+        ),
+    environment: Environments.googlePlay,
+    steps: [
+      ...ValidateInputsBuilder({
+        WorkflowSecrets.googlePlayKey.name: config.googlePlayKey,
+      }).build(),
+      ...DeployAndroidAppBuilder(config: config).build(),
+    ],
+  );
 }

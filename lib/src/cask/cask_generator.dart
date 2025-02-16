@@ -10,9 +10,7 @@ import 'cask_options_loader.dart';
 class CaskGenerator {
   final CaskOptionsLoader _caskOptionsLoader;
 
-  const CaskGenerator([
-    this._caskOptionsLoader = const CaskOptionsLoader(),
-  ]);
+  const CaskGenerator([this._caskOptionsLoader = const CaskOptionsLoader()]);
 
   Future<void> call({
     required Directory inDir,
@@ -29,36 +27,28 @@ class CaskGenerator {
 
   Future<List<Map<String, dynamic>>> _buildCasksConfig(
     CaskOptions options,
-  ) async =>
-      [
-        {
-          'version': options.pubspec.version,
-          'sha256': await _getDmgSha256Sum(options),
-        },
-        {
-          'url': options.options.downloadUrl,
-          'name': options.appInfo.productName,
-          'desc': options.pubspec.description,
-          'homepage': options.pubspec.homepage,
-        },
-        {
-          'depends_on macos:': '>= ${options.options.minMacosVersion}',
-        },
-        {
-          'app': '${options.appInfo.productName}.app',
-        },
-        if (options.options.zap case final List<dynamic> zap
-            when zap.isNotEmpty)
-          {
-            'zap trash:': zap,
-          }
-        else if (options.options.zap == null)
-          {
-            'zap trash:': [
-              '~/Library/Containers/${options.appInfo.productBundleIdentifier}',
-            ],
-          },
-      ];
+  ) async => [
+    {
+      'version': options.pubspec.version,
+      'sha256': await _getDmgSha256Sum(options),
+    },
+    {
+      'url': options.options.downloadUrl,
+      'name': options.appInfo.productName,
+      'desc': options.pubspec.description,
+      'homepage': options.pubspec.homepage,
+    },
+    {'depends_on macos:': '>= ${options.options.minMacosVersion}'},
+    {'app': '${options.appInfo.productName}.app'},
+    if (options.options.zap case final List<dynamic> zap when zap.isNotEmpty)
+      {'zap trash:': zap}
+    else if (options.options.zap == null)
+      {
+        'zap trash:': [
+          '~/Library/Containers/${options.appInfo.productBundleIdentifier}',
+        ],
+      },
+  ];
 
   Future<String> _getDmgSha256Sum(CaskOptions options) async {
     final client = HttpClient();
@@ -143,8 +133,9 @@ class CaskGenerator {
       return caskName;
     }
 
-    return options.pubspec.name
-        .toLowerCase()
-        .replaceAll(RegExp('[^a-z0-9-]'), '-');
+    return options.pubspec.name.toLowerCase().replaceAll(
+      RegExp('[^a-z0-9-]'),
+      '-',
+    );
   }
 }

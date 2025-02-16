@@ -28,22 +28,20 @@ final class WebIntegrationTestJobBuilder
 
   @override
   Job build() => Job(
-        name: 'Integration tests (web)',
-        ifExpression: config.integrationTestPaths.ne(Expression.empty) &
-            EnabledPlatforms.check(
-              enabledPlatformsOutput.expression,
-              Expression.literal(FlutterPlatform.web.platform),
-            ),
-        needs: {
-          enabledPlatformsOutput.jobId,
-        },
-        runsOn: FlutterPlatform.web.os.id,
-        steps: [
-          ...buildSetupSdkSteps(
-            buildPlatform:
-                ExpressionOrValue.value(FlutterPlatform.web.platform),
-          ),
-          ...WebIntegrationTestBuilder(config: config).build(),
-        ],
-      );
+    name: 'Integration tests (web)',
+    ifExpression:
+        config.integrationTestPaths.ne(Expression.empty) &
+        EnabledPlatforms.check(
+          enabledPlatformsOutput.expression,
+          Expression.literal(FlutterPlatform.web.platform),
+        ),
+    needs: {enabledPlatformsOutput.jobId},
+    runsOn: FlutterPlatform.web.os.id,
+    steps: [
+      ...buildSetupSdkSteps(
+        buildPlatform: ExpressionOrValue.value(FlutterPlatform.web.platform),
+      ),
+      ...WebIntegrationTestBuilder(config: config).build(),
+    ],
+  );
 }

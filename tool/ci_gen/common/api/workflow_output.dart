@@ -19,13 +19,10 @@ class WorkflowOutputContext {
   final _outputs = <String, Output>{};
 
   void add(WorkflowOutput output, JobIdOutput value) => _outputs.update(
-        output.name,
-        (_) => throw StateError('Output ${output.name} has already been added'),
-        ifAbsent: () => Output(
-          description: output.description,
-          value: value,
-        ),
-      );
+    output.name,
+    (_) => throw StateError('Output ${output.name} has already been added'),
+    ifAbsent: () => Output(description: output.description, value: value),
+  );
 
   Outputs? createOutputs() =>
       _outputs.isEmpty ? null : UnmodifiableMapView(_outputs);

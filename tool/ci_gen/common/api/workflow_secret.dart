@@ -13,10 +13,8 @@ class WorkflowSecret with _$WorkflowSecret {
   const WorkflowSecret._();
 
   // ignore: sort_unnamed_constructors_first
-  const factory WorkflowSecret({
-    required String name,
-    required Secret secret,
-  }) = _WorkflowSecret;
+  const factory WorkflowSecret({required String name, required Secret secret}) =
+      _WorkflowSecret;
 }
 
 class WorkflowSecretContext {
@@ -27,7 +25,8 @@ class WorkflowSecretContext {
     return Expression('secrets.${secret.name}');
   }
 
-  Secrets? createSecrets() => _secrets.isEmpty
-      ? null
-      : {for (final secret in _secrets) secret.name: secret.secret};
+  Secrets? createSecrets() =>
+      _secrets.isEmpty
+          ? null
+          : {for (final secret in _secrets) secret.name: secret.secret};
 }

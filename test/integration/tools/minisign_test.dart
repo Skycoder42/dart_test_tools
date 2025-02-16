@@ -18,10 +18,7 @@ void main() {
 
       await Minisign.ensureInstalled();
 
-      expect(
-        _runMinisign(Directory.systemTemp, const ['-v']),
-        completion(0),
-      );
+      expect(_runMinisign(Directory.systemTemp, const ['-v']), completion(0));
     });
 
     test('can create and verify a signature', () async {

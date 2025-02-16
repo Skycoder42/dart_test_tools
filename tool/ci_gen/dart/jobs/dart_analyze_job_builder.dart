@@ -10,16 +10,14 @@ final class DartAnalyzeJobConfig extends AnalyzeJobConfig
 final class DartAnalyzeJobBuilder
     extends AnalyzeJobBuilder<DartAnalyzeJobConfig>
     with DartSdkJobBuilderMixin<DartAnalyzeJobConfig> {
-  const DartAnalyzeJobBuilder({
-    required super.config,
-  });
+  const DartAnalyzeJobBuilder({required super.config});
 
   @override
   Iterable<Step> buildAnalyzeSteps() => [
-        Step.run(
-          name: 'Static analysis',
-          run: 'dart analyze --fatal-infos',
-          workingDirectory: config.workingDirectory.toString(),
-        ),
-      ];
+    Step.run(
+      name: 'Static analysis',
+      run: 'dart analyze --fatal-infos',
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+  ];
 }

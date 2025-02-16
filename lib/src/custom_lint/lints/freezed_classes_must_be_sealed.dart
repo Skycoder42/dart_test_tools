@@ -26,9 +26,7 @@ class FreezedClassesMustBeSealed extends DartLintRule {
   }
 
   @override
-  List<Fix> getFixes() => [
-        FreezedClassesMustBeSealedFix(),
-      ];
+  List<Fix> getFixes() => [FreezedClassesMustBeSealedFix()];
 }
 
 extension ClassDeclarationX on ClassDeclaration {

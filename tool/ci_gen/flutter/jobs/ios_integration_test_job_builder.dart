@@ -36,32 +36,29 @@ final class IosIntegrationTestJobBuilder
 
   @override
   Job build() => Job(
-        name: 'Integration tests (ios)',
-        ifExpression: config.integrationTestPaths.ne(Expression.empty) &
-            EnabledPlatforms.check(
-              enabledPlatformsOutput.expression,
-              Expression.literal(FlutterPlatform.ios.platform),
-            ),
-        needs: {
-          enabledPlatformsOutput.jobId,
-        },
-        runsOn: FlutterPlatform.ios.os.id,
-        steps: [
-          ...ValidateInputsBuilder({
-            WorkflowSecrets.provisioningProfile.name:
-                config.encodedProvisioningProfile,
-            WorkflowSecrets.signingIdentity.name: config.encodedSigningIdentity,
-            WorkflowSecrets.signingIdentityPassphrase.name:
-                config.signingIdentityPassphrase,
-            WorkflowInputs.firebaseProjectId.name: config.firebaseProjectId,
-            WorkflowSecrets.firebaseCredentials.name:
-                config.firebaseCredentials,
-          }).build(),
-          ...buildSetupSdkSteps(
-            buildPlatform:
-                ExpressionOrValue.value(FlutterPlatform.ios.platform),
-          ),
-          ...IosIntegrationTestBuilder(config: config).build(),
-        ],
-      );
+    name: 'Integration tests (ios)',
+    ifExpression:
+        config.integrationTestPaths.ne(Expression.empty) &
+        EnabledPlatforms.check(
+          enabledPlatformsOutput.expression,
+          Expression.literal(FlutterPlatform.ios.platform),
+        ),
+    needs: {enabledPlatformsOutput.jobId},
+    runsOn: FlutterPlatform.ios.os.id,
+    steps: [
+      ...ValidateInputsBuilder({
+        WorkflowSecrets.provisioningProfile.name:
+            config.encodedProvisioningProfile,
+        WorkflowSecrets.signingIdentity.name: config.encodedSigningIdentity,
+        WorkflowSecrets.signingIdentityPassphrase.name:
+            config.signingIdentityPassphrase,
+        WorkflowInputs.firebaseProjectId.name: config.firebaseProjectId,
+        WorkflowSecrets.firebaseCredentials.name: config.firebaseCredentials,
+      }).build(),
+      ...buildSetupSdkSteps(
+        buildPlatform: ExpressionOrValue.value(FlutterPlatform.ios.platform),
+      ),
+      ...IosIntegrationTestBuilder(config: config).build(),
+    ],
+  );
 }

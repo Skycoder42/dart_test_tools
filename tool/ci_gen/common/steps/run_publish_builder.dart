@@ -23,11 +23,11 @@ class RunPublishBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        Step.run(
-          name: publishStepName,
-          ifExpression: ifExpression,
-          run: '${config.pubTool} publish $publishArgs',
-          workingDirectory: config.workingDirectory.toString(),
-        ),
-      ];
+    Step.run(
+      name: publishStepName,
+      ifExpression: ifExpression,
+      run: '${config.pubTool} publish $publishArgs',
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+  ];
 }

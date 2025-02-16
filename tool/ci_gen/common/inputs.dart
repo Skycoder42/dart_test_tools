@@ -21,7 +21,8 @@ abstract base class WorkflowInputs {
       type: Type.boolean,
       required: false,
       defaultValue: false,
-      description: 'Specify whether build_runner is used in the project '
+      description:
+          'Specify whether build_runner is used in the project '
           '(defaults to false).',
     ),
   );
@@ -42,7 +43,8 @@ abstract base class WorkflowInputs {
       type: Type.string,
       required: false,
       defaultValue: 'stable',
-      description: 'The Dart-SDK version. '
+      description:
+          'The Dart-SDK version. '
           'Passed as "sdk" to "dart-lang/setup-dart".',
     ),
   );
@@ -53,7 +55,8 @@ abstract base class WorkflowInputs {
       type: Type.string,
       required: false,
       defaultValue: 'stable',
-      description: 'The Flutter-SDK channel. '
+      description:
+          'The Flutter-SDK channel. '
           'Passed as "channel" to "subosito/flutter-action".',
     ),
   );
@@ -64,7 +67,8 @@ abstract base class WorkflowInputs {
       type: Type.number,
       required: false,
       defaultValue: 21,
-      description: 'The Java-SDK version (mayor only). '
+      description:
+          'The Java-SDK version (mayor only). '
           'Passed as "java-version" to "actions/setup-java".',
     ),
   );
@@ -75,7 +79,8 @@ abstract base class WorkflowInputs {
       type: Type.string,
       required: false,
       defaultValue: 'ubuntu-latest',
-      description: 'The Runner-Image to use for the analyze step. '
+      description:
+          'The Runner-Image to use for the analyze step. '
           'Uses ubuntu-latest by default.',
     ),
   );
@@ -86,7 +91,8 @@ abstract base class WorkflowInputs {
       type: Type.number,
       required: false,
       defaultValue: 0,
-      description: 'The threshold that the pana score is allowed '
+      description:
+          'The threshold that the pana score is allowed '
           'to be below the maximum value.',
     ),
   );
@@ -97,7 +103,8 @@ abstract base class WorkflowInputs {
       type: Type.string,
       required: false,
       defaultValue: 'test',
-      description: 'Specify directories or paths of unit tests to run. '
+      description:
+          'Specify directories or paths of unit tests to run. '
           'By default, all test in the test directory are run.',
     ),
   );
@@ -107,7 +114,8 @@ abstract base class WorkflowInputs {
     input: Input(
       type: Type.string,
       required: false,
-      description: 'Specify directories or paths of integration tests to run. '
+      description:
+          'Specify directories or paths of integration tests to run. '
           'By default, no integration test are run.',
     ),
   );
@@ -167,7 +175,8 @@ Example:
     input: Input(
       type: Type.string,
       required: false,
-      description: 'Files to exclude from test coverage. Passed as '
+      description:
+          'Files to exclude from test coverage. Passed as '
           'command line arguments to a bash script. Excludes should be '
           'properly escaped, e.g. \'config.dart "**/*.g.dart"\'.',
     ),
@@ -189,7 +198,8 @@ Example:
       type: Type.string,
       required: false,
       defaultValue: 'v',
-      description: 'The prefix of git tags. The tag is the prefix, '
+      description:
+          'The prefix of git tags. The tag is the prefix, '
           'followed by the package version.',
     ),
   );
@@ -321,7 +331,8 @@ Example:
       type: Type.string,
       required: false,
       defaultValue: '',
-      description: 'A space-separated list of package names that should be '
+      description:
+          'A space-separated list of package names that should be '
           'downloaded from the artifacts and overwritten for the workflow. '
           'The packages should be space separated and placed in a single line. '
           'You can use the YAML ">-" for that.',
@@ -374,7 +385,8 @@ Example:
       type: Type.string,
       required: false,
       defaultValue: 'en-US',
-      description: 'The default locale of the app. '
+      description:
+          'The default locale of the app. '
           'This is used to set the language of the generated changelogs',
     ),
   );
@@ -385,7 +397,8 @@ Example:
       type: Type.string,
       required: false,
       defaultValue: 'production',
-      description: 'The google play release track to publish the app to '
+      description:
+          'The google play release track to publish the app to '
           '(Standard tracks are: production, beta, alpha, internal).',
     ),
   );
@@ -396,7 +409,8 @@ Example:
       type: Type.string,
       required: false,
       defaultValue: 'completed',
-      description: 'The google play release status after publishing the app '
+      description:
+          'The google play release status after publishing the app '
           '(completed, draft, halted, inProgress).',
     ),
   );
@@ -407,7 +421,8 @@ Example:
       type: Type.string,
       required: false,
       defaultValue: 'binaries',
-      description: 'The prefix of the binary archive files that contain '
+      description:
+          'The prefix of the binary archive files that contain '
           'the actual binaries. Will be suffixed with the platform name.',
     ),
   );
@@ -473,7 +488,8 @@ Example:
     input: Input(
       type: Type.string,
       required: false,
-      description: 'The repository identifier (<owner>/<repo>) '
+      description:
+          'The repository identifier (<owner>/<repo>) '
           'to which the cask should be published.',
     ),
   );

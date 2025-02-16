@@ -26,35 +26,39 @@ class UpdateOverridesBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        if (config.removePubspecOverrides.rawValueOr(true))
-          Step.run(
-            name: 'Remove pubspec_overrides.yaml$titleSuffix',
-            ifExpression: config.removePubspecOverrides.isExpression
+    if (config.removePubspecOverrides.rawValueOr(true))
+      Step.run(
+        name: 'Remove pubspec_overrides.yaml$titleSuffix',
+        ifExpression:
+            config.removePubspecOverrides.isExpression
                 ? (config.removePubspecOverrides.asExpression &
                     config.ifExpression)
                 : config.ifExpression,
-            run: 'find . -type f -name "pubspec_overrides.yaml" '
-                r'-exec git rm -f {} \;',
-            workingDirectory: config.workingDirectory.toString(),
-            shell: 'bash',
-          ),
-        if (config.artifactDependencies case final Expression artDeps) ...[
-          Step.uses(
-            name: 'Download artifacts',
-            ifExpression: artDeps.ne(Expression.empty) & config.ifExpression,
-            uses: Tools.actionsDownloadArtifact,
-            withArgs: {
-              'pattern': 'package-*',
-              'path': '$artifactTargetDir/.artifacts',
-            },
-          ),
-          Step.run(
-            name: 'Create pubspec_overrides.yaml for artifact packages'
-                '$titleSuffix',
-            ifExpression: config.artifactDependencies!.ne(Expression.empty) &
-                config.ifExpression,
-            shell: 'bash',
-            run: '''
+        run:
+            'find . -type f -name "pubspec_overrides.yaml" '
+            r'-exec git rm -f {} \;',
+        workingDirectory: config.workingDirectory.toString(),
+        shell: 'bash',
+      ),
+    if (config.artifactDependencies case final Expression artDeps) ...[
+      Step.uses(
+        name: 'Download artifacts',
+        ifExpression: artDeps.ne(Expression.empty) & config.ifExpression,
+        uses: Tools.actionsDownloadArtifact,
+        withArgs: {
+          'pattern': 'package-*',
+          'path': '$artifactTargetDir/.artifacts',
+        },
+      ),
+      Step.run(
+        name:
+            'Create pubspec_overrides.yaml for artifact packages'
+            '$titleSuffix',
+        ifExpression:
+            config.artifactDependencies!.ne(Expression.empty) &
+            config.ifExpression,
+        shell: 'bash',
+        run: '''
 set -eo pipefail
 if [[ ! -f pubspec_overrides.yaml ]]; then
   yq '{"dependency_overrides": .dependency_overrides}' pubspec.yaml > pubspec_overrides.yaml
@@ -63,22 +67,23 @@ for package in ${config.artifactDependencies}; do
   yq -i ".dependency_overrides.\$package.path=\\"$artifactTargetDir/.artifacts/package-\$package\\"" pubspec_overrides.yaml
 done
 ''',
-            workingDirectory: config.workingDirectory.toString(),
-          ),
-        ],
-        if (config.localResolution.rawValueOr(true))
-          Step.run(
-            name: 'Switch to local resolution',
-            ifExpression: config.localResolution.isExpression
+        workingDirectory: config.workingDirectory.toString(),
+      ),
+    ],
+    if (config.localResolution.rawValueOr(true))
+      Step.run(
+        name: 'Switch to local resolution',
+        ifExpression:
+            config.localResolution.isExpression
                 ? config.localResolution.asExpression & config.ifExpression
                 : config.ifExpression,
-            run: '''
+        run: '''
 set -eo pipefail
 touch pubspec_overrides.yaml
 yq -i '.resolution=null' pubspec_overrides.yaml
 ''',
-            workingDirectory: config.workingDirectory.toString(),
-            shell: 'bash',
-          ),
-      ];
+        workingDirectory: config.workingDirectory.toString(),
+        shell: 'bash',
+      ),
+  ];
 }

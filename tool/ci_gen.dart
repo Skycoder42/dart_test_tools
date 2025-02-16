@@ -50,17 +50,13 @@ Future<int> _writeWorkflowToFile(WorkflowBuilder workflowBuilder) async {
 
   final outFile =
       File('.github/workflows/${workflowBuilder.name}.yml').openWrite();
-  final yqProc = await Process.start(
-    'yq',
-    const ['e', '-P'],
-    runInShell: true,
-  );
+  final yqProc = await Process.start('yq', const ['e', '-P'], runInShell: true);
   final errFuture = yqProc.stderr.listen(stderr.add).asFuture<void>();
   final outFuture = yqProc.stdout.pipe(outFile);
 
-  await Stream.value(writer.write(workflowBuilder.build()))
-      .transform(utf8.encoder)
-      .pipe(yqProc.stdin);
+  await Stream.value(
+    writer.write(workflowBuilder.build()),
+  ).transform(utf8.encoder).pipe(yqProc.stdin);
 
   await Future.wait([outFuture, errFuture]);
 
@@ -68,12 +64,12 @@ Future<int> _writeWorkflowToFile(WorkflowBuilder workflowBuilder) async {
 }
 
 YamlWriter _createYamlWriter() => YamlWriter(
-      toEncodable: (dynamic data) {
-        // ignore: avoid_dynamic_calls
-        final dynamic jsonData = data.toJson != null ? data.toJson() : data;
-        if (jsonData is Map) {
-          return <dynamic, dynamic>{...jsonData}..remove('runtimeType');
-        }
-        return jsonData;
-      },
-    );
+  toEncodable: (dynamic data) {
+    // ignore: avoid_dynamic_calls
+    final dynamic jsonData = data.toJson != null ? data.toJson() : data;
+    if (jsonData is Map) {
+      return <dynamic, dynamic>{...jsonData}..remove('runtimeType');
+    }
+    return jsonData;
+  },
+);

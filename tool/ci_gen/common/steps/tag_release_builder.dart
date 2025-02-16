@@ -11,8 +11,9 @@ import 'release_entry_builder.dart';
 
 base mixin TagReleaseConfig on JobConfig, ReleaseEntryConfig {
   late final dartSdkVersion = inputContext(WorkflowInputs.dartSdkVersion);
-  late final persistCredentials =
-      inputContext(WorkflowInputs.persistCredentials);
+  late final persistCredentials = inputContext(
+    WorkflowInputs.persistCredentials,
+  );
   String? get binaryArtifactsPattern;
 }
 
@@ -23,23 +24,20 @@ class TagReleaseBuilder implements StepBuilder {
 
   final TagReleaseConfig config;
 
-  const TagReleaseBuilder({
-    required this.config,
-  });
+  const TagReleaseBuilder({required this.config});
 
   @override
   Iterable<Step> build() => [
-        ...DartSdkBuilder(
-          dartSdkVersion: config.dartSdkVersion,
-        ).build(),
-        ...CheckoutBuilder(
-          persistCredentials:
-              ExpressionOrValue.expression(config.persistCredentials),
-        ).build(),
-        Step.run(
-          id: versionStepId,
-          name: 'Check if a release should be created',
-          run: '''
+    ...DartSdkBuilder(dartSdkVersion: config.dartSdkVersion).build(),
+    ...CheckoutBuilder(
+      persistCredentials: ExpressionOrValue.expression(
+        config.persistCredentials,
+      ),
+    ).build(),
+    Step.run(
+      id: versionStepId,
+      name: 'Check if a release should be created',
+      run: '''
 set -eo pipefail
 package_version=\$(cat pubspec.yaml | yq e ".version" -)
 git fetch --tags > /dev/null
@@ -54,26 +52,27 @@ else
   ${updateOutput.bashSetter('false')}
 fi
 ''',
-          workingDirectory: config.workingDirectory.toString(),
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+    if (config.binaryArtifactsPattern case final String binaryArtifactsPattern)
+      Step.uses(
+        name: 'Download all binary artifacts',
+        ifExpression: updateOutput.expression.eq(
+          const Expression.literal('true'),
         ),
-        if (config.binaryArtifactsPattern
-            case final String binaryArtifactsPattern)
-          Step.uses(
-            name: 'Download all binary artifacts',
-            ifExpression:
-                updateOutput.expression.eq(const Expression.literal('true')),
-            uses: Tools.actionsDownloadArtifact,
-            withArgs: <String, dynamic>{
-              'path': 'artifacts',
-              'pattern': binaryArtifactsPattern,
-            },
-          ),
-        ...ReleaseEntryBuilder(
-          config: config,
-          versionUpdate: updateOutput.expression,
-          files: config.binaryArtifactsPattern != null
+        uses: Tools.actionsDownloadArtifact,
+        withArgs: <String, dynamic>{
+          'path': 'artifacts',
+          'pattern': binaryArtifactsPattern,
+        },
+      ),
+    ...ReleaseEntryBuilder(
+      config: config,
+      versionUpdate: updateOutput.expression,
+      files:
+          config.binaryArtifactsPattern != null
               ? 'artifacts/${config.binaryArtifactsPattern}/*'
               : null,
-        ).build(),
-      ];
+    ).build(),
+  ];
 }

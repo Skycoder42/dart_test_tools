@@ -24,7 +24,6 @@ linter:
     # rules from package:lint/package.yaml
     implicit_reopen: true
     literal_only_boolean_expressions: true
-    package_api_docs: true
     # custom rules
     always_use_package_imports: false # overwritten
     avoid_classes_with_only_static_members: false # overwritten
@@ -62,3 +61,5 @@ linter:
     no_literal_bool_comparisons: true
     use_truncating_division: true
     # new rules
+    require_trailing_commas: false
+    document_ignores: false

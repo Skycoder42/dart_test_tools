@@ -7,11 +7,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'input.freezed.dart';
 part 'input.g.dart';
 
-enum Type {
-  boolean,
-  number,
-  string,
-}
+enum Type { boolean, number, string }
 
 @freezed
 class Input with _$Input {
@@ -35,14 +31,13 @@ class Input with _$Input {
     required dynamic defaultValue,
     String? description,
     String? deprecationMessage,
-  }) =>
-      Input(
-        type: Type.string,
-        required: required,
-        defaultValue: json.encode(defaultValue),
-        description: description,
-        deprecationMessage: deprecationMessage,
-      );
+  }) => Input(
+    type: Type.string,
+    required: required,
+    defaultValue: json.encode(defaultValue),
+    description: description,
+    deprecationMessage: deprecationMessage,
+  );
 
   factory Input.fromJson(Map<String, dynamic> json) => _$InputFromJson(json);
 }

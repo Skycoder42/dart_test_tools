@@ -41,8 +41,15 @@ abstract interface class Callable5<TRet, TArg1, TArg2, TArg3, TArg4, TArg5> {
 class MockCallable5<TRet, TArg1, TArg2, TArg3, TArg4, TArg5> extends Mock
     implements Callable5<TRet, TArg1, TArg2, TArg3, TArg4, TArg5> {}
 
-abstract interface class Callable6<TRet, TArg1, TArg2, TArg3, TArg4, TArg5,
-    TArg6> {
+abstract interface class Callable6<
+  TRet,
+  TArg1,
+  TArg2,
+  TArg3,
+  TArg4,
+  TArg5,
+  TArg6
+> {
   TRet call(
     TArg1 arg1,
     TArg2 arg2,
@@ -56,8 +63,16 @@ abstract interface class Callable6<TRet, TArg1, TArg2, TArg3, TArg4, TArg5,
 class MockCallable6<TRet, TArg1, TArg2, TArg3, TArg4, TArg5, TArg6> extends Mock
     implements Callable6<TRet, TArg1, TArg2, TArg3, TArg4, TArg5, TArg6> {}
 
-abstract interface class Callable7<TRet, TArg1, TArg2, TArg3, TArg4, TArg5,
-    TArg6, TArg7> {
+abstract interface class Callable7<
+  TRet,
+  TArg1,
+  TArg2,
+  TArg3,
+  TArg4,
+  TArg5,
+  TArg6,
+  TArg7
+> {
   TRet call(
     TArg1 arg1,
     TArg2 arg2,
@@ -74,8 +89,17 @@ class MockCallable7<TRet, TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7>
     implements
         Callable7<TRet, TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7> {}
 
-abstract interface class Callable8<TRet, TArg1, TArg2, TArg3, TArg4, TArg5,
-    TArg6, TArg7, TArg8> {
+abstract interface class Callable8<
+  TRet,
+  TArg1,
+  TArg2,
+  TArg3,
+  TArg4,
+  TArg5,
+  TArg6,
+  TArg7,
+  TArg8
+> {
   TRet call(
     TArg1 arg1,
     TArg2 arg2,
@@ -88,14 +112,43 @@ abstract interface class Callable8<TRet, TArg1, TArg2, TArg3, TArg4, TArg5,
   );
 }
 
-class MockCallable8<TRet, TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7,
-        TArg8> extends Mock
+class MockCallable8<
+  TRet,
+  TArg1,
+  TArg2,
+  TArg3,
+  TArg4,
+  TArg5,
+  TArg6,
+  TArg7,
+  TArg8
+>
+    extends Mock
     implements
-        Callable8<TRet, TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7,
-            TArg8> {}
+        Callable8<
+          TRet,
+          TArg1,
+          TArg2,
+          TArg3,
+          TArg4,
+          TArg5,
+          TArg6,
+          TArg7,
+          TArg8
+        > {}
 
-abstract interface class Callable9<TRet, TArg1, TArg2, TArg3, TArg4, TArg5,
-    TArg6, TArg7, TArg8, TArg9> {
+abstract interface class Callable9<
+  TRet,
+  TArg1,
+  TArg2,
+  TArg3,
+  TArg4,
+  TArg5,
+  TArg6,
+  TArg7,
+  TArg8,
+  TArg9
+> {
   TRet call(
     TArg1 arg1,
     TArg2 arg2,
@@ -109,8 +162,29 @@ abstract interface class Callable9<TRet, TArg1, TArg2, TArg3, TArg4, TArg5,
   );
 }
 
-class MockCallable9<TRet, TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7,
-        TArg8, TArg9> extends Mock
+class MockCallable9<
+  TRet,
+  TArg1,
+  TArg2,
+  TArg3,
+  TArg4,
+  TArg5,
+  TArg6,
+  TArg7,
+  TArg8,
+  TArg9
+>
+    extends Mock
     implements
-        Callable9<TRet, TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8,
-            TArg9> {}
+        Callable9<
+          TRet,
+          TArg1,
+          TArg2,
+          TArg3,
+          TArg4,
+          TArg5,
+          TArg6,
+          TArg7,
+          TArg8,
+          TArg9
+        > {}

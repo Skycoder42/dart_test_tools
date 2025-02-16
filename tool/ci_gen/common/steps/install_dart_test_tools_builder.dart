@@ -7,10 +7,11 @@ class InstallDartTestToolsBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        Step.run(
-          name: 'Install dart_test_tools',
-          run: 'dart pub global activate '
-              'dart_test_tools ^$dartTestToolsVersion',
-        ),
-      ];
+    Step.run(
+      name: 'Install dart_test_tools',
+      run:
+          'dart pub global activate '
+          'dart_test_tools ^$dartTestToolsVersion',
+    ),
+  ];
 }

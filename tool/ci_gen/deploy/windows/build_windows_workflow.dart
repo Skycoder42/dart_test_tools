@@ -22,9 +22,7 @@ class BuildWindowsWorkflow implements WorkflowBuilder {
     );
 
     return Workflow(
-      jobs: {
-        buildWindowsJobBuilder.id: buildWindowsJobBuilder.build(),
-      },
+      jobs: {buildWindowsJobBuilder.id: buildWindowsJobBuilder.build()},
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),

@@ -12,8 +12,8 @@ class _CustomLintPlugin extends PluginBase {
   /// We list all the custom warnings/infos/errors
   @override
   List<LintRule> getLintRules(CustomLintConfigs configs) => [
-        const NoSelfPackageImports(),
-        const SrcLibraryNotExported(),
-        const FreezedClassesMustBeSealed(),
-      ];
+    const NoSelfPackageImports(),
+    const SrcLibraryNotExported(),
+    const FreezedClassesMustBeSealed(),
+  ];
 }

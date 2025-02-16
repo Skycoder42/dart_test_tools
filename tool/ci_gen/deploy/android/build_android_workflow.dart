@@ -22,9 +22,7 @@ class BuildAndroidWorkflow implements WorkflowBuilder {
     );
 
     return Workflow(
-      jobs: {
-        buildAndroidJobBuilder.id: buildAndroidJobBuilder.build(),
-      },
+      jobs: {buildAndroidJobBuilder.id: buildAndroidJobBuilder.build()},
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),

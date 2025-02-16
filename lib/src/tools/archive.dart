@@ -12,18 +12,12 @@ abstract base class Archive {
     required Directory outDir,
   }) async {
     if (_tarFileRegexp.hasMatch(archive.path)) {
-      await Github.exec(
-        'tar',
-        ['-xvf', archive.path],
-        workingDirectory: outDir,
-      );
-    } else {
-      await Github.exec('7z', [
-        'x',
-        '-y',
-        '-o${outDir.path}',
+      await Github.exec('tar', [
+        '-xvf',
         archive.path,
-      ]);
+      ], workingDirectory: outDir);
+    } else {
+      await Github.exec('7z', ['x', '-y', '-o${outDir.path}', archive.path]);
     }
   }
 
@@ -32,17 +26,18 @@ abstract base class Archive {
     required File archive,
   }) async {
     if (_tarFileRegexp.hasMatch(archive.path)) {
-      await Github.exec(
-        'tar',
-        ['-cavf', archive.path, '.'],
-        workingDirectory: inDir,
-      );
+      await Github.exec('tar', [
+        '-cavf',
+        archive.path,
+        '.',
+      ], workingDirectory: inDir);
     } else {
-      await Github.exec(
-        '7z',
-        ['a', '-y', archive.path, '.'],
-        workingDirectory: inDir,
-      );
+      await Github.exec('7z', [
+        'a',
+        '-y',
+        archive.path,
+        '.',
+      ], workingDirectory: inDir);
     }
   }
 }

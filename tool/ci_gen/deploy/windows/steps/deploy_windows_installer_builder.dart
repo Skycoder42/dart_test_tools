@@ -21,40 +21,39 @@ base mixin DeployWindowsInstallerConfig on JobConfig, WorkingDirectoryConfig {
 class DeployWindowsInstallerBuilder implements StepBuilder {
   final DeployWindowsInstallerConfig config;
 
-  const DeployWindowsInstallerBuilder({
-    required this.config,
-  });
+  const DeployWindowsInstallerBuilder({required this.config});
 
   @override
   Iterable<Step> build() => [
-        const Step.uses(
-          name: 'Install msstore cli',
-          uses: Tools.microsoftSetupMsstoreCli,
-        ),
-        ...const CheckoutBuilder().build(),
-        Step.uses(
-          name: 'Download windows app artifact',
-          uses: Tools.actionsDownloadArtifact,
-          withArgs: {
-            'name': 'app-deployment-windows',
-            'path': '${config.workingDirectory}/build/windows/msix',
-          },
-        ),
-        Step.run(
-          name: 'Configure msstore cli',
-          run: 'msstore reconfigure '
-              "--tenantId '${config.tenantId}' "
-              "--sellerId '${config.sellerId}' "
-              "--clientId '${config.clientId}' "
-              "--clientSecret '${config.clientSecret}'",
-          workingDirectory: config.workingDirectory.toString(),
-        ),
-        Step.run(
-          name: 'Publish MSIX to the Microsoft Store',
-          run: 'msstore publish $_draftArgs $_flightIdArgs',
-          workingDirectory: config.workingDirectory.toString(),
-        ),
-      ];
+    const Step.uses(
+      name: 'Install msstore cli',
+      uses: Tools.microsoftSetupMsstoreCli,
+    ),
+    ...const CheckoutBuilder().build(),
+    Step.uses(
+      name: 'Download windows app artifact',
+      uses: Tools.actionsDownloadArtifact,
+      withArgs: {
+        'name': 'app-deployment-windows',
+        'path': '${config.workingDirectory}/build/windows/msix',
+      },
+    ),
+    Step.run(
+      name: 'Configure msstore cli',
+      run:
+          'msstore reconfigure '
+          "--tenantId '${config.tenantId}' "
+          "--sellerId '${config.sellerId}' "
+          "--clientId '${config.clientId}' "
+          "--clientSecret '${config.clientSecret}'",
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+    Step.run(
+      name: 'Publish MSIX to the Microsoft Store',
+      run: 'msstore publish $_draftArgs $_flightIdArgs',
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+  ];
 
   Expression get _draftArgs =>
       config.isDraft.eq(const Expression.literal('true')) &

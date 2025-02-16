@@ -13,24 +13,17 @@ class UploadDebJobBuilder implements JobBuilder {
   final JobId packageJobId;
   final UploadDebJobConfig config;
 
-  const UploadDebJobBuilder({
-    required this.packageJobId,
-    required this.config,
-  });
+  const UploadDebJobBuilder({required this.packageJobId, required this.config});
 
   @override
   JobId get id => const JobId('upload_deb');
 
   @override
   Job build() => Job(
-        name: 'Upload deb package to packagecloud',
-        runsOn: 'ubuntu-latest',
-        needs: {
-          packageJobId,
-        },
-        environment: Environments.packagecloud,
-        steps: [
-          ...PackagecloudUploadBuilder(config: config).build(),
-        ],
-      );
+    name: 'Upload deb package to packagecloud',
+    runsOn: 'ubuntu-latest',
+    needs: {packageJobId},
+    environment: Environments.packagecloud,
+    steps: [...PackagecloudUploadBuilder(config: config).build()],
+  );
 }

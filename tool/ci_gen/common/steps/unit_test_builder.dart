@@ -27,8 +27,9 @@ base mixin UnitTestConfig
   );
 
   @override
-  late final artifactDependencies =
-      inputContext(WorkflowInputs.artifactDependencies);
+  late final artifactDependencies = inputContext(
+    WorkflowInputs.artifactDependencies,
+  );
 }
 
 final class DartTestArgsMatrixProperty
@@ -40,9 +41,9 @@ final class DartTestArgsMatrixProperty
 
   @override
   Object? valueFor(IPlatformMatrixSelector selector) => switch (selector) {
-        IPlatformMatrixSelector(isWeb: true) => '-p chrome',
-        _ => null,
-      };
+    IPlatformMatrixSelector(isWeb: true) => '-p chrome',
+    _ => null,
+  };
 }
 
 class UnitTestBuilder implements StepBuilder {
@@ -60,19 +61,20 @@ class UnitTestBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        ...ProjectSetupBuilder(config: config).build(),
-        Step.run(
-          name: 'Run unit tests',
-          run: '${config.baseTool} test ${dartTestArgs.expression} '
-              '${config.coverageArgs} '
-              '--reporter github ${config.unitTestPaths} || [ \$? = 79 ]',
-          workingDirectory: config.workingDirectory.toString(),
-          shell: 'bash',
-        ),
-        ...CoverageCollectorBuilder(
-          config: config,
-          platform: platform,
-          lcovCleanCommand: lcovCleanCommand,
-        ).build(),
-      ];
+    ...ProjectSetupBuilder(config: config).build(),
+    Step.run(
+      name: 'Run unit tests',
+      run:
+          '${config.baseTool} test ${dartTestArgs.expression} '
+          '${config.coverageArgs} '
+          '--reporter github ${config.unitTestPaths} || [ \$? = 79 ]',
+      workingDirectory: config.workingDirectory.toString(),
+      shell: 'bash',
+    ),
+    ...CoverageCollectorBuilder(
+      config: config,
+      platform: platform,
+      lcovCleanCommand: lcovCleanCommand,
+    ).build(),
+  ];
 }

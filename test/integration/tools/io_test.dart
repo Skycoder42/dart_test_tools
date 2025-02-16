@@ -10,8 +10,9 @@ import 'package:test/test.dart';
 void main() {
   group('FileSystemEntityX', () {
     test('assertExists throws exception if FSE does not exist', () {
-      final testFile =
-          Directory.systemTemp.subFile('file-that-should-not-exist');
+      final testFile = Directory.systemTemp.subFile(
+        'file-that-should-not-exist',
+      );
       expect(
         testFile.assertExists,
         throwsA(
@@ -85,9 +86,10 @@ void main() {
         addTearDown(server.close);
 
         server.listen((request) {
-          request.response.statusCode = request.method == 'HEAD'
-              ? HttpStatus.ok
-              : HttpStatus.methodNotAllowed;
+          request.response.statusCode =
+              request.method == 'HEAD'
+                  ? HttpStatus.ok
+                  : HttpStatus.methodNotAllowed;
           request.response.headers.add(headerName, headerValue);
           request.response.close();
         });
@@ -109,9 +111,10 @@ void main() {
         addTearDown(server.close);
 
         server.listen((request) {
-          request.response.statusCode = request.method == 'HEAD'
-              ? HttpStatus.ok
-              : HttpStatus.methodNotAllowed;
+          request.response.statusCode =
+              request.method == 'HEAD'
+                  ? HttpStatus.ok
+                  : HttpStatus.methodNotAllowed;
           request.response.close();
         });
 
@@ -120,10 +123,7 @@ void main() {
         final client = HttpClient();
         addTearDown(client.close);
 
-        expect(
-          () => client.getHeader(uri, headerName),
-          throwsException,
-        );
+        expect(() => client.getHeader(uri, headerName), throwsException);
       });
     });
   });

@@ -20,11 +20,11 @@ final class TestArgsMatrixProperty extends IMatrixProperty<FlutterPlatform> {
 
   @override
   Object? valueFor(FlutterPlatform selector) => switch (selector) {
-        FlutterPlatform.linux => '-d linux',
-        FlutterPlatform.macos => '-d macos',
-        FlutterPlatform.windows => '-d windows',
-        _ => null,
-      };
+    FlutterPlatform.linux => '-d linux',
+    FlutterPlatform.macos => '-d macos',
+    FlutterPlatform.windows => '-d windows',
+    _ => null,
+  };
 }
 
 final class RunPrefixMatrixProperty extends IMatrixProperty<FlutterPlatform> {
@@ -35,9 +35,9 @@ final class RunPrefixMatrixProperty extends IMatrixProperty<FlutterPlatform> {
 
   @override
   Object? valueFor(FlutterPlatform selector) => switch (selector) {
-        FlutterPlatform.linux => 'xvfb-run --auto-servernum',
-        _ => null,
-      };
+    FlutterPlatform.linux => 'xvfb-run --auto-servernum',
+    _ => null,
+  };
 }
 
 class DesktopIntegrationTestBuilder implements StepBuilder {
@@ -57,28 +57,28 @@ class DesktopIntegrationTestBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        Step.run(
-          name: 'Install test dependencies (linux)',
-          ifExpression:
-              platform.expression.eq(const Expression.literal('linux')),
-          run: '''
+    Step.run(
+      name: 'Install test dependencies (linux)',
+      ifExpression: platform.expression.eq(const Expression.literal('linux')),
+      run: '''
 set -e
 sudo apt-get -qq update
 sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
 ''',
-        ),
-        ...PrepareIntegrationTestBuilder(
-          config: config,
-          platform: ExpressionOrValue.expression(platform.expression),
-        ).build(),
-        Step.run(
-          name: 'Run integration tests',
-          run: '${runPrefix.expression} '
-              '${config.baseTool} test ${testArgs.expression} '
-              '--reporter expanded '
-              '${config.integrationTestPaths} || [ \$? = 79 ]',
-          workingDirectory: config.integrationTestWorkingDirectory,
-          shell: 'bash',
-        ),
-      ];
+    ),
+    ...PrepareIntegrationTestBuilder(
+      config: config,
+      platform: ExpressionOrValue.expression(platform.expression),
+    ).build(),
+    Step.run(
+      name: 'Run integration tests',
+      run:
+          '${runPrefix.expression} '
+          '${config.baseTool} test ${testArgs.expression} '
+          '--reporter expanded '
+          '${config.integrationTestPaths} || [ \$? = 79 ]',
+      workingDirectory: config.integrationTestWorkingDirectory,
+      shell: 'bash',
+    ),
+  ];
 }

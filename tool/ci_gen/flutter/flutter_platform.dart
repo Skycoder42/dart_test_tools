@@ -21,10 +21,7 @@ enum FlutterPlatform implements IPlatformMatrixSelector {
   // ignore: avoid_positional_boolean_parameters
   const FlutterPlatform(this.platform, this.os, this.isWeb);
 
-  static const mobile = [
-    FlutterPlatform.android,
-    FlutterPlatform.ios,
-  ];
+  static const mobile = [FlutterPlatform.android, FlutterPlatform.ios];
 
   static const desktop = [
     FlutterPlatform.linux,

@@ -27,9 +27,9 @@ class AnalysisOptionsRef with _$AnalysisOptionsRef {
   }
 
   String toJson() => when(
-        package: (packageName, path) => 'package:$packageName/$path',
-        local: (path) => path,
-      );
+    package: (packageName, path) => 'package:$packageName/$path',
+    local: (path) => path,
+  );
 
   @override
   String toString() => toJson();

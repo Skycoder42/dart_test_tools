@@ -14,20 +14,16 @@ class DockerJobBuilder implements JobBuilder {
 
   final DockerJobConfig config;
 
-  DockerJobBuilder({
-    required this.config,
-  });
+  DockerJobBuilder({required this.config});
 
   @override
   JobId get id => jobId;
 
   @override
   Job build() => Job(
-        name: 'Build and publish Docker images',
-        runsOn: 'ubuntu-latest',
-        environment: Environments.dockerHub,
-        steps: [
-          ...DockerImageBuilder(config: config).build(),
-        ],
-      );
+    name: 'Build and publish Docker images',
+    runsOn: 'ubuntu-latest',
+    environment: Environments.dockerHub,
+    steps: [...DockerImageBuilder(config: config).build()],
+  );
 }

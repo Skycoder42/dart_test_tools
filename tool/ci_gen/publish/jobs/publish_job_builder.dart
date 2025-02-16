@@ -38,42 +38,38 @@ final class PublishJobConfig extends JobConfig
 class PublishJobBuilder implements JobBuilder {
   final PublishJobConfig config;
 
-  PublishJobBuilder({
-    required this.config,
-  });
+  PublishJobBuilder({required this.config});
 
   @override
   JobId get id => const JobId('publish');
 
   @override
   Job build() => Job(
-        name: 'Publish to pub.dev',
-        environment: Environments.pubDeploy,
-        ifExpression: const Expression('startsWith')([
-          Github.ref,
-          const Expression('format')([
-            const Expression.literal('refs/tags/{0}'),
-            config.tagPrefix,
-          ]),
-        ]),
-        permissions: const {
-          'id-token': 'write',
-        },
-        runsOn: 'ubuntu-latest',
-        steps: [
-          ...DartSdkBuilder(
-            dartSdkVersion: config.dartSdkVersion,
-            ifExpression: config.isFlutter.asExpression.not,
-          ).build(),
-          ...FlutterSdkBuilder(
-            flutterSdkChannel: config.flutterSdkChannel,
-            javaJdkVersion: config.javaJdkVersion,
-            ifExpression: config.isFlutter.asExpression,
-          ).build(),
-          ...FlutterAuthBuilder(
-            ifExpression: config.isFlutter.asExpression,
-          ).build(),
-          ...PublishBuilder(config: config).build(),
-        ],
-      );
+    name: 'Publish to pub.dev',
+    environment: Environments.pubDeploy,
+    ifExpression: const Expression('startsWith')([
+      Github.ref,
+      const Expression('format')([
+        const Expression.literal('refs/tags/{0}'),
+        config.tagPrefix,
+      ]),
+    ]),
+    permissions: const {'id-token': 'write'},
+    runsOn: 'ubuntu-latest',
+    steps: [
+      ...DartSdkBuilder(
+        dartSdkVersion: config.dartSdkVersion,
+        ifExpression: config.isFlutter.asExpression.not,
+      ).build(),
+      ...FlutterSdkBuilder(
+        flutterSdkChannel: config.flutterSdkChannel,
+        javaJdkVersion: config.javaJdkVersion,
+        ifExpression: config.isFlutter.asExpression,
+      ).build(),
+      ...FlutterAuthBuilder(
+        ifExpression: config.isFlutter.asExpression,
+      ).build(),
+      ...PublishBuilder(config: config).build(),
+    ],
+  );
 }

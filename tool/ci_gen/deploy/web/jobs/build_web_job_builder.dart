@@ -32,23 +32,20 @@ final class BuildWebJobConfig extends JobConfig
 
 final class BuildWebJobBuilder extends SdkJobBuilder<BuildWebJobConfig>
     with FlutterSdkJobBuilderMixin<BuildWebJobConfig> {
-  const BuildWebJobBuilder({
-    required super.config,
-  });
+  const BuildWebJobBuilder({required super.config});
 
   @override
   JobId get id => const JobId('build_web');
 
   @override
   Job build() => Job(
-        name: 'Build web archive',
-        runsOn: RunsOn.ubuntuLatest.id,
-        steps: [
-          ...buildSetupSdkSteps(
-            buildPlatform:
-                ExpressionOrValue.value(FlutterPlatform.web.platform),
-          ),
-          ...BuildWebArchiveBuilder(config: config).build(),
-        ],
-      );
+    name: 'Build web archive',
+    runsOn: RunsOn.ubuntuLatest.id,
+    steps: [
+      ...buildSetupSdkSteps(
+        buildPlatform: ExpressionOrValue.value(FlutterPlatform.web.platform),
+      ),
+      ...BuildWebArchiveBuilder(config: config).build(),
+    ],
+  );
 }

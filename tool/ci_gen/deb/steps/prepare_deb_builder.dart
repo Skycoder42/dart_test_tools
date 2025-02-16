@@ -7,30 +7,27 @@ class PrepareDebBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        const Step.run(
-          name: 'Add dart repository',
-          run: '''
+    const Step.run(
+      name: 'Add dart repository',
+      run: '''
 set -eo pipefail
 wget -qO- 'https://dl-ssl.google.com/linux/linux_signing_key.pub' | sudo gpg --dearmor -o /usr/share/keyrings/dart.gpg
 echo 'deb [signed-by=/usr/share/keyrings/dart.gpg arch=amd64] https://storage.googleapis.com/download.dartlang.org/linux/debian stable main' | sudo tee /etc/apt/sources.list.d/dart_stable.list
 ''',
-        ),
-        const Step.run(
-          name: 'Add makedeb repository',
-          run: '''
+    ),
+    const Step.run(
+      name: 'Add makedeb repository',
+      run: '''
 set -eo pipefail
 wget -qO- 'https://proget.makedeb.org/debian-feeds/makedeb.pub' | sudo gpg --dearmor -o /usr/share/keyrings/makedeb-archive-keyring.gpg
 echo 'deb [signed-by=/usr/share/keyrings/makedeb-archive-keyring.gpg arch=all] https://proget.makedeb.org/ makedeb main' | sudo tee /etc/apt/sources.list.d/makedeb.list
 ''',
-        ),
-        const Step.run(
-          name: 'Refresh packages cache',
-          run: 'sudo apt-get update',
-        ),
-        const Step.run(
-          name: 'Install needed packages',
-          run: 'sudo apt-get install -y dart makedeb',
-        ),
-        ...const InstallDartTestToolsBuilder().build(),
-      ];
+    ),
+    const Step.run(name: 'Refresh packages cache', run: 'sudo apt-get update'),
+    const Step.run(
+      name: 'Install needed packages',
+      run: 'sudo apt-get install -y dart makedeb',
+    ),
+    ...const InstallDartTestToolsBuilder().build(),
+  ];
 }

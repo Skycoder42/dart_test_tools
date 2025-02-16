@@ -28,9 +28,7 @@ class ReleaseWorkflow implements WorkflowBuilder {
       ..add(WorkflowOutputs.releaseVersion, releaseJobBuilder.versionOutput);
 
     return Workflow(
-      jobs: {
-        releaseJobBuilder.id: releaseJobBuilder.build(),
-      },
+      jobs: {releaseJobBuilder.id: releaseJobBuilder.build()},
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),

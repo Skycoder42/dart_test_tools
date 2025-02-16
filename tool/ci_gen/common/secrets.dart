@@ -27,7 +27,8 @@ MY_API_KEY=<reference secret here>"
     name: 'AUR_SSH_PRIVATE_KEY',
     secret: Secret(
       required: true,
-      description: 'The ASCII armored private SSH key to use to push changes '
+      description:
+          'The ASCII armored private SSH key to use to push changes '
           'to the AUR. The corresponding public key must have been added at '
           'https://aur.archlinux.org/ under "My Account".',
     ),
@@ -53,7 +54,8 @@ MY_API_KEY=<reference secret here>"
     name: 'githubToken',
     secret: Secret(
       required: true,
-      description: 'The personal access token to create new releases with. '
+      description:
+          'The personal access token to create new releases with. '
           'Is required, as the default github workflow token does not '
           'trigger workflows when creating releases.',
     ),
@@ -86,7 +88,8 @@ VARIABLE2=value2
     name: 'keystorePassword',
     secret: Secret(
       required: true,
-      description: 'The primary password for the signing keystore. '
+      description:
+          'The primary password for the signing keystore. '
           'Must be the password for both, keystore and signing key.',
     ),
   );
@@ -95,7 +98,8 @@ VARIABLE2=value2
     name: 'sentryAuthToken',
     secret: Secret(
       required: false,
-      description: 'A sentry authentication token. '
+      description:
+          'A sentry authentication token. '
           'If specified, debug symbols will be uploaded to sentry. '
           'If not specified (the default), no debug symbols are uploaded.',
     ),
@@ -105,7 +109,8 @@ VARIABLE2=value2
     name: 'googlePlayKey',
     secret: Secret(
       required: false,
-      description: 'The google play api upload JSON key. '
+      description:
+          'The google play api upload JSON key. '
           'Needed by fastlane to actually publish the app.',
     ),
   );
@@ -119,27 +124,25 @@ VARIABLE2=value2
   );
 
   static WorkflowSecret gpgKey(bool required) => WorkflowSecret(
-        name: 'gpgKey',
-        secret: Secret(
-          required: required,
-          description:
-              'The GPG key to sign the flatpak bundle and repository with.',
-        ),
-      );
+    name: 'gpgKey',
+    secret: Secret(
+      required: required,
+      description:
+          'The GPG key to sign the flatpak bundle and repository with.',
+    ),
+  );
 
   static WorkflowSecret gpgKeyId(bool required) => WorkflowSecret(
-        name: 'gpgKeyId',
-        secret: Secret(
-          required: required,
-          description: 'The id of the gpgKey',
-        ),
-      );
+    name: 'gpgKeyId',
+    secret: Secret(required: required, description: 'The id of the gpgKey'),
+  );
 
   static const targetRepoToken = WorkflowSecret(
     name: 'targetRepoToken',
     secret: Secret(
       required: false,
-      description: 'A GitHub PAT that has the permission '
+      description:
+          'A GitHub PAT that has the permission '
           'to push commits to the targetRepo.',
     ),
   );
@@ -201,7 +204,8 @@ VARIABLE2=value2
     name: 'signingIdentity',
     secret: Secret(
       required: false,
-      description: 'The base64 encoded PKCS#12 container with the code signing '
+      description:
+          'The base64 encoded PKCS#12 container with the code signing '
           'certificate and private key to sign the app. Must be a certificate '
           'that is allowed by the provisioningProfile. Use the '
           'signingIdentityPassphrase secret to specify the passphrase that is '

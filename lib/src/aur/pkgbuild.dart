@@ -35,43 +35,46 @@ class PkgProperty with _$PkgProperty {
     List<String> values, {
     bool skipEmpty = true,
     bool multiLine = false,
-  }) =>
-      PkgProperty.list(
-        values.map(PkgProperty.new).toList(),
-        skipEmpty: skipEmpty,
-        multiLine: multiLine,
-      );
+  }) => PkgProperty.list(
+    values.map(PkgProperty.new).toList(),
+    skipEmpty: skipEmpty,
+    multiLine: multiLine,
+  );
 
   bool get isEmpty => maybeWhen(
-        (value) => value == null,
-        list: (values, skipEmpty, _) => skipEmpty && values.isEmpty,
-        orElse: () => false,
-      );
+    (value) => value == null,
+    list: (values, skipEmpty, _) => skipEmpty && values.isEmpty,
+    orElse: () => false,
+  );
 
   String encode({int width = 0}) => when(
-        (value) {
-          if (value == null) {
-            return '';
-          } else if (value is String) {
-            return "'$value'";
-          } else {
-            return '$value';
-          }
-        },
-        interpolate: (value) => '"$value"',
-        list: (vs, skipEmpty, multiline) => multiline
-            ? '(${vs.map((v) => v.encode()).join('\n${' ' * (width + 1)}')})'
-            : '(${vs.map((v) => v.encode()).join(' ')})',
-      );
+    (value) {
+      if (value == null) {
+        return '';
+      } else if (value is String) {
+        return "'$value'";
+      } else {
+        return '$value';
+      }
+    },
+    interpolate: (value) => '"$value"',
+    list: (props, skipEmpty, multiline) {
+      final encodedProps = props.map((p) => p.encode());
+      return multiline
+          ? '(${encodedProps.join('\n${' ' * (width + 1)}')})'
+          : '(${encodedProps.join(' ')})';
+    },
+  );
 }
 
 @internal
 extension PkgPropertyMapX on Map<String, PkgProperty> {
   String encode() => entries
       .map(
-        (entry) => entry.value.isEmpty
-            ? null
-            : '${entry.key}=${entry.value.encode(width: entry.key.length + 1)}',
+        (e) =>
+            e.value.isEmpty
+                ? null
+                : '${e.key}=${e.value.encode(width: e.key.length + 1)}',
       )
       .whereType<String>()
       .join('\n');

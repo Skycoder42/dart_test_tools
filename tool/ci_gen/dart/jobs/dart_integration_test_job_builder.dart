@@ -33,17 +33,19 @@ final class DartIntegrationTestMatrix extends PlatformMatrix {
 
   @override
   List<IMatrixProperty<IPlatformMatrixSelector>> get includeProperties => [
-        ...super.includeProperties,
-        dartTestArgs,
-      ];
+    ...super.includeProperties,
+    dartTestArgs,
+  ];
 }
 
 final class DartIntegrationTestJobBuilder
     extends SdkJobBuilder<DartIntegrationTestJobConfig>
     with
         DartSdkJobBuilderMixin<DartIntegrationTestJobConfig>,
-        MatrixJobBuilderMixin<DartIntegrationTestMatrix,
-            IPlatformMatrixSelector>,
+        MatrixJobBuilderMixin<
+          DartIntegrationTestMatrix,
+          IPlatformMatrixSelector
+        >,
         PlatformJobBuilderMixin<DartIntegrationTestMatrix> {
   final JobIdOutput enabledPlatformsOutput;
 
@@ -63,19 +65,17 @@ final class DartIntegrationTestJobBuilder
 
   @override
   Job buildGeneric(String runsOn) => Job(
-        name: 'Integration tests',
-        ifExpression: config.integrationTestPaths.ne(Expression.empty),
-        needs: {
-          enabledPlatformsOutput.jobId,
-        },
-        runsOn: runsOn,
-        steps: [
-          ...buildSetupSdkSteps(),
-          ...DartIntegrationTestBuilder(
-            config: config,
-            platform: matrix.platform,
-            dartTestArgs: matrix.dartTestArgs,
-          ).build(),
-        ],
-      );
+    name: 'Integration tests',
+    ifExpression: config.integrationTestPaths.ne(Expression.empty),
+    needs: {enabledPlatformsOutput.jobId},
+    runsOn: runsOn,
+    steps: [
+      ...buildSetupSdkSteps(),
+      ...DartIntegrationTestBuilder(
+        config: config,
+        platform: matrix.platform,
+        dartTestArgs: matrix.dartTestArgs,
+      ).build(),
+    ],
+  );
 }

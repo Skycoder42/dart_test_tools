@@ -22,9 +22,7 @@ class BuildLinuxWorkflow implements WorkflowBuilder {
     );
 
     return Workflow(
-      jobs: {
-        buildLinuxJobBuilder.id: buildLinuxJobBuilder.build(),
-      },
+      jobs: {buildLinuxJobBuilder.id: buildLinuxJobBuilder.build()},
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),

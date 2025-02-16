@@ -12,14 +12,18 @@ import '../../types/id.dart';
 import '../../types/step.dart';
 
 base mixin DartIntegrationTestConfig on JobConfig, ProjectSetupConfig {
-  late final integrationTestSetup =
-      inputContext(WorkflowInputs.integrationTestSetup);
-  late final integrationTestPaths =
-      inputContext(WorkflowInputs.integrationTestPaths);
-  late final integrationTestEnvVars =
-      secretContext(WorkflowSecrets.integrationTestEnvVars);
-  late final integrationTestCacheConfig =
-      inputContext(WorkflowInputs.integrationTestCacheConfig);
+  late final integrationTestSetup = inputContext(
+    WorkflowInputs.integrationTestSetup,
+  );
+  late final integrationTestPaths = inputContext(
+    WorkflowInputs.integrationTestPaths,
+  );
+  late final integrationTestEnvVars = secretContext(
+    WorkflowSecrets.integrationTestEnvVars,
+  );
+  late final integrationTestCacheConfig = inputContext(
+    WorkflowInputs.integrationTestCacheConfig,
+  );
 
   @override
   late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
@@ -35,8 +39,9 @@ base mixin DartIntegrationTestConfig on JobConfig, ProjectSetupConfig {
   );
 
   @override
-  late final artifactDependencies =
-      inputContext(WorkflowInputs.artifactDependencies);
+  late final artifactDependencies = inputContext(
+    WorkflowInputs.artifactDependencies,
+  );
 }
 
 final class DartTestArgsMatrixProperty
@@ -48,9 +53,9 @@ final class DartTestArgsMatrixProperty
 
   @override
   Object? valueFor(IPlatformMatrixSelector selector) => switch (selector) {
-        IPlatformMatrixSelector(isWeb: true) => '-p chrome',
-        _ => null,
-      };
+    IPlatformMatrixSelector(isWeb: true) => '-p chrome',
+    _ => null,
+  };
 }
 
 class DartIntegrationTestBuilder implements StepBuilder {
@@ -68,44 +73,45 @@ class DartIntegrationTestBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        ...ProjectSetupBuilder(config: config).build(),
-        ...CacheBuilder(
-          cacheStepId: testSetupCacheStepId,
-          platform: ExpressionOrValue.expression(platform.expression),
-          cacheConfig: config.integrationTestCacheConfig,
-          ifExpression: _platformTestSetup.ne(Expression.empty),
-        ).build(),
-        Step.run(
-          name: 'Create .env file from secrets',
-          run: "echo '${config.integrationTestEnvVars}' > .env",
-          workingDirectory: config.workingDirectory.toString(),
-          shell: 'bash',
-        ),
-        Step.run(
-          name: 'Run platform test setup',
-          ifExpression: _platformTestSetup.ne(Expression.empty),
-          run: _platformTestSetup.toString(),
-          workingDirectory: config.workingDirectory.toString(),
-          env: CacheBuilder.createEnv(testSetupCacheStepId),
-        ),
-        Step.run(
-          name: 'Run integration tests',
-          run: '${config.baseTool} test ${dartTestArgs.expression} '
-              '--reporter github ${config.integrationTestPaths} '
-              r'|| [ $? = 79 ]',
-          workingDirectory: config.workingDirectory.toString(),
-          shell: 'bash',
-        ),
-        Step.run(
-          name: 'Shred .env file',
-          ifExpression: Functions.always,
-          run: 'shred -fzvu .env',
-          workingDirectory: config.workingDirectory.toString(),
-        ),
-      ];
+    ...ProjectSetupBuilder(config: config).build(),
+    ...CacheBuilder(
+      cacheStepId: testSetupCacheStepId,
+      platform: ExpressionOrValue.expression(platform.expression),
+      cacheConfig: config.integrationTestCacheConfig,
+      ifExpression: _platformTestSetup.ne(Expression.empty),
+    ).build(),
+    Step.run(
+      name: 'Create .env file from secrets',
+      run: "echo '${config.integrationTestEnvVars}' > .env",
+      workingDirectory: config.workingDirectory.toString(),
+      shell: 'bash',
+    ),
+    Step.run(
+      name: 'Run platform test setup',
+      ifExpression: _platformTestSetup.ne(Expression.empty),
+      run: _platformTestSetup.toString(),
+      workingDirectory: config.workingDirectory.toString(),
+      env: CacheBuilder.createEnv(testSetupCacheStepId),
+    ),
+    Step.run(
+      name: 'Run integration tests',
+      run:
+          '${config.baseTool} test ${dartTestArgs.expression} '
+          '--reporter github ${config.integrationTestPaths} '
+          r'|| [ $? = 79 ]',
+      workingDirectory: config.workingDirectory.toString(),
+      shell: 'bash',
+    ),
+    Step.run(
+      name: 'Shred .env file',
+      ifExpression: Functions.always,
+      run: 'shred -fzvu .env',
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+  ];
 
   Expression get _platformTestSetup => Expression(
-        'fromJSON(${config.integrationTestSetup.value})'
-        '[${platform.expression.value}]',
-      );
+    'fromJSON(${config.integrationTestSetup.value})'
+    '[${platform.expression.value}]',
+  );
 }

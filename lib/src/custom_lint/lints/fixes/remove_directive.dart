@@ -19,9 +19,7 @@ class RemoveDirective extends DartFix {
             message: 'Remove the ${_directiveKind(node)}',
             priority: 0,
           )
-          .addDartFileEdit(
-            (builder) => builder.addDeletion(node.sourceRange),
-          );
+          .addDartFileEdit((builder) => builder.addDeletion(node.sourceRange));
     });
   }
 

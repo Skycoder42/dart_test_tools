@@ -40,34 +40,23 @@ class RepoFileGenerator {
           .transform(base64.encoder)
           .join();
 
-  Map<String, String> _createRepInfo(
-    RepoMetadata metadata,
-    String gpgKey,
-  ) =>
-      {
-        'Url': metadata.url.toString(),
-        'Title': '${metadata.title ?? metadata.name} Repository',
-        ..._createCommonInfo(metadata, gpgKey),
-      };
+  Map<String, String> _createRepInfo(RepoMetadata metadata, String gpgKey) => {
+    'Url': metadata.url.toString(),
+    'Title': '${metadata.title ?? metadata.name} Repository',
+    ..._createCommonInfo(metadata, gpgKey),
+  };
 
-  Map<String, String> _createRefInfo(
-    RepoMetadata metadata,
-    String gpgKey,
-  ) =>
-      {
-        'Name': metadata.id,
-        'Url': metadata.url.toString(),
-        'Branch': metadata.branch,
-        'RuntimeRepo': 'https://dl.flathub.org/repo/flathub.flatpakrepo',
-        'IsRuntime': 'false',
-        'Title': metadata.title ?? metadata.name,
-        ..._createCommonInfo(metadata, gpgKey),
-      };
+  Map<String, String> _createRefInfo(RepoMetadata metadata, String gpgKey) => {
+    'Name': metadata.id,
+    'Url': metadata.url.toString(),
+    'Branch': metadata.branch,
+    'RuntimeRepo': 'https://dl.flathub.org/repo/flathub.flatpakrepo',
+    'IsRuntime': 'false',
+    'Title': metadata.title ?? metadata.name,
+    ..._createCommonInfo(metadata, gpgKey),
+  };
 
-  Map<String, String> _createCommonInfo(
-    RepoMetadata metadata,
-    String gpgKey,
-  ) =>
+  Map<String, String> _createCommonInfo(RepoMetadata metadata, String gpgKey) =>
       {
         if (metadata.homepage case final Uri homepage)
           'Homepage': homepage.toString(),
@@ -99,8 +88,10 @@ class RepoFileGenerator {
   }
 
   Future<void> _copyIcon(Directory repo, RepoMetadata metadata) async {
-    if (metadata.icon
-        case IconInfo(iconName: final iconName, iconFile: final iconFile)) {
+    if (metadata.icon case IconInfo(
+      iconName: final iconName,
+      iconFile: final iconFile,
+    )) {
       await iconFile.copy(repo.subFile(iconName).path);
     }
   }

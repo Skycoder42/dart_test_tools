@@ -10,8 +10,9 @@ import 'flutter_sdk_job_builder_mixin.dart';
 
 base mixin CommonIntegrationTestConfig
     on JobConfig, PrepareIntegrationTestConfig {
-  late final integrationTestPaths =
-      inputContext(WorkflowInputs.integrationTestPaths);
+  late final integrationTestPaths = inputContext(
+    WorkflowInputs.integrationTestPaths,
+  );
 
   @override
   late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);

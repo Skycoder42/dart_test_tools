@@ -16,31 +16,26 @@ class DeployToPagesBuilder implements StepBuilder {
 
   final DeployToPagesConfig config;
 
-  DeployToPagesBuilder({
-    required this.config,
-  });
+  DeployToPagesBuilder({required this.config});
 
   @override
   Iterable<Step> build() => [
-        ...const CheckoutBuilder(
-          gitRef: Expression.fake(_gpPagesBranch),
-          path: 'repo',
-          persistCredentials: ExpressionOrValue.value(true),
-        ).build(),
-        const Step.uses(
-          name: 'Download flatpak bundle artifacts',
-          uses: Tools.actionsDownloadArtifact,
-          withArgs: {
-            'pattern': 'flatpak-bundle-*',
-            'path': 'bundles',
-          },
-        ),
-        ...WithGpgKey(
-          config: config,
-          steps: [
-            Step.run(
-              name: 'Import bundles into repository',
-              run: '''
+    ...const CheckoutBuilder(
+      gitRef: Expression.fake(_gpPagesBranch),
+      path: 'repo',
+      persistCredentials: ExpressionOrValue.value(true),
+    ).build(),
+    const Step.uses(
+      name: 'Download flatpak bundle artifacts',
+      uses: Tools.actionsDownloadArtifact,
+      withArgs: {'pattern': 'flatpak-bundle-*', 'path': 'bundles'},
+    ),
+    ...WithGpgKey(
+      config: config,
+      steps: [
+        Step.run(
+          name: 'Import bundles into repository',
+          run: '''
 set -eo pipefail
 for bundle in bundles/*/*.flatpak; do
   echo "Importing \$bundle..."
@@ -51,25 +46,26 @@ for bundle in bundles/*/*.flatpak; do
     "\$bundle"
 done
 ''',
-            ),
-            Step.run(
-              name: 'Generate static deltas',
-              run: 'flatpak build-update-repo '
-                  '--generate-static-deltas '
-                  '--prune '
-                  "--gpg-sign='${config.gpgKeyId}' "
-                  'repo',
-            ),
-          ],
-        ).build(),
-        const Step.uses(
-          name: 'Commit repository updates',
-          uses: Tools.stefanzweifelGitAutoCommitAction,
-          withArgs: {
-            'branch': _gpPagesBranch,
-            'repository': 'repo',
-            'skip_dirty_check': true,
-          },
         ),
-      ];
+        Step.run(
+          name: 'Generate static deltas',
+          run:
+              'flatpak build-update-repo '
+              '--generate-static-deltas '
+              '--prune '
+              "--gpg-sign='${config.gpgKeyId}' "
+              'repo',
+        ),
+      ],
+    ).build(),
+    const Step.uses(
+      name: 'Commit repository updates',
+      uses: Tools.stefanzweifelGitAutoCommitAction,
+      withArgs: {
+        'branch': _gpPagesBranch,
+        'repository': 'repo',
+        'skip_dirty_check': true,
+      },
+    ),
+  ];
 }

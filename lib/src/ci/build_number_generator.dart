@@ -23,7 +23,8 @@ class BuildNumberGenerator {
     Github.logInfo('Detected app version as ${pubspec.version}');
     final Version(major: major, minor: minor, patch: patch) = pubspec.version!;
 
-    final buildNumberRaw = _padFilled('major', major, 0) +
+    final buildNumberRaw =
+        _padFilled('major', major, 0) +
         _padFilled('minor', minor, minorWidth) +
         _padFilled('patch', patch, patchWidth);
     final buildNumber = int.parse(buildNumberRaw, radix: 10);

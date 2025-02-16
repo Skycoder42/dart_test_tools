@@ -18,14 +18,11 @@ base mixin FlutterSdkJobConfig on SdkJobConfig {
 base mixin FlutterSdkJobBuilderMixin<TConfig extends FlutterSdkJobConfig>
     on SdkJobBuilder<TConfig> {
   @override
-  Iterable<Step> buildSetupSdkSteps({
-    ExpressionOrValue? buildPlatform,
-  }) =>
-      [
-        ...FlutterSdkBuilder(
-          flutterSdkChannel: config.flutterSdkChannel,
-          javaJdkVersion: config.javaJdkVersion,
-          buildPlatform: buildPlatform,
-        ).build(),
-      ];
+  Iterable<Step> buildSetupSdkSteps({ExpressionOrValue? buildPlatform}) => [
+    ...FlutterSdkBuilder(
+      flutterSdkChannel: config.flutterSdkChannel,
+      javaJdkVersion: config.javaJdkVersion,
+      buildPlatform: buildPlatform,
+    ).build(),
+  ];
 }

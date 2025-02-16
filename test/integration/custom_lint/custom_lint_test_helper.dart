@@ -22,43 +22,38 @@ void customLintTest(
   dynamic tags,
   Map<String, dynamic>? onPlatform,
   int? retry,
-}) =>
-    test(
-      description,
-      () async {
-        final dartDir = await _setup();
-        for (final entry in files.entries) {
-          final fileMode =
-              entry.key == 'pubspec.yaml' ? FileMode.append : FileMode.write;
+}) => test(
+  description,
+  () async {
+    final dartDir = await _setup();
+    for (final entry in files.entries) {
+      final fileMode =
+          entry.key == 'pubspec.yaml' ? FileMode.append : FileMode.write;
 
-          final file = File.fromUri(dartDir.uri.resolve(entry.key));
-          await file.parent.create(recursive: true);
-          await file.writeAsString(entry.value, mode: fileMode);
-        }
+      final file = File.fromUri(dartDir.uri.resolve(entry.key));
+      await file.parent.create(recursive: true);
+      await file.writeAsString(entry.value, mode: fileMode);
+    }
 
-        await _expectDart(
-          const ['run', 'custom_lint'],
-          expectedExitCode: expectedExitCode,
-          expectedOutput: expectedOutput,
-          workingDirectory: dartDir,
-        );
-
-        await _cleanup(dartDir);
-      },
-      testOn: testOn,
-      timeout: timeout ?? const Timeout(Duration(minutes: 2)),
-      skip: skip,
-      tags: tags,
-      onPlatform: onPlatform,
-      retry: retry,
+    await _expectDart(
+      const ['run', 'custom_lint'],
+      expectedExitCode: expectedExitCode,
+      expectedOutput: expectedOutput,
+      workingDirectory: dartDir,
     );
 
-Matcher emitsNoIssues() => emitsInOrder(<dynamic>[
-      'Analyzing...',
-      '',
-      'No issues found!',
-      emitsDone,
-    ]);
+    await _cleanup(dartDir);
+  },
+  testOn: testOn,
+  timeout: timeout ?? const Timeout(Duration(minutes: 2)),
+  skip: skip,
+  tags: tags,
+  onPlatform: onPlatform,
+  retry: retry,
+);
+
+Matcher emitsNoIssues() =>
+    emitsInOrder(<dynamic>['Analyzing...', '', 'No issues found!', emitsDone]);
 
 Matcher customLint(String lint, String location) {
   final realLocation = location.replaceAll('/', path.separator);
@@ -74,69 +69,52 @@ Matcher emitsCustomLint(String lint, List<String> locations) =>
 
 Matcher emitsCustomLints(Map<String, List<String>> lints) {
   final issuesCount = lints.values.fold(0, (p, l) => p + l.length);
-  return emitsInAnyOrder(
-    <dynamic>[
-      'Analyzing...',
-      '',
-      ...lints.entries.expand<Matcher>(
-        (e) => e.value.map((location) => customLint(e.key, location)),
-      ),
-      '',
-      if (issuesCount == 1) '1 issue found.' else '$issuesCount issues found.',
-      emitsDone,
-    ],
-  );
+  return emitsInAnyOrder(<dynamic>[
+    'Analyzing...',
+    '',
+    ...lints.entries.expand<Matcher>(
+      (e) => e.value.map((location) => customLint(e.key, location)),
+    ),
+    '',
+    if (issuesCount == 1) '1 issue found.' else '$issuesCount issues found.',
+    emitsDone,
+  ]);
 }
 
 Future<Directory> _setup() async {
   final testDir = await Directory.systemTemp.createTemp();
   printOnFailure('Using temporary directory: $testDir');
-  await _runDart(
-    const [
-      'create',
-      '--template',
-      'package-simple',
-      'dart_test_tools_integration_test',
-    ],
-    testDir,
-  );
+  await _runDart(const [
+    'create',
+    '--template',
+    'package-simple',
+    'dart_test_tools_integration_test',
+  ], testDir);
 
   final dartDir = Directory.fromUri(
     testDir.uri.resolve('dart_test_tools_integration_test'),
   );
 
-  final dartTestToolsConfig = {
-    'path': Directory.current.path,
-  };
-  await _runDart(
-    [
-      'pub',
-      'add',
-      'meta',
-      'dev:custom_lint',
-      'dev:dart_test_tools:${json.encode(dartTestToolsConfig)}',
-    ],
-    dartDir,
-  );
+  final dartTestToolsConfig = {'path': Directory.current.path};
+  await _runDart([
+    'pub',
+    'add',
+    'meta',
+    'dev:custom_lint',
+    'dev:dart_test_tools:${json.encode(dartTestToolsConfig)}',
+  ], dartDir);
 
   final analysisOptionsFile = File.fromUri(
     dartDir.uri.resolve('analysis_options.yaml'),
   );
-  await analysisOptionsFile.writeAsString(
-    mode: FileMode.append,
-    '''
+  await analysisOptionsFile.writeAsString(mode: FileMode.append, '''
 analyzer:
   plugins:
     - custom_lint
-''',
-  );
+''');
 
-  await Directory.fromUri(
-    dartDir.uri.resolve('lib'),
-  ).delete(recursive: true);
-  await Directory.fromUri(
-    dartDir.uri.resolve('test'),
-  ).delete(recursive: true);
+  await Directory.fromUri(dartDir.uri.resolve('lib')).delete(recursive: true);
+  await Directory.fromUri(dartDir.uri.resolve('test')).delete(recursive: true);
   await Directory.fromUri(
     dartDir.uri.resolve('example'),
   ).delete(recursive: true);

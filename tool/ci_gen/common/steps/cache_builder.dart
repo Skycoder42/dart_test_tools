@@ -18,33 +18,25 @@ class CacheBuilder implements StepBuilder {
     this.ifExpression,
   });
 
-  static Env createEnv(StepId cacheStepId) => Env({
-        'CACHE_HIT': cacheStepId.output('cache-hit').expression.toString(),
-      });
+  static Env createEnv(StepId cacheStepId) =>
+      Env({'CACHE_HIT': cacheStepId.output('cache-hit').expression.toString()});
 
   @override
   Iterable<Step> build() => [
-        Step.uses(
-          name: 'Restore integration test cache',
-          id: cacheStepId,
-          uses: Tools.actionsCache,
-          ifExpression: cacheConfig.ne(Expression.empty) & ifExpression,
-          withArgs: <String, dynamic>{
-            for (final key in [
-              'key',
-              'path',
-              'restore-keys',
-              'upload-chunk-size',
-            ])
-              key: _cacheConfig(key),
-          },
-        ),
-      ];
+    Step.uses(
+      name: 'Restore integration test cache',
+      id: cacheStepId,
+      uses: Tools.actionsCache,
+      ifExpression: cacheConfig.ne(Expression.empty) & ifExpression,
+      withArgs: <String, dynamic>{
+        for (final key in ['key', 'path', 'restore-keys', 'upload-chunk-size'])
+          key: _cacheConfig(key),
+      },
+    ),
+  ];
 
   String _cacheConfig(String key) {
-    final expression = Expression(
-      "fromJSON(${cacheConfig.value})['$key']",
-    );
+    final expression = Expression("fromJSON(${cacheConfig.value})['$key']");
     if (key == 'key') {
       return '$platform-$expression';
     } else {

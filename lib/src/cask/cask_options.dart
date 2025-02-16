@@ -30,13 +30,9 @@ class AppInfoOptions with _$AppInfoOptions {
 @internal
 @freezed
 sealed class CaskOptionsPubspecView with _$CaskOptionsPubspecView {
-  @JsonSerializable(
-    anyMap: true,
-    checked: true,
-  )
-  const factory CaskOptionsPubspecView({
-    required CaskPubspecOptions cask,
-  }) = _CaskOptionsPubspecView;
+  @JsonSerializable(anyMap: true, checked: true)
+  const factory CaskOptionsPubspecView({required CaskPubspecOptions cask}) =
+      _CaskOptionsPubspecView;
 
   factory CaskOptionsPubspecView.fromJson(Map<String, dynamic> json) =>
       _$CaskOptionsPubspecViewFromJson(json);
@@ -48,11 +44,7 @@ sealed class CaskOptionsPubspecView with _$CaskOptionsPubspecView {
 @internal
 @freezed
 sealed class CaskPubspecOptions with _$CaskPubspecOptions {
-  @JsonSerializable(
-    anyMap: true,
-    checked: true,
-    disallowUnrecognizedKeys: true,
-  )
+  @JsonSerializable(anyMap: true, checked: true, disallowUnrecognizedKeys: true)
   const factory CaskPubspecOptions({
     String? caskName,
     required String downloadUrl,

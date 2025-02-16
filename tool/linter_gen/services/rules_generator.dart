@@ -24,19 +24,22 @@ class RulesGenerator {
   }) async {
     final newRules = await knownRulesLoader.loadNewRules();
 
-    final relativeToDir = relativeTo != null
-        ? rulesCollector.analysisOptionsLoader.findDirectory(relativeTo)
-        : null;
+    final relativeToDir =
+        relativeTo != null
+            ? rulesCollector.analysisOptionsLoader.findDirectory(relativeTo)
+            : null;
     final baseRules = await rulesCollector.collectRulesRecursively(
       baseOptions,
       relativeTo: relativeToDir,
     );
-    final mergeRules = await Stream.fromIterable(mergeOptions)
-        .asyncMap(rulesCollector.collectRulesRecursively)
-        .toList();
-    final customRules = customOptions != null
-        ? await rulesCollector.collectRulesRecursively(customOptions)
-        : null;
+    final mergeRules =
+        await Stream.fromIterable(
+          mergeOptions,
+        ).asyncMap(rulesCollector.collectRulesRecursively).toList();
+    final customRules =
+        customOptions != null
+            ? await rulesCollector.collectRulesRecursively(customOptions)
+            : null;
 
     final appliedRules = _mergeRules(
       baseRules,
@@ -48,12 +51,8 @@ class RulesGenerator {
 
     return AnalysisOptions(
       include: baseOptions,
-      analyzer: const AnalysisOptionsAnalyzer(
-        plugins: ['custom_lint'],
-      ),
-      linter: AnalysisOptionsLinter(
-        rules: appliedRules,
-      ),
+      analyzer: const AnalysisOptionsAnalyzer(plugins: ['custom_lint']),
+      linter: AnalysisOptionsLinter(rules: appliedRules),
     );
   }
 

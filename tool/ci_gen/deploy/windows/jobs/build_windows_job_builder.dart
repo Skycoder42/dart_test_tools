@@ -32,23 +32,22 @@ final class BuildWindowsJobConfig extends JobConfig
 
 final class BuildWindowsJobBuilder extends SdkJobBuilder<BuildWindowsJobConfig>
     with FlutterSdkJobBuilderMixin<BuildWindowsJobConfig> {
-  const BuildWindowsJobBuilder({
-    required super.config,
-  });
+  const BuildWindowsJobBuilder({required super.config});
 
   @override
   JobId get id => const JobId('build_windows');
 
   @override
   Job build() => Job(
-        name: 'Build windows msix installer',
-        runsOn: RunsOn.windowsLatest.id,
-        steps: [
-          ...buildSetupSdkSteps(
-            buildPlatform:
-                ExpressionOrValue.value(FlutterPlatform.windows.platform),
-          ),
-          ...BuildWindowsInstallerBuilder(config: config).build(),
-        ],
-      );
+    name: 'Build windows msix installer',
+    runsOn: RunsOn.windowsLatest.id,
+    steps: [
+      ...buildSetupSdkSteps(
+        buildPlatform: ExpressionOrValue.value(
+          FlutterPlatform.windows.platform,
+        ),
+      ),
+      ...BuildWindowsInstallerBuilder(config: config).build(),
+    ],
+  );
 }

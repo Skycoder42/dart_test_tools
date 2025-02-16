@@ -41,26 +41,26 @@ final class DeployMacosJobBuilder extends SdkJobBuilder<DeployMacosJobConfig>
 
   @override
   Job build() => Job(
-        name: 'Deploy DMG image to homebrew tap',
-        needs: {releaseCreated.jobId, releaseVersion.jobId},
-        runsOn: RunsOn.macosLatest.id,
-        ifExpression:
-            releaseCreated.expression.eq(const Expression.literal('true')) &
-                EnabledPlatforms.check(
-                  config.enabledPlatforms,
-                  Expression.literal(FlutterPlatform.macos.platform),
-                ),
-        environment: Environments.homebrew,
-        steps: [
-          ...ValidateInputsBuilder({
-            WorkflowInputs.targetRepo.name: config.targetRepo,
-            WorkflowSecrets.targetRepoToken.name: config.targetRepoToken,
-          }).build(),
-          ...buildSetupSdkSteps(),
-          ...DeployToTapBuilder(
-            config: config,
-            releaseVersion: releaseVersion.expression,
-          ).build(),
-        ],
-      );
+    name: 'Deploy DMG image to homebrew tap',
+    needs: {releaseCreated.jobId, releaseVersion.jobId},
+    runsOn: RunsOn.macosLatest.id,
+    ifExpression:
+        releaseCreated.expression.eq(const Expression.literal('true')) &
+        EnabledPlatforms.check(
+          config.enabledPlatforms,
+          Expression.literal(FlutterPlatform.macos.platform),
+        ),
+    environment: Environments.homebrew,
+    steps: [
+      ...ValidateInputsBuilder({
+        WorkflowInputs.targetRepo.name: config.targetRepo,
+        WorkflowSecrets.targetRepoToken.name: config.targetRepoToken,
+      }).build(),
+      ...buildSetupSdkSteps(),
+      ...DeployToTapBuilder(
+        config: config,
+        releaseVersion: releaseVersion.expression,
+      ).build(),
+    ],
+  );
 }

@@ -38,11 +38,11 @@ final class CompileMatrix extends PlatformMatrix {
 
   @override
   List<IMatrixProperty<IPlatformMatrixSelector>> get includeProperties => [
-        ...super.includeProperties,
-        binaryType,
-        compileArgs,
-        archiveType,
-      ];
+    ...super.includeProperties,
+    binaryType,
+    compileArgs,
+    archiveType,
+  ];
 }
 
 final class CompileJobBuilder extends SdkJobBuilder<CompileJobConfig>
@@ -56,30 +56,26 @@ final class CompileJobBuilder extends SdkJobBuilder<CompileJobConfig>
   @override
   final Expression enabledPlatforms;
 
-  CompileJobBuilder({
-    required this.enabledPlatforms,
-    required super.config,
-  }) : matrix = const CompileMatrix();
+  CompileJobBuilder({required this.enabledPlatforms, required super.config})
+    : matrix = const CompileMatrix();
 
   @override
   final CompileMatrix matrix;
 
   @override
   Job buildGeneric(String runsOn) => Job(
-        name: 'Create compiled artifacts',
-        permissions: const {
-          'contents': 'read',
-        },
-        runsOn: runsOn,
-        steps: [
-          ...buildSetupSdkSteps(),
-          ...CompileBuilder(
-            config: config,
-            platform: matrix.platform,
-            binaryType: matrix.binaryType,
-            compileArgs: matrix.compileArgs,
-            archiveType: matrix.archiveType,
-          ).build(),
-        ],
-      );
+    name: 'Create compiled artifacts',
+    permissions: const {'contents': 'read'},
+    runsOn: runsOn,
+    steps: [
+      ...buildSetupSdkSteps(),
+      ...CompileBuilder(
+        config: config,
+        platform: matrix.platform,
+        binaryType: matrix.binaryType,
+        compileArgs: matrix.compileArgs,
+        archiveType: matrix.archiveType,
+      ).build(),
+    ],
+  );
 }

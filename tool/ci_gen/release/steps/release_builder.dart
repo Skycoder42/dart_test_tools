@@ -17,20 +17,16 @@ class ReleaseBuilder implements StepBuilder {
 
   final ReleaseConfig config;
 
-  ReleaseBuilder({
-    required this.config,
-  });
+  ReleaseBuilder({required this.config});
 
   @override
   Iterable<Step> build() => [
-        ...DartSdkBuilder(
-          dartSdkVersion: config.dartSdkVersion,
-        ).build(),
-        ...const CheckoutBuilder().build(),
-        Step.run(
-          id: versionStepId,
-          name: 'Check if package should be published',
-          run: '''
+    ...DartSdkBuilder(dartSdkVersion: config.dartSdkVersion).build(),
+    ...const CheckoutBuilder().build(),
+    Step.run(
+      id: versionStepId,
+      name: 'Check if package should be published',
+      run: '''
 set -e
 package_name=\$(cat pubspec.yaml | yq e ".name" -)
 package_version=\$(cat pubspec.yaml | yq e ".version" -)
@@ -52,13 +48,14 @@ else
   ${versionOutput.bashSetter(r'$package_version')}
 fi
 ''',
-          workingDirectory: config.workingDirectory.toString(),
-        ),
-        ...ReleaseEntryBuilder(
-          config: config,
-          versionUpdate: versionUpdate.expression,
-          changelogExtra: "The package and it's documentation are available at "
-              r'[pub.dev](https://pub.dev/packages/$package_name/versions/$package_version).',
-        ).build(),
-      ];
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+    ...ReleaseEntryBuilder(
+      config: config,
+      versionUpdate: versionUpdate.expression,
+      changelogExtra:
+          "The package and it's documentation are available at "
+          r'[pub.dev](https://pub.dev/packages/$package_name/versions/$package_version).',
+    ).build(),
+  ];
 }

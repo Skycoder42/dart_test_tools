@@ -10,10 +10,7 @@ part 'output.g.dart';
 @freezed
 class Output with _$Output {
   const factory Output({
-    @JsonKey(
-      fromJson: Output._fromJson,
-      toJson: Output._toJson,
-    )
+    @JsonKey(fromJson: Output._fromJson, toJson: Output._toJson)
     required JobIdOutput value,
     @JsonKey(includeIfNull: false) String? description,
   }) = _Output;

@@ -16,10 +16,7 @@ class CaskOptionsLoader {
     final pubspecFile = sourceDir.subFile('pubspec.yaml');
     final pubspecYaml = await pubspecFile.readAsString();
 
-    final pubspec = Pubspec.parse(
-      pubspecYaml,
-      sourceUrl: pubspecFile.uri,
-    );
+    final pubspec = Pubspec.parse(pubspecYaml, sourceUrl: pubspecFile.uri);
 
     final view = checkedYamlDecode(
       pubspecYaml,
@@ -34,11 +31,7 @@ class CaskOptionsLoader {
         .subFile('AppInfo.xcconfig');
     final appInfo = await _readAppInfo(appInfoFile);
 
-    return CaskOptions(
-      pubspec: pubspec,
-      options: view.cask,
-      appInfo: appInfo,
-    );
+    return CaskOptions(pubspec: pubspec, options: view.cask, appInfo: appInfo);
   }
 
   Future<AppInfoOptions> _readAppInfo(File file) async {

@@ -22,9 +22,7 @@ class BuildMacosWorkflow implements WorkflowBuilder {
     );
 
     return Workflow(
-      jobs: {
-        buildMacosJobBuilder.id: buildMacosJobBuilder.build(),
-      },
+      jobs: {buildMacosJobBuilder.id: buildMacosJobBuilder.build()},
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),

@@ -42,9 +42,10 @@ class _NeedsConverter implements JsonConverter<Set<JobId>?, List<String>?> {
   const _NeedsConverter();
 
   @override
-  Set<JobId>? fromJson(List<String>? json) => json != null
-      ? {...json.map((j) => const JobIdConverter().fromJson(j)!)}
-      : null;
+  Set<JobId>? fromJson(List<String>? json) =>
+      json != null
+          ? {...json.map((j) => const JobIdConverter().fromJson(j)!)}
+          : null;
 
   @override
   List<String>? toJson(Set<JobId>? needs) =>
@@ -79,11 +80,12 @@ class JobsConverter implements JsonConverter<Jobs, Map<String, dynamic>> {
   const JobsConverter();
 
   @override
-  Jobs fromJson(Map<String, dynamic> json) => json
-      .map((key, dynamic value) => MapEntry(JobId(key), Job.fromJson(json)));
+  Jobs fromJson(Map<String, dynamic> json) => json.map(
+    (key, dynamic value) => MapEntry(JobId(key), Job.fromJson(json)),
+  );
 
   @override
   Map<String, dynamic> toJson(Jobs jobs) => jobs.map<String, dynamic>(
-        (key, value) => MapEntry<String, dynamic>(key.id, value.toJson()),
-      );
+    (key, value) => MapEntry<String, dynamic>(key.id, value.toJson()),
+  );
 }

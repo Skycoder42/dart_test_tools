@@ -24,8 +24,9 @@ final class BuildLinuxJobConfig extends JobConfig
         WithGpgKeyConfig,
         BuildFlatpakBundleConfig,
         DartSdkJobConfig {
-  late final flatpakPlatformImage =
-      inputContext(WorkflowInputs.flatpakPlatformImage);
+  late final flatpakPlatformImage = inputContext(
+    WorkflowInputs.flatpakPlatformImage,
+  );
 
   @override
   late final removePubspecOverrides = ExpressionOrValue.expression(
@@ -38,8 +39,9 @@ final class BuildLinuxJobConfig extends JobConfig
   );
 
   @override
-  late final artifactDependencies =
-      inputContext(WorkflowInputs.artifactDependencies);
+  late final artifactDependencies = inputContext(
+    WorkflowInputs.artifactDependencies,
+  );
 
   BuildLinuxJobConfig(super.inputContext, super.secretContext);
 }
@@ -55,17 +57,18 @@ final class FlatpakMatrix extends Matrix<FlatpakArchMatrixSelector> {
   IMatrixProperty<FlatpakArchMatrixSelector> get selectorProperty => arch;
 
   @override
-  List<IMatrixProperty<FlatpakArchMatrixSelector>> get includeProperties =>
-      [arch, qemuArch];
+  List<IMatrixProperty<FlatpakArchMatrixSelector>> get includeProperties => [
+    arch,
+    qemuArch,
+  ];
 }
 
 final class BuildLinuxJobBuilder extends SdkJobBuilder<BuildLinuxJobConfig>
     with
         DartSdkJobBuilderMixin<BuildLinuxJobConfig>,
         MatrixJobBuilderMixin<FlatpakMatrix, FlatpakArchMatrixSelector> {
-  BuildLinuxJobBuilder({
-    required super.config,
-  }) : matrix = const FlatpakMatrix();
+  BuildLinuxJobBuilder({required super.config})
+    : matrix = const FlatpakMatrix();
 
   @override
   JobId get id => const JobId('build_linux');
@@ -78,20 +81,20 @@ final class BuildLinuxJobBuilder extends SdkJobBuilder<BuildLinuxJobConfig>
 
   @override
   Job buildGeneric(String runsOn) => Job(
-        name: 'Build linux flatpak bundle',
-        runsOn: runsOn,
-        container: Container(
-          image: 'bilelmoussaoui/${config.flatpakPlatformImage}',
-          options: '--privileged',
-        ),
-        steps: [
-          ...buildSetupSdkSteps(),
-          ...const InstallDartTestToolsBuilder().build(),
-          ...BuildFlatpakBundleBuilder(
-            config: config,
-            arch: matrix.arch,
-            qemuArch: matrix.qemuArch,
-          ).build(),
-        ],
-      );
+    name: 'Build linux flatpak bundle',
+    runsOn: runsOn,
+    container: Container(
+      image: 'bilelmoussaoui/${config.flatpakPlatformImage}',
+      options: '--privileged',
+    ),
+    steps: [
+      ...buildSetupSdkSteps(),
+      ...const InstallDartTestToolsBuilder().build(),
+      ...BuildFlatpakBundleBuilder(
+        config: config,
+        arch: matrix.arch,
+        qemuArch: matrix.qemuArch,
+      ).build(),
+    ],
+  );
 }

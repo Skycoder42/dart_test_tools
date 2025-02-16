@@ -22,12 +22,12 @@ class Expression with _$Expression {
   const factory Expression.fake(String fakeValue) = _FakeExpression;
 
   dynamic get value => when<dynamic>(
-        (value) => value,
-        literal: (dynamic rawValue) =>
-            rawValue is String ? "'$rawValue'" : rawValue,
-        json: (jsonValue) => json.encode(jsonValue),
-        fake: (fakeValue) => fakeValue,
-      );
+    (value) => value,
+    literal:
+        (dynamic rawValue) => rawValue is String ? "'$rawValue'" : rawValue,
+    json: (jsonValue) => json.encode(jsonValue),
+    fake: (fakeValue) => fakeValue,
+  );
 
   Expression property(String name) => Expression('$value.$name');
 
@@ -36,8 +36,8 @@ class Expression with _$Expression {
   Expression get not => Expression('!$value');
 
   Expression call(List<Expression> arguments) => Expression(
-        '$value(${arguments.map<dynamic>((e) => e.value).join(', ')})',
-      );
+    '$value(${arguments.map<dynamic>((e) => e.value).join(', ')})',
+  );
 
   Expression operator <(Expression other) =>
       Expression('$value < ${other.value}');
@@ -63,10 +63,10 @@ class Expression with _$Expression {
 
   @override
   String toString() => maybeWhen(
-        null,
-        fake: (fakeValue) => fakeValue,
-        orElse: () => '\${{ $value }}',
-      );
+    null,
+    fake: (fakeValue) => fakeValue,
+    orElse: () => '\${{ $value }}',
+  );
 }
 
 @freezed
@@ -82,20 +82,16 @@ class ExpressionOrValue with _$ExpressionOrValue {
 
   bool get isValue => this is _ExpressionOrValueValue;
 
-  T rawValueOr<T>(T defaultValue) => when(
-        expression: (_) => defaultValue,
-        value: (value) => value as T,
-      );
+  T rawValueOr<T>(T defaultValue) =>
+      when(expression: (_) => defaultValue, value: (value) => value as T);
 
   dynamic get asValue => when(
-        expression: (expression) => expression.toString(),
-        value: (value) => value,
-      );
+    expression: (expression) => expression.toString(),
+    value: (value) => value,
+  );
 
-  Expression get asExpression => when(
-        expression: (expression) => expression,
-        value: Expression.literal,
-      );
+  Expression get asExpression =>
+      when(expression: (expression) => expression, value: Expression.literal);
 
   @override
   String toString() => asValue.toString();

@@ -26,17 +26,12 @@ final class PackageJobBuilder extends SdkJobBuilder<PackageJobConfig>
   @override
   JobId get id => const JobId('package');
 
-  PackageJobBuilder({
-    required super.config,
-  });
+  PackageJobBuilder({required super.config});
 
   @override
   Job build() => Job(
-        name: 'Create dart package artifact',
-        runsOn: 'ubuntu-latest',
-        steps: [
-          ...buildSetupSdkSteps(),
-          ...PackageBuilder(config: config).build(),
-        ],
-      );
+    name: 'Create dart package artifact',
+    runsOn: 'ubuntu-latest',
+    steps: [...buildSetupSdkSteps(), ...PackageBuilder(config: config).build()],
+  );
 }

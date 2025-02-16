@@ -17,14 +17,14 @@ class FreezedClassesMustBeSealedFix extends DartFix {
       if (node.isUnsealedFreezed) {
         reporter
             .createChangeBuilder(
-          message: 'Add sealed keyword to class definition.',
-          priority: 0,
-        )
+              message: 'Add sealed keyword to class definition.',
+              priority: 0,
+            )
             .addDartFileEdit((builder) {
-          builder.addInsertion(node.classKeyword.offset, (builder) {
-            builder.write('sealed ');
-          });
-        });
+              builder.addInsertion(node.classKeyword.offset, (builder) {
+                builder.write('sealed ');
+              });
+            });
       }
     });
   }

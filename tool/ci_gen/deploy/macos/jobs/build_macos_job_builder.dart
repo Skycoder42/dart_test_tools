@@ -32,23 +32,20 @@ final class BuildMacosJobConfig extends JobConfig
 
 final class BuildMacosJobBuilder extends SdkJobBuilder<BuildMacosJobConfig>
     with FlutterSdkJobBuilderMixin<BuildMacosJobConfig> {
-  const BuildMacosJobBuilder({
-    required super.config,
-  });
+  const BuildMacosJobBuilder({required super.config});
 
   @override
   JobId get id => const JobId('build_macos');
 
   @override
   Job build() => Job(
-        name: 'Build macos dmg image',
-        runsOn: RunsOn.macosLatest.id,
-        steps: [
-          ...buildSetupSdkSteps(
-            buildPlatform:
-                ExpressionOrValue.value(FlutterPlatform.macos.platform),
-          ),
-          ...BuildMacosDmgBuilder(config: config).build(),
-        ],
-      );
+    name: 'Build macos dmg image',
+    runsOn: RunsOn.macosLatest.id,
+    steps: [
+      ...buildSetupSdkSteps(
+        buildPlatform: ExpressionOrValue.value(FlutterPlatform.macos.platform),
+      ),
+      ...BuildMacosDmgBuilder(config: config).build(),
+    ],
+  );
 }

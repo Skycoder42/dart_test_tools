@@ -12,28 +12,25 @@ base mixin PrepareArchConfig on JobConfig {
 class PrepareArchBuilder implements StepBuilder {
   final PrepareArchConfig config;
 
-  const PrepareArchBuilder({
-    required this.config,
-  });
+  const PrepareArchBuilder({required this.config});
 
   @override
   Iterable<Step> build() => [
-        const Step.run(
-          name: 'Install pacman dependencies',
-          run: 'pacman -Syu --noconfirm '
-              'git openssh go-yq pacman-contrib namcap unzip',
-        ),
-        ...DartSdkBuilder(
-          dartSdkVersion: config.dartSdkVersion,
-        ).build(),
-        ...const InstallDartTestToolsBuilder().build(),
-        const Step.run(
-          name: 'Create build user',
-          run: '''
+    const Step.run(
+      name: 'Install pacman dependencies',
+      run:
+          'pacman -Syu --noconfirm '
+          'git openssh go-yq pacman-contrib namcap unzip',
+    ),
+    ...DartSdkBuilder(dartSdkVersion: config.dartSdkVersion).build(),
+    ...const InstallDartTestToolsBuilder().build(),
+    const Step.run(
+      name: 'Create build user',
+      run: '''
 set -eo pipefail
 useradd -m build
 echo 'build ALL=(ALL:ALL) NOPASSWD: ALL' >> /etc/sudoers
 ''',
-        ),
-      ];
+    ),
+  ];
 }

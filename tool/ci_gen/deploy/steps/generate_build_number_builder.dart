@@ -16,19 +16,17 @@ class GenerateBuildNumberBuilder implements StepBuilder {
   final GenerateBuildNumberConfig config;
   final bool asEnv;
 
-  const GenerateBuildNumberBuilder({
-    required this.config,
-    this.asEnv = false,
-  });
+  const GenerateBuildNumberBuilder({required this.config, this.asEnv = false});
 
   @override
   Iterable<Step> build() => [
-        Step.run(
-          id: stepId,
-          name: 'Generate build number',
-          run: 'dart pub global run dart_test_tools:generate_build_number '
-              '${config.buildNumberArgs}${asEnv ? ' --env' : ''}',
-          workingDirectory: config.workingDirectory.toString(),
-        ),
-      ];
+    Step.run(
+      id: stepId,
+      name: 'Generate build number',
+      run:
+          'dart pub global run dart_test_tools:generate_build_number '
+          '${config.buildNumberArgs}${asEnv ? ' --env' : ''}',
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+  ];
 }

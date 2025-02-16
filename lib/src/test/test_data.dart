@@ -15,18 +15,17 @@ void testData<TData>(
   Map<String, dynamic>? onPlatform,
   int? retry,
   DataToStringFn<TData>? dataToString,
-}) =>
-    group(description, () {
-      for (final element in data) {
-        test(
-          '(Variant: ${dataToString?.call(element) ?? element.toString()})',
-          () => body(element),
-          testOn: testOn,
-          timeout: timeout,
-          skip: skip,
-          tags: tags,
-          onPlatform: onPlatform,
-          retry: retry,
-        );
-      }
-    });
+}) => group(description, () {
+  for (final element in data) {
+    test(
+      '(Variant: ${dataToString?.call(element) ?? element.toString()})',
+      () => body(element),
+      testOn: testOn,
+      timeout: timeout,
+      skip: skip,
+      tags: tags,
+      onPlatform: onPlatform,
+      retry: retry,
+    );
+  }
+});

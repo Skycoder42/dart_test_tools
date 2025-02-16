@@ -7,30 +7,31 @@ class PushAurBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        const Step.run(
-          name: 'Stage package files',
-          run: r'''
+    const Step.run(
+      name: 'Stage package files',
+      run: r'''
 set -e
 git add $(cat .files) .SRCINFO
 git status --short
 ''',
-          workingDirectory: 'aur',
-        ),
-        const Step.run(
-          name: 'Create update commit',
-          run: r'git commit -m "Update $(yq ".name" ../src/pubspec.yaml) '
-              r'to version $(yq ".version" ../src/pubspec.yaml)"',
-          workingDirectory: 'aur',
-        ),
-        const Step.run(
-          name: 'Push update to AUR',
-          run: 'git push',
-          workingDirectory: 'aur',
-        ),
-        Step.run(
-          name: 'Clean up SSH key',
-          ifExpression: Functions.always,
-          run: "shred -fzvu '${Runner.temp}/ssh-key'",
-        ),
-      ];
+      workingDirectory: 'aur',
+    ),
+    const Step.run(
+      name: 'Create update commit',
+      run:
+          r'git commit -m "Update $(yq ".name" ../src/pubspec.yaml) '
+          r'to version $(yq ".version" ../src/pubspec.yaml)"',
+      workingDirectory: 'aur',
+    ),
+    const Step.run(
+      name: 'Push update to AUR',
+      run: 'git push',
+      workingDirectory: 'aur',
+    ),
+    Step.run(
+      name: 'Clean up SSH key',
+      ifExpression: Functions.always,
+      run: "shred -fzvu '${Runner.temp}/ssh-key'",
+    ),
+  ];
 }

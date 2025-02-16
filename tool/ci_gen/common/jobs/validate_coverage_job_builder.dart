@@ -29,17 +29,12 @@ class ValidateCoverageJobBuilder implements JobBuilder {
 
   @override
   Job build() => Job(
-        name: 'Validate coverage',
-        ifExpression: CoverageBuilderConfig.createRunCoverageExpression(
-              config.minCoverage,
-            ) &
-            (config.unitTestPaths.ne(Expression.empty)),
-        needs: {
-          unitTestJobId,
-        },
-        runsOn: 'ubuntu-latest',
-        steps: [
-          ...ValidateCoverageBuilder(config: config).build(),
-        ],
-      );
+    name: 'Validate coverage',
+    ifExpression:
+        CoverageBuilderConfig.createRunCoverageExpression(config.minCoverage) &
+        (config.unitTestPaths.ne(Expression.empty)),
+    needs: {unitTestJobId},
+    runsOn: 'ubuntu-latest',
+    steps: [...ValidateCoverageBuilder(config: config).build()],
+  );
 }

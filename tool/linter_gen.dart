@@ -11,17 +11,13 @@ import 'linter_gen/services/rules_generator.dart';
 
 Future<void> main() async {
   final loader = AnalysisOptionsLoader();
-  final writer = AnalysisOptionsWriter(
-    yamlWriter: YamlWriter(),
-  );
+  final writer = AnalysisOptionsWriter(yamlWriter: YamlWriter());
   final generator = RulesGenerator(
     knownRulesLoader: KnownRulesLoader(
       analysisOptionsLoader: loader,
       analysisOptionsWriter: writer,
     ),
-    rulesCollector: RulesCollector(
-      analysisOptionsLoader: loader,
-    ),
+    rulesCollector: RulesCollector(analysisOptionsLoader: loader),
   );
 
   await _writeNormalOptions(generator, writer);
@@ -33,9 +29,7 @@ Future<void> _writeNormalOptions(
   RulesGenerator generator,
   AnalysisOptionsWriter writer,
 ) async {
-  const normalOptionsRef = AnalysisOptionsRef.local(
-    'lib/strict.yaml',
-  );
+  const normalOptionsRef = AnalysisOptionsRef.local('lib/strict.yaml');
   stdout.writeln('Generating $normalOptionsRef');
   final normalOptions = await generator.generateRules(
     baseOptions: const AnalysisOptionsRef.package(
@@ -61,20 +55,13 @@ Future<void> _writePackageOptions(
   RulesGenerator generator,
   AnalysisOptionsWriter writer,
 ) async {
-  const packageOptionsRef = AnalysisOptionsRef.local(
-    'lib/package.yaml',
-  );
+  const packageOptionsRef = AnalysisOptionsRef.local('lib/package.yaml');
   stdout.writeln('Generating $packageOptionsRef');
   final packageOptions = await generator.generateRules(
-    baseOptions: const AnalysisOptionsRef.local(
-      'strict.yaml',
-    ),
+    baseOptions: const AnalysisOptionsRef.local('strict.yaml'),
     relativeTo: packageOptionsRef,
     mergeOptions: const [
-      AnalysisOptionsRef.package(
-        packageName: 'lint',
-        path: 'package.yaml',
-      ),
+      AnalysisOptionsRef.package(packageName: 'lint', path: 'package.yaml'),
     ],
     customOptions: packageOptionsRef,
   );
@@ -85,9 +72,7 @@ Future<void> _writeSelfOptions(
   RulesGenerator generator,
   AnalysisOptionsWriter writer,
 ) async {
-  const normalOptionsRef = AnalysisOptionsRef.local(
-    'analysis_options.yaml',
-  );
+  const normalOptionsRef = AnalysisOptionsRef.local('analysis_options.yaml');
   stdout.writeln('Generating $normalOptionsRef');
   final normalOptions = await generator.generateRules(
     baseOptions: const AnalysisOptionsRef.package(
@@ -103,10 +88,7 @@ Future<void> _writeSelfOptions(
         packageName: 'flutter_lints',
         path: 'flutter.yaml',
       ),
-      AnalysisOptionsRef.package(
-        packageName: 'lint',
-        path: 'package.yaml',
-      ),
+      AnalysisOptionsRef.package(packageName: 'lint', path: 'package.yaml'),
     ],
     customOptions: normalOptionsRef,
   );

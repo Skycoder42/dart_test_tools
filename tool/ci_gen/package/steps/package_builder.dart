@@ -17,43 +17,44 @@ base mixin PackageConfig on JobConfig, ProjectSetupConfig {
   );
 
   @override
-  late final artifactDependencies =
-      inputContext(WorkflowInputs.artifactDependencies);
+  late final artifactDependencies = inputContext(
+    WorkflowInputs.artifactDependencies,
+  );
 }
 
 class PackageBuilder implements StepBuilder {
   static const _getPackageNameStepId = StepId('get-package-name');
-  static const _packageNameOutput =
-      StepIdOutput(_getPackageNameStepId, 'package-name');
+  static const _packageNameOutput = StepIdOutput(
+    _getPackageNameStepId,
+    'package-name',
+  );
 
   final PackageConfig config;
 
-  PackageBuilder({
-    required this.config,
-  });
+  PackageBuilder({required this.config});
 
   @override
   Iterable<Step> build() => [
-        ...ProjectSetupBuilder(config: config).build(),
-        Step.run(
-          id: _getPackageNameStepId,
-          name: 'Get package name for artifact upload',
-          run: _packageNameOutput.bashSetter(r'$(yq .name pubspec.yaml)'),
-          workingDirectory: config.workingDirectory.toString(),
-        ),
-        Step.uses(
-          name: 'Upload compiled binaries artifact',
-          uses: Tools.actionsUploadArtifact,
-          withArgs: <String, dynamic>{
-            'name': 'package-${_packageNameOutput.expression}',
-            'path': '''
+    ...ProjectSetupBuilder(config: config).build(),
+    Step.run(
+      id: _getPackageNameStepId,
+      name: 'Get package name for artifact upload',
+      run: _packageNameOutput.bashSetter(r'$(yq .name pubspec.yaml)'),
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+    Step.uses(
+      name: 'Upload compiled binaries artifact',
+      uses: Tools.actionsUploadArtifact,
+      withArgs: <String, dynamic>{
+        'name': 'package-${_packageNameOutput.expression}',
+        'path': '''
 ${config.workingDirectory}
 !${config.workingDirectory}/.*
 !${config.workingDirectory}/**/.*
 ''',
-            'retention-days': 7,
-            'if-no-files-found': 'error',
-          },
-        ),
-      ];
+        'retention-days': 7,
+        'if-no-files-found': 'error',
+      },
+    ),
+  ];
 }

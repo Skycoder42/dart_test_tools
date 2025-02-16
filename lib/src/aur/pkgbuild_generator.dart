@@ -12,9 +12,7 @@ class PkgBuildGenerator {
 
   final AurOptionsLoader aurOptionsLoader;
 
-  const PkgBuildGenerator({
-    this.aurOptionsLoader = const AurOptionsLoader(),
-  });
+  const PkgBuildGenerator({this.aurOptionsLoader = const AurOptionsLoader()});
 
   Future<void> generatePkgbuild({
     required Directory sourceDirectory,
@@ -79,8 +77,9 @@ class PkgBuildGenerator {
         options.pubspec.homepage ?? options.pubspec.repository?.toString();
     final depends =
         (makedebMode ? options.aurOptions.makedeb?.depends : null) ??
-            options.aurOptions.depends;
-    final backup = (makedebMode ? options.aurOptions.makedeb?.backup : null) ??
+        options.aurOptions.depends;
+    final backup =
+        (makedebMode ? options.aurOptions.makedeb?.backup : null) ??
         options.aurOptions.backup;
     final pkgBase = options.aurOptions.pkgname ?? options.pubspec.name;
 
@@ -99,10 +98,7 @@ class PkgBuildGenerator {
           'arch': PkgProperty.literalList(_supportedArchs),
         'url': PkgProperty(url),
         'license': PkgProperty.literalList([options.aurOptions.license]),
-        'depends': PkgProperty.literalList(
-          depends,
-          skipEmpty: false,
-        ),
+        'depends': PkgProperty.literalList(depends, skipEmpty: false),
         'source': _getSourceUrls(options),
         'b2sums': PkgProperty.literalList(
           List.filled(
@@ -197,7 +193,7 @@ class PkgBuildGenerator {
 
     final installFiles =
         (makedebMode ? options.aurOptions.makedeb?.files : null) ??
-            options.aurOptions.files;
+        options.aurOptions.files;
 
     for (final install in installFiles) {
       if (install.recursive) {

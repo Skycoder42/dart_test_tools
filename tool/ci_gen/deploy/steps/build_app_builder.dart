@@ -31,8 +31,9 @@ base mixin BuildAppConfig
   );
 
   @override
-  late final artifactDependencies =
-      inputContext(WorkflowInputs.artifactDependencies);
+  late final artifactDependencies = inputContext(
+    WorkflowInputs.artifactDependencies,
+  );
 }
 
 class BuildAppBuilder implements StepBuilder {
@@ -50,25 +51,25 @@ class BuildAppBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        ...const InstallDartTestToolsBuilder().build(),
-        ...ProjectSetupBuilder(config: config).build(),
-        ...GenerateBuildNumberBuilder(config: config).build(),
-        ...FlutterBuildBuilder(
-          buildNumber: GenerateBuildNumberBuilder.buildNumberOutput.expression,
-          config: config,
-          preBuildSteps: preBuildSteps,
-          cleanupPaths: cleanupPaths,
-        ).build(),
-        ...packageSteps,
-        Step.uses(
-          name: 'Upload app and debug info',
-          uses: Tools.actionsUploadArtifact,
-          withArgs: {
-            'name': 'app-deployment-${config.buildTarget}',
-            'path': '${config.workingDirectory}/${config.artifactDir}',
-            'retention-days': 1,
-            'if-no-files-found': 'error',
-          },
-        ),
-      ];
+    ...const InstallDartTestToolsBuilder().build(),
+    ...ProjectSetupBuilder(config: config).build(),
+    ...GenerateBuildNumberBuilder(config: config).build(),
+    ...FlutterBuildBuilder(
+      buildNumber: GenerateBuildNumberBuilder.buildNumberOutput.expression,
+      config: config,
+      preBuildSteps: preBuildSteps,
+      cleanupPaths: cleanupPaths,
+    ).build(),
+    ...packageSteps,
+    Step.uses(
+      name: 'Upload app and debug info',
+      uses: Tools.actionsUploadArtifact,
+      withArgs: {
+        'name': 'app-deployment-${config.buildTarget}',
+        'path': '${config.workingDirectory}/${config.artifactDir}',
+        'retention-days': 1,
+        'if-no-files-found': 'error',
+      },
+    ),
+  ];
 }

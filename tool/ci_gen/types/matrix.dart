@@ -28,13 +28,13 @@ class Matrix with _$Matrix {
   }
 
   dynamic toJson() => when(
-        (matrix, include, exclude) => {
-          ...matrix,
-          if (include != null) 'include': include,
-          if (exclude != null) 'exclude': exclude,
-        },
-        expression: (expression) => expression.toString(),
-      );
+    (matrix, include, exclude) => {
+      ...matrix,
+      if (include != null) 'include': include,
+      if (exclude != null) 'exclude': exclude,
+    },
+    expression: (expression) => expression.toString(),
+  );
 
   static List<Map<String, dynamic>>? _extractFilter(
     Map<String, dynamic> json,

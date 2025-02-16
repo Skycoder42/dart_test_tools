@@ -29,15 +29,8 @@ class RepoInit {
       icon: icon,
     );
 
-    await _repoGenerator(
-      repo: repo,
-      metadata: metadata,
-      update: update,
-    );
+    await _repoGenerator(repo: repo, metadata: metadata, update: update);
 
-    await _repoFileGenerator(
-      repo: repo,
-      metadata: metadata,
-    );
+    await _repoFileGenerator(repo: repo, metadata: metadata);
   }
 }

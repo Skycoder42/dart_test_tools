@@ -29,9 +29,7 @@ abstract base class AnalyzeJobConfig extends JobConfig
 
 abstract base class AnalyzeJobBuilder<TConfig extends AnalyzeJobConfig>
     extends SdkJobBuilder<TConfig> {
-  const AnalyzeJobBuilder({
-    required super.config,
-  });
+  const AnalyzeJobBuilder({required super.config});
 
   @override
   JobId get id => const JobId('analyze');
@@ -40,19 +38,17 @@ abstract base class AnalyzeJobBuilder<TConfig extends AnalyzeJobConfig>
 
   @override
   Job build() => Job(
-        name: 'Analyze',
-        runsOn: config.analyzeImage.toString(),
-        outputs: {
-          platformsOutput: AnalyzeBuilder.platformsOutput,
-        },
-        steps: [
-          ...buildSetupSdkSteps(),
-          ...AnalyzeBuilder(
-            config: config,
-            buildAnalyzeStep: buildAnalyzeSteps,
-          ).build(),
-        ],
-      );
+    name: 'Analyze',
+    runsOn: config.analyzeImage.toString(),
+    outputs: {platformsOutput: AnalyzeBuilder.platformsOutput},
+    steps: [
+      ...buildSetupSdkSteps(),
+      ...AnalyzeBuilder(
+        config: config,
+        buildAnalyzeStep: buildAnalyzeSteps,
+      ).build(),
+    ],
+  );
 
   @protected
   Iterable<Step> buildAnalyzeSteps();

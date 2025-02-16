@@ -43,10 +43,7 @@ class _GithubEnv {
         mode: FileMode.append,
       );
     } else {
-      await outputFile.writeAsString(
-        '$name=$value\n',
-        mode: FileMode.append,
-      );
+      await outputFile.writeAsString('$name=$value\n', mode: FileMode.append);
     }
   }
 
@@ -58,10 +55,7 @@ class _GithubEnv {
 
     final resolvedPath = await directory.resolveSymbolicLinks();
     final outputFile = File(outputFilePath);
-    await outputFile.writeAsString(
-      '$resolvedPath\n',
-      mode: FileMode.append,
-    );
+    await outputFile.writeAsString('$resolvedPath\n', mode: FileMode.append);
   }
 }
 
@@ -104,14 +98,13 @@ abstract base class Github {
   static Future<void> runZoned(
     FutureOr<void> Function() main, {
     bool setExitCode = true,
-  }) async =>
-      runZonedGuarded(main, (error, stack) {
-        logError(error.toString());
-        logGroup('Stack-Trace', () => print(stack));
-        if (setExitCode) {
-          exitCode = 1;
-        }
-      });
+  }) async => runZonedGuarded(main, (error, stack) {
+    logError(error.toString());
+    logGroup('Stack-Trace', () => print(stack));
+    if (setExitCode) {
+      exitCode = 1;
+    }
+  });
 
   static Future<int> exec(
     String executable,

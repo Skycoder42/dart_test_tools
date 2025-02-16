@@ -18,34 +18,26 @@ base mixin BuildMacosDmgConfig on JobConfig, BuildAppConfig {
 class BuildMacosDmgBuilder implements StepBuilder {
   final BuildMacosDmgConfig config;
 
-  const BuildMacosDmgBuilder({
-    required this.config,
-  });
+  const BuildMacosDmgBuilder({required this.config});
 
   @override
   Iterable<Step> build() => [
-        const Step.uses(
-          name: 'Setup NodeJS',
-          uses: Tools.actionsSetupNode,
-        ),
-        const Step.run(
-          name: 'Install appdmg',
-          run: 'npm install -g appdmg',
-        ),
-        ...BuildAppBuilder(
-          config: config,
-          packageSteps: [
-            Step.run(
-              name: 'Generate DMG image',
-              run: '''
+    const Step.uses(name: 'Setup NodeJS', uses: Tools.actionsSetupNode),
+    const Step.run(name: 'Install appdmg', run: 'npm install -g appdmg'),
+    ...BuildAppBuilder(
+      config: config,
+      packageSteps: [
+        Step.run(
+          name: 'Generate DMG image',
+          run: '''
 set -eo pipefail
 title=\$(jq -r '.title' '${config.dmgConfigPath}')
 mkdir -p build/macos/dmg
 appdmg '${config.dmgConfigPath}' "build/macos/dmg/\$title.dmg"
 ''',
-              workingDirectory: config.workingDirectory.toString(),
-            ),
-          ],
-        ).build(),
-      ];
+          workingDirectory: config.workingDirectory.toString(),
+        ),
+      ],
+    ).build(),
+  ];
 }

@@ -15,10 +15,8 @@ class IconInfo with _$IconInfo {
 
 @freezed
 class GpgInfo with _$GpgInfo {
-  const factory GpgInfo({
-    required String keyId,
-    required File publicKeyFile,
-  }) = _GpgInfo;
+  const factory GpgInfo({required String keyId, required File publicKeyFile}) =
+      _GpgInfo;
 }
 
 @freezed

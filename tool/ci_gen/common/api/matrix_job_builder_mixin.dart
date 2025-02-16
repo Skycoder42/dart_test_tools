@@ -28,10 +28,10 @@ abstract base class Matrix<TMatrixSelector extends IMatrixSelector> {
 
   List<IMatrixProperty<TMatrixSelector>> get includeProperties;
 
-  MapEntry<String, List<dynamic>> _createSelector() =>
-      MapEntry(selectorProperty.name, [
-        for (final selector in _selectors) selectorProperty.valueFor(selector),
-      ]);
+  MapEntry<String, List<dynamic>> _createSelector() => MapEntry(
+    selectorProperty.name,
+    [for (final selector in _selectors) selectorProperty.valueFor(selector)],
+  );
 
   Iterable<Map<String, dynamic>> _createIncludes() sync* {
     for (final selector in _selectors) {
@@ -49,8 +49,11 @@ abstract base class Matrix<TMatrixSelector extends IMatrixSelector> {
   }
 }
 
-base mixin MatrixJobBuilderMixin<TMatrix extends Matrix<TMatrixSelector>,
-    TMatrixSelector extends IMatrixSelector> implements JobBuilder {
+base mixin MatrixJobBuilderMixin<
+  TMatrix extends Matrix<TMatrixSelector>,
+  TMatrixSelector extends IMatrixSelector
+>
+    implements JobBuilder {
   @protected
   TMatrix get matrix;
 
@@ -71,18 +74,17 @@ base mixin MatrixJobBuilderMixin<TMatrix extends Matrix<TMatrixSelector>,
       strategy: Strategy(
         failFast: false,
         matrix: m.Matrix(
-          Map.fromEntries([
-            matrix._createSelector(),
-          ]),
+          Map.fromEntries([matrix._createSelector()]),
           include: matrix._createIncludes().toList(),
         ),
       ),
       steps: [
         for (final step in rawJob.steps)
           step.copyWith(
-            ifExpression: matrixCondition != null
-                ? (matrixCondition! & step.ifExpression)
-                : step.ifExpression,
+            ifExpression:
+                matrixCondition != null
+                    ? (matrixCondition! & step.ifExpression)
+                    : step.ifExpression,
           ),
       ],
     );

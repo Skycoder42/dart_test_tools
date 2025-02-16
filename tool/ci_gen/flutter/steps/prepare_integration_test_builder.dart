@@ -12,12 +12,15 @@ import '../../types/id.dart';
 import '../../types/step.dart';
 
 base mixin PrepareIntegrationTestConfig on ProjectSetupConfig {
-  late final integrationTestSetup =
-      inputContext(WorkflowInputs.integrationTestSetup);
-  late final integrationTestProject =
-      inputContext(WorkflowInputs.integrationTestProject);
-  late final integrationTestCacheConfig =
-      inputContext(WorkflowInputs.integrationTestCacheConfig);
+  late final integrationTestSetup = inputContext(
+    WorkflowInputs.integrationTestSetup,
+  );
+  late final integrationTestProject = inputContext(
+    WorkflowInputs.integrationTestProject,
+  );
+  late final integrationTestCacheConfig = inputContext(
+    WorkflowInputs.integrationTestCacheConfig,
+  );
 
   @override
   late final removePubspecOverrides = ExpressionOrValue.expression(
@@ -30,8 +33,9 @@ base mixin PrepareIntegrationTestConfig on ProjectSetupConfig {
   );
 
   @override
-  late final artifactDependencies =
-      inputContext(WorkflowInputs.artifactDependencies);
+  late final artifactDependencies = inputContext(
+    WorkflowInputs.artifactDependencies,
+  );
 
   String get integrationTestWorkingDirectory =>
       '$workingDirectory/$integrationTestProject';
@@ -73,11 +77,12 @@ final class _TestProjectConfig extends JobConfig
   late final localResolution = const ExpressionOrValue.value(false);
 
   @override
-  late final ifExpression =
-      baseConfig.integrationTestProject.ne(Expression.empty);
+  late final ifExpression = baseConfig.integrationTestProject.ne(
+    Expression.empty,
+  );
 
   _TestProjectConfig(this.baseConfig)
-      : super(baseConfig.inputContext, baseConfig.secretContext);
+    : super(baseConfig.inputContext, baseConfig.secretContext);
 }
 
 class PrepareIntegrationTestBuilder implements StepBuilder {
@@ -93,32 +98,32 @@ class PrepareIntegrationTestBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        ...ProjectSetupBuilder(config: config).build(),
-        Step.run(
-          name: 'Validate flutter setup',
-          run: '${config.baseTool} doctor -v',
-        ),
-        ...ProjectPrepareBuilder(
-          titleSuffix: '(Integration test project)',
-          config: _TestProjectConfig(config),
-        ).build(),
-        ...CacheBuilder(
-          cacheStepId: testSetupCacheStepId,
-          platform: platform,
-          cacheConfig: config.integrationTestCacheConfig,
-          ifExpression: _platformTestSetup.ne(Expression.empty),
-        ).build(),
-        Step.run(
-          name: 'Run platform test setup',
-          ifExpression: _platformTestSetup.ne(Expression.empty),
-          run: _platformTestSetup.toString(),
-          workingDirectory: config.workingDirectory.toString(),
-          env: CacheBuilder.createEnv(testSetupCacheStepId),
-        ),
-      ];
+    ...ProjectSetupBuilder(config: config).build(),
+    Step.run(
+      name: 'Validate flutter setup',
+      run: '${config.baseTool} doctor -v',
+    ),
+    ...ProjectPrepareBuilder(
+      titleSuffix: '(Integration test project)',
+      config: _TestProjectConfig(config),
+    ).build(),
+    ...CacheBuilder(
+      cacheStepId: testSetupCacheStepId,
+      platform: platform,
+      cacheConfig: config.integrationTestCacheConfig,
+      ifExpression: _platformTestSetup.ne(Expression.empty),
+    ).build(),
+    Step.run(
+      name: 'Run platform test setup',
+      ifExpression: _platformTestSetup.ne(Expression.empty),
+      run: _platformTestSetup.toString(),
+      workingDirectory: config.workingDirectory.toString(),
+      env: CacheBuilder.createEnv(testSetupCacheStepId),
+    ),
+  ];
 
   Expression get _platformTestSetup => Expression(
-        'fromJSON(${config.integrationTestSetup.value})'
-        '[${platform.asExpression.value}]',
-      );
+    'fromJSON(${config.integrationTestSetup.value})'
+    '[${platform.asExpression.value}]',
+  );
 }

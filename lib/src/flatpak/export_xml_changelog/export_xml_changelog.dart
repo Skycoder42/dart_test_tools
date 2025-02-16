@@ -8,10 +8,7 @@ import 'package:xml/xml.dart';
 class ExportXmlChangelog {
   const ExportXmlChangelog();
 
-  Future<void> call({
-    required File outFile,
-    bool isMetadataXml = true,
-  }) async {
+  Future<void> call({required File outFile, bool isMetadataXml = true}) async {
     final changelogFile = File('CHANGELOG.md');
     final changelog = parseChangelog(await changelogFile.readAsString());
 
@@ -22,8 +19,8 @@ class ExportXmlChangelog {
       _buildReleases(builder, changelog);
       document.getElement('component')!.children.add(builder.buildFragment());
     } else {
-      final builder = XmlBuilder()
-        ..processing('xml', 'version="1.0" encoding="UTF-8"');
+      final builder =
+          XmlBuilder()..processing('xml', 'version="1.0" encoding="UTF-8"');
       _buildReleases(builder, changelog);
       document = builder.buildDocument();
     }
@@ -83,8 +80,8 @@ class ExportXmlChangelog {
           'ul',
           nest: () {
             for (final change in changes) {
-              final visitor = _DescriptionVisitor()
-                ..visitAll(change.description);
+              final visitor =
+                  _DescriptionVisitor()..visitAll(change.description);
               builder.xml(visitor.toXml());
             }
           },
@@ -110,8 +107,9 @@ class _DescriptionVisitor extends NodeVisitor {
   bool visitElementBefore(Element element) {
     final newElement = XmlElement.tag(
       element.tag,
-      attributes: element.attributes.entries
-          .map((e) => XmlAttribute(XmlName.fromString(e.key), e.value)),
+      attributes: element.attributes.entries.map(
+        (e) => XmlAttribute(XmlName.fromString(e.key), e.value),
+      ),
     );
     _currentElement.children.add(newElement);
     _currentElement = newElement;

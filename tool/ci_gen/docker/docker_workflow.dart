@@ -22,9 +22,7 @@ class DockerWorkflow implements WorkflowBuilder {
     );
 
     return Workflow(
-      jobs: {
-        dockerJobBuilder.id: dockerJobBuilder.build(),
-      },
+      jobs: {dockerJobBuilder.id: dockerJobBuilder.build()},
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),

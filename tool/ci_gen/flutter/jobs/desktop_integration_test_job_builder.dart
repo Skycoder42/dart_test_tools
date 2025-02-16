@@ -10,7 +10,8 @@ import 'common_integration_test_config.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
 final class DesktopIntegrationTestJobConfig
-    extends CommonIntegrationTestJobConfig with DesktopIntegrationTestConfig {
+    extends CommonIntegrationTestJobConfig
+    with DesktopIntegrationTestConfig {
   DesktopIntegrationTestJobConfig(super.inputContext, super.secretContext);
 }
 
@@ -23,18 +24,20 @@ final class FlutterIntegrationTestMatrix extends PlatformMatrix {
 
   @override
   List<IMatrixProperty<IPlatformMatrixSelector>> get includeProperties => [
-        ...super.includeProperties,
-        testArgs,
-        runPrefix,
-      ];
+    ...super.includeProperties,
+    testArgs,
+    runPrefix,
+  ];
 }
 
 final class DesktopIntegrationTestJobBuilder
     extends SdkJobBuilder<DesktopIntegrationTestJobConfig>
     with
         FlutterSdkJobBuilderMixin<DesktopIntegrationTestJobConfig>,
-        MatrixJobBuilderMixin<FlutterIntegrationTestMatrix,
-            IPlatformMatrixSelector>,
+        MatrixJobBuilderMixin<
+          FlutterIntegrationTestMatrix,
+          IPlatformMatrixSelector
+        >,
         PlatformJobBuilderMixin<FlutterIntegrationTestMatrix> {
   final JobIdOutput enabledPlatformsOutput;
 
@@ -54,23 +57,20 @@ final class DesktopIntegrationTestJobBuilder
 
   @override
   Job buildGeneric(String runsOn) => Job(
-        name: 'Integration tests (desktop)',
-        ifExpression: config.integrationTestPaths.ne(Expression.empty),
-        needs: {
-          enabledPlatformsOutput.jobId,
-        },
-        runsOn: runsOn,
-        steps: [
-          ...buildSetupSdkSteps(
-            buildPlatform:
-                ExpressionOrValue.expression(matrix.platform.expression),
-          ),
-          ...DesktopIntegrationTestBuilder(
-            config: config,
-            platform: matrix.platform,
-            testArgs: matrix.testArgs,
-            runPrefix: matrix.runPrefix,
-          ).build(),
-        ],
-      );
+    name: 'Integration tests (desktop)',
+    ifExpression: config.integrationTestPaths.ne(Expression.empty),
+    needs: {enabledPlatformsOutput.jobId},
+    runsOn: runsOn,
+    steps: [
+      ...buildSetupSdkSteps(
+        buildPlatform: ExpressionOrValue.expression(matrix.platform.expression),
+      ),
+      ...DesktopIntegrationTestBuilder(
+        config: config,
+        platform: matrix.platform,
+        testArgs: matrix.testArgs,
+        runPrefix: matrix.runPrefix,
+      ).build(),
+    ],
+  );
 }

@@ -26,23 +26,21 @@ class RepoGenerator {
       '--repo=${repo.path}',
     ]);
 
-    final emptyDirs = await repo
-        .list(recursive: true)
-        .where((e) => e is Directory)
-        .cast<Directory>()
-        .asyncMap((d) async => (d, await d.list().isEmpty))
-        .where((d) => d.$2)
-        .map((d) => d.$1)
-        .toList();
+    final emptyDirs =
+        await repo
+            .list(recursive: true)
+            .where((e) => e is Directory)
+            .cast<Directory>()
+            .asyncMap((d) async => (d, await d.list().isEmpty))
+            .where((d) => d.$2)
+            .map((d) => d.$1)
+            .toList();
     for (final dir in emptyDirs) {
       await dir.subFile('.gitkeep').create();
     }
   }
 
-  Future<void> _updateRepo(
-    Directory repo,
-    RepoMetadata metadata,
-  ) =>
+  Future<void> _updateRepo(Directory repo, RepoMetadata metadata) =>
       Github.exec('flatpak', [
         'build-update-repo',
         if (metadata.title case final String title) '--title=$title',

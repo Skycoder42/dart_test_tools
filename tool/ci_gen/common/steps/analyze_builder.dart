@@ -8,8 +8,9 @@ import 'project_setup_builder.dart';
 import 'run_publish_builder.dart';
 
 base mixin AnalyzeConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
-  late final panaScoreThreshold =
-      inputContext(WorkflowInputs.panaScoreThreshold);
+  late final panaScoreThreshold = inputContext(
+    WorkflowInputs.panaScoreThreshold,
+  );
 
   @override
   late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
@@ -25,8 +26,9 @@ base mixin AnalyzeConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
   );
 
   @override
-  late final artifactDependencies =
-      inputContext(WorkflowInputs.artifactDependencies);
+  late final artifactDependencies = inputContext(
+    WorkflowInputs.artifactDependencies,
+  );
 }
 
 class AnalyzeBuilder implements StepBuilder {
@@ -39,46 +41,44 @@ class AnalyzeBuilder implements StepBuilder {
   final AnalyzeConfig config;
   final StepBuilderFn buildAnalyzeStep;
 
-  const AnalyzeBuilder({
-    required this.config,
-    required this.buildAnalyzeStep,
-  });
+  const AnalyzeBuilder({required this.config, required this.buildAnalyzeStep});
 
   @override
   Iterable<Step> build() => [
-        Step.run(
-          name: 'Install pana',
-          run: '${config.pubTool} global activate pana',
-        ),
-        ...ProjectSetupBuilder(config: config).build(),
-        Step.run(
-          id: checkPlatformsStepId,
-          name: 'Check supported platforms',
-          run: '''
+    Step.run(
+      name: 'Install pana',
+      run: '${config.pubTool} global activate pana',
+    ),
+    ...ProjectSetupBuilder(config: config).build(),
+    Step.run(
+      id: checkPlatformsStepId,
+      name: 'Check supported platforms',
+      run: '''
 set -eo pipefail
 platforms=\$(yq '.platforms // {} | keys' -o=json -I=0 pubspec.yaml)
 echo "Detected supported platforms as: \$platforms"
 ${platformsOutput.bashSetter(r'$platforms')}
 ''',
-          workingDirectory: config.workingDirectory.toString(),
-          shell: 'bash',
-        ),
-        ...buildAnalyzeStep(),
-        Step.run(
-          name: 'Run custom_lint',
-          run: '${config.runTool} custom_lint',
-          workingDirectory: config.workingDirectory.toString(),
-        ),
-        Step.run(
-          name: 'Validate correct formatting',
-          run: 'dart format -onone --set-exit-if-changed '
-              r"$(git ls-files '*.dart')",
-          workingDirectory: config.workingDirectory.toString(),
-        ),
-        Step.run(
-          id: checkPublishStepId,
-          name: 'Check if package is publishable',
-          run: '''
+      workingDirectory: config.workingDirectory.toString(),
+      shell: 'bash',
+    ),
+    ...buildAnalyzeStep(),
+    Step.run(
+      name: 'Run custom_lint',
+      run: '${config.runTool} custom_lint',
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+    Step.run(
+      name: 'Validate correct formatting',
+      run:
+          'dart format -onone --set-exit-if-changed '
+          r"$(git ls-files '*.dart')",
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+    Step.run(
+      id: checkPublishStepId,
+      name: 'Check if package is publishable',
+      run: '''
 set -eo pipefail
 publish_to=\$(cat pubspec.yaml | yq e ".publish_to" -)
 if [[ "\$publish_to" == "none" ]]; then
@@ -87,23 +87,26 @@ else
   ${checkPublishOutput.bashSetter('true')}
 fi
 ''',
-          workingDirectory: config.workingDirectory.toString(),
-          shell: 'bash',
-        ),
-        ...RunPublishBuilder(
-          config: config,
-          publishStepName: 'Test publishing configuration',
-          publishArgs: '--dry-run',
-          ifExpression: checkPublishOutput.expression
-              .eq(const Expression.literal('true')),
-        ).build(),
-        Step.run(
-          name: 'Validate pana score',
-          ifExpression: checkPublishOutput.expression
-              .eq(const Expression.literal('true')),
-          run: '${config.pubTool} global run pana '
-              '--exit-code-threshold ${config.panaScoreThreshold} .',
-          workingDirectory: config.workingDirectory.toString(),
-        ),
-      ];
+      workingDirectory: config.workingDirectory.toString(),
+      shell: 'bash',
+    ),
+    ...RunPublishBuilder(
+      config: config,
+      publishStepName: 'Test publishing configuration',
+      publishArgs: '--dry-run',
+      ifExpression: checkPublishOutput.expression.eq(
+        const Expression.literal('true'),
+      ),
+    ).build(),
+    Step.run(
+      name: 'Validate pana score',
+      ifExpression: checkPublishOutput.expression.eq(
+        const Expression.literal('true'),
+      ),
+      run:
+          '${config.pubTool} global run pana '
+          '--exit-code-threshold ${config.panaScoreThreshold} .',
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+  ];
 }

@@ -15,23 +15,19 @@ final class BuildDebJobConfig extends JobConfig
 class BuildDebJobBuilder implements JobBuilder {
   final BuildDebJobConfig config;
 
-  const BuildDebJobBuilder({
-    required this.config,
-  });
+  const BuildDebJobBuilder({required this.config});
 
   @override
   JobId get id => const JobId('build_deb');
 
   @override
   Job build() => Job(
-        name: 'Build deb package',
-        runsOn: 'ubuntu-latest',
-        steps: [
-          ...const PrepareDebBuilder().build(),
-          ...const CheckoutBuilder(
-            path: 'src',
-          ).build(),
-          ...MakedebBuilder(config: config).build(),
-        ],
-      );
+    name: 'Build deb package',
+    runsOn: 'ubuntu-latest',
+    steps: [
+      ...const PrepareDebBuilder().build(),
+      ...const CheckoutBuilder(path: 'src').build(),
+      ...MakedebBuilder(config: config).build(),
+    ],
+  );
 }

@@ -17,6 +17,6 @@ base mixin DartSdkJobBuilderMixin<TConfig extends DartSdkJobConfig>
     on SdkJobBuilder<TConfig> {
   @override
   Iterable<Step> buildSetupSdkSteps() => [
-        ...DartSdkBuilder(dartSdkVersion: config.dartSdkVersion).build(),
-      ];
+    ...DartSdkBuilder(dartSdkVersion: config.dartSdkVersion).build(),
+  ];
 }

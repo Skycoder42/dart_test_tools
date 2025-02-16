@@ -9,9 +9,7 @@ class RulesCollector {
   @internal
   final AnalysisOptionsLoader analysisOptionsLoader;
 
-  RulesCollector({
-    required this.analysisOptionsLoader,
-  });
+  RulesCollector({required this.analysisOptionsLoader});
 
   Future<Map<String, bool>> collectRulesRecursively(
     AnalysisOptionsRef analysisOptionsRef, {

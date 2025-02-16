@@ -24,14 +24,8 @@ class MetadataCollector {
     var metadata = RepoMetadata(
       name: repository,
       id: 'PLACEHOLDER',
-      url: Uri.https(
-        '${username.toLowerCase()}.github.io',
-        '/$repository/',
-      ),
-      gpgInfo: GpgInfo(
-        keyId: gpgKeyId,
-        publicKeyFile: publicKeyFile,
-      ),
+      url: Uri.https('${username.toLowerCase()}.github.io', '/$repository/'),
+      gpgInfo: GpgInfo(keyId: gpgKeyId, publicKeyFile: publicKeyFile),
       branch: defaultBranch,
     );
 
@@ -45,11 +39,12 @@ class MetadataCollector {
   }
 
   Future<(String, String)> _loadRepoInfo(Directory repo) async {
-    final remoteString = await Github.execLines(
-      'git',
-      const ['config', '--get', 'remote.origin.url'],
-      workingDirectory: repo,
-    ).single;
+    final remoteString =
+        await Github.execLines('git', const [
+          'config',
+          '--get',
+          'remote.origin.url',
+        ], workingDirectory: repo).single;
     final remoteUrl = Uri.parse(remoteString);
 
     if (remoteUrl.origin != 'https://github.com') {
@@ -61,29 +56,27 @@ class MetadataCollector {
   }
 
   Future<String> _loadDefaultBranch(Directory repo) async {
-    final defaultRef = await Github.execLines(
-      'git',
-      const ['symbolic-ref', 'refs/remotes/origin/HEAD', '--short'],
-      workingDirectory: repo,
-    ).single;
+    final defaultRef =
+        await Github.execLines('git', const [
+          'symbolic-ref',
+          'refs/remotes/origin/HEAD',
+          '--short',
+        ], workingDirectory: repo).single;
     return defaultRef.split('/').last;
   }
 
   Future<File> _exportGpgKey(String gpgKeyId) async {
     final tmpDir = await Directory.systemTemp.createTemp();
     final gpgFile = tmpDir.subFile('$gpgKeyId.key');
-    await Github.exec(
-      'gpg',
-      [
-        '--batch',
-        '--yes',
-        '--export',
-        '--armor',
-        '-o',
-        gpgFile.path,
-        gpgKeyId,
-      ],
-    );
+    await Github.exec('gpg', [
+      '--batch',
+      '--yes',
+      '--export',
+      '--armor',
+      '-o',
+      gpgFile.path,
+      gpgKeyId,
+    ]);
     return gpgFile;
   }
 
@@ -94,10 +87,11 @@ class MetadataCollector {
     final metaInfoString = await metaInfo.readAsString();
     final metaInfoXml = XmlDocument.parse(metaInfoString);
 
-    final homepageUrl = metaInfoXml
-        .xpath('/component/url[@type = "homepage"]')
-        .firstOrNull
-        ?.innerText;
+    final homepageUrl =
+        metaInfoXml
+            .xpath('/component/url[@type = "homepage"]')
+            .firstOrNull
+            ?.innerText;
 
     return metadata.copyWith(
       id: metaInfoXml.xpath('/component/id').first.innerText,

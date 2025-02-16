@@ -8,9 +8,7 @@ import '../models/analysis_options_ref.dart';
 class AnalysisOptionsWriter {
   final YamlWriter yamlWriter;
 
-  AnalysisOptionsWriter({
-    required this.yamlWriter,
-  });
+  AnalysisOptionsWriter({required this.yamlWriter});
 
   Future<void> saveAnalysisOptions(
     AnalysisOptionsRef target,

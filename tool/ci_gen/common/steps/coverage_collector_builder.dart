@@ -23,14 +23,15 @@ final class LcovCleanCommandMatrixProperty
 
   @override
   Object? valueFor(IPlatformMatrixSelector selector) => switch (selector) {
-        IPlatformMatrixSelector(os: RunsOn.ubuntuLatest) =>
-          r'sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info',
-        IPlatformMatrixSelector(os: RunsOn.macosLatest) ||
-        IPlatformMatrixSelector(os: RunsOn.macos13) =>
-          r'sed -i "" "s#SF:$PWD/#SF:#g" coverage/lcov.info',
-        IPlatformMatrixSelector(os: RunsOn.windowsLatest) =>
-          r'(Get-Content coverage\lcov.info).replace("SF:$PWD\", "SF:").replace("\", "/") | Set-Content coverage\lcov.info',
-      };
+    IPlatformMatrixSelector(os: RunsOn.ubuntuLatest) =>
+      r'sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info',
+    IPlatformMatrixSelector(os: RunsOn.macosLatest) ||
+    IPlatformMatrixSelector(
+      os: RunsOn.macos13,
+    ) => r'sed -i "" "s#SF:$PWD/#SF:#g" coverage/lcov.info',
+    IPlatformMatrixSelector(os: RunsOn.windowsLatest) =>
+      r'(Get-Content coverage\lcov.info).replace("SF:$PWD\", "SF:").replace("\", "/") | Set-Content coverage\lcov.info',
+  };
 }
 
 class CoverageCollectorBuilder implements StepBuilder {
@@ -46,34 +47,35 @@ class CoverageCollectorBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        if (config.needsFormatting)
-          Step.run(
-            name: 'Convert coverage data to lcov format',
-            ifExpression: config.runCoverageExpression,
-            run: '${config.runTool} coverage:format_coverage '
-                '--lcov '
-                '--check-ignore '
-                '--in=coverage '
-                '--out=coverage/lcov.info '
-                '--report-on=lib',
-            workingDirectory: config.workingDirectory.toString(),
-          ),
-        Step.run(
-          name: 'Normalize coverage paths',
-          ifExpression: config.runCoverageExpression,
-          run: lcovCleanCommand.expression.toString(),
-          workingDirectory: config.workingDirectory.toString(),
-        ),
-        Step.uses(
-          name: 'Upload coverage data',
-          ifExpression: config.runCoverageExpression,
-          uses: Tools.actionsUploadArtifact,
-          withArgs: <String, dynamic>{
-            'name': 'coverage-info-${platform.expression}',
-            'path': '${config.workingDirectory}/coverage/lcov.info',
-            'retention-days': 1,
-            'if-no-files-found': 'error',
-          },
-        ),
-      ];
+    if (config.needsFormatting)
+      Step.run(
+        name: 'Convert coverage data to lcov format',
+        ifExpression: config.runCoverageExpression,
+        run:
+            '${config.runTool} coverage:format_coverage '
+            '--lcov '
+            '--check-ignore '
+            '--in=coverage '
+            '--out=coverage/lcov.info '
+            '--report-on=lib',
+        workingDirectory: config.workingDirectory.toString(),
+      ),
+    Step.run(
+      name: 'Normalize coverage paths',
+      ifExpression: config.runCoverageExpression,
+      run: lcovCleanCommand.expression.toString(),
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+    Step.uses(
+      name: 'Upload coverage data',
+      ifExpression: config.runCoverageExpression,
+      uses: Tools.actionsUploadArtifact,
+      withArgs: <String, dynamic>{
+        'name': 'coverage-info-${platform.expression}',
+        'path': '${config.workingDirectory}/coverage/lcov.info',
+        'retention-days': 1,
+        'if-no-files-found': 'error',
+      },
+    ),
+  ];
 }

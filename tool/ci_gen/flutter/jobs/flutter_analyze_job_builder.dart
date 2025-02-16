@@ -14,16 +14,14 @@ final class FlutterAnalyzeJobConfig extends AnalyzeJobConfig
 final class FlutterAnalyzeJobBuilder
     extends AnalyzeJobBuilder<FlutterAnalyzeJobConfig>
     with FlutterSdkJobBuilderMixin<FlutterAnalyzeJobConfig> {
-  const FlutterAnalyzeJobBuilder({
-    required super.config,
-  });
+  const FlutterAnalyzeJobBuilder({required super.config});
 
   @override
   Iterable<Step> buildAnalyzeSteps() => [
-        Step.run(
-          name: 'Static analysis',
-          run: 'flutter analyze',
-          workingDirectory: config.workingDirectory.toString(),
-        ),
-      ];
+    Step.run(
+      name: 'Static analysis',
+      run: 'flutter analyze',
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+  ];
 }

@@ -22,9 +22,7 @@ class AurWorkflow implements WorkflowBuilder {
     );
 
     return Workflow(
-      jobs: {
-        aurDeployJobBuilder.id: aurDeployJobBuilder.build(),
-      },
+      jobs: {aurDeployJobBuilder.id: aurDeployJobBuilder.build()},
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),

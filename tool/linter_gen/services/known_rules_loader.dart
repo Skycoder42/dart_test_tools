@@ -13,10 +13,7 @@ class KnownRulesLoader {
   final AnalysisOptionsLoader analysisOptionsLoader;
   final AnalysisOptionsWriter analysisOptionsWriter;
 
-  final _rulesPageUri = Uri.https(
-    'dart.dev',
-    '/tools/linter-rules/all',
-  );
+  final _rulesPageUri = Uri.https('dart.dev', '/tools/linter-rules/all');
 
   KnownRulesLoader({
     required this.analysisOptionsLoader,
@@ -28,8 +25,9 @@ class KnownRulesLoader {
       'tool/linter_gen/known_rules.yaml',
     );
 
-    final previousKnownOptions =
-        await analysisOptionsLoader.load(knownRulesCacheFile);
+    final previousKnownOptions = await analysisOptionsLoader.load(
+      knownRulesCacheFile,
+    );
     final newKnownOptions = await _loadKnownRules();
 
     await analysisOptionsWriter.saveAnalysisOptions(

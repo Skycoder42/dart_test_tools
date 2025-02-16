@@ -17,8 +17,9 @@ import '../steps/with_gpg_key.dart';
 final class DeployLinuxJobConfig extends JobConfig
     with WithGpgKeyConfig, DeployToPagesConfig {
   late final enabledPlatforms = inputContext(WorkflowInputs.enabledPlatforms);
-  late final flatpakPlatformImage =
-      inputContext(WorkflowInputs.flatpakPlatformImage);
+  late final flatpakPlatformImage = inputContext(
+    WorkflowInputs.flatpakPlatformImage,
+  );
 
   DeployLinuxJobConfig(super.inputContext, super.secretContext);
 }
@@ -27,39 +28,34 @@ class DeployLinuxJobBuilder implements JobBuilder {
   final JobIdOutput releaseCreated;
   final DeployLinuxJobConfig config;
 
-  DeployLinuxJobBuilder({
-    required this.releaseCreated,
-    required this.config,
-  });
+  DeployLinuxJobBuilder({required this.releaseCreated, required this.config});
 
   @override
   JobId get id => const JobId('deploy_linux');
 
   @override
   Job build() => Job(
-        name: 'Deploy flatpak bundles to GitHub Pages',
-        needs: {releaseCreated.jobId},
-        runsOn: RunsOn.ubuntuLatest.id,
-        container: Container(
-          image: 'bilelmoussaoui/${config.flatpakPlatformImage}',
-          options: '--privileged',
+    name: 'Deploy flatpak bundles to GitHub Pages',
+    needs: {releaseCreated.jobId},
+    runsOn: RunsOn.ubuntuLatest.id,
+    container: Container(
+      image: 'bilelmoussaoui/${config.flatpakPlatformImage}',
+      options: '--privileged',
+    ),
+    ifExpression:
+        releaseCreated.expression.eq(const Expression.literal('true')) &
+        EnabledPlatforms.check(
+          config.enabledPlatforms,
+          Expression.literal(FlutterPlatform.linux.platform),
         ),
-        ifExpression:
-            releaseCreated.expression.eq(const Expression.literal('true')) &
-                EnabledPlatforms.check(
-                  config.enabledPlatforms,
-                  Expression.literal(FlutterPlatform.linux.platform),
-                ),
-        environment: Environments.flatpak,
-        permissions: const {
-          'contents': 'write',
-        },
-        steps: [
-          ...ValidateInputsBuilder({
-            WorkflowSecrets.gpgKeyId(false).name: config.gpgKeyId,
-            WorkflowSecrets.gpgKey(false).name: config.gpgKey,
-          }).build(),
-          ...DeployToPagesBuilder(config: config).build(),
-        ],
-      );
+    environment: Environments.flatpak,
+    permissions: const {'contents': 'write'},
+    steps: [
+      ...ValidateInputsBuilder({
+        WorkflowSecrets.gpgKeyId(false).name: config.gpgKeyId,
+        WorkflowSecrets.gpgKey(false).name: config.gpgKey,
+      }).build(),
+      ...DeployToPagesBuilder(config: config).build(),
+    ],
+  );
 }

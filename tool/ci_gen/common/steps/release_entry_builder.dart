@@ -20,10 +20,12 @@ base mixin ReleaseEntryConfig on JobConfig, WorkingDirectoryConfig {
 class ReleaseEntryBuilder implements StepBuilder {
   static const releaseContentStepId = StepId('release_content');
   static final releaseContentTagName = releaseContentStepId.output('tag_name');
-  static final releaseContentReleaseName =
-      releaseContentStepId.output('release_name');
-  static final releaseContentBodyPath =
-      releaseContentStepId.output('body_path');
+  static final releaseContentReleaseName = releaseContentStepId.output(
+    'release_name',
+  );
+  static final releaseContentBodyPath = releaseContentStepId.output(
+    'body_path',
+  );
 
   final ReleaseEntryConfig config;
   final Expression versionUpdate;
@@ -39,16 +41,16 @@ class ReleaseEntryBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-        Step.run(
-          name: 'Activate cider',
-          ifExpression: versionUpdate.eq(const Expression.literal('true')),
-          run: 'dart pub global activate cider',
-        ),
-        Step.run(
-          id: releaseContentStepId,
-          name: 'Generate release content',
-          ifExpression: versionUpdate.eq(const Expression.literal('true')),
-          run: '''
+    Step.run(
+      name: 'Activate cider',
+      ifExpression: versionUpdate.eq(const Expression.literal('true')),
+      run: 'dart pub global activate cider',
+    ),
+    Step.run(
+      id: releaseContentStepId,
+      name: 'Generate release content',
+      ifExpression: versionUpdate.eq(const Expression.literal('true')),
+      run: '''
 set -e
 package_name=\$(cat pubspec.yaml | yq e ".name" -)
 package_version=\$(cat pubspec.yaml | yq e ".version" -)
@@ -65,21 +67,21 @@ dart pub global run cider describe "\$package_version" >> \$version_changelog_fi
 echo "" >> \$version_changelog_file${changelogExtra != null ? '\necho "$changelogExtra" >> \$version_changelog_file' : ''}
 ${releaseContentBodyPath.bashSetter(r'$version_changelog_file')}
 ''',
-          workingDirectory: config.workingDirectory.toString(),
-        ),
-        Step.uses(
-          name: 'Create Release',
-          ifExpression: versionUpdate.eq(const Expression.literal('true')),
-          uses: Tools.softpropsActionGhRelease,
-          withArgs: <String, dynamic>{
-            if (config.githubToken case final Expression token)
-              'token': token.toString(),
-            'tag_name': releaseContentTagName.expression.toString(),
-            'name': releaseContentReleaseName.expression.toString(),
-            'body_path': releaseContentBodyPath.expression.toString(),
-            'target_commitish': Github.sha.toString(),
-            if (files != null) 'files': files,
-          },
-        ),
-      ];
+      workingDirectory: config.workingDirectory.toString(),
+    ),
+    Step.uses(
+      name: 'Create Release',
+      ifExpression: versionUpdate.eq(const Expression.literal('true')),
+      uses: Tools.softpropsActionGhRelease,
+      withArgs: <String, dynamic>{
+        if (config.githubToken case final Expression token)
+          'token': token.toString(),
+        'tag_name': releaseContentTagName.expression.toString(),
+        'name': releaseContentReleaseName.expression.toString(),
+        'body_path': releaseContentBodyPath.expression.toString(),
+        'target_commitish': Github.sha.toString(),
+        if (files != null) 'files': files,
+      },
+    ),
+  ];
 }

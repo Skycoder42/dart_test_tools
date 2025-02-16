@@ -36,29 +36,26 @@ final class AndroidIntegrationTestJobBuilder
 
   @override
   Job build() => Job(
-        name: 'Integration tests (android)',
-        ifExpression: config.integrationTestPaths.ne(Expression.empty) &
-            EnabledPlatforms.check(
-              enabledPlatformsOutput.expression,
-              Expression.literal(FlutterPlatform.android.platform),
-            ),
-        needs: {
-          enabledPlatformsOutput.jobId,
-        },
-        runsOn: FlutterPlatform.android.os.id,
-        steps: [
-          ...ValidateInputsBuilder({
-            WorkflowInputs.firebaseProjectId.name: config.firebaseProjectId,
-            WorkflowSecrets.firebaseCredentials.name:
-                config.firebaseCredentials,
-          }).build(),
-          ...buildSetupSdkSteps(
-            buildPlatform:
-                ExpressionOrValue.value(FlutterPlatform.android.platform),
-          ),
-          ...AndroidIntegrationTestBuilder(
-            config: config,
-          ).build(),
-        ],
-      );
+    name: 'Integration tests (android)',
+    ifExpression:
+        config.integrationTestPaths.ne(Expression.empty) &
+        EnabledPlatforms.check(
+          enabledPlatformsOutput.expression,
+          Expression.literal(FlutterPlatform.android.platform),
+        ),
+    needs: {enabledPlatformsOutput.jobId},
+    runsOn: FlutterPlatform.android.os.id,
+    steps: [
+      ...ValidateInputsBuilder({
+        WorkflowInputs.firebaseProjectId.name: config.firebaseProjectId,
+        WorkflowSecrets.firebaseCredentials.name: config.firebaseCredentials,
+      }).build(),
+      ...buildSetupSdkSteps(
+        buildPlatform: ExpressionOrValue.value(
+          FlutterPlatform.android.platform,
+        ),
+      ),
+      ...AndroidIntegrationTestBuilder(config: config).build(),
+    ],
+  );
 }

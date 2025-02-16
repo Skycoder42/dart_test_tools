@@ -10,7 +10,8 @@ extension ContextRootX on ContextRoot {
   static final _srcExpando = Expando<Folder>();
   static final _testExpando = Expando<Folder>();
 
-  Pubspec get pubspec => _pubspecExpando[this] ??= () {
+  Pubspec get pubspec =>
+      _pubspecExpando[this] ??= () {
         final pubspecFile = _workspaceRoot.getChildAssumingFile('pubspec.yaml');
         assert(pubspecFile.exists, 'pubspec.yaml must exist');
         final pubspecData = pubspecFile.readAsStringSync();

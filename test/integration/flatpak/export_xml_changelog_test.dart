@@ -32,40 +32,34 @@ void main() {
 
     test(
       'generates changelog XML from MD',
-      () async => IOOverrides.runWithIOOverrides(
-        () async {
-          await File('CHANGELOG.md').writeAsString(_testChangelogMdFull);
+      () async => IOOverrides.runWithIOOverrides(() async {
+        await File('CHANGELOG.md').writeAsString(_testChangelogMdFull);
 
-          final outFile = File('releases.xml');
-          await sut(outFile: outFile, isMetadataXml: false);
+        final outFile = File('releases.xml');
+        await sut(outFile: outFile, isMetadataXml: false);
 
-          expect(outFile.existsSync(), isTrue);
-          expect(outFile.readAsString(), completion(_testChangelogXml));
-        },
-        _TestOverrides(testDir),
-      ),
+        expect(outFile.existsSync(), isTrue);
+        expect(outFile.readAsString(), completion(_testChangelogXml));
+      }, _TestOverrides(testDir)),
     );
 
     test(
       'adds changelog to metainfo.xml',
-      () async => IOOverrides.runWithIOOverrides(
-        () async {
-          await File('CHANGELOG.md').writeAsString(_testChangelogMdMinimal);
-          final outFile = File('metainfo.xml');
-          await outFile.writeAsString('''
+      () async => IOOverrides.runWithIOOverrides(() async {
+        await File('CHANGELOG.md').writeAsString(_testChangelogMdMinimal);
+        final outFile = File('metainfo.xml');
+        await outFile.writeAsString('''
 <?xml version="1.0" encoding="UTF-8"?>
 <component>
   <id>test-id</id>
 </component>
 ''');
 
-          await sut(outFile: outFile);
+        await sut(outFile: outFile);
 
-          expect(outFile.existsSync(), isTrue);
-          expect(outFile.readAsString(), completion(_testMetainfoXml));
-        },
-        _TestOverrides(testDir),
-      ),
+        expect(outFile.existsSync(), isTrue);
+        expect(outFile.readAsString(), completion(_testMetainfoXml));
+      }, _TestOverrides(testDir)),
     );
   });
 }

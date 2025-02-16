@@ -13,16 +13,16 @@ void main() {
   group('$Github', () {
     group('env', () {
       testData<(Directory Function(), String)>(
-          'variables are reported correctly', [
-        (() => Github.env.githubWorkspace, 'GITHUB_WORKSPACE'),
-        (() => Github.env.runnerTemp, 'RUNNER_TEMP'),
-        (() => Github.env.runnerToolCache, 'RUNNER_TOOL_CACHE'),
-      ], (fixture) {
-        expect(
-          fixture.$1().path,
-          Platform.environment[fixture.$2],
-        );
-      });
+        'variables are reported correctly',
+        [
+          (() => Github.env.githubWorkspace, 'GITHUB_WORKSPACE'),
+          (() => Github.env.runnerTemp, 'RUNNER_TEMP'),
+          (() => Github.env.runnerToolCache, 'RUNNER_TOOL_CACHE'),
+        ],
+        (fixture) {
+          expect(fixture.$1().path, Platform.environment[fixture.$2]);
+        },
+      );
 
       group('setOutput', () {
         test('sets single line output var', () async {
@@ -139,10 +139,7 @@ void main() {
       test('invokes process', () {
         expect(
           () => Github.exec('bash', const ['-c', 'true']),
-          allOf(
-            prints('[command] bash -c true\n'),
-            returnsNormally,
-          ),
+          allOf(prints('[command] bash -c true\n'), returnsNormally),
         );
       });
 
@@ -199,10 +196,7 @@ void main() {
       test('invokes process', () {
         expect(
           () => Github.execLines('bash', const ['-c', 'true']).drain<void>(),
-          allOf(
-            prints('[command] bash -c true\n'),
-            returnsNormally,
-          ),
+          allOf(prints('[command] bash -c true\n'), returnsNormally),
         );
       });
 
@@ -224,31 +218,21 @@ void main() {
 
       test('completes with exit code', () {
         expect(
-          Github.execLines(
-            'bash',
-            const ['-c', 'exit 42'],
-            expectedExitCode: null,
-          ),
+          Github.execLines('bash', const [
+            '-c',
+            'exit 42',
+          ], expectedExitCode: null),
           emitsDone,
         );
       });
 
       test('streams output lines', () {
         expect(
-          Github.execLines(
-            'bash',
-            const [
-              '-c',
-              'echo "Hello world"; echo ""; echo -n test; echo test',
-            ],
-            expectedExitCode: null,
-          ),
-          emitsInOrder([
-            'Hello world',
-            '',
-            'testtest',
-            emitsDone,
-          ]),
+          Github.execLines('bash', const [
+            '-c',
+            'echo "Hello world"; echo ""; echo -n test; echo test',
+          ], expectedExitCode: null),
+          emitsInOrder(['Hello world', '', 'testtest', emitsDone]),
         );
       });
 
@@ -268,11 +252,10 @@ void main() {
         addTearDown(() => tmpDir.delete(recursive: true));
 
         expect(
-          Github.execLines(
-            'bash',
-            const ['-c', r'echo $PWD'],
-            workingDirectory: tmpDir,
-          ),
+          Github.execLines('bash', const [
+            '-c',
+            r'echo $PWD',
+          ], workingDirectory: tmpDir),
           emits(tmpDir.resolveSymbolicLinksSync()),
         );
       });

@@ -35,12 +35,15 @@ void main() {
     await _createTestProject(testDir, testVersion);
 
     buildGradle = File.fromUri(testDir.uri.resolve('android/build.gradle'));
-    darwinPodspec =
-        File.fromUri(testDir.uri.resolve('darwin/version_sync_test.podspec'));
-    iosPodspec =
-        File.fromUri(testDir.uri.resolve('ios/version_sync_test.podspec'));
-    macosPodspec =
-        File.fromUri(testDir.uri.resolve('macos/version_sync_test.podspec'));
+    darwinPodspec = File.fromUri(
+      testDir.uri.resolve('darwin/version_sync_test.podspec'),
+    );
+    iosPodspec = File.fromUri(
+      testDir.uri.resolve('ios/version_sync_test.podspec'),
+    );
+    macosPodspec = File.fromUri(
+      testDir.uri.resolve('macos/version_sync_test.podspec'),
+    );
     dartVersion = File.fromUri(testDir.uri.resolve('lib/src/version.dart'));
 
     reset(mockStdout);
@@ -188,56 +191,57 @@ Future<void> _run(
 }
 
 Future<void> _createTestProject(Directory pwd, String version) async {
-  await _run(
-    'flutter',
-    const [
-      'create',
-      '--project-name',
-      'version_sync_test',
-      '--platforms',
-      'android',
-      '--platforms',
-      'ios',
-      '--platforms',
-      'linux',
-      '--platforms',
-      'macos',
-      '--platforms',
-      'windows',
-      '--platforms',
-      'web',
-      '--template',
-      'plugin',
-      '.',
-    ],
-    workingDirectory: pwd.path,
-  );
+  await _run('flutter', const [
+    'create',
+    '--project-name',
+    'version_sync_test',
+    '--platforms',
+    'android',
+    '--platforms',
+    'ios',
+    '--platforms',
+    'linux',
+    '--platforms',
+    'macos',
+    '--platforms',
+    'windows',
+    '--platforms',
+    'web',
+    '--template',
+    'plugin',
+    '.',
+  ], workingDirectory: pwd.path);
 
   await Directory.fromUri(pwd.uri.resolve('lib/src')).create();
-  await File.fromUri(pwd.uri.resolve('lib/src/version.dart'))
-      .writeAsString(flush: true, '''
+  await File.fromUri(pwd.uri.resolve('lib/src/version.dart')).writeAsString(
+    flush: true,
+    '''
 // this is the library version
 const version = '1.5.8';
 const name = 'version_sync_test';
-''');
+''',
+  );
 
   await Directory.fromUri(pwd.uri.resolve('darwin')).create();
-  await File.fromUri(pwd.uri.resolve('ios/version_sync_test.podspec'))
-      .copy(pwd.uri.resolve('darwin/version_sync_test.podspec').toFilePath());
+  await File.fromUri(
+    pwd.uri.resolve('ios/version_sync_test.podspec'),
+  ).copy(pwd.uri.resolve('darwin/version_sync_test.podspec').toFilePath());
 
   final pubspecFile = File.fromUri(pwd.uri.resolve('pubspec.yaml'));
-  final pubspecEditor = YamlEditor(await pubspecFile.readAsString())
-    ..update(const ['version'], version)
-    ..update(const [
-      'cider',
-    ], {
-      'version_sync': const {
-        'lib/src/version.dart': {
-          'pattern': r"^const version = '.*';$",
-          'replacement': "const version = '%{version}';",
-        },
-      },
-    });
+  final pubspecEditor =
+      YamlEditor(await pubspecFile.readAsString())
+        ..update(const ['version'], version)
+        ..update(
+          const ['cider'],
+          {
+            'version_sync': const {
+              'lib/src/version.dart': {
+                'pattern': r"^const version = '.*';$",
+                'replacement': "const version = '%{version}';",
+              },
+            },
+          },
+        );
 
   await pubspecFile.writeAsString(pubspecEditor.toString(), flush: true);
 }

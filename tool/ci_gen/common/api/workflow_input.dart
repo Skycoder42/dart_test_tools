@@ -12,10 +12,8 @@ class WorkflowInput with _$WorkflowInput {
   const WorkflowInput._();
 
   // ignore: sort_unnamed_constructors_first
-  const factory WorkflowInput({
-    required String name,
-    required Input input,
-  }) = _WorkflowInput;
+  const factory WorkflowInput({required String name, required Input input}) =
+      _WorkflowInput;
 }
 
 class WorkflowInputContext {
@@ -26,7 +24,8 @@ class WorkflowInputContext {
     return Expression('inputs.${input.name}');
   }
 
-  Inputs? createInputs() => _inputs.isEmpty
-      ? null
-      : {for (final input in _inputs) input.name: input.input};
+  Inputs? createInputs() =>
+      _inputs.isEmpty
+          ? null
+          : {for (final input in _inputs) input.name: input.input};
 }

@@ -26,10 +26,7 @@ class TagReleaseJobBuilder implements JobBuilder {
   final Set<JobId>? compileJobIds;
   final TagReleaseJobConfig config;
 
-  const TagReleaseJobBuilder({
-    this.compileJobIds,
-    required this.config,
-  });
+  const TagReleaseJobBuilder({this.compileJobIds, required this.config});
 
   @override
   JobId get id => const JobId('release');
@@ -40,19 +37,15 @@ class TagReleaseJobBuilder implements JobBuilder {
 
   @override
   Job build() => Job(
-        name: 'Create release if needed',
-        needs: compileJobIds,
-        ifExpression: Github.ref.eq(config.releaseRef),
-        permissions: const {
-          'contents': 'write',
-        },
-        outputs: {
-          updateOutput: TagReleaseBuilder.updateOutput,
-          versionOutput: TagReleaseBuilder.versionOutput,
-        },
-        runsOn: 'ubuntu-latest',
-        steps: [
-          ...TagReleaseBuilder(config: config).build(),
-        ],
-      );
+    name: 'Create release if needed',
+    needs: compileJobIds,
+    ifExpression: Github.ref.eq(config.releaseRef),
+    permissions: const {'contents': 'write'},
+    outputs: {
+      updateOutput: TagReleaseBuilder.updateOutput,
+      versionOutput: TagReleaseBuilder.versionOutput,
+    },
+    runsOn: 'ubuntu-latest',
+    steps: [...TagReleaseBuilder(config: config).build()],
+  );
 }

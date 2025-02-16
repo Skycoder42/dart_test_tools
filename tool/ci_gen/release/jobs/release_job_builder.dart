@@ -21,9 +21,7 @@ final class ReleaseJobConfig extends JobConfig
 class ReleaseJobBuilder implements JobBuilder {
   final ReleaseJobConfig config;
 
-  ReleaseJobBuilder({
-    required this.config,
-  });
+  ReleaseJobBuilder({required this.config});
 
   @override
   JobId get id => const JobId('release');
@@ -34,15 +32,13 @@ class ReleaseJobBuilder implements JobBuilder {
 
   @override
   Job build() => Job(
-        name: 'Create release if needed',
-        runsOn: 'ubuntu-latest',
-        ifExpression: Github.ref.eq(config.releaseRef),
-        outputs: {
-          updateOutput: ReleaseBuilder.versionUpdate,
-          versionOutput: ReleaseBuilder.versionOutput,
-        },
-        steps: [
-          ...ReleaseBuilder(config: config).build(),
-        ],
-      );
+    name: 'Create release if needed',
+    runsOn: 'ubuntu-latest',
+    ifExpression: Github.ref.eq(config.releaseRef),
+    outputs: {
+      updateOutput: ReleaseBuilder.versionUpdate,
+      versionOutput: ReleaseBuilder.versionOutput,
+    },
+    steps: [...ReleaseBuilder(config: config).build()],
+  );
 }

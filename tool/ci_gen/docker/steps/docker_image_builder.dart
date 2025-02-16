@@ -13,8 +13,9 @@ base mixin DockerImageConfig on JobConfig {
   late final extraTags = inputContext(WorkflowInputs.extraTags);
   late final dockerPlatforms = inputContext(WorkflowInputs.dockerPlatforms);
   late final dockerBuildArgs = inputContext(WorkflowInputs.dockerBuildArgs);
-  late final dockerHubUsername =
-      secretContext(WorkflowSecrets.dockerHubUsername);
+  late final dockerHubUsername = secretContext(
+    WorkflowSecrets.dockerHubUsername,
+  );
   late final dockerHubToken = secretContext(WorkflowSecrets.dockerHubToken);
 }
 
@@ -27,25 +28,20 @@ class DockerImageBuilder implements StepBuilder {
 
   final DockerImageConfig config;
 
-  DockerImageBuilder({
-    required this.config,
-  });
+  DockerImageBuilder({required this.config});
 
   @override
   Iterable<Step> build() => [
-        const Step.uses(
-          name: 'Setup QEMU',
-          uses: Tools.dockerSetupQemuAction,
-        ),
-        const Step.uses(
-          id: _setupBuildxId,
-          name: 'Setup docker buildx',
-          uses: Tools.dockerSetupBuildxAction,
-        ),
-        Step.run(
-          id: _generateTags,
-          name: 'Generate docker image tags',
-          run: '''
+    const Step.uses(name: 'Setup QEMU', uses: Tools.dockerSetupQemuAction),
+    const Step.uses(
+      id: _setupBuildxId,
+      name: 'Setup docker buildx',
+      uses: Tools.dockerSetupBuildxAction,
+    ),
+    Step.run(
+      id: _generateTags,
+      name: 'Generate docker image tags',
+      run: '''
 set -eo pipefail
 
 major_version=\$(cut -d. -f1 <<< '${config.version}')
@@ -61,30 +57,31 @@ image_versions+=( ${config.extraTags} )
 
 ${_generateTagsOutput.bashSetterMultiLine('''printf '${config.imageName}:%s\\n' "\${image_versions[@]}"''', isCommand: true)}
 ''',
-        ),
-        Step.uses(
-          name: 'Login to Docker Hub',
-          uses: Tools.dockerLoginAction,
-          withArgs: <String, dynamic>{
-            'username': config.dockerHubUsername.toString(),
-            'password': config.dockerHubToken.toString(),
-          },
-        ),
-        Step.uses(
-          name: 'Build and push image',
-          uses: Tools.dockerBuildAndPushAction,
-          withArgs: <String, dynamic>{
-            'platforms': (config.dockerPlatforms.ne(Expression.empty) &
+    ),
+    Step.uses(
+      name: 'Login to Docker Hub',
+      uses: Tools.dockerLoginAction,
+      withArgs: <String, dynamic>{
+        'username': config.dockerHubUsername.toString(),
+        'password': config.dockerHubToken.toString(),
+      },
+    ),
+    Step.uses(
+      name: 'Build and push image',
+      uses: Tools.dockerBuildAndPushAction,
+      withArgs: <String, dynamic>{
+        'platforms':
+            (config.dockerPlatforms.ne(Expression.empty) &
                         config.dockerPlatforms |
                     _buildxPlatformsOutput.expression)
                 .toString(),
-            'build-args': config.dockerBuildArgs.toString(),
-            'tags': _generateTagsOutput.expression.toString(),
-            'pull': true,
-            'sbom': true,
-            'provenance': true,
-            'push': true,
-          },
-        ),
-      ];
+        'build-args': config.dockerBuildArgs.toString(),
+        'tags': _generateTagsOutput.expression.toString(),
+        'pull': true,
+        'sbom': true,
+        'provenance': true,
+        'push': true,
+      },
+    ),
+  ];
 }

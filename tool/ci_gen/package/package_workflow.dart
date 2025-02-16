@@ -22,9 +22,7 @@ class PackageWorkflow implements WorkflowBuilder {
     );
 
     return Workflow(
-      jobs: {
-        packageJobBuilder.id: packageJobBuilder.build(),
-      },
+      jobs: {packageJobBuilder.id: packageJobBuilder.build()},
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),

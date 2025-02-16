@@ -20,39 +20,37 @@ class CloneAurBuilder implements StepBuilder {
 
   final CloneAurConfig config;
 
-  const CloneAurBuilder({
-    required this.config,
-  });
+  const CloneAurBuilder({required this.config});
 
   @override
   Iterable<Step> build() => [
-        const Step.run(
-          name: 'Setup git author',
-          run: r'''
+    const Step.run(
+      name: 'Setup git author',
+      run: r'''
 set -eo pipefail
 git config --global user.name "$GITHUB_ACTOR"
 git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
 ''',
-        ),
-        const Step.run(
-          name: 'Ensure SSH configuration directory exists',
-          run: 'mkdir -p /etc/ssh',
-        ),
-        Step.run(
-          name: 'Setup known host keys',
-          run: ['set -eo pipefail']
-              .followedBy(
-                aurHostKeys.entries.map(
-                  (entry) =>
-                      "echo 'aur.archlinux.org ${entry.key} ${entry.value}' "
-                      '>> /etc/ssh/ssh_known_hosts',
-                ),
-              )
-              .join('\n'),
-        ),
-        Step.run(
-          name: 'Import SSH private key',
-          run: '''
+    ),
+    const Step.run(
+      name: 'Ensure SSH configuration directory exists',
+      run: 'mkdir -p /etc/ssh',
+    ),
+    Step.run(
+      name: 'Setup known host keys',
+      run: ['set -eo pipefail']
+          .followedBy(
+            aurHostKeys.entries.map(
+              (entry) =>
+                  "echo 'aur.archlinux.org ${entry.key} ${entry.value}' "
+                  '>> /etc/ssh/ssh_known_hosts',
+            ),
+          )
+          .join('\n'),
+    ),
+    Step.run(
+      name: 'Import SSH private key',
+      run: '''
 set -eo pipefail
 
 mkdir -p '${Runner.temp}'
@@ -66,17 +64,18 @@ echo '  User aur' >> /etc/ssh/ssh_config
 echo 'Imported SSH private key for public key:'
 ssh-keygen -y -f '${Runner.temp}/ssh-key'
 ''',
-        ),
-        const Step.run(
-          name: 'Clone AUR repository',
-          run: 'git clone '
-              r'"ssh://aur@aur.archlinux.org/$(yq ".name" src/pubspec.yaml).git" '
-              './aur',
-        ),
-        const Step.run(
-          name: 'Cleanup AUR repository',
-          run: r'find . -type f -not -path "./.git*" -exec git rm {} \;',
-          workingDirectory: 'aur',
-        ),
-      ];
+    ),
+    const Step.run(
+      name: 'Clone AUR repository',
+      run:
+          'git clone '
+          r'"ssh://aur@aur.archlinux.org/$(yq ".name" src/pubspec.yaml).git" '
+          './aur',
+    ),
+    const Step.run(
+      name: 'Cleanup AUR repository',
+      run: r'find . -type f -not -path "./.git*" -exec git rm {} \;',
+      workingDirectory: 'aur',
+    ),
+  ];
 }

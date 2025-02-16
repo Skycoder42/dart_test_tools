@@ -25,15 +25,12 @@ class VersionSyncCommand extends CiderCommand {
   Future<int> exec(Project project) async {
     final rootDir = switch (globalResults!['project-root']) {
       final String path => Directory(path),
-      _ => await findProjectRoot(Directory.current)
+      _ => await findProjectRoot(Directory.current),
     };
 
     final pubspecFile = File.fromUri(rootDir.uri.resolve('pubspec.yaml'));
     final pubspecYaml = await pubspecFile.readAsString();
-    final pubspec = Pubspec.parse(
-      pubspecYaml,
-      sourceUrl: pubspecFile.uri,
-    );
+    final pubspec = Pubspec.parse(pubspecYaml, sourceUrl: pubspecFile.uri);
 
     final version = pubspec.version;
     if (version == null) {
@@ -127,8 +124,10 @@ class VersionSyncCommand extends CiderCommand {
       await _replaceInFileMapped(
         file,
         config['pattern'] as String,
-        (m) => (config['replacement'] as String)
-            .replaceAll('%{version}', pubspec.version!.toString()),
+        (m) => (config['replacement'] as String).replaceAll(
+          '%{version}',
+          pubspec.version!.toString(),
+        ),
       );
 
       stdout.writeln('Synced version with $path');

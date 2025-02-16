@@ -48,8 +48,10 @@ base class PlatformMatrix extends Matrix<IPlatformMatrixSelector> {
 
   @override
   @mustCallSuper
-  List<IMatrixProperty<IPlatformMatrixSelector>> get includeProperties =>
-      [platform, os];
+  List<IMatrixProperty<IPlatformMatrixSelector>> get includeProperties => [
+    platform,
+    os,
+  ];
 }
 
 base mixin PlatformJobBuilderMixin<TMatrix extends PlatformMatrix>

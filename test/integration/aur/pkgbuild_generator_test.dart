@@ -38,16 +38,9 @@ void main() {
       'version': '1.2.3-dev+5',
       'homepage': 'https://example.com/home',
       if (!minimal) 'repository': 'https://example.com/home/git/',
-      'environment': {
-        if (!minimal) 'sdk': '>=2.17.0 <3.0.0',
-      },
-      'executables': {
-        'exe_1': null,
-        if (!minimal) 'exe-two': 'exe_2',
-      },
-      'dev_dependencies': {
-        if (!minimal) 'build_runner': '^2.2.0',
-      },
+      'environment': {if (!minimal) 'sdk': '>=2.17.0 <3.0.0'},
+      'executables': {'exe_1': null, if (!minimal) 'exe-two': 'exe_2'},
+      'dev_dependencies': {if (!minimal) 'build_runner': '^2.2.0'},
       'aur': {
         'maintainer': 'Maintainer <maintainer@maintain.org>',
         if (!minimal) 'pkgname': 'custom_package',
@@ -56,11 +49,7 @@ void main() {
         if (!minimal) 'epoch': 1,
         if (!minimal) 'license': 'MIT',
         if (!minimal)
-          'depends': const [
-            'dependency-a',
-            'dependency-b',
-            'dependency-c',
-          ],
+          'depends': const ['dependency-a', 'dependency-b', 'dependency-c'],
         if (!minimal) 'sourcesDir': r'test-package-sources-$pkgver/my_app',
         if (!minimal) 'binariesArchivePrefix': 'my-app',
         if (!minimal)
@@ -68,25 +57,18 @@ void main() {
             {
               'name': 'extra-source.tar.gz',
               'url': 'https://example.com/extra/source.tar.gz',
-            }
+            },
           ],
         if (!minimal) 'install': 'custom_package.install',
         if (!minimal)
           'files': const [
-            {
-              'source': 'config/config.json',
-              'target': '/etc/config.json',
-            },
+            {'source': 'config/config.json', 'target': '/etc/config.json'},
             {
               'source': 'data/database.db',
               'target': r'/usr/share/$pkgname/core.db',
               'permissions': 600,
             },
-            {
-              'source': 'doc',
-              'target': '/usr/doc',
-              'recursive': true,
-            },
+            {'source': 'doc', 'target': '/usr/doc', 'recursive': true},
             {
               'source': 'data/base-data',
               'target': r'/usr/share/$pkgname/base',
@@ -97,16 +79,9 @@ void main() {
         if (!minimal) 'backup': const ['etc/config.json'],
         if (!minimal)
           'makedeb': {
-            'depends': const [
-              'dependency-x',
-              'dependency-y',
-              'dependency-z',
-            ],
+            'depends': const ['dependency-x', 'dependency-y', 'dependency-z'],
             'files': const [
-              {
-                'source': 'config/deb.json',
-                'target': '/etc/config.json',
-              },
+              {'source': 'config/deb.json', 'target': '/etc/config.json'},
               {
                 'source': 'data/deb-data',
                 'target': r'/usr/share/$pkgname/base',
@@ -119,16 +94,20 @@ void main() {
       },
     });
 
-    await File.fromUri(srcDir.uri.resolve('pubspec.yaml'))
-        .writeAsString(pubspecYaml);
+    await File.fromUri(
+      srcDir.uri.resolve('pubspec.yaml'),
+    ).writeAsString(pubspecYaml);
 
     if (!minimal) {
-      await File.fromUri(srcDir.uri.resolve('CHANGELOG.md'))
-          .writeAsString('# The Changelog');
-      await File.fromUri(srcDir.uri.resolve('LICENSE.txt'))
-          .writeAsString('THE LICENSE');
-      await File.fromUri(srcDir.uri.resolve('custom_package.install'))
-          .writeAsString('install');
+      await File.fromUri(
+        srcDir.uri.resolve('CHANGELOG.md'),
+      ).writeAsString('# The Changelog');
+      await File.fromUri(
+        srcDir.uri.resolve('LICENSE.txt'),
+      ).writeAsString('THE LICENSE');
+      await File.fromUri(
+        srcDir.uri.resolve('custom_package.install'),
+      ).writeAsString('install');
     }
   }
 
@@ -146,9 +125,8 @@ void main() {
       expect(aurFiles, hasLength(1));
       expect(aurFiles, contains(hasBaseName('PKGBUILD')));
 
-      final pkgBuildContent = await File.fromUri(
-        aurDir.uri.resolve('PKGBUILD'),
-      ).readAsString();
+      final pkgBuildContent =
+          await File.fromUri(aurDir.uri.resolve('PKGBUILD')).readAsString();
 
       expect(pkgBuildContent, _minimalPkgbuild);
     });
@@ -168,21 +146,20 @@ void main() {
       expect(aurFiles, contains(hasBaseName('CHANGELOG.md')));
       expect(aurFiles, contains(hasBaseName('custom_package.install')));
 
-      final pkgBuildContent = await File.fromUri(
-        aurDir.uri.resolve('PKGBUILD'),
-      ).readAsString();
+      final pkgBuildContent =
+          await File.fromUri(aurDir.uri.resolve('PKGBUILD')).readAsString();
 
       expect(pkgBuildContent, _fullPkgbuild);
 
-      final changelogContent = await File.fromUri(
-        aurDir.uri.resolve('CHANGELOG.md'),
-      ).readAsString();
+      final changelogContent =
+          await File.fromUri(aurDir.uri.resolve('CHANGELOG.md')).readAsString();
 
       expect(changelogContent, '# The Changelog');
 
-      final installContent = await File.fromUri(
-        aurDir.uri.resolve('custom_package.install'),
-      ).readAsString();
+      final installContent =
+          await File.fromUri(
+            aurDir.uri.resolve('custom_package.install'),
+          ).readAsString();
 
       expect(installContent, 'install');
     });
@@ -205,9 +182,8 @@ void main() {
       expect(aurFiles, hasLength(1));
       expect(aurFiles, contains(hasBaseName('PKGBUILD')));
 
-      final pkgBuildContent = await File.fromUri(
-        aurDir.uri.resolve('PKGBUILD'),
-      ).readAsString();
+      final pkgBuildContent =
+          await File.fromUri(aurDir.uri.resolve('PKGBUILD')).readAsString();
 
       expect(pkgBuildContent, _minimalDebPkgbuild);
     });
@@ -230,21 +206,20 @@ void main() {
       expect(aurFiles, contains(hasBaseName('CHANGELOG.md')));
       expect(aurFiles, contains(hasBaseName('custom_package.install')));
 
-      final pkgBuildContent = await File.fromUri(
-        aurDir.uri.resolve('PKGBUILD'),
-      ).readAsString();
+      final pkgBuildContent =
+          await File.fromUri(aurDir.uri.resolve('PKGBUILD')).readAsString();
 
       expect(pkgBuildContent, _fullDebPkgbuild);
 
-      final changelogContent = await File.fromUri(
-        aurDir.uri.resolve('CHANGELOG.md'),
-      ).readAsString();
+      final changelogContent =
+          await File.fromUri(aurDir.uri.resolve('CHANGELOG.md')).readAsString();
 
       expect(changelogContent, '# The Changelog');
 
-      final installContent = await File.fromUri(
-        aurDir.uri.resolve('custom_package.install'),
-      ).readAsString();
+      final installContent =
+          await File.fromUri(
+            aurDir.uri.resolve('custom_package.install'),
+          ).readAsString();
 
       expect(installContent, 'install');
     });

@@ -40,28 +40,29 @@ final class DeployWindowsJobBuilder
 
   @override
   Job build() => Job(
-        name: 'Publish MSIX installer to Microsoft Store',
-        runsOn: RunsOn.windowsLatest.id,
-        needs: {releaseCreated.jobId},
-        ifExpression:
-            releaseCreated.expression.eq(const Expression.literal('true')) &
-                EnabledPlatforms.check(
-                  config.enabledPlatforms,
-                  Expression.literal(FlutterPlatform.windows.platform),
-                ),
-        environment: Environments.msstore,
-        steps: [
-          ...ValidateInputsBuilder({
-            WorkflowSecrets.tenantId.name: config.tenantId,
-            WorkflowSecrets.sellerId.name: config.sellerId,
-            WorkflowSecrets.clientId.name: config.clientId,
-            WorkflowSecrets.clientSecret.name: config.clientSecret,
-          }).build(),
-          ...buildSetupSdkSteps(
-            buildPlatform:
-                ExpressionOrValue.value(FlutterPlatform.windows.platform),
-          ),
-          ...DeployWindowsInstallerBuilder(config: config).build(),
-        ],
-      );
+    name: 'Publish MSIX installer to Microsoft Store',
+    runsOn: RunsOn.windowsLatest.id,
+    needs: {releaseCreated.jobId},
+    ifExpression:
+        releaseCreated.expression.eq(const Expression.literal('true')) &
+        EnabledPlatforms.check(
+          config.enabledPlatforms,
+          Expression.literal(FlutterPlatform.windows.platform),
+        ),
+    environment: Environments.msstore,
+    steps: [
+      ...ValidateInputsBuilder({
+        WorkflowSecrets.tenantId.name: config.tenantId,
+        WorkflowSecrets.sellerId.name: config.sellerId,
+        WorkflowSecrets.clientId.name: config.clientId,
+        WorkflowSecrets.clientSecret.name: config.clientSecret,
+      }).build(),
+      ...buildSetupSdkSteps(
+        buildPlatform: ExpressionOrValue.value(
+          FlutterPlatform.windows.platform,
+        ),
+      ),
+      ...DeployWindowsInstallerBuilder(config: config).build(),
+    ],
+  );
 }

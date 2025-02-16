@@ -17,26 +17,22 @@ final class AurDeployJobConfig extends JobConfig
 class AurDeployJobBuilder implements JobBuilder {
   final AurDeployJobConfig config;
 
-  const AurDeployJobBuilder({
-    required this.config,
-  });
+  const AurDeployJobBuilder({required this.config});
 
   @override
   JobId get id => const JobId('aur_deploy');
 
   @override
   Job build() => Job(
-        name: 'Deploy to AUR',
-        runsOn: 'ubuntu-latest',
-        container: const Container(image: 'archlinux:base-devel'),
-        steps: [
-          ...PrepareArchBuilder(config: config).build(),
-          ...const CheckoutBuilder(
-            path: 'src',
-          ).build(),
-          ...CloneAurBuilder(config: config).build(),
-          ...const CreateAurPackageBuilder().build(),
-          ...const PushAurBuilder().build(),
-        ],
-      );
+    name: 'Deploy to AUR',
+    runsOn: 'ubuntu-latest',
+    container: const Container(image: 'archlinux:base-devel'),
+    steps: [
+      ...PrepareArchBuilder(config: config).build(),
+      ...const CheckoutBuilder(path: 'src').build(),
+      ...CloneAurBuilder(config: config).build(),
+      ...const CreateAurPackageBuilder().build(),
+      ...const PushAurBuilder().build(),
+    ],
+  );
 }

@@ -15,23 +15,20 @@ class WithGpgKey implements StepBuilder {
   final WithGpgKeyConfig config;
   final Steps steps;
 
-  const WithGpgKey({
-    required this.config,
-    required this.steps,
-  });
+  const WithGpgKey({required this.config, required this.steps});
 
   @override
   Iterable<Step> build() => [
-        Step.run(
-          name: 'Import GPG key',
-          run: "echo '${config.gpgKey}' | gpg --import",
-        ),
-        ...steps,
-        Step.run(
-          name: 'Delete GPG key',
-          ifExpression: Functions.always,
-          continueOnError: true,
-          run: "gpg --batch --yes --delete-secret-keys '${config.gpgKeyId}'",
-        ),
-      ];
+    Step.run(
+      name: 'Import GPG key',
+      run: "echo '${config.gpgKey}' | gpg --import",
+    ),
+    ...steps,
+    Step.run(
+      name: 'Delete GPG key',
+      ifExpression: Functions.always,
+      continueOnError: true,
+      run: "gpg --batch --yes --delete-secret-keys '${config.gpgKeyId}'",
+    ),
+  ];
 }

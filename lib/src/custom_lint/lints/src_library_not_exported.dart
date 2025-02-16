@@ -19,9 +19,11 @@ class SrcLibraryNotExported extends DartLintRule {
 
   static const _code = LintCode(
     name: 'src_library_not_exported',
-    problemMessage: 'The library contains public symbols, but '
+    problemMessage:
+        'The library contains public symbols, but '
         'is not exported in any of the package library files.',
-    correctionMessage: 'Exports the library from the package or '
+    correctionMessage:
+        'Exports the library from the package or '
         'make all top level elements non-public.',
   );
 
@@ -30,9 +32,7 @@ class SrcLibraryNotExported extends DartLintRule {
   const SrcLibraryNotExported() : super(code: _code);
 
   @override
-  List<String> get filesToAnalyze => [
-        'lib/src/**.dart',
-      ];
+  List<String> get filesToAnalyze => ['lib/src/**.dart'];
 
   @override
   Future<void> startUp(
@@ -72,10 +72,11 @@ class SrcLibraryNotExported extends DartLintRule {
         return;
       }
 
-      final exportableElements = node.declarations
-          .expand(_declaredElements)
-          .where((e) => e.isExportable)
-          .toList();
+      final exportableElements =
+          node.declarations
+              .expand(_declaredElements)
+              .where((e) => e.isExportable)
+              .toList();
 
       if (exportableElements.isEmpty) {
         return;
@@ -106,9 +107,7 @@ class SrcLibraryNotExported extends DartLintRule {
     return elements.whereType<Element>();
   }
 
-  Future<Set<String>> _loadPackageExports(
-    AnalysisSession session,
-  ) async {
+  Future<Set<String>> _loadPackageExports(AnalysisSession session) async {
     final exportSet = HashSet(equals: path.equals, hashCode: path.hash);
     final contextRoot = session.analysisContext.contextRoot;
 

@@ -24,10 +24,7 @@ class DartWorkflow implements WorkflowBuilder {
     final outputContext = WorkflowOutputContext();
 
     final analyzeJobBuilder = DartAnalyzeJobBuilder(
-      config: DartAnalyzeJobConfig(
-        inputContext,
-        secretContext,
-      ),
+      config: DartAnalyzeJobConfig(inputContext, secretContext),
     );
     outputContext.add(
       WorkflowOutputs.enabledPlatforms,
@@ -36,26 +33,17 @@ class DartWorkflow implements WorkflowBuilder {
 
     final unitTestBuilder = DartUnitTestJobBuilder(
       enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
-      config: DartUnitTestJobConfig(
-        inputContext,
-        secretContext,
-      ),
+      config: DartUnitTestJobConfig(inputContext, secretContext),
     );
 
     final validateCoverageBuilder = ValidateCoverageJobBuilder(
       unitTestJobId: unitTestBuilder.id,
-      config: ValidateCoverageJobConfig(
-        inputContext,
-        secretContext,
-      ),
+      config: ValidateCoverageJobConfig(inputContext, secretContext),
     );
 
     final integrationTestBuilder = DartIntegrationTestJobBuilder(
       enabledPlatformsOutput: analyzeJobBuilder.platformsOutput,
-      config: DartIntegrationTestJobConfig(
-        inputContext,
-        secretContext,
-      ),
+      config: DartIntegrationTestJobConfig(inputContext, secretContext),
     );
 
     return Workflow(

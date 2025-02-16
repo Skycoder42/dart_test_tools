@@ -37,10 +37,10 @@ final class UnitTestMatrix extends PlatformMatrix {
 
   @override
   List<IMatrixProperty<IPlatformMatrixSelector>> get includeProperties => [
-        ...super.includeProperties,
-        dartTestArgs,
-        lcovCleanCommand,
-      ];
+    ...super.includeProperties,
+    dartTestArgs,
+    lcovCleanCommand,
+  ];
 }
 
 abstract base class UnitTestJobBuilder<TConfig extends UnitTestJobConfig>
@@ -66,20 +66,18 @@ abstract base class UnitTestJobBuilder<TConfig extends UnitTestJobConfig>
 
   @override
   Job buildGeneric(String runsOn) => Job(
-        name: 'Unit tests',
-        ifExpression: config.unitTestPaths.ne(Expression.empty),
-        needs: {
-          enabledPlatformsOutput.jobId,
-        },
-        runsOn: runsOn,
-        steps: [
-          ...buildSetupSdkSteps(),
-          ...UnitTestBuilder(
-            config: config,
-            dartTestArgs: matrix.dartTestArgs,
-            lcovCleanCommand: matrix.lcovCleanCommand,
-            platform: matrix.platform,
-          ).build(),
-        ],
-      );
+    name: 'Unit tests',
+    ifExpression: config.unitTestPaths.ne(Expression.empty),
+    needs: {enabledPlatformsOutput.jobId},
+    runsOn: runsOn,
+    steps: [
+      ...buildSetupSdkSteps(),
+      ...UnitTestBuilder(
+        config: config,
+        dartTestArgs: matrix.dartTestArgs,
+        lcovCleanCommand: matrix.lcovCleanCommand,
+        platform: matrix.platform,
+      ).build(),
+    ],
+  );
 }

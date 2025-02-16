@@ -19,10 +19,7 @@ sealed class PubspecWithAur with _$PubspecWithAur {
 @internal
 @freezed
 sealed class AurOptionsPubspecView with _$AurOptionsPubspecView {
-  @JsonSerializable(
-    anyMap: true,
-    checked: true,
-  )
+  @JsonSerializable(anyMap: true, checked: true)
   const factory AurOptionsPubspecView({
     @JsonKey(required: true) required Map<String, String?> executables,
     @JsonKey(required: true) required AurOptions aur,
@@ -38,11 +35,7 @@ sealed class AurOptionsPubspecView with _$AurOptionsPubspecView {
 @internal
 @freezed
 sealed class AurOptions with _$AurOptions {
-  @JsonSerializable(
-    anyMap: true,
-    checked: true,
-    disallowUnrecognizedKeys: true,
-  )
+  @JsonSerializable(anyMap: true, checked: true, disallowUnrecognizedKeys: true)
   const factory AurOptions({
     @JsonKey(required: true) required String maintainer,
     String? pkgname,
@@ -67,11 +60,7 @@ sealed class AurOptions with _$AurOptions {
 @internal
 @freezed
 sealed class Source with _$Source {
-  @JsonSerializable(
-    anyMap: true,
-    checked: true,
-    disallowUnrecognizedKeys: true,
-  )
+  @JsonSerializable(anyMap: true, checked: true, disallowUnrecognizedKeys: true)
   const factory Source({
     @JsonKey(required: true) required String name,
     @JsonKey(required: true) required Uri url,
@@ -83,11 +72,7 @@ sealed class Source with _$Source {
 @internal
 @freezed
 sealed class InstallTarget with _$InstallTarget {
-  @JsonSerializable(
-    anyMap: true,
-    checked: true,
-    disallowUnrecognizedKeys: true,
-  )
+  @JsonSerializable(anyMap: true, checked: true, disallowUnrecognizedKeys: true)
   const factory InstallTarget({
     @JsonKey(required: true) required String source,
     @JsonKey(required: true) required String target,
@@ -102,11 +87,7 @@ sealed class InstallTarget with _$InstallTarget {
 @internal
 @freezed
 sealed class MakedebOptions with _$MakedebOptions {
-  @JsonSerializable(
-    anyMap: true,
-    checked: true,
-    disallowUnrecognizedKeys: true,
-  )
+  @JsonSerializable(anyMap: true, checked: true, disallowUnrecognizedKeys: true)
   const factory MakedebOptions({
     List<String>? depends,
     List<InstallTarget>? files,

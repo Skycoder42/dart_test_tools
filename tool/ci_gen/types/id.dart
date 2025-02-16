@@ -25,9 +25,9 @@ class Id with _$Id {
   String toString() => id;
 
   IdOutput _createOutput(String name) => map(
-        step: (stepId) => IdOutput.step(stepId, name),
-        job: (jobId) => IdOutput.job(jobId, name),
-      );
+    step: (stepId) => IdOutput.step(stepId, name),
+    job: (jobId) => IdOutput.job(jobId, name),
+  );
 }
 
 extension IdX on Id {
@@ -51,42 +51,46 @@ class IdOutput with _$IdOutput {
   const factory IdOutput.job(JobId jobId, String name) = JobIdOutput;
 
   Expression get expression => when(
-        step: (id, name) => Expression('steps.$id.outputs.$name'),
-        job: (id, name) => Expression('needs.$id.outputs.$name'),
-      );
+    step: (id, name) => Expression('steps.$id.outputs.$name'),
+    job: (id, name) => Expression('needs.$id.outputs.$name'),
+  );
 
   String bashSetter(String value, {bool isCommand = false}) => maybeWhen(
-        step: (id, name) => isCommand
-            ? 'echo "$name=\$($value)" >> \$GITHUB_OUTPUT'
-            : 'echo "$name=$value" >> \$GITHUB_OUTPUT',
-        orElse: () =>
-            throw UnsupportedError('Cannot create a bash setter for $this'),
-      );
+    step:
+        (id, name) =>
+            isCommand
+                ? 'echo "$name=\$($value)" >> \$GITHUB_OUTPUT'
+                : 'echo "$name=$value" >> \$GITHUB_OUTPUT',
+    orElse:
+        () => throw UnsupportedError('Cannot create a bash setter for $this'),
+  );
 
   String bashSetterMultiLine(String value, {bool isCommand = false}) =>
       maybeWhen(
-        step: (id, name) => '''
+        step:
+            (id, name) => '''
 echo "$name<<EOF" >> \$GITHUB_OUTPUT
 ${isCommand ? value : 'echo "$value"'} >> \$GITHUB_OUTPUT
 echo "EOF" >> \$GITHUB_OUTPUT
 ''',
-        orElse: () =>
-            throw UnsupportedError('Cannot create a bash setter for $this'),
+        orElse:
+            () =>
+                throw UnsupportedError('Cannot create a bash setter for $this'),
       );
 
   Expression get workflowExpression => maybeWhen(
-        job: (id, name) => Expression('jobs.$id.outputs.$name'),
-        orElse: () => throw UnsupportedError(
-          'Cannot create a workflowExpression for $this',
-        ),
-      );
+    job: (id, name) => Expression('jobs.$id.outputs.$name'),
+    orElse:
+        () =>
+            throw UnsupportedError(
+              'Cannot create a workflowExpression for $this',
+            ),
+  );
 }
 
 extension IdOutputX on IdOutput {
-  Id get id => when(
-        step: (stepId, name) => stepId,
-        job: (jobId, name) => jobId,
-      );
+  Id get id =>
+      when(step: (stepId, name) => stepId, job: (jobId, name) => jobId);
 }
 
 extension StepIdOutputX on StepIdOutput {

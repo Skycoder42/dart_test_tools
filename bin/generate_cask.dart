@@ -5,9 +5,10 @@ import 'package:dart_test_tools/src/cask/cask_generator.dart';
 import 'package:dart_test_tools/src/tools/github.dart';
 
 Future<void> main(List<String> args) => Github.runZoned(() async {
-      final parser = ArgParser(
-        usageLineLength: stdout.hasTerminal ? stdout.terminalColumns : null,
-      )
+  final parser =
+      ArgParser(
+          usageLineLength: stdout.hasTerminal ? stdout.terminalColumns : null,
+        )
         ..addOption(
           'input',
           abbr: 'i',
@@ -20,33 +21,29 @@ Future<void> main(List<String> args) => Github.runZoned(() async {
           abbr: 'o',
           mandatory: true,
           valueHelp: 'directory',
-          help: 'The target <directory> where the generated Cask script should '
+          help:
+              'The target <directory> where the generated Cask script should '
               'be placed.',
         )
-        ..addFlag(
-          'help',
-          abbr: 'h',
-          negatable: false,
-          help: 'Show this help.',
-        );
+        ..addFlag('help', abbr: 'h', negatable: false, help: 'Show this help.');
 
-      try {
-        final options = parser.parse(args);
+  try {
+    final options = parser.parse(args);
 
-        if (options['help'] as bool) {
-          stdout.writeln(parser.usage);
-          return;
-        }
+    if (options['help'] as bool) {
+      stdout.writeln(parser.usage);
+      return;
+    }
 
-        await const CaskGenerator()(
-          inDir: Directory(options['input'] as String),
-          outDir: Directory(options['output'] as String),
-        );
-      } on FormatException catch (e) {
-        stderr
-          ..writeln('Error: ${e.message}\n')
-          ..writeln('Usage:')
-          ..writeln(parser.usage);
-        exitCode = 3;
-      }
-    });
+    await const CaskGenerator()(
+      inDir: Directory(options['input'] as String),
+      outDir: Directory(options['output'] as String),
+    );
+  } on FormatException catch (e) {
+    stderr
+      ..writeln('Error: ${e.message}\n')
+      ..writeln('Usage:')
+      ..writeln(parser.usage);
+    exitCode = 3;
+  }
+});
