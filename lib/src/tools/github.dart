@@ -17,6 +17,10 @@ class _GithubEnv {
     return runnerToolCache != null ? Directory(runnerToolCache) : runnerTemp;
   }
 
+  String? get runnerOs => Platform.environment['RUNNER_OS'];
+
+  String? get runnerArch => Platform.environment['RUNNER_ARCH'];
+
   Directory get githubWorkspace {
     final githubWorkspace = Platform.environment['GITHUB_WORKSPACE'];
     return githubWorkspace != null
