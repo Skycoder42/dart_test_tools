@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.1.0] - 2025-02-17
+### Added
+- Added code generator for pubspec metadata
+  - is disabled by default but can be enabled per project
+
+### Changed
+- Updated dependencies
+
 ## [6.0.3] - 2025-02-16
 ### Changed
 - Updated min required dart sdk to 3.7.0
@@ -396,6 +404,7 @@ have been added:
 ### Added
 - Initial release
 
+[6.1.0]: https://github.com/Skycoder42/dart_test_tools/compare/v6.0.3...v6.1.0
 [6.0.3]: https://github.com/Skycoder42/dart_test_tools/compare/v6.0.2+2...v6.0.3
 [6.0.2+2]: https://github.com/Skycoder42/dart_test_tools/compare/v6.0.2+1...v6.0.2+2
 [6.0.2+1]: https://github.com/Skycoder42/dart_test_tools/compare/v6.0.2...v6.0.2+1

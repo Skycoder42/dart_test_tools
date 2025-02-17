@@ -1,3 +1,3 @@
-import 'package:dart_test_tools/src/constants/pubspec.yaml.g.dart';
+import 'package:dart_test_tools/gen/package_metadata.dart' as metadata;
 
-final dartTestToolsVersion = Pubspec.version.canonical;
+const dartTestToolsVersion = metadata.version;

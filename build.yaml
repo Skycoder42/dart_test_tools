@@ -1,0 +1,24 @@
+builders:
+  dart_test_tools_builders:
+    import: "package:dart_test_tools/builders.dart"
+    builder_factories:
+      - packageMetadataBuilder
+    build_extensions:
+      "pubspec.yaml":
+        - "lib/gen/package_metadata.dart"
+    auto_apply: none
+    build_to: source
+    defaults:
+      options:
+        generateApi: true
+        generateClient: true
+
+targets:
+  $default:
+    sources:
+      - $package$
+      - lib/**
+      - pubspec.yaml
+    builders:
+      dart_test_tools:dart_test_tools_builders:
+        enabled: true

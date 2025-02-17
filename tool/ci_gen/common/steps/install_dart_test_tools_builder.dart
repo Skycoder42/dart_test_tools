@@ -7,7 +7,7 @@ class InstallDartTestToolsBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-    Step.run(
+    const Step.run(
       name: 'Install dart_test_tools',
       run:
           'dart pub global activate '
