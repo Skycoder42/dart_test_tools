@@ -32,6 +32,8 @@ jobs:
       image: skycoder42/flatpak-github-actions:freedesktop-24.08
       options: --privileged
     steps:
+      - name: Install jq and yq
+        run: dnf -y install jq yq
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -40,13 +42,12 @@ jobs:
         run: |
           set -eo pipefail
 
-          mkdir -p '${{ runner.temp }}'
-          manifest='${{ runner.temp }}/manifest.json'
+          manifest=/tmp/manifest.json
           curl -sSLo "$manifest" https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json
           version_hash=$(jq -r '.current_release.stable' "$manifest")
           base_url=$(jq -r '.base_url' "$manifest")
 
-          release='${{ runner.temp }}/release.json'
+          release=/tmp/release.json
           jq \
               --arg hash "$version_hash" \
               --arg arch '${{ matrix.flutter_arch }}' \
