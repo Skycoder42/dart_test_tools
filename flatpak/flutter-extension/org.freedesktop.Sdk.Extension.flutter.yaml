@@ -30,6 +30,7 @@ modules:
         commands:
           - /usr/bin/tar "$@" --no-same-owner
     build-commands:
+      - find . -maxdepth 3
       - cp -a flutter/. "$FLATPAK_DEST/"
       - mv scripts/tar "$FLATPAK_DEST/bin/"
       - dart --disable-analytics
