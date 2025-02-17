@@ -24,6 +24,7 @@ modules:
       - type: archive
         url: https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_LATEST-stable.tar.xz
         sha256: LATEST
+        strip-components: 0
       - type: script
         dest: scripts
         dest-filename: tar

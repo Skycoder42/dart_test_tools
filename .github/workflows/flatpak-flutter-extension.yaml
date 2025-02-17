@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - flatpak/flutter-extension/
+      - flatpak/flutter-extension/*
       - .github/workflows/flatpak-flutter-extension.yaml
   schedule:
     - cron: "17 5 * * 6"
