@@ -54,10 +54,10 @@ jobs:
               '.releases[] | select(.channel == "stable" and .dart_sdk_arch == $arch and.hash == $hash)' \
               "$manifest" > "$release"
           export archive=$base_url/$(jq -r '.archive' "$release")
-          export hash=$(jq -r '.hash' "$release")
+          export sha256=$(jq -r '.sha256' "$release")
 
           yq e -i \
-            '.modules[0].sources[0].url = env(archive) | .modules[0].sources[0].sha256 = env(hash)' \
+            '.modules[0].sources[0].url = env(archive) | .modules[0].sources[0].sha256 = env(sha256)' \
             flatpak/flutter-extension/org.freedesktop.Sdk.Extension.flutter.yaml
       - name: Import GPG key
         run: echo '${{ secrets.GPG_KEY }}' | gpg --import
