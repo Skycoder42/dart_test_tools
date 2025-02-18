@@ -18,6 +18,8 @@ targets:
     sources:
       - $package$
       - lib/**
+      - test/**
+      - tool/**
       - pubspec.yaml
     builders:
       dart_test_tools:dart_test_tools_builders:
