@@ -32,7 +32,7 @@ void main() {
 
     test(
       'generates changelog XML from MD',
-      () async => IOOverrides.runWithIOOverrides(() async {
+      () async => await IOOverrides.runWithIOOverrides(() async {
         await File('CHANGELOG.md').writeAsString(_testChangelogMdFull);
 
         final outFile = File('releases.xml');
@@ -45,7 +45,7 @@ void main() {
 
     test(
       'adds changelog to metainfo.xml',
-      () async => IOOverrides.runWithIOOverrides(() async {
+      () async => await IOOverrides.runWithIOOverrides(() async {
         await File('CHANGELOG.md').writeAsString(_testChangelogMdMinimal);
         final outFile = File('metainfo.xml');
         await outFile.writeAsString('''

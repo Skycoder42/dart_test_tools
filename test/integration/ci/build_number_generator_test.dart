@@ -41,7 +41,7 @@ void main() {
         ('1.2.3', 3, 4, '10020003'),
         ('1.234.5678', 3, 4, '12345678'),
       ],
-      (fixture) async => IOOverrides.runWithIOOverrides(() async {
+      (fixture) async => await IOOverrides.runWithIOOverrides(() async {
         await File('pubspec.yaml').writeAsString('''
 name: test_package
 version: ${fixture.$1}
@@ -58,7 +58,7 @@ version: ${fixture.$1}
     testData<String>(
       'throws if version number exceeds padding limits',
       const ['1.234.5', '1.2.345', '1.234.567'],
-      (fixture) async => IOOverrides.runWithIOOverrides(() async {
+      (fixture) async => await IOOverrides.runWithIOOverrides(() async {
         await File('pubspec.yaml').writeAsString('''
 name: test_package
 version: $fixture
@@ -70,7 +70,7 @@ version: $fixture
 
     test(
       'write to env if specified',
-      () async => IOOverrides.runWithIOOverrides(() async {
+      () async => await IOOverrides.runWithIOOverrides(() async {
         await File('pubspec.yaml').writeAsString('''
 name: test_package
 version: 1.2.3

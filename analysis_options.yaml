@@ -57,6 +57,4 @@ linter:
     deprecated_member_use_from_same_package: true
     matching_super_parameters: true
     no_literal_bool_comparisons: true
-    use_truncating_division: true
-    strict_top_level_inference: true
-    unnecessary_underscores: true
+    # new rules

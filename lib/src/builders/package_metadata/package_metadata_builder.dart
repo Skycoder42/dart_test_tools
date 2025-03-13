@@ -20,7 +20,7 @@ class PackageMetadataBuilder extends Builder {
   bool get strictTypes => options.config['strictTypes'] as bool? ?? false;
 
   @override
-  FutureOr<void> build(BuildStep buildStep) async {
+  Future<void> build(BuildStep buildStep) async {
     final outAsset = buildStep.allowedOutputs.single;
 
     final pubspecYaml = await buildStep.readAsString(buildStep.inputId);
