@@ -12,7 +12,7 @@ part 'workflow.freezed.dart';
 part 'workflow.g.dart';
 
 @freezed
-class Workflow with _$Workflow {
+sealed class Workflow with _$Workflow {
   const factory Workflow({
     required On on,
     @JsonKey(includeIfNull: false) Env? env,

@@ -53,7 +53,7 @@ class _NeedsConverter implements JsonConverter<Set<JobId>?, List<String>?> {
 }
 
 @freezed
-class Job with _$Job {
+sealed class Job with _$Job {
   const factory Job({
     required String name,
     @JsonKey(includeIfNull: false) @_NeedsConverter() Set<JobId>? needs,

@@ -7,7 +7,7 @@ part 'cask_options.freezed.dart';
 part 'cask_options.g.dart';
 
 @freezed
-class CaskOptions with _$CaskOptions {
+sealed class CaskOptions with _$CaskOptions {
   const factory CaskOptions({
     required Pubspec pubspec,
     required CaskPubspecOptions options,
@@ -16,7 +16,7 @@ class CaskOptions with _$CaskOptions {
 }
 
 @freezed
-class AppInfoOptions with _$AppInfoOptions {
+sealed class AppInfoOptions with _$AppInfoOptions {
   const factory AppInfoOptions({
     @JsonKey(name: 'PRODUCT_BUNDLE_IDENTIFIER')
     required String productBundleIdentifier,
@@ -38,7 +38,7 @@ sealed class CaskOptionsPubspecView with _$CaskOptionsPubspecView {
       _$CaskOptionsPubspecViewFromJson(json);
 
   factory CaskOptionsPubspecView.fromYaml(Map<dynamic, dynamic>? map) =>
-      _$$CaskOptionsPubspecViewImplFromJson(map!);
+      _$CaskOptionsPubspecViewFromJson(map!);
 }
 
 @internal

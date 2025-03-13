@@ -10,7 +10,7 @@ part 'step.freezed.dart';
 part 'step.g.dart';
 
 @freezed
-class Step with _$Step {
+sealed class Step with _$Step {
   const Step._();
 
   const factory Step.run({

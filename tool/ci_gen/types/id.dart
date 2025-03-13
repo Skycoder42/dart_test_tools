@@ -4,30 +4,33 @@ import 'expression.dart';
 
 part 'id.freezed.dart';
 
-abstract class StepId implements Id {
+// ignore: avoid_implementing_value_types because this is a workaround as otherwise the workflow cannot be generated
+abstract interface class StepId implements Id {
   const factory StepId(String id) = _StepId;
 }
 
-abstract class JobId implements Id {
+// ignore: avoid_implementing_value_types because this is a workaround as otherwise the workflow cannot be generated
+abstract interface class JobId implements Id {
   const factory JobId(String id) = _JobId;
 }
 
 @freezed
-class Id with _$Id {
-  const Id._();
-
+sealed class Id with _$Id {
   @Implements<StepId>()
   const factory Id.step(String id) = _StepId;
+
   @Implements<JobId>()
   const factory Id.job(String id) = _JobId;
+
+  const Id._();
 
   @override
   String toString() => id;
 
-  IdOutput _createOutput(String name) => map(
-    step: (stepId) => IdOutput.step(stepId, name),
-    job: (jobId) => IdOutput.job(jobId, name),
-  );
+  IdOutput _createOutput(String name) => switch (this) {
+    final StepId stepId => IdOutput.step(stepId, name),
+    final JobId jobId => IdOutput.job(jobId, name),
+  };
 }
 
 extension IdX on Id {
@@ -43,54 +46,53 @@ extension JobIdX on JobId {
 }
 
 @freezed
-class IdOutput with _$IdOutput {
+sealed class IdOutput with _$IdOutput {
   const IdOutput._();
 
   // ignore: unused_element
   const factory IdOutput.step(StepId stepId, String name) = StepIdOutput;
   const factory IdOutput.job(JobId jobId, String name) = JobIdOutput;
 
-  Expression get expression => when(
-    step: (id, name) => Expression('steps.$id.outputs.$name'),
-    job: (id, name) => Expression('needs.$id.outputs.$name'),
-  );
+  Expression get expression => switch (this) {
+    StepIdOutput(:final stepId, :final name) => Expression(
+      'steps.$stepId.outputs.$name',
+    ),
+    JobIdOutput(:final jobId, :final name) => Expression(
+      'needs.$jobId.outputs.$name',
+    ),
+  };
 
-  String bashSetter(String value, {bool isCommand = false}) => maybeWhen(
-    step:
-        (id, name) =>
-            isCommand
-                ? 'echo "$name=\$($value)" >> \$GITHUB_OUTPUT'
-                : 'echo "$name=$value" >> \$GITHUB_OUTPUT',
-    orElse:
-        () => throw UnsupportedError('Cannot create a bash setter for $this'),
-  );
+  String bashSetter(String value, {bool isCommand = false}) => switch (this) {
+    StepIdOutput(:final name) when isCommand =>
+      'echo "$name=\$($value)" >> \$GITHUB_OUTPUT',
+    StepIdOutput(:final name) when !isCommand =>
+      'echo "$name=$value" >> \$GITHUB_OUTPUT',
+    _ => throw UnsupportedError('Cannot create a bash setter for $this'),
+  };
 
   String bashSetterMultiLine(String value, {bool isCommand = false}) =>
-      maybeWhen(
-        step:
-            (id, name) => '''
+      switch (this) {
+        StepIdOutput(:final name) => '''
 echo "$name<<EOF" >> \$GITHUB_OUTPUT
 ${isCommand ? value : 'echo "$value"'} >> \$GITHUB_OUTPUT
 echo "EOF" >> \$GITHUB_OUTPUT
 ''',
-        orElse:
-            () =>
-                throw UnsupportedError('Cannot create a bash setter for $this'),
-      );
+        _ => throw UnsupportedError('Cannot create a bash setter for $this'),
+      };
 
-  Expression get workflowExpression => maybeWhen(
-    job: (id, name) => Expression('jobs.$id.outputs.$name'),
-    orElse:
-        () =>
-            throw UnsupportedError(
-              'Cannot create a workflowExpression for $this',
-            ),
-  );
+  Expression get workflowExpression => switch (this) {
+    JobIdOutput(:final jobId, :final name) => Expression(
+      'jobs.$jobId.outputs.$name',
+    ),
+    _ => throw UnsupportedError('Cannot create a workflowExpression for $this'),
+  };
 }
 
 extension IdOutputX on IdOutput {
-  Id get id =>
-      when(step: (stepId, name) => stepId, job: (jobId, name) => jobId);
+  Id get id => switch (this) {
+    StepIdOutput(:final stepId) => stepId,
+    JobIdOutput(:final jobId) => jobId,
+  };
 }
 
 extension StepIdOutputX on StepIdOutput {
@@ -113,14 +115,14 @@ final class StepIdConverter extends _IdConverter<StepId> {
   const StepIdConverter();
 
   @override
-  StepId? fromJson(String? json) => json != null ? _StepId(json) : null;
+  StepId? fromJson(String? json) => json != null ? StepId(json) : null;
 }
 
 final class JobIdConverter extends _IdConverter<JobId> {
   const JobIdConverter();
 
   @override
-  JobId? fromJson(String? json) => json != null ? _JobId(json) : null;
+  JobId? fromJson(String? json) => json != null ? JobId(json) : null;
 }
 
 class IdOutputConverter implements JsonConverter<IdOutput, String> {

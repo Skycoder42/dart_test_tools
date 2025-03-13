@@ -8,7 +8,7 @@ part 'on.freezed.dart';
 part 'on.g.dart';
 
 @freezed
-class On with _$On {
+sealed class On with _$On {
   const factory On({
     @JsonKey(name: 'workflow_call') required WorkflowCall workflowCall,
   }) = _On;

@@ -6,7 +6,7 @@ part 'secret.freezed.dart';
 part 'secret.g.dart';
 
 @freezed
-class Secret with _$Secret {
+sealed class Secret with _$Secret {
   const factory Secret({
     required bool required,
     @JsonKey(includeIfNull: false) String? description,

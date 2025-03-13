@@ -34,7 +34,7 @@ jobs:
       - name: Install needed packages
         run: sudo apt-get install -y dart makedeb
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^6.0.3
+        run: dart pub global activate dart_test_tools ^6.1.1
       - name: Checkout repository
         uses: actions/checkout@v4
         with:

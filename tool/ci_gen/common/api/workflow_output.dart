@@ -8,7 +8,7 @@ import '../../types/output.dart';
 part 'workflow_output.freezed.dart';
 
 @freezed
-class WorkflowOutput with _$WorkflowOutput {
+sealed class WorkflowOutput with _$WorkflowOutput {
   const factory WorkflowOutput({
     required String name,
     required String description,

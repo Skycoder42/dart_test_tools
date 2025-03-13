@@ -5,7 +5,7 @@ import 'expression.dart';
 part 'env.freezed.dart';
 
 @freezed
-class Env with _$Env {
+sealed class Env with _$Env {
   const Env._();
 
   // ignore: sort_unnamed_constructors_first
@@ -18,6 +18,8 @@ class Env with _$Env {
     return Env(json as Map<String, String>);
   }
 
-  dynamic toJson() =>
-      when((env) => env, expression: (expression) => expression.toString());
+  dynamic toJson() => switch (this) {
+    _Env(:final env) => env,
+    _EnvExpression(:final expression) => expression.toString(),
+  };
 }

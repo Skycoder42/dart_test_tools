@@ -10,7 +10,7 @@ part 'input.g.dart';
 enum Type { boolean, number, string }
 
 @freezed
-class Input with _$Input {
+sealed class Input with _$Input {
   @Assert(
     'defaultValue == null || '
         '(identical(type, Type.boolean) && defaultValue is bool) || '

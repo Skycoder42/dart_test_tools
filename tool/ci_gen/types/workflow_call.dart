@@ -10,7 +10,7 @@ part 'workflow_call.freezed.dart';
 part 'workflow_call.g.dart';
 
 @freezed
-class WorkflowCall with _$WorkflowCall {
+sealed class WorkflowCall with _$WorkflowCall {
   const factory WorkflowCall({
     @JsonKey(includeIfNull: false) Inputs? inputs,
     @JsonKey(includeIfNull: false) Outputs? outputs,

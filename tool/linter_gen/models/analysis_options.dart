@@ -8,7 +8,7 @@ part 'analysis_options.freezed.dart';
 part 'analysis_options.g.dart';
 
 @freezed
-class AnalysisOptions with _$AnalysisOptions {
+sealed class AnalysisOptions with _$AnalysisOptions {
   @JsonSerializable(anyMap: true, checked: true)
   const factory AnalysisOptions({
     AnalysisOptionsRef? include,
@@ -24,7 +24,7 @@ class AnalysisOptions with _$AnalysisOptions {
 }
 
 @freezed
-class AnalysisOptionsAnalyzer with _$AnalysisOptionsAnalyzer {
+sealed class AnalysisOptionsAnalyzer with _$AnalysisOptionsAnalyzer {
   @JsonSerializable(anyMap: true, checked: true)
   const factory AnalysisOptionsAnalyzer({
     @JsonKey(includeIfNull: false) Map<String, dynamic>? language,
@@ -36,7 +36,7 @@ class AnalysisOptionsAnalyzer with _$AnalysisOptionsAnalyzer {
 }
 
 @freezed
-class AnalysisOptionsLinter with _$AnalysisOptionsLinter {
+sealed class AnalysisOptionsLinter with _$AnalysisOptionsLinter {
   @JsonSerializable(anyMap: true, checked: true, disallowUnrecognizedKeys: true)
   const factory AnalysisOptionsLinter({required dynamic rules}) =
       _AnalysisOptionsLinter;

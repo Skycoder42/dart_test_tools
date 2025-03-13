@@ -5,29 +5,31 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'expression.freezed.dart';
 
 @freezed
-class Expression with _$Expression {
+sealed class Expression with _$Expression {
   static const empty = Expression.literal('');
 
-  const Expression._();
-
-  // ignore: sort_unnamed_constructors_first
   const factory Expression(String value) = _Expression;
+
   @Assert(
     // ignore: lines_longer_than_80_chars
     'rawValue is String || rawValue is num || rawValue is bool || rawValue is Null',
     'Only YAML primitives (string, number, bool, null) are allowed',
   )
   const factory Expression.literal(dynamic rawValue) = _LiteralExpression;
+
   const factory Expression.json(Object? jsonValue) = _JsonExpression;
+
   const factory Expression.fake(String fakeValue) = _FakeExpression;
 
-  dynamic get value => when<dynamic>(
-    (value) => value,
-    literal:
-        (dynamic rawValue) => rawValue is String ? "'$rawValue'" : rawValue,
-    json: (jsonValue) => json.encode(jsonValue),
-    fake: (fakeValue) => fakeValue,
-  );
+  const Expression._();
+
+  dynamic get value => switch (this) {
+    _Expression(:final value) => value,
+    _LiteralExpression(:final String rawValue) => "'$rawValue'",
+    _LiteralExpression(:final rawValue) => rawValue,
+    _JsonExpression(:final jsonValue) => json.encode(jsonValue),
+    _FakeExpression(:final fakeValue) => fakeValue,
+  };
 
   Expression property(String name) => Expression('$value.$name');
 
@@ -62,36 +64,39 @@ class Expression with _$Expression {
       other != null ? Expression('$value || ${other.value}') : this;
 
   @override
-  String toString() => maybeWhen(
-    null,
-    fake: (fakeValue) => fakeValue,
-    orElse: () => '\${{ $value }}',
-  );
+  String toString() => switch (this) {
+    _FakeExpression(:final fakeValue) => fakeValue,
+    _ => '\${{ $value }}',
+  };
 }
 
 @freezed
-class ExpressionOrValue with _$ExpressionOrValue {
+sealed class ExpressionOrValue with _$ExpressionOrValue {
   const factory ExpressionOrValue.expression(Expression expression) =
-      _ExpressionOrValueExpression;
-  const factory ExpressionOrValue.value(dynamic value) =
-      _ExpressionOrValueValue;
+      ExpressionOrValueExpression;
+
+  const factory ExpressionOrValue.value(dynamic value) = ExpressionOrValueValue;
 
   const ExpressionOrValue._();
 
-  bool get isExpression => this is _ExpressionOrValueExpression;
+  bool get isExpression => this is ExpressionOrValueExpression;
 
-  bool get isValue => this is _ExpressionOrValueValue;
+  bool get isValue => this is ExpressionOrValueValue;
 
-  T rawValueOr<T>(T defaultValue) =>
-      when(expression: (_) => defaultValue, value: (value) => value as T);
+  T rawValueOr<T>(T defaultValue) => switch (this) {
+    ExpressionOrValueExpression() => defaultValue,
+    ExpressionOrValueValue(:final value) => value as T,
+  };
 
-  dynamic get asValue => when(
-    expression: (expression) => expression.toString(),
-    value: (value) => value,
-  );
+  dynamic get asValue => switch (this) {
+    ExpressionOrValueExpression(:final expression) => expression.toString(),
+    ExpressionOrValueValue(:final value) => value,
+  };
 
-  Expression get asExpression =>
-      when(expression: (expression) => expression, value: Expression.literal);
+  Expression get asExpression => switch (this) {
+    ExpressionOrValueExpression(:final expression) => expression,
+    ExpressionOrValueValue(:final value) => Expression.literal(value),
+  };
 
   @override
   String toString() => asValue.toString();

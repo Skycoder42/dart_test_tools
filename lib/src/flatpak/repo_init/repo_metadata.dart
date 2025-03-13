@@ -5,7 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'repo_metadata.freezed.dart';
 
 @freezed
-class IconInfo with _$IconInfo {
+sealed class IconInfo with _$IconInfo {
   const factory IconInfo({
     required String iconName,
     required Uri iconUrl,
@@ -14,13 +14,13 @@ class IconInfo with _$IconInfo {
 }
 
 @freezed
-class GpgInfo with _$GpgInfo {
+sealed class GpgInfo with _$GpgInfo {
   const factory GpgInfo({required String keyId, required File publicKeyFile}) =
       _GpgInfo;
 }
 
 @freezed
-class RepoMetadata with _$RepoMetadata {
+sealed class RepoMetadata with _$RepoMetadata {
   const factory RepoMetadata({
     required String name,
     required String id,

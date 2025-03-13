@@ -8,7 +8,7 @@ part 'strategy.freezed.dart';
 part 'strategy.g.dart';
 
 @freezed
-class Strategy with _$Strategy {
+sealed class Strategy with _$Strategy {
   const factory Strategy({
     @JsonKey(name: 'fail-fast', includeIfNull: false) bool? failFast,
     @JsonKey(name: 'max-parallel', includeIfNull: false) int? maxParallel,

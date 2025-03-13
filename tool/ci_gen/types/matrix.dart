@@ -5,10 +5,7 @@ import 'expression.dart';
 part 'matrix.freezed.dart';
 
 @freezed
-class Matrix with _$Matrix {
-  const Matrix._();
-
-  // ignore: sort_unnamed_constructors_first
+sealed class Matrix with _$Matrix {
   const factory Matrix(
     Map<String, List<dynamic>> matrix, {
     List<Map<String, dynamic>>? include,
@@ -16,6 +13,8 @@ class Matrix with _$Matrix {
   }) = _Matrix;
 
   const factory Matrix.expression(Expression expression) = _MatrixExpression;
+
+  const Matrix._();
 
   factory Matrix.fromJson(Map<String, dynamic> json) {
     final include = _extractFilter(json, 'include');
@@ -27,14 +26,14 @@ class Matrix with _$Matrix {
     );
   }
 
-  dynamic toJson() => when(
-    (matrix, include, exclude) => {
+  dynamic toJson() => switch (this) {
+    _Matrix(:final matrix, :final include, :final exclude) => {
       ...matrix,
       if (include != null) 'include': include,
       if (exclude != null) 'exclude': exclude,
     },
-    expression: (expression) => expression.toString(),
-  );
+    _MatrixExpression(:final expression) => expression.toString(),
+  };
 
   static List<Map<String, dynamic>>? _extractFilter(
     Map<String, dynamic> json,

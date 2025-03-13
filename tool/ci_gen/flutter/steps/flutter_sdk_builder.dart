@@ -43,19 +43,16 @@ class FlutterSdkBuilder implements StepBuilder {
   Step? _maybeSetupJdk() =>
       javaJdkVersion == null
           ? null
-          : buildPlatform?.when(
-            expression:
-                (expression) => _setupJdk(
-                  expression.eq(
-                    Expression.literal(FlutterPlatform.android.platform),
-                  ),
-                ),
-            value:
-                (value) =>
-                    value == FlutterPlatform.android.platform
-                        ? _setupJdk()
-                        : null,
-          );
+          : switch (buildPlatform) {
+            null => null,
+            ExpressionOrValueExpression(:final expression) => _setupJdk(
+              expression.eq(
+                Expression.literal(FlutterPlatform.android.platform),
+              ),
+            ),
+            ExpressionOrValueValue(:final value) =>
+              value == FlutterPlatform.android.platform ? _setupJdk() : null,
+          };
 
   Step _setupJdk([Expression? condition]) => Step.uses(
     name: 'Install JDK Version $javaJdkVersion',
@@ -67,22 +64,19 @@ class FlutterSdkBuilder implements StepBuilder {
     },
   );
 
-  Step? _maybeEnableSwiftPackageManger() => buildPlatform?.when(
-    expression:
-        (expression) => _enableSwiftPackageManger(
-          (expression.eq(Expression.literal(FlutterPlatform.ios.platform)) |
-                  expression.eq(
-                    Expression.literal(FlutterPlatform.macos.platform),
-                  ))
-              .parenthesized,
-        ),
-    value:
-        (value) =>
-            value == FlutterPlatform.ios.platform ||
-                    value == FlutterPlatform.macos.platform
-                ? _enableSwiftPackageManger()
-                : null,
-  );
+  Step? _maybeEnableSwiftPackageManger() => switch (buildPlatform) {
+    null => null,
+    ExpressionOrValueExpression(:final expression) => _enableSwiftPackageManger(
+      (expression.eq(Expression.literal(FlutterPlatform.ios.platform)) |
+              expression.eq(Expression.literal(FlutterPlatform.macos.platform)))
+          .parenthesized,
+    ),
+    ExpressionOrValueValue(:final value) =>
+      value == FlutterPlatform.ios.platform ||
+              value == FlutterPlatform.macos.platform
+          ? _enableSwiftPackageManger()
+          : null,
+  };
 
   Step _enableSwiftPackageManger([Expression? condition]) => Step.run(
     name: 'Enable swift package manager',

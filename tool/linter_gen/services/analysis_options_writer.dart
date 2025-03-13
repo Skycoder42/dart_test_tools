@@ -14,10 +14,11 @@ class AnalysisOptionsWriter {
     AnalysisOptionsRef target,
     AnalysisOptions analysisOptions,
   ) async {
-    final analysisOptionsPath = target.when(
-      local: (path) => path,
-      package: (_, _) => throw Exception('Cannot save options to a package'),
-    );
+    final analysisOptionsPath = switch (target) {
+      AnalysisOptionsLocalRef(:final path) => path,
+      AnalysisOptionsPackageRef() =>
+        throw Exception('Cannot save options to a package'),
+    };
 
     final file = File(analysisOptionsPath);
     await file.parent.create(recursive: true);

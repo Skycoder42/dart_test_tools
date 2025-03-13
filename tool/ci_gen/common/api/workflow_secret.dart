@@ -9,7 +9,7 @@ part 'workflow_secret.freezed.dart';
 typedef InputBuilderFn<TParam> = Input Function(TParam param);
 
 @freezed
-class WorkflowSecret with _$WorkflowSecret {
+sealed class WorkflowSecret with _$WorkflowSecret {
   const WorkflowSecret._();
 
   // ignore: sort_unnamed_constructors_first

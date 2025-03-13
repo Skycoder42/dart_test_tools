@@ -4,12 +4,13 @@ part 'pkgbuild.freezed.dart';
 
 @internal
 @freezed
-class Pkgbuild with _$Pkgbuild {
+sealed class Pkgbuild with _$Pkgbuild {
   const factory Pkgbuild({
     required String maintainer,
     required Map<String, PkgProperty> properties,
     required Map<String, PkgFunction> functions,
   }) = _Pkgbuild;
+
   const Pkgbuild._();
 
   String encode() => '''
@@ -22,15 +23,17 @@ ${functions.encode()}
 
 @internal
 @freezed
-class PkgProperty with _$PkgProperty {
+sealed class PkgProperty with _$PkgProperty {
   const factory PkgProperty(Object? value) = _Single;
-  const PkgProperty._();
+
   const factory PkgProperty.interpolate(String value) = _Interpolate;
+
   const factory PkgProperty.list(
     List<PkgProperty> values, {
     @Default(true) bool skipEmpty,
     @Default(false) bool multiLine,
   }) = _List;
+
   factory PkgProperty.literalList(
     List<String> values, {
     bool skipEmpty = true,
@@ -41,30 +44,26 @@ class PkgProperty with _$PkgProperty {
     multiLine: multiLine,
   );
 
-  bool get isEmpty => maybeWhen(
-    (value) => value == null,
-    list: (values, skipEmpty, _) => skipEmpty && values.isEmpty,
-    orElse: () => false,
-  );
+  const PkgProperty._();
 
-  String encode({int width = 0}) => when(
-    (value) {
-      if (value == null) {
-        return '';
-      } else if (value is String) {
-        return "'$value'";
-      } else {
-        return '$value';
-      }
-    },
-    interpolate: (value) => '"$value"',
-    list: (props, skipEmpty, multiline) {
-      final encodedProps = props.map((p) => p.encode());
-      return multiline
-          ? '(${encodedProps.join('\n${' ' * (width + 1)}')})'
-          : '(${encodedProps.join(' ')})';
-    },
-  );
+  bool get isEmpty => switch (this) {
+    _Single(:final value) => value == null,
+    _List(:final values, :final skipEmpty) => skipEmpty && values.isEmpty,
+    _ => false,
+  };
+
+  String encode({int width = 0}) => switch (this) {
+    _Single(value: null) => '',
+    _Single(:final String value) => "'$value'",
+    _Single(:final value) => '$value',
+    _Interpolate(:final value) => '"$value"',
+    _List(:final values, multiLine: true) =>
+      '(${_encode(values).join('\n${' ' * (width + 1)}')})',
+    _List(:final values, multiLine: false) => '(${_encode(values).join(' ')})',
+  };
+
+  static Iterable<String> _encode(Iterable<PkgProperty> properties) =>
+      properties.map((p) => p.encode());
 }
 
 @internal
@@ -82,8 +81,9 @@ extension PkgPropertyMapX on Map<String, PkgProperty> {
 
 @internal
 @freezed
-class PkgFunction with _$PkgFunction {
+sealed class PkgFunction with _$PkgFunction {
   const factory PkgFunction(List<String> commands) = _PkgFunction;
+
   const PkgFunction._();
 
   String encode(String name) => '''

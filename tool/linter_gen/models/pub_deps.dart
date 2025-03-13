@@ -7,7 +7,7 @@ part 'pub_deps.freezed.dart';
 part 'pub_deps.g.dart';
 
 @freezed
-class PubDeps with _$PubDeps {
+sealed class PubDeps with _$PubDeps {
   const factory PubDeps({required List<PubDepsPackage> packages}) = _PubDeps;
 
   factory PubDeps.fromJson(Map<String, dynamic> json) =>
@@ -15,7 +15,7 @@ class PubDeps with _$PubDeps {
 }
 
 @freezed
-class PubDepsPackage with _$PubDepsPackage {
+sealed class PubDepsPackage with _$PubDepsPackage {
   @VersionConverter()
   const factory PubDepsPackage({
     required String name,

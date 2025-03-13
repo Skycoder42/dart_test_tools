@@ -21,17 +21,22 @@ class AnalysisOptionsLoader {
   Future<AnalysisOptions> load(
     AnalysisOptionsRef analysisOptionsRef, {
     Directory? relativeTo,
-  }) => analysisOptionsRef.when(
-    package: _loadPackage,
-    local: (path) => _loadLocal(path, relativeTo),
-  );
+  }) => switch (analysisOptionsRef) {
+    AnalysisOptionsPackageRef(:final packageName, :final path) => _loadPackage(
+      packageName,
+      path,
+    ),
+    AnalysisOptionsLocalRef(:final path) => _loadLocal(path, relativeTo),
+  };
 
   Directory? findDirectory(
     AnalysisOptionsRef analysisOptionsRef, {
     Directory? relativeTo,
-  }) => analysisOptionsRef.whenOrNull(
-    local: (path) => _resolveLocalFile(path, relativeTo).parent,
-  );
+  }) => switch (analysisOptionsRef) {
+    AnalysisOptionsLocalRef(:final path) =>
+      _resolveLocalFile(path, relativeTo).parent,
+    _ => null,
+  };
 
   Future<AnalysisOptions> _loadLocal(String path, Directory? relativeTo) =>
       _parse(_resolveLocalFile(path, relativeTo));

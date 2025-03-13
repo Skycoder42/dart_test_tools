@@ -4,9 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- c
+
 ## [6.1.1] - 2025-03-13
 ### Changed
 - Updated dependencies
+  - refactored models to be compatible with freezed 3.0
 - Updated linter rules with newer lint base package
 
 ## [6.1.0] - 2025-02-17
@@ -409,6 +414,7 @@ have been added:
 ### Added
 - Initial release
 
+[Unreleased]: https://github.com/Skycoder42/dart_test_tools/compare/v6.1.1...vHEAD
 [6.1.1]: https://github.com/Skycoder42/dart_test_tools/compare/v6.1.0...v6.1.1
 [6.1.0]: https://github.com/Skycoder42/dart_test_tools/compare/v6.0.3...v6.1.0
 [6.0.3]: https://github.com/Skycoder42/dart_test_tools/compare/v6.0.2+2...v6.0.3

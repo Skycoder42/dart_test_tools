@@ -4,15 +4,15 @@ import 'package:path/path.dart';
 part 'analysis_options_ref.freezed.dart';
 
 @freezed
-class AnalysisOptionsRef with _$AnalysisOptionsRef {
+sealed class AnalysisOptionsRef with _$AnalysisOptionsRef {
   const AnalysisOptionsRef._();
 
   const factory AnalysisOptionsRef.package({
     required String packageName,
     required String path,
-  }) = _Package;
+  }) = AnalysisOptionsPackageRef;
 
-  const factory AnalysisOptionsRef.local(String path) = _Local;
+  const factory AnalysisOptionsRef.local(String path) = AnalysisOptionsLocalRef;
 
   factory AnalysisOptionsRef.fromJson(String json) {
     final uri = Uri.parse(json);
@@ -26,10 +26,11 @@ class AnalysisOptionsRef with _$AnalysisOptionsRef {
     }
   }
 
-  String toJson() => when(
-    package: (packageName, path) => 'package:$packageName/$path',
-    local: (path) => path,
-  );
+  String toJson() => switch (this) {
+    AnalysisOptionsPackageRef(:final packageName, :final path) =>
+      'package:$packageName/$path',
+    AnalysisOptionsLocalRef(:final path) => path,
+  };
 
   @override
   String toString() => toJson();
