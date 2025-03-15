@@ -8,4 +8,5 @@ abstract base class Environments {
   static const dockerHub = 'docker-hub';
   static const homebrew = 'homebrew';
   static const msstore = 'msstore';
+  static const aur = 'aur';
 }

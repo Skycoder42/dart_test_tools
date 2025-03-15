@@ -1,5 +1,6 @@
 import '../../common/api/job_builder.dart';
 import '../../common/api/job_config.dart';
+import '../../common/environments.dart';
 import '../../common/steps/checkout_builder.dart';
 import '../../types/container.dart';
 import '../../types/id.dart';
@@ -26,6 +27,7 @@ class AurDeployJobBuilder implements JobBuilder {
   Job build() => Job(
     name: 'Deploy to AUR',
     runsOn: 'ubuntu-latest',
+    environment: Environments.aur,
     container: const Container(image: 'archlinux:base-devel'),
     steps: [
       ...PrepareArchBuilder(config: config).build(),
