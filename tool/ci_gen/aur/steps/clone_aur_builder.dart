@@ -69,7 +69,7 @@ ssh-keygen -y -f '${Runner.temp}/ssh-key'
       name: 'Clone AUR repository',
       run:
           'git clone '
-          r'"ssh://aur@aur.archlinux.org/$(yq ".name" src/pubspec.yaml).git" '
+          r'"ssh://aur@aur.archlinux.org/$(yq ".aur.pkgname // .name" src/pubspec.yaml).git" '
           './aur',
     ),
     const Step.run(

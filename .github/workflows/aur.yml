@@ -64,7 +64,7 @@ jobs:
           echo 'Imported SSH private key for public key:'
           ssh-keygen -y -f '${{ runner.temp }}/ssh-key'
       - name: Clone AUR repository
-        run: git clone "ssh://aur@aur.archlinux.org/$(yq ".name" src/pubspec.yaml).git" ./aur
+        run: git clone "ssh://aur@aur.archlinux.org/$(yq ".aur.pkgname // .name" src/pubspec.yaml).git" ./aur
       - name: Cleanup AUR repository
         run: find . -type f -not -path "./.git*" -exec git rm {} \;
         working-directory: aur
