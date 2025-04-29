@@ -24,11 +24,12 @@ base mixin BuildFlatpakBundleConfig
   bool get requireGpgKey => true;
 }
 
-enum FlatpakArchMatrixSelector implements IMatrixSelector { x86_64 }
+enum FlatpakArchMatrixSelector implements IMatrixSelector { x86_64, aarch64 }
 
 final class ArchMatrixProperty
     extends IMatrixProperty<FlatpakArchMatrixSelector> {
   const ArchMatrixProperty();
+
   @override
   String get name => 'arch';
 
@@ -36,46 +37,38 @@ final class ArchMatrixProperty
   Object? valueFor(FlatpakArchMatrixSelector include) => include.name;
 }
 
-final class QEmuArchProperty
+final class YqArchMatrixProperty
     extends IMatrixProperty<FlatpakArchMatrixSelector> {
-  const QEmuArchProperty();
+  const YqArchMatrixProperty();
 
   @override
-  String get name => 'qemuArch';
+  String get name => 'yqArch';
 
   @override
-  Object? valueFor(FlatpakArchMatrixSelector include) => null;
+  Object? valueFor(FlatpakArchMatrixSelector include) => switch (include) {
+    FlatpakArchMatrixSelector.x86_64 => 'amd64',
+    FlatpakArchMatrixSelector.aarch64 => 'arm64',
+  };
 }
 
 class BuildFlatpakBundleBuilder implements StepBuilder {
   final BuildFlatpakBundleConfig config;
   final ArchMatrixProperty arch;
-  final QEmuArchProperty qemuArch;
+  final YqArchMatrixProperty yqArch;
 
   const BuildFlatpakBundleBuilder({
     required this.config,
     required this.arch,
-    required this.qemuArch,
+    required this.yqArch,
   });
 
   @override
   Iterable<Step> build() => [
     Step.run(
-      name: 'Install docker',
-      ifExpression: qemuArch.expression,
-      run: 'dnf -y install docker',
-    ),
-    Step.uses(
-      name: 'Setup QEMU',
-      ifExpression: qemuArch.expression,
-      uses: Tools.dockerSetupQemuAction,
-      withArgs: {'platforms': qemuArch.expression.toString()},
-    ),
-    const Step.run(
       name: 'Manually install yq',
       run: '''
 set -eo pipefail
-curl -sSLo /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+curl -sSLo /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${yqArch.expression}
 chmod +x /usr/bin/yq
 ''',
     ),

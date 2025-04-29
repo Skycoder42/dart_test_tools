@@ -64,8 +64,15 @@ jobs:
       matrix:
         arch:
           - x86_64
-        include: []
-    runs-on: ubuntu-latest
+          - aarch64
+        include:
+          - arch: x86_64
+            runs-on: ubuntu-latest
+            yqArch: amd64
+          - arch: aarch64
+            runs-on: ubuntu-24.04-arm
+            yqArch: arm64
+    runs-on: ${{ matrix.runs-on }}
     container:
       image: ${{ inputs.flatpakPlatformImage }}
       options: --privileged
@@ -76,18 +83,10 @@ jobs:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install dart_test_tools
         run: dart pub global activate dart_test_tools ^6.1.1
-      - name: Install docker
-        if: matrix.qemuArch
-        run: dnf -y install docker
-      - name: Setup QEMU
-        if: matrix.qemuArch
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: ${{ matrix.qemuArch }}
       - name: Manually install yq
         run: |
           set -eo pipefail
-          curl -sSLo /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          curl -sSLo /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${{ matrix.yqArch }}
           chmod +x /usr/bin/yq
       - name: Download flatpak flutter SDK
         run: curl --fail-with-body -L -o /tmp/flutter.flatpak 'https://github.com/Skycoder42/dart_test_tools/releases/download/flatpak-flutter-extension%2F${{ inputs.flatpakSdkVersion }}/org.freedesktop.Sdk.Extension.flutter_${{ inputs.flatpakSdkVersion }}_${{ matrix.arch }}.flatpak'

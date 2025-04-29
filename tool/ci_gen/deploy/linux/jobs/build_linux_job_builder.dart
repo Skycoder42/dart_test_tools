@@ -10,7 +10,6 @@ import '../../../types/container.dart';
 import '../../../types/expression.dart';
 import '../../../types/id.dart';
 import '../../../types/job.dart';
-import '../../../types/runs_on.dart';
 import '../../steps/generate_build_number_builder.dart';
 import '../steps/build_flatpak_bundle_builder.dart';
 import '../steps/with_gpg_key.dart';
@@ -46,12 +45,28 @@ final class BuildLinuxJobConfig extends JobConfig
   BuildLinuxJobConfig(super.inputContext, super.secretContext);
 }
 
+final class RunsOnMatrixProperty
+    extends IMatrixProperty<FlatpakArchMatrixSelector> {
+  const RunsOnMatrixProperty();
+
+  @override
+  String get name => 'runs-on';
+
+  @override
+  Object? valueFor(FlatpakArchMatrixSelector include) => switch (include) {
+    FlatpakArchMatrixSelector.x86_64 => 'ubuntu-latest',
+    FlatpakArchMatrixSelector.aarch64 => 'ubuntu-24.04-arm',
+  };
+}
+
 final class FlatpakMatrix extends Matrix<FlatpakArchMatrixSelector> {
   const FlatpakMatrix() : super(FlatpakArchMatrixSelector.values);
 
   ArchMatrixProperty get arch => const ArchMatrixProperty();
 
-  QEmuArchProperty get qemuArch => const QEmuArchProperty();
+  RunsOnMatrixProperty get runsOn => const RunsOnMatrixProperty();
+
+  YqArchMatrixProperty get yqArch => const YqArchMatrixProperty();
 
   @override
   IMatrixProperty<FlatpakArchMatrixSelector> get selectorProperty => arch;
@@ -59,7 +74,8 @@ final class FlatpakMatrix extends Matrix<FlatpakArchMatrixSelector> {
   @override
   List<IMatrixProperty<FlatpakArchMatrixSelector>> get includeProperties => [
     arch,
-    qemuArch,
+    runsOn,
+    yqArch,
   ];
 }
 
@@ -77,7 +93,7 @@ final class BuildLinuxJobBuilder extends SdkJobBuilder<BuildLinuxJobConfig>
   final FlatpakMatrix matrix;
 
   @override
-  Expression get matrixRunsOn => Expression.fake(RunsOn.ubuntuLatest.id);
+  Expression get matrixRunsOn => matrix.runsOn.expression;
 
   @override
   Job buildGeneric(String runsOn) => Job(
@@ -93,7 +109,7 @@ final class BuildLinuxJobBuilder extends SdkJobBuilder<BuildLinuxJobConfig>
       ...BuildFlatpakBundleBuilder(
         config: config,
         arch: matrix.arch,
-        qemuArch: matrix.qemuArch,
+        yqArch: matrix.yqArch,
       ).build(),
     ],
   );
