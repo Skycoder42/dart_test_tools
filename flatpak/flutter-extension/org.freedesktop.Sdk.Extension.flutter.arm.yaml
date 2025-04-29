@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/flatpak/flatpak-builder/main/data/flatpak-manifest.schema.json
+
+---
+app-id: org.freedesktop.Sdk.Extension.flutter
+branch: "24.08"
+runtime: org.freedesktop.Sdk
+runtime-version: "24.08"
+sdk: org.freedesktop.Sdk
+build-extension: true
+separate-locales: false
+modules:
+  - name: flutter-sdk
+    buildsystem: simple
+    only-arches:
+      - aarch64
+    build-options:
+      prepend-path: /usr/lib/sdk/flutter/bin:/usr/lib/sdk/flutter/.pub-cache/bin
+      build-args:
+        - --share=network
+      env:
+        FLUTTER_ROOT: /usr/lib/sdk/flutter
+        PUB_CACHE: /usr/lib/sdk/flutter/.pub-cache
+    sources:
+      - type: git
+        url: https://github.com/flutter/flutter.git
+        branch: stable
+        dest: flutter
+      - type: script
+        dest: scripts
+        dest-filename: tar
+        commands:
+          - /usr/bin/tar "$@" --no-same-owner
+    build-commands:
+      - cp -a flutter/. "$FLATPAK_DEST/"
+      - mv scripts/tar "$FLATPAK_DEST/bin/"
+      - dart --disable-analytics
+      - flutter config --disable-analytics
+      - flutter precache --universal --linux
+      - dart pub global activate dart_test_tools
+  - name: flatpak-metadata
+    buildsystem: simple
+    sources:
+      - type: file
+        path: org.freedesktop.Sdk.Extension.flutter.metainfo.xml
+    build-commands:
+      - mkdir -p "$FLATPAK_DEST/share/metainfo/"
+      - cp -a "$FLATPAK_ID.metainfo.xml" "$FLATPAK_DEST/share/metainfo/"
