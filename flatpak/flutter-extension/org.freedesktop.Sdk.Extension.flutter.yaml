@@ -2,9 +2,9 @@
 
 ---
 app-id: org.freedesktop.Sdk.Extension.flutter
-branch: "24.08"
+branch: FLATPAK_VERSION
 runtime: org.freedesktop.Sdk
-runtime-version: "24.08"
+runtime-version: FLATPAK_VERSION
 sdk: org.freedesktop.Sdk
 build-extension: true
 separate-locales: false
