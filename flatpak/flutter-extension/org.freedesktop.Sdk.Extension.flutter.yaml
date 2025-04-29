@@ -13,6 +13,7 @@ modules:
     buildsystem: simple
     only-arches:
       - x86_64
+      - aarch64
     build-options:
       prepend-path: /usr/lib/sdk/flutter/bin:/usr/lib/sdk/flutter/.pub-cache/bin
       build-args:
@@ -21,10 +22,10 @@ modules:
         FLUTTER_ROOT: /usr/lib/sdk/flutter
         PUB_CACHE: /usr/lib/sdk/flutter/.pub-cache
     sources:
-      - type: archive
-        url: https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_LATEST-stable.tar.xz
-        sha256: LATEST
-        strip-components: 0
+      - type: git
+        url: https://github.com/flutter/flutter.git
+        branch: stable
+        dest: flutter
       - type: script
         dest: scripts
         dest-filename: tar

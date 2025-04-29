@@ -17,14 +17,22 @@ env:
 jobs:
   build_extension:
     name: Build flatpak runtime extension
-    runs-on: ubuntu-latest
     environment: flatpak
     strategy:
       fail-fast: false
       matrix:
+        arch:
+          - x86_64
+          - aarch64
+
         include:
           - arch: x86_64
-            flutter_arch: x64
+            runsOn: ubuntu-latest
+            yqArch: amd64
+          - arch: aarch64
+            runsOn: ubuntu-24.04-arm
+            yqArch: arm64
+    runs-on: ${{ matrix.runsOn }}
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-24.08
       options: --privileged
@@ -32,37 +40,17 @@ jobs:
       - name: Install yq
         run: |
           set -eo pipefail
-          wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+          wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${{ matrix.yqArch }} -O /usr/bin/yq
           chmod +x /usr/bin/yq
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Configure Flutter SDK version
-        run: |
-          set -eo pipefail
-
-          manifest=/tmp/manifest.json
-          curl -sSLo "$manifest" https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json
-          base_url=$(yq -r '.base_url' "$manifest")
-          export version_hash=$(yq -r '.current_release.stable' "$manifest")
-          echo "Detected latest linux release hash: $version_hash"
-
-          release=/tmp/release.json
-          yq \
-              '.releases[] | select(.channel == "stable" and .dart_sdk_arch == "${{ matrix.flutter_arch }}" and.hash == env(version_hash))' \
-              "$manifest" > "$release"
-          export archive=$base_url/$(yq -r '.archive' "$release")
-          export sha256=$(yq -r '.sha256' "$release")
-          echo "Detected latest linux release archive: $archive"
-          echo "Detected latest linux release sha256: $sha256"
-
-          yq e -i \
-            '.modules[0].sources[0].url = env(archive) |
-              .modules[0].sources[0].sha256 = env(sha256) |
-              .branch = strenv(SDK_VERSION) |
-              .runtime-version = strenv(SDK_VERSION)' \
-            flatpak/flutter-extension/org.freedesktop.Sdk.Extension.flutter.yaml
+      - name: Configure Flatpak runtime version
+        run: >-
+          yq e -i
+          '.branch = strenv(SDK_VERSION) | .runtime-version = strenv(SDK_VERSION)'
+          flatpak/flutter-extension/org.freedesktop.Sdk.Extension.flutter.yaml
       - name: Import GPG key
         run: echo '${{ secrets.GPG_KEY }}' | gpg --import
       - name: Build flatpak
