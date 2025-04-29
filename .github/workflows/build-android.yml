@@ -137,7 +137,13 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - id: checkGenerate
         name: Check if localizations generation is required
-        run: echo "generate=$(yq -r '.flutter.generate // false' pubspec.yaml)" >> $GITHUB_OUTPUT
+        run: |
+          set -eo pipefail
+          if [ -f l10n.yaml ]; then
+            echo "generate=true" >> $GITHUB_OUTPUT
+          else
+            echo "generate=false" >> $GITHUB_OUTPUT
+          fi
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Generate localization files

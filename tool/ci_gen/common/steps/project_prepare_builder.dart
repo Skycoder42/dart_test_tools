@@ -49,10 +49,14 @@ class ProjectPrepareBuilder implements StepBuilder {
             config.ifExpression != null
                 ? config.ifExpression! & _onlyIfFlutter
                 : _onlyIfFlutter,
-        run: generateOutput.bashSetter(
-          "yq -r '.flutter.generate // false' pubspec.yaml",
-          isCommand: true,
-        ),
+        run: '''
+          set -eo pipefail
+          if [ -f l10n.yaml ]; then
+            ${generateOutput.bashSetter('true')}
+          else
+            ${generateOutput.bashSetter('false')}
+          fi
+''',
         workingDirectory: config.workingDirectory.toString(),
         shell: 'bash',
       ),
