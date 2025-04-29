@@ -4,7 +4,7 @@ on:
       flatpakPlatformImage:
         type: string
         required: false
-        default: flatpak-github-actions:gnome-47
+        default: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
         description: The docker image to be used to build the bundle with
       dartSdkVersion:
         type: string
@@ -64,14 +64,10 @@ jobs:
       matrix:
         arch:
           - x86_64
-          - aarch64
-        include:
-          - arch: aarch64
-            qemuArch: arm64
-            imageSuffix: -aarch64
+        include: []
     runs-on: ubuntu-latest
     container:
-      image: skycoder42/${{ inputs.flatpakPlatformImage }}${{ matrix.imageSuffix }}
+      image: ${{ inputs.flatpakPlatformImage }}
       options: --privileged
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
@@ -144,7 +140,7 @@ jobs:
       - name: Import GPG key
         run: echo '${{ secrets.gpgKey }}' | gpg --import
       - name: Build flatpak bundle
-        uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
           bundle: ${{ inputs.bundleName }}
           manifest-path: ${{ inputs.workingDirectory }}/${{ inputs.manifestPath }}

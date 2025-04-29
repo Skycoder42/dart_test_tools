@@ -39,7 +39,7 @@ class DeployLinuxJobBuilder implements JobBuilder {
     needs: {releaseCreated.jobId},
     runsOn: RunsOn.ubuntuLatest.id,
     container: Container(
-      image: 'bilelmoussaoui/${config.flatpakPlatformImage}',
+      image: config.flatpakPlatformImage.toString(),
       options: '--privileged',
     ),
     ifExpression:

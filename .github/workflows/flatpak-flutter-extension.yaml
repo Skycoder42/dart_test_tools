@@ -46,6 +46,7 @@ jobs:
           curl -sSLo "$manifest" https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json
           base_url=$(yq -r '.base_url' "$manifest")
           export version_hash=$(yq -r '.current_release.stable' "$manifest")
+          echo "Detected latest linux release hash: $version_hash"
 
           release=/tmp/release.json
           yq \
@@ -53,6 +54,8 @@ jobs:
               "$manifest" > "$release"
           export archive=$base_url/$(yq -r '.archive' "$release")
           export sha256=$(yq -r '.sha256' "$release")
+          echo "Detected latest linux release archive: $archive"
+          echo "Detected latest linux release sha256: $sha256"
 
           yq e -i \
             '.modules[0].sources[0].url = env(archive) |

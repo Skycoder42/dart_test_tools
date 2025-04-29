@@ -24,7 +24,7 @@ base mixin BuildFlatpakBundleConfig
   bool get requireGpgKey => true;
 }
 
-enum FlatpakArchMatrixSelector implements IMatrixSelector { x86_64, aarch64 }
+enum FlatpakArchMatrixSelector implements IMatrixSelector { x86_64 }
 
 final class ArchMatrixProperty
     extends IMatrixProperty<FlatpakArchMatrixSelector> {
@@ -44,8 +44,7 @@ final class QEmuArchProperty
   String get name => 'qemuArch';
 
   @override
-  Object? valueFor(FlatpakArchMatrixSelector include) =>
-      include == FlatpakArchMatrixSelector.aarch64 ? 'arm64' : null;
+  Object? valueFor(FlatpakArchMatrixSelector include) => null;
 }
 
 class BuildFlatpakBundleBuilder implements StepBuilder {
@@ -108,7 +107,7 @@ ostree --repo=repo config set core.min-free-space-size "1MB"
       steps: [
         Step.uses(
           name: 'Build flatpak bundle',
-          uses: Tools.bilelmoussaouiFlatpakGithubActionsFlatpakBuilder,
+          uses: Tools.flatpakFlatpakGithubActionsFlatpakBuilder,
           withArgs: {
             'bundle': config.bundleName.toString(),
             'manifest-path':

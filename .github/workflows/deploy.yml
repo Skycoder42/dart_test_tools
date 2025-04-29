@@ -43,7 +43,7 @@ on:
       flatpakPlatformImage:
         type: string
         required: false
-        default: flatpak-github-actions:gnome-47
+        default: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
         description: The docker image to be used to build the bundle with
       targetRepo:
         type: string
@@ -217,7 +217,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/${{ inputs.flatpakPlatformImage }}
+      image: ${{ inputs.flatpakPlatformImage }}
       options: --privileged
     steps:
       - name: '[Validate Inputs] Ensure gpgKeyId is set'

@@ -84,7 +84,7 @@ final class BuildLinuxJobBuilder extends SdkJobBuilder<BuildLinuxJobConfig>
     name: 'Build linux flatpak bundle',
     runsOn: runsOn,
     container: Container(
-      image: 'bilelmoussaoui/${config.flatpakPlatformImage}',
+      image: config.flatpakPlatformImage.toString(),
       options: '--privileged',
     ),
     steps: [
