@@ -1,6 +1,11 @@
 on:
   workflow_call:
     inputs:
+      ubuntuVersions:
+        type: string
+        required: false
+        default: '["noble","jammy"]'
+        description: A JSON list list of ubuntu version code names to publish for.
       workingDirectory:
         type: string
         required: false
@@ -65,6 +70,10 @@ jobs:
     needs:
       - build_deb
     environment: packagecloud
+    strategy:
+      fail-fast: false
+      matrix:
+        code-name: ${{ fromJson(inputs.ubuntuVersions) }}
     runs-on: ubuntu-latest
     steps:
       - name: Download debian package
@@ -77,4 +86,4 @@ jobs:
           PACKAGECLOUD_TOKEN: ${{ secrets.packagecloudToken }}
         uses: lpenz/ghaction-packagecloud@v0.4
         with:
-          repository: ${{ inputs.packagecloudRepository }}
+          repository: ${{ inputs.packagecloudRepository }}/${{ matrix.code-name }}

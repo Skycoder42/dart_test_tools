@@ -1,3 +1,4 @@
+import '../deb/steps/packagecloud_upload_builder.dart';
 import '../types/input.dart';
 import 'api/workflow_input.dart';
 import 'tools.dart';
@@ -433,6 +434,16 @@ Example:
       type: Type.string,
       required: true,
       description: 'The packagecloud repository to publish to.',
+    ),
+  );
+
+  static final ubuntuVersions = WorkflowInput(
+    name: 'ubuntuVersions',
+    input: Input.json(
+      required: false,
+      description:
+          'A JSON list list of ubuntu version code names to publish for.',
+      defaultValue: UbuntuCodeName.values.map((e) => e.name).toList(),
     ),
   );
 

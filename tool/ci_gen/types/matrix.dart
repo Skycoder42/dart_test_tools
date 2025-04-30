@@ -7,7 +7,7 @@ part 'matrix.freezed.dart';
 @freezed
 sealed class Matrix with _$Matrix {
   const factory Matrix(
-    Map<String, List<dynamic>> matrix, {
+    Map<String, dynamic> matrix, {
     List<Map<String, dynamic>>? include,
     List<Map<String, dynamic>>? exclude,
   }) = _Matrix;

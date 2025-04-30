@@ -19,14 +19,29 @@ abstract base class IMatrixProperty<TMatrixSelector extends IMatrixSelector> {
   Expression get expression => Expression('matrix.$name');
 }
 
-abstract base class Matrix<TMatrixSelector extends IMatrixSelector> {
+abstract interface class IMatrix<TMatrixSelector extends IMatrixSelector> {
+  @internal
+  m.Matrix build();
+}
+
+abstract base class Matrix<TMatrixSelector extends IMatrixSelector>
+    implements IMatrix<TMatrixSelector> {
   final List<TMatrixSelector> _selectors;
 
   const Matrix(this._selectors);
 
   IMatrixProperty<TMatrixSelector> get selectorProperty;
 
-  List<IMatrixProperty<TMatrixSelector>> get includeProperties;
+  List<IMatrixProperty<TMatrixSelector>>? get includeProperties => null;
+
+  @override
+  m.Matrix build() {
+    final includes = _createIncludes().toList();
+    return m.Matrix(
+      Map.fromEntries([_createSelector()]),
+      include: includes.isEmpty ? null : includes,
+    );
+  }
 
   MapEntry<String, List<dynamic>> _createSelector() => MapEntry(
     selectorProperty.name,
@@ -37,7 +52,8 @@ abstract base class Matrix<TMatrixSelector extends IMatrixSelector> {
     for (final selector in _selectors) {
       final include = {
         selectorProperty.name: selectorProperty.valueFor(selector),
-        for (final property in includeProperties)
+        for (final property
+            in includeProperties ?? <IMatrixProperty<TMatrixSelector>>[])
           if (property.valueFor(selector) case final Object value)
             property.name: value,
       };
@@ -49,8 +65,20 @@ abstract base class Matrix<TMatrixSelector extends IMatrixSelector> {
   }
 }
 
+abstract base class ExpressionMatrix<TMatrixSelector extends IMatrixSelector>
+    implements IMatrix<TMatrixSelector> {
+  final Expression expression;
+
+  ExpressionMatrix(this.expression);
+
+  IMatrixProperty<TMatrixSelector> get selectorProperty;
+
+  @override
+  m.Matrix build() => m.Matrix({selectorProperty.name: expression.toString()});
+}
+
 base mixin MatrixJobBuilderMixin<
-  TMatrix extends Matrix<TMatrixSelector>,
+  TMatrix extends IMatrix<TMatrixSelector>,
   TMatrixSelector extends IMatrixSelector
 >
     implements JobBuilder {
@@ -71,13 +99,7 @@ base mixin MatrixJobBuilderMixin<
   Job build() {
     final rawJob = buildGeneric(matrixRunsOn.toString());
     return rawJob.copyWith(
-      strategy: Strategy(
-        failFast: false,
-        matrix: m.Matrix(
-          Map.fromEntries([matrix._createSelector()]),
-          include: matrix._createIncludes().toList(),
-        ),
-      ),
+      strategy: Strategy(failFast: false, matrix: matrix.build()),
       steps: [
         for (final step in rawJob.steps)
           step.copyWith(

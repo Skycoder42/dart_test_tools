@@ -31,4 +31,7 @@ abstract base class Functions {
 
   static Expression format(String message, List<Expression> args) =>
       Expression("format('$message', ${args.map((e) => e.value).join(', ')})");
+
+  static Expression fromJson(Expression jsonString) =>
+      Expression('fromJson(${jsonString.value})');
 }
