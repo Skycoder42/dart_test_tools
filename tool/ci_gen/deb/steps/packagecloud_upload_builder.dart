@@ -41,15 +41,6 @@ class PackagecloudUploadBuilder implements StepBuilder {
       uses: Tools.actionsDownloadArtifact,
       withArgs: {'name': 'debian-package', 'path': 'deb'},
     ),
-    Step.run(
-      name: 'Append ${codeName.expression} to debian packages',
-      run: '''
-set -eo pipefail
-for file in deb/*.deb; do
-  mv "\$file" "\${file%.deb}_${codeName.expression}.deb"
-done
-''',
-    ),
     Step.uses(
       name: 'Upload debian package to packagecloud',
       uses: Tools.lpenzGhactionPackagecloud,

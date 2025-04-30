@@ -81,12 +81,6 @@ jobs:
         with:
           name: debian-package
           path: deb
-      - name: Append ${{ matrix.code-name }} to debian packages
-        run: |
-          set -eo pipefail
-          for file in deb/*.deb; do
-            mv "$file" "${file%.deb}_${{ matrix.code-name }}.deb"
-          done
       - name: Upload debian package to packagecloud
         env:
           PACKAGECLOUD_TOKEN: ${{ secrets.packagecloudToken }}
