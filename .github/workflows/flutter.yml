@@ -740,7 +740,7 @@ jobs:
           echo -n '${{ secrets.provisioningProfile }}' | base64 --decode > "$new_dir/app.mobileprovision"
           ln -s "$new_dir/app.mobileprovision" "$old_dir/app.mobileprovision"
       - name: Build integration test app
-        run: flutter build ios --release '${{ inputs.integrationTestPaths }}'
+        run: flutter build ios --config-only --debug '${{ inputs.integrationTestPaths }}'
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
       - name: Build test instrumentation app
         run: xcodebuild build-for-testing -workspace Runner.xcworkspace -scheme Runner -configuration Release -sdk iphoneos -derivedDataPath ../build/ios_integration
