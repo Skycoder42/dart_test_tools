@@ -41,7 +41,7 @@ final class DartTestArgsMatrixProperty
 
   @override
   Object? valueFor(IPlatformMatrixSelector selector) => switch (selector) {
-    IPlatformMatrixSelector(isWeb: true) => '-p chrome',
+    IPlatformMatrixSelector(isWeb: true) => '--platform chrome',
     _ => null,
   };
 }

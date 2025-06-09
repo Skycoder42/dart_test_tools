@@ -275,7 +275,7 @@ jobs:
             lcovCleanCommand: (Get-Content coverage\lcov.info).replace("SF:$PWD\", "SF:").replace("\", "/") | Set-Content coverage\lcov.info
           - platform: web
             os: ubuntu-latest
-            dartTestArgs: -p chrome
+            dartTestArgs: --platform chrome
             lcovCleanCommand: sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info
     runs-on: ${{ matrix.os }}
     steps:
