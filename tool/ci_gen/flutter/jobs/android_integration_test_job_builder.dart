@@ -42,12 +42,12 @@ final class AndroidIntegrationTestJobBuilder
         EnabledPlatforms.check(
           enabledPlatformsOutput.expression,
           Expression.literal(FlutterPlatform.android.platform),
-        ),
+        ) &
+        config.firebaseProjectId.ne(Expression.empty),
     needs: {enabledPlatformsOutput.jobId},
     runsOn: FlutterPlatform.android.os.id,
     steps: [
       ...ValidateInputsBuilder({
-        WorkflowInputs.firebaseProjectId.name: config.firebaseProjectId,
         WorkflowSecrets.firebaseCredentials.name: config.firebaseCredentials,
       }).build(),
       ...buildSetupSdkSteps(

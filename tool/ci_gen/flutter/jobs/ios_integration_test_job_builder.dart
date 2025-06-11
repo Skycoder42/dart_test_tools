@@ -1,5 +1,4 @@
 import '../../common/api/platform_matrix_job_builder_mixin.dart';
-import '../../common/inputs.dart';
 import '../../common/jobs/sdk_job_builder.dart';
 import '../../common/secrets.dart';
 import '../../common/steps/validate_inputs_builder.dart';
@@ -42,7 +41,8 @@ final class IosIntegrationTestJobBuilder
         EnabledPlatforms.check(
           enabledPlatformsOutput.expression,
           Expression.literal(FlutterPlatform.ios.platform),
-        ),
+        ) &
+        config.firebaseProjectId.ne(Expression.empty),
     needs: {enabledPlatformsOutput.jobId},
     runsOn: FlutterPlatform.ios.os.id,
     steps: [
@@ -52,7 +52,6 @@ final class IosIntegrationTestJobBuilder
         WorkflowSecrets.signingIdentity.name: config.encodedSigningIdentity,
         WorkflowSecrets.signingIdentityPassphrase.name:
             config.signingIdentityPassphrase,
-        WorkflowInputs.firebaseProjectId.name: config.firebaseProjectId,
         WorkflowSecrets.firebaseCredentials.name: config.firebaseCredentials,
       }).build(),
       ...buildSetupSdkSteps(

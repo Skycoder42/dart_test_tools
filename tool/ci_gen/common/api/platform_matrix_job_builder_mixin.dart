@@ -33,7 +33,7 @@ final class OsMatrixProperty extends IMatrixProperty<IPlatformMatrixSelector> {
   Object? valueFor(IPlatformMatrixSelector include) => include.os.id;
 }
 
-base class PlatformMatrix extends Matrix<IPlatformMatrixSelector> {
+abstract class PlatformMatrix extends Matrix<IPlatformMatrixSelector> {
   const PlatformMatrix(super._selectors);
 
   @nonVirtual

@@ -24,7 +24,7 @@ abstract interface class IMatrix<TMatrixSelector extends IMatrixSelector> {
   m.Matrix build();
 }
 
-abstract base class Matrix<TMatrixSelector extends IMatrixSelector>
+abstract class Matrix<TMatrixSelector extends IMatrixSelector>
     implements IMatrix<TMatrixSelector> {
   final List<TMatrixSelector> _selectors;
 

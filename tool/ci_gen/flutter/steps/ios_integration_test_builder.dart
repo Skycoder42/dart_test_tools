@@ -34,7 +34,7 @@ class IosIntegrationTestBuilder implements StepBuilder {
       name: 'Build integration test app',
       run:
           '${config.baseTool} build ios '
-          "--release '${config.integrationTestPaths}'",
+          "--release --config-only '${config.integrationTestPaths}'",
       workingDirectory: config.integrationTestWorkingDirectory,
     ),
     Step.run(

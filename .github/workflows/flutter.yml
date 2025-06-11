@@ -267,16 +267,20 @@ jobs:
           - platform: linux
             os: ubuntu-latest
             lcovCleanCommand: sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info
+            coverageArgs: --coverage
           - platform: macos
             os: macos-latest
             lcovCleanCommand: sed -i "" "s#SF:$PWD/#SF:#g" coverage/lcov.info
+            coverageArgs: --coverage
           - platform: windows
             os: windows-latest
             lcovCleanCommand: (Get-Content coverage\lcov.info).replace("SF:$PWD\", "SF:").replace("\", "/") | Set-Content coverage\lcov.info
+            coverageArgs: --coverage
           - platform: web
             os: ubuntu-latest
             dartTestArgs: --platform chrome
             lcovCleanCommand: sed -i "s#SF:$PWD/#SF:#g" coverage/lcov.info
+            coverageArgs: ""
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
@@ -365,15 +369,15 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run unit tests
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
-        run: flutter test ${{ matrix.dartTestArgs }} --coverage --reporter github ${{ inputs.unitTestPaths }} || [ $? = 79 ]
+        run: flutter test ${{ matrix.dartTestArgs }} ${{ matrix.coverageArgs }} --reporter github ${{ inputs.unitTestPaths }} || [ $? = 79 ]
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Normalize coverage paths
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.minCoverage > 0
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.minCoverage > 0 && matrix.coverageArgs != ''
         run: ${{ matrix.lcovCleanCommand }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload coverage data
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.minCoverage > 0
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.minCoverage > 0 && matrix.coverageArgs != ''
         uses: actions/upload-artifact@v4
         with:
           name: coverage-info-${{ matrix.platform }}
@@ -433,16 +437,9 @@ jobs:
     name: Integration tests (android)
     needs:
       - analyze
-    if: inputs.integrationTestPaths != '' && (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), 'android'))
+    if: inputs.integrationTestPaths != '' && (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), 'android')) && inputs.firebaseProjectId != ''
     runs-on: ubuntu-latest
     steps:
-      - name: '[Validate Inputs] Ensure firebaseProjectId is set'
-        run: |
-          if [[ '${{ inputs.firebaseProjectId }}' == '' ]]; then
-            echo '::error::Platform is enabled, but required input firebaseProjectId is not set'
-            exit 1
-          fi
-        shell: bash
       - name: '[Validate Inputs] Ensure firebaseCredentials is set'
         run: |
           if [[ '${{ secrets.firebaseCredentials }}' == '' ]]; then
@@ -581,7 +578,7 @@ jobs:
     name: Integration tests (ios)
     needs:
       - analyze
-    if: inputs.integrationTestPaths != '' && (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), 'ios'))
+    if: inputs.integrationTestPaths != '' && (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), 'ios')) && inputs.firebaseProjectId != ''
     runs-on: macos-latest
     steps:
       - name: '[Validate Inputs] Ensure provisioningProfile is set'
@@ -602,13 +599,6 @@ jobs:
         run: |
           if [[ '${{ secrets.signingIdentityPassphrase }}' == '' ]]; then
             echo '::error::Platform is enabled, but required input signingIdentityPassphrase is not set'
-            exit 1
-          fi
-        shell: bash
-      - name: '[Validate Inputs] Ensure firebaseProjectId is set'
-        run: |
-          if [[ '${{ inputs.firebaseProjectId }}' == '' ]]; then
-            echo '::error::Platform is enabled, but required input firebaseProjectId is not set'
             exit 1
           fi
         shell: bash

@@ -26,7 +26,7 @@ abstract base class UnitTestJobConfig extends JobConfig
   UnitTestJobConfig(super.inputContext, super.secretContext);
 }
 
-final class UnitTestMatrix extends PlatformMatrix {
+class UnitTestMatrix extends PlatformMatrix {
   const UnitTestMatrix(super._selectors);
 
   DartTestArgsMatrixProperty get dartTestArgs =>
@@ -56,7 +56,8 @@ abstract base class UnitTestJobBuilder<TConfig extends UnitTestJobConfig>
     required List<IPlatformMatrixSelector> platformSelectors,
     required this.enabledPlatformsOutput,
     required super.config,
-  }) : matrix = UnitTestMatrix(platformSelectors);
+    UnitTestMatrix? matrix,
+  }) : matrix = matrix ?? UnitTestMatrix(platformSelectors);
 
   @override
   JobId get id => const JobId('unit_tests');
