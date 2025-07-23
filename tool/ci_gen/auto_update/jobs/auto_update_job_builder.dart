@@ -102,6 +102,11 @@ fi
         run: '${config.pubTool} upgrade',
         workingDirectory: config.workingDirectory.toString(),
       ),
+      Step.run(
+        name: 'Display changes',
+        run: 'git diff',
+        workingDirectory: config.workingDirectory.toString(),
+      ),
     ],
   );
 }
