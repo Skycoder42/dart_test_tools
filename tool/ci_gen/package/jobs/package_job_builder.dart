@@ -32,6 +32,9 @@ final class PackageJobBuilder extends SdkJobBuilder<PackageJobConfig>
   Job build() => Job(
     name: 'Create dart package artifact',
     runsOn: 'ubuntu-latest',
-    steps: [...buildSetupSdkSteps(), ...PackageBuilder(config: config).build()],
+    steps: [
+      ...buildSetupSdkSteps(),
+      ...PackageBuilder(config: config).build(),
+    ],
   );
 }

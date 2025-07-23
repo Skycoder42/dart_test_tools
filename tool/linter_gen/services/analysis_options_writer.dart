@@ -16,8 +16,9 @@ class AnalysisOptionsWriter {
   ) async {
     final analysisOptionsPath = switch (target) {
       AnalysisOptionsLocalRef(:final path) => path,
-      AnalysisOptionsPackageRef() =>
-        throw Exception('Cannot save options to a package'),
+      AnalysisOptionsPackageRef() => throw Exception(
+        'Cannot save options to a package',
+      ),
     };
 
     final file = File(analysisOptionsPath);

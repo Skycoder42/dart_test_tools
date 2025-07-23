@@ -53,7 +53,8 @@ class AnalyzeBuilder implements StepBuilder {
     Step.run(
       id: checkPlatformsStepId,
       name: 'Check supported platforms',
-      run: '''
+      run:
+          '''
 set -eo pipefail
 platforms=\$(yq '.platforms // {} | keys' -o=json -I=0 pubspec.yaml)
 echo "Detected supported platforms as: \$platforms"
@@ -78,7 +79,8 @@ ${platformsOutput.bashSetter(r'$platforms')}
     Step.run(
       id: checkPublishStepId,
       name: 'Check if package is publishable',
-      run: '''
+      run:
+          '''
 set -eo pipefail
 publish_to=\$(cat pubspec.yaml | yq e ".publish_to" -)
 if [[ "\$publish_to" == "none" ]]; then

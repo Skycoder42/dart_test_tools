@@ -49,8 +49,9 @@ version: ${fixture.$1}
 
         await sut(minorWidth: fixture.$2, patchWidth: fixture.$3);
 
-        final output =
-            await File(Platform.environment['GITHUB_OUTPUT']!).readAsLines();
+        final output = await File(
+          Platform.environment['GITHUB_OUTPUT']!,
+        ).readAsLines();
         expect(output.last, 'buildNumber=${fixture.$4}');
       }, _TestOverrides(testDir)),
     );
@@ -78,8 +79,9 @@ version: 1.2.3
 
         await sut(asEnv: true);
 
-        final output =
-            await File(Platform.environment['GITHUB_ENV']!).readAsLines();
+        final output = await File(
+          Platform.environment['GITHUB_ENV']!,
+        ).readAsLines();
         expect(output.last, 'BUILD_NUMBER=10203');
       }, _TestOverrides(testDir)),
     );

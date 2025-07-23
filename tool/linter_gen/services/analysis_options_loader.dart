@@ -33,8 +33,10 @@ class AnalysisOptionsLoader {
     AnalysisOptionsRef analysisOptionsRef, {
     Directory? relativeTo,
   }) => switch (analysisOptionsRef) {
-    AnalysisOptionsLocalRef(:final path) =>
-      _resolveLocalFile(path, relativeTo).parent,
+    AnalysisOptionsLocalRef(:final path) => _resolveLocalFile(
+      path,
+      relativeTo,
+    ).parent,
     _ => null,
   };
 
@@ -57,8 +59,8 @@ class AnalysisOptionsLoader {
 
   File _resolveLocalFile(String path, Directory? relativeTo) =>
       relativeTo != null
-          ? File.fromUri(relativeTo.uri.resolve(path))
-          : File(path);
+      ? File.fromUri(relativeTo.uri.resolve(path))
+      : File(path);
 
   Future<File> _resolvePackageFile(String packageName, String path) async {
     final pubDeps = await _loadPackages();
@@ -91,13 +93,12 @@ class AnalysisOptionsLoader {
     ]);
     unawaited(stderr.addStream(pubDepsProcess.stderr));
 
-    final pubDeps =
-        await pubDepsProcess.stdout
-            .transform(utf8.decoder)
-            .transform(json.decoder)
-            .cast<Map<String, dynamic>>()
-            .map(PubDeps.fromJson)
-            .single;
+    final pubDeps = await pubDepsProcess.stdout
+        .transform(utf8.decoder)
+        .transform(json.decoder)
+        .cast<Map<String, dynamic>>()
+        .map(PubDeps.fromJson)
+        .single;
 
     final exitCode = await pubDepsProcess.exitCode;
     if (exitCode != 0) {

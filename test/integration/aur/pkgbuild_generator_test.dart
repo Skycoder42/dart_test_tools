@@ -125,8 +125,9 @@ void main() {
       expect(aurFiles, hasLength(1));
       expect(aurFiles, contains(hasBaseName('PKGBUILD')));
 
-      final pkgBuildContent =
-          await File.fromUri(aurDir.uri.resolve('PKGBUILD')).readAsString();
+      final pkgBuildContent = await File.fromUri(
+        aurDir.uri.resolve('PKGBUILD'),
+      ).readAsString();
 
       expect(pkgBuildContent, _minimalPkgbuild);
     });
@@ -146,20 +147,21 @@ void main() {
       expect(aurFiles, contains(hasBaseName('CHANGELOG.md')));
       expect(aurFiles, contains(hasBaseName('custom_package.install')));
 
-      final pkgBuildContent =
-          await File.fromUri(aurDir.uri.resolve('PKGBUILD')).readAsString();
+      final pkgBuildContent = await File.fromUri(
+        aurDir.uri.resolve('PKGBUILD'),
+      ).readAsString();
 
       expect(pkgBuildContent, _fullPkgbuild);
 
-      final changelogContent =
-          await File.fromUri(aurDir.uri.resolve('CHANGELOG.md')).readAsString();
+      final changelogContent = await File.fromUri(
+        aurDir.uri.resolve('CHANGELOG.md'),
+      ).readAsString();
 
       expect(changelogContent, '# The Changelog');
 
-      final installContent =
-          await File.fromUri(
-            aurDir.uri.resolve('custom_package.install'),
-          ).readAsString();
+      final installContent = await File.fromUri(
+        aurDir.uri.resolve('custom_package.install'),
+      ).readAsString();
 
       expect(installContent, 'install');
     });
@@ -182,8 +184,9 @@ void main() {
       expect(aurFiles, hasLength(1));
       expect(aurFiles, contains(hasBaseName('PKGBUILD')));
 
-      final pkgBuildContent =
-          await File.fromUri(aurDir.uri.resolve('PKGBUILD')).readAsString();
+      final pkgBuildContent = await File.fromUri(
+        aurDir.uri.resolve('PKGBUILD'),
+      ).readAsString();
 
       expect(pkgBuildContent, _minimalDebPkgbuild);
     });
@@ -206,20 +209,21 @@ void main() {
       expect(aurFiles, contains(hasBaseName('CHANGELOG.md')));
       expect(aurFiles, contains(hasBaseName('custom_package.install')));
 
-      final pkgBuildContent =
-          await File.fromUri(aurDir.uri.resolve('PKGBUILD')).readAsString();
+      final pkgBuildContent = await File.fromUri(
+        aurDir.uri.resolve('PKGBUILD'),
+      ).readAsString();
 
       expect(pkgBuildContent, _fullDebPkgbuild);
 
-      final changelogContent =
-          await File.fromUri(aurDir.uri.resolve('CHANGELOG.md')).readAsString();
+      final changelogContent = await File.fromUri(
+        aurDir.uri.resolve('CHANGELOG.md'),
+      ).readAsString();
 
       expect(changelogContent, '# The Changelog');
 
-      final installContent =
-          await File.fromUri(
-            aurDir.uri.resolve('custom_package.install'),
-          ).readAsString();
+      final installContent = await File.fromUri(
+        aurDir.uri.resolve('custom_package.install'),
+      ).readAsString();
 
       expect(installContent, 'install');
     });

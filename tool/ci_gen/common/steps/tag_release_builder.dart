@@ -37,7 +37,8 @@ class TagReleaseBuilder implements StepBuilder {
     Step.run(
       id: versionStepId,
       name: 'Check if a release should be created',
-      run: '''
+      run:
+          '''
 set -eo pipefail
 package_version=\$(cat pubspec.yaml | yq e ".version" -)
 git fetch --tags > /dev/null
@@ -69,10 +70,9 @@ fi
     ...ReleaseEntryBuilder(
       config: config,
       versionUpdate: updateOutput.expression,
-      files:
-          config.binaryArtifactsPattern != null
-              ? 'artifacts/${config.binaryArtifactsPattern}/*'
-              : null,
+      files: config.binaryArtifactsPattern != null
+          ? 'artifacts/${config.binaryArtifactsPattern}/*'
+          : null,
     ).build(),
   ];
 }

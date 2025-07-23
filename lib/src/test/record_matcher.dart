@@ -112,17 +112,27 @@ Matcher _isRecord8(
   dynamic $6,
   dynamic $7,
   dynamic $8,
-) => isA<
-      (dynamic, dynamic, dynamic, dynamic, dynamic, dynamic, dynamic, dynamic)
-    >()
-    .having((m) => m.$1, r'$1', $1)
-    .having((m) => m.$2, r'$2', $2)
-    .having((m) => m.$3, r'$3', $3)
-    .having((m) => m.$4, r'$4', $4)
-    .having((m) => m.$5, r'$5', $5)
-    .having((m) => m.$6, r'$6', $6)
-    .having((m) => m.$7, r'$7', $7)
-    .having((m) => m.$8, r'$8', $8);
+) =>
+    isA<
+          (
+            dynamic,
+            dynamic,
+            dynamic,
+            dynamic,
+            dynamic,
+            dynamic,
+            dynamic,
+            dynamic,
+          )
+        >()
+        .having((m) => m.$1, r'$1', $1)
+        .having((m) => m.$2, r'$2', $2)
+        .having((m) => m.$3, r'$3', $3)
+        .having((m) => m.$4, r'$4', $4)
+        .having((m) => m.$5, r'$5', $5)
+        .having((m) => m.$6, r'$6', $6)
+        .having((m) => m.$7, r'$7', $7)
+        .having((m) => m.$8, r'$8', $8);
 Matcher _isRecord9(
   dynamic $1,
   dynamic $2,
@@ -133,25 +143,26 @@ Matcher _isRecord9(
   dynamic $7,
   dynamic $8,
   dynamic $9,
-) => isA<
-      (
-        dynamic,
-        dynamic,
-        dynamic,
-        dynamic,
-        dynamic,
-        dynamic,
-        dynamic,
-        dynamic,
-        dynamic,
-      )
-    >()
-    .having((m) => m.$1, r'$1', $1)
-    .having((m) => m.$2, r'$2', $2)
-    .having((m) => m.$3, r'$3', $3)
-    .having((m) => m.$4, r'$4', $4)
-    .having((m) => m.$5, r'$5', $5)
-    .having((m) => m.$6, r'$6', $6)
-    .having((m) => m.$7, r'$7', $7)
-    .having((m) => m.$8, r'$8', $8)
-    .having((m) => m.$9, r'$9', $9);
+) =>
+    isA<
+          (
+            dynamic,
+            dynamic,
+            dynamic,
+            dynamic,
+            dynamic,
+            dynamic,
+            dynamic,
+            dynamic,
+            dynamic,
+          )
+        >()
+        .having((m) => m.$1, r'$1', $1)
+        .having((m) => m.$2, r'$2', $2)
+        .having((m) => m.$3, r'$3', $3)
+        .having((m) => m.$4, r'$4', $4)
+        .having((m) => m.$5, r'$5', $5)
+        .having((m) => m.$6, r'$6', $6)
+        .having((m) => m.$7, r'$7', $7)
+        .having((m) => m.$8, r'$8', $8)
+        .having((m) => m.$9, r'$9', $9);

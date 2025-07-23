@@ -103,10 +103,9 @@ base mixin MatrixJobBuilderMixin<
       steps: [
         for (final step in rawJob.steps)
           step.copyWith(
-            ifExpression:
-                matrixCondition != null
-                    ? (matrixCondition! & step.ifExpression)
-                    : step.ifExpression,
+            ifExpression: matrixCondition != null
+                ? (matrixCondition! & step.ifExpression)
+                : step.ifExpression,
           ),
       ],
     );

@@ -66,7 +66,8 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
   Iterable<Step> build() => [
     Step.run(
       name: 'Manually install yq',
-      run: '''
+      run:
+          '''
 set -eo pipefail
 curl -sSLo /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${yqArch.expression}
 chmod +x /usr/bin/yq

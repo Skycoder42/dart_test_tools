@@ -29,7 +29,8 @@ class BuildMacosDmgBuilder implements StepBuilder {
       packageSteps: [
         Step.run(
           name: 'Generate DMG image',
-          run: '''
+          run:
+              '''
 set -eo pipefail
 title=\$(jq -r '.title' '${config.dmgConfigPath}')
 mkdir -p build/macos/dmg

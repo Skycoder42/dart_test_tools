@@ -50,7 +50,8 @@ git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
     ),
     Step.run(
       name: 'Import SSH private key',
-      run: '''
+      run:
+          '''
 set -eo pipefail
 
 mkdir -p '${Runner.temp}'

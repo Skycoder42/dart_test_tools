@@ -26,7 +26,8 @@ class ReleaseBuilder implements StepBuilder {
     Step.run(
       id: versionStepId,
       name: 'Check if package should be published',
-      run: '''
+      run:
+          '''
 set -e
 package_name=\$(cat pubspec.yaml | yq e ".name" -)
 package_version=\$(cat pubspec.yaml | yq e ".version" -)

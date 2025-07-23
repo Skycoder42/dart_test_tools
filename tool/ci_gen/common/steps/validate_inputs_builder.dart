@@ -12,7 +12,8 @@ class ValidateInputsBuilder implements StepBuilder {
     for (final MapEntry(key: name, value: input) in inputs.entries)
       Step.run(
         name: '[Validate Inputs] Ensure $name is set',
-        run: '''
+        run:
+            '''
 if [[ '$input' == '' ]]; then
   echo '::error::Platform is enabled, but required input $name is not set'
   exit 1

@@ -27,8 +27,9 @@ void customLintTest(
   () async {
     final dartDir = await _setup();
     for (final entry in files.entries) {
-      final fileMode =
-          entry.key == 'pubspec.yaml' ? FileMode.append : FileMode.write;
+      final fileMode = entry.key == 'pubspec.yaml'
+          ? FileMode.append
+          : FileMode.write;
 
       final file = File.fromUri(dartDir.uri.resolve(entry.key));
       await file.parent.create(recursive: true);

@@ -31,7 +31,8 @@ class BuildAndroidAppBuilder implements StepBuilder {
       preBuildSteps: [
         Step.run(
           name: 'Prepare signing keystore',
-          run: '''
+          run:
+              '''
 set -eo pipefail
 keystore_path='${Runner.temp}/app.keystore'
 echo '${config.keystore}' | openssl base64 -d > "\$keystore_path"
@@ -51,7 +52,8 @@ EOF
       packageSteps: [
         Step.run(
           name: 'Generate Changelog',
-          run: '''
+          run:
+              '''
 set -eo pipefail
 version=\$(yq e '.version' pubspec.yaml)
 changelogs_dir='build/app/outputs/metadata/${config.primaryLocale}/changelogs'

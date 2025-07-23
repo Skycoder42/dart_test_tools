@@ -40,19 +40,16 @@ class FlutterSdkBuilder implements StepBuilder {
   String get _preCachePlatformArgs =>
       buildPlatform != null ? ' --$buildPlatform' : '';
 
-  Step? _maybeSetupJdk() =>
-      javaJdkVersion == null
-          ? null
-          : switch (buildPlatform) {
-            null => null,
-            ExpressionOrValueExpression(:final expression) => _setupJdk(
-              expression.eq(
-                Expression.literal(FlutterPlatform.android.platform),
-              ),
-            ),
-            ExpressionOrValueValue(:final value) =>
-              value == FlutterPlatform.android.platform ? _setupJdk() : null,
-          };
+  Step? _maybeSetupJdk() => javaJdkVersion == null
+      ? null
+      : switch (buildPlatform) {
+          null => null,
+          ExpressionOrValueExpression(:final expression) => _setupJdk(
+            expression.eq(Expression.literal(FlutterPlatform.android.platform)),
+          ),
+          ExpressionOrValueValue(:final value) =>
+            value == FlutterPlatform.android.platform ? _setupJdk() : null,
+        };
 
   Step _setupJdk([Expression? condition]) => Step.uses(
     name: 'Install JDK Version $javaJdkVersion',

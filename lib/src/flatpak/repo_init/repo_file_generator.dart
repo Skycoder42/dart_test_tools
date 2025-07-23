@@ -34,11 +34,12 @@ class RepoFileGenerator {
     await _copyIcon(repo, metadata);
   }
 
-  Future<String> _loadGpgKey(RepoMetadata metadata) =>
-      metadata.gpgInfo.publicKeyFile
-          .openRead()
-          .transform(base64.encoder)
-          .join();
+  Future<String> _loadGpgKey(RepoMetadata metadata) => metadata
+      .gpgInfo
+      .publicKeyFile
+      .openRead()
+      .transform(base64.encoder)
+      .join();
 
   Map<String, String> _createRepInfo(RepoMetadata metadata, String gpgKey) => {
     'Url': metadata.url.toString(),

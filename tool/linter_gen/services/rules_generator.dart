@@ -25,22 +25,19 @@ class RulesGenerator {
   }) async {
     final newRules = await knownRulesLoader.loadNewRules();
 
-    final relativeToDir =
-        relativeTo != null
-            ? rulesCollector.analysisOptionsLoader.findDirectory(relativeTo)
-            : null;
+    final relativeToDir = relativeTo != null
+        ? rulesCollector.analysisOptionsLoader.findDirectory(relativeTo)
+        : null;
     final baseRules = await rulesCollector.collectRulesRecursively(
       baseOptions,
       relativeTo: relativeToDir,
     );
-    final mergeRules =
-        await Stream.fromIterable(
-          mergeOptions,
-        ).asyncMap(rulesCollector.collectRulesRecursively).toList();
-    final customRules =
-        customOptions != null
-            ? await rulesCollector.collectRulesRecursively(customOptions)
-            : null;
+    final mergeRules = await Stream.fromIterable(
+      mergeOptions,
+    ).asyncMap(rulesCollector.collectRulesRecursively).toList();
+    final customRules = customOptions != null
+        ? await rulesCollector.collectRulesRecursively(customOptions)
+        : null;
 
     final appliedRules = _mergeRules(
       baseRules,
@@ -54,14 +51,13 @@ class RulesGenerator {
       include: baseOptions,
       analyzer: AnalysisOptionsAnalyzer(
         plugins: const ['custom_lint'],
-        language:
-            withLanguageRules
-                ? const {
-                  'strict-casts': true,
-                  'strict-inference': true,
-                  'strict-raw-types': true,
-                }
-                : null,
+        language: withLanguageRules
+            ? const {
+                'strict-casts': true,
+                'strict-inference': true,
+                'strict-raw-types': true,
+              }
+            : null,
       ),
       linter: AnalysisOptionsLinter(rules: appliedRules),
     );

@@ -13,7 +13,8 @@ sealed class Pkgbuild with _$Pkgbuild {
 
   const Pkgbuild._();
 
-  String encode() => '''
+  String encode() =>
+      '''
 # Maintainer: $maintainer
 ${properties.encode()}
 
@@ -70,10 +71,9 @@ sealed class PkgProperty with _$PkgProperty {
 extension PkgPropertyMapX on Map<String, PkgProperty> {
   String encode() => entries
       .map(
-        (e) =>
-            e.value.isEmpty
-                ? null
-                : '${e.key}=${e.value.encode(width: e.key.length + 1)}',
+        (e) => e.value.isEmpty
+            ? null
+            : '${e.key}=${e.value.encode(width: e.key.length + 1)}',
       )
       .whereType<String>()
       .join('\n');
@@ -86,7 +86,8 @@ sealed class PkgFunction with _$PkgFunction {
 
   const PkgFunction._();
 
-  String encode(String name) => '''
+  String encode(String name) =>
+      '''
 $name() {
 ${commands.map((c) => '  $c').join('\n')}
 }

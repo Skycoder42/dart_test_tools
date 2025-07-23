@@ -119,7 +119,8 @@ class CompileBuilder implements StepBuilder {
     ...ProjectSetupBuilder(config: config).build(),
     Step.run(
       name: 'Compile executables',
-      run: '''
+      run:
+          '''
 set -eo pipefail
 mkdir -p build/bin
 yq ".executables.[] | key" pubspec.yaml | while read executableName; do
@@ -133,7 +134,8 @@ done
     Step.run(
       name: 'Create release archives (${ArchiveType.tar.name})',
       ifExpression: archiveType.expression.eq(ArchiveType.tar.expression),
-      run: '''
+      run:
+          '''
 set -eo pipefail
 shopt -s extglob
 mkdir -p ../artifacts
@@ -146,7 +148,8 @@ tar -cavf '../artifacts/${config.archivePrefix}-${platform.expression}-debug-sym
     Step.run(
       name: 'Create release archives (${ArchiveType.zip.name})',
       ifExpression: archiveType.expression.eq(ArchiveType.zip.expression),
-      run: '''
+      run:
+          '''
 set -eo pipefail
 shopt -s nullglob
 mkdir -p ../artifacts

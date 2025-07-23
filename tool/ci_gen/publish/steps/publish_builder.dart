@@ -51,7 +51,8 @@ class PublishBuilder implements StepBuilder {
     Step.run(
       id: toolsStepId,
       name: 'Prepare build tools',
-      run: '''
+      run:
+          '''
 if ${config.isFlutter.asExpression}; then
   ${toolsPub.bashSetter('flutter pub')}
   ${toolsPubRun.bashSetter('flutter pub run')}

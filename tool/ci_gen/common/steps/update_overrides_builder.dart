@@ -29,11 +29,9 @@ class UpdateOverridesBuilder implements StepBuilder {
     if (config.removePubspecOverrides.rawValueOr(true))
       Step.run(
         name: 'Remove pubspec_overrides.yaml$titleSuffix',
-        ifExpression:
-            config.removePubspecOverrides.isExpression
-                ? (config.removePubspecOverrides.asExpression &
-                    config.ifExpression)
-                : config.ifExpression,
+        ifExpression: config.removePubspecOverrides.isExpression
+            ? (config.removePubspecOverrides.asExpression & config.ifExpression)
+            : config.ifExpression,
         run:
             'find . -type f -name "pubspec_overrides.yaml" '
             r'-exec git rm -f {} \;',
@@ -58,7 +56,8 @@ class UpdateOverridesBuilder implements StepBuilder {
             config.artifactDependencies!.ne(Expression.empty) &
             config.ifExpression,
         shell: 'bash',
-        run: '''
+        run:
+            '''
 set -eo pipefail
 if [[ ! -f pubspec_overrides.yaml ]]; then
   yq '{"dependency_overrides": .dependency_overrides}' pubspec.yaml > pubspec_overrides.yaml
@@ -73,10 +72,9 @@ done
     if (config.localResolution.rawValueOr(true))
       Step.run(
         name: 'Switch to local resolution',
-        ifExpression:
-            config.localResolution.isExpression
-                ? config.localResolution.asExpression & config.ifExpression
-                : config.ifExpression,
+        ifExpression: config.localResolution.isExpression
+            ? config.localResolution.asExpression & config.ifExpression
+            : config.ifExpression,
         run: '''
 set -eo pipefail
 touch pubspec_overrides.yaml

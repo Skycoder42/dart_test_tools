@@ -33,7 +33,8 @@ class InstallXcodeSigningBuilder implements StepBuilder {
     ),
     Step.run(
       name: 'Install Provisioning Profile',
-      run: '''
+      run:
+          '''
 set -eo pipefail
 new_dir="\$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
 old_dir="\$HOME/Library/MobileDevice/Provisioning Profiles"

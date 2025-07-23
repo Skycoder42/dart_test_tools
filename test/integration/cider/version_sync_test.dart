@@ -228,20 +228,19 @@ const name = 'version_sync_test';
   ).copy(pwd.uri.resolve('darwin/version_sync_test.podspec').toFilePath());
 
   final pubspecFile = File.fromUri(pwd.uri.resolve('pubspec.yaml'));
-  final pubspecEditor =
-      YamlEditor(await pubspecFile.readAsString())
-        ..update(const ['version'], version)
-        ..update(
-          const ['cider'],
-          {
-            'version_sync': const {
-              'lib/src/version.dart': {
-                'pattern': r"^const version = '.*';$",
-                'replacement': "const version = '%{version}';",
-              },
-            },
+  final pubspecEditor = YamlEditor(await pubspecFile.readAsString())
+    ..update(const ['version'], version)
+    ..update(
+      const ['cider'],
+      {
+        'version_sync': const {
+          'lib/src/version.dart': {
+            'pattern': r"^const version = '.*';$",
+            'replacement': "const version = '%{version}';",
           },
-        );
+        },
+      },
+    );
 
   await pubspecFile.writeAsString(pubspecEditor.toString(), flush: true);
 }

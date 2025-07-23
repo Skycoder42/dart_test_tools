@@ -41,7 +41,8 @@ class DockerImageBuilder implements StepBuilder {
     Step.run(
       id: _generateTags,
       name: 'Generate docker image tags',
-      run: '''
+      run:
+          '''
 set -eo pipefail
 
 major_version=\$(cut -d. -f1 <<< '${config.version}')

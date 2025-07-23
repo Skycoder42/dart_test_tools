@@ -39,12 +39,11 @@ class MetadataCollector {
   }
 
   Future<(String, String)> _loadRepoInfo(Directory repo) async {
-    final remoteString =
-        await Github.execLines('git', const [
-          'config',
-          '--get',
-          'remote.origin.url',
-        ], workingDirectory: repo).single;
+    final remoteString = await Github.execLines('git', const [
+      'config',
+      '--get',
+      'remote.origin.url',
+    ], workingDirectory: repo).single;
     final remoteUrl = Uri.parse(remoteString);
 
     if (remoteUrl.origin != 'https://github.com') {
@@ -56,12 +55,11 @@ class MetadataCollector {
   }
 
   Future<String> _loadDefaultBranch(Directory repo) async {
-    final defaultRef =
-        await Github.execLines('git', const [
-          'symbolic-ref',
-          'refs/remotes/origin/HEAD',
-          '--short',
-        ], workingDirectory: repo).single;
+    final defaultRef = await Github.execLines('git', const [
+      'symbolic-ref',
+      'refs/remotes/origin/HEAD',
+      '--short',
+    ], workingDirectory: repo).single;
     return defaultRef.split('/').last;
   }
 
@@ -87,18 +85,19 @@ class MetadataCollector {
     final metaInfoString = await metaInfo.readAsString();
     final metaInfoXml = XmlDocument.parse(metaInfoString);
 
-    final homepageUrl =
-        metaInfoXml
-            .xpath('/component/url[@type = "homepage"]')
-            .firstOrNull
-            ?.innerText;
+    final homepageUrl = metaInfoXml
+        .xpath('/component/url[@type = "homepage"]')
+        .firstOrNull
+        ?.innerText;
 
     return metadata.copyWith(
       id: metaInfoXml.xpath('/component/id').first.innerText,
       title: metaInfoXml.xpath('/component/name').firstOrNull?.innerText,
       summary: metaInfoXml.xpath('/component/summary').firstOrNull?.innerText,
-      description:
-          metaInfoXml.xpath('/component/description').firstOrNull?.innerText,
+      description: metaInfoXml
+          .xpath('/component/description')
+          .firstOrNull
+          ?.innerText,
       homepage: homepageUrl != null ? Uri.parse(homepageUrl) : null,
     );
   }

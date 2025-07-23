@@ -19,8 +19,8 @@ class ExportXmlChangelog {
       _buildReleases(builder, changelog);
       document.getElement('component')!.children.add(builder.buildFragment());
     } else {
-      final builder =
-          XmlBuilder()..processing('xml', 'version="1.0" encoding="UTF-8"');
+      final builder = XmlBuilder()
+        ..processing('xml', 'version="1.0" encoding="UTF-8"');
       _buildReleases(builder, changelog);
       document = builder.buildDocument();
     }
@@ -80,8 +80,8 @@ class ExportXmlChangelog {
           'ul',
           nest: () {
             for (final change in changes) {
-              final visitor =
-                  _DescriptionVisitor()..visitAll(change.description);
+              final visitor = _DescriptionVisitor()
+                ..visitAll(change.description);
               builder.xml(visitor.toXml());
             }
           },

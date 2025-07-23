@@ -141,19 +141,22 @@ class PkgBuildGenerator {
     final baseRepoString = baseRepo.toString();
     final tagPrefix = Uri.encodeComponent(options.aurOptions.tagPrefix);
 
-    final repoUri = Uri.parse(
-      baseRepoString.endsWith('/') ? baseRepoString : '$baseRepoString/',
-    ).resolveUri(
-      Uri(
-        path: 'archive/refs/tags/$tagPrefix${options.pubspec.version}.tar.gz',
-      ),
-    );
+    final repoUri =
+        Uri.parse(
+          baseRepoString.endsWith('/') ? baseRepoString : '$baseRepoString/',
+        ).resolveUri(
+          Uri(
+            path:
+                'archive/refs/tags/$tagPrefix${options.pubspec.version}.tar.gz',
+          ),
+        );
 
-    final binariesBaseUri = Uri.parse(
-      baseRepoString.endsWith('/') ? baseRepoString : '$baseRepoString/',
-    ).resolveUri(
-      Uri(path: 'releases/download/$tagPrefix${options.pubspec.version}/'),
-    );
+    final binariesBaseUri =
+        Uri.parse(
+          baseRepoString.endsWith('/') ? baseRepoString : '$baseRepoString/',
+        ).resolveUri(
+          Uri(path: 'releases/download/$tagPrefix${options.pubspec.version}/'),
+        );
 
     return PkgProperty.list(multiLine: true, [
       PkgProperty.interpolate('sources.tar.gz::$repoUri'),

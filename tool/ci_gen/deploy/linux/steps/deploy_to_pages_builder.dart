@@ -35,7 +35,8 @@ class DeployToPagesBuilder implements StepBuilder {
       steps: [
         Step.run(
           name: 'Import bundles into repository',
-          run: '''
+          run:
+              '''
 set -eo pipefail
 for bundle in bundles/*/*.flatpak; do
   echo "Importing \$bundle..."

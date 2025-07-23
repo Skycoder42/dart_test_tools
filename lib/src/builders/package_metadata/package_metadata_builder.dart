@@ -41,20 +41,19 @@ class PackageMetadataBuilder extends Builder {
   }
 
   Library _buildLibrary(Pubspec pubspec) => Library(
-    (b) =>
-        b
-          ..ignoreForFile.add('type=lint')
-          ..body.addAll([
-            _buildReqStringField('package', pubspec.name),
-            _buildStringField('version', pubspec.version?.canonicalizedVersion),
-            _buildStringField('description', pubspec.description),
-            _buildStrUriField('homepage', pubspec.homepage),
-            _buildUriField('repository', pubspec.repository),
-            _buildUriField('issueTracker', pubspec.issueTracker),
-            _buildUriListField('funding', pubspec.funding),
-            _buildStringListField('topics', pubspec.topics),
-            _buildStrUriField('documentation', pubspec.documentation),
-          ]),
+    (b) => b
+      ..ignoreForFile.add('type=lint')
+      ..body.addAll([
+        _buildReqStringField('package', pubspec.name),
+        _buildStringField('version', pubspec.version?.canonicalizedVersion),
+        _buildStringField('description', pubspec.description),
+        _buildStrUriField('homepage', pubspec.homepage),
+        _buildUriField('repository', pubspec.repository),
+        _buildUriField('issueTracker', pubspec.issueTracker),
+        _buildUriListField('funding', pubspec.funding),
+        _buildStringListField('topics', pubspec.topics),
+        _buildStrUriField('documentation', pubspec.documentation),
+      ]),
   );
 
   Field _buildReqStringField(String name, String value) =>
@@ -79,8 +78,8 @@ class PackageMetadataBuilder extends Builder {
     _uri.nullable,
     value != null
         ? _uri.newInstanceNamed('parse', [
-          literalString(value.toString(), raw: true),
-        ])
+            literalString(value.toString(), raw: true),
+          ])
         : literalNull,
   );
 
@@ -93,11 +92,11 @@ class PackageMetadataBuilder extends Builder {
     _uri.list,
     values != null
         ? literalList([
-          for (final value in values)
-            _uri.newInstanceNamed('parse', [
-              literalString(value.toString(), raw: true),
-            ]),
-        ])
+            for (final value in values)
+              _uri.newInstanceNamed('parse', [
+                literalString(value.toString(), raw: true),
+              ]),
+          ])
         : literalList(const [], _uri),
   );
 
@@ -107,27 +106,24 @@ class PackageMetadataBuilder extends Builder {
     Expression value, {
     FieldModifier modifier = FieldModifier.constant,
   }) => Field(
-    (b) =>
-        b
-          ..name = name
-          ..modifier = modifier
-          ..type = strictTypes || value == literalNull ? type : null
-          ..assignment = value.code,
+    (b) => b
+      ..name = name
+      ..modifier = modifier
+      ..type = strictTypes || value == literalNull ? type : null
+      ..assignment = value.code,
   );
 }
 
 extension on TypeReference {
   TypeReference get nullable => TypeReference(
-    (b) =>
-        b
-          ..replace(this)
-          ..isNullable = true,
+    (b) => b
+      ..replace(this)
+      ..isNullable = true,
   );
 
   TypeReference get list => TypeReference(
-    (b) =>
-        b
-          ..symbol = 'List'
-          ..types.add(this),
+    (b) => b
+      ..symbol = 'List'
+      ..types.add(this),
   );
 }

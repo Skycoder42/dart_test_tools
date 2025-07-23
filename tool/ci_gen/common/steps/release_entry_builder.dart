@@ -13,8 +13,9 @@ base mixin ReleaseEntryConfig on JobConfig, WorkingDirectoryConfig {
   bool get withToken => false;
 
   late final tagPrefix = inputContext(WorkflowInputs.tagPrefix);
-  late final githubToken =
-      withToken ? secretContext(WorkflowSecrets.githubToken) : null;
+  late final githubToken = withToken
+      ? secretContext(WorkflowSecrets.githubToken)
+      : null;
 }
 
 class ReleaseEntryBuilder implements StepBuilder {
@@ -50,7 +51,8 @@ class ReleaseEntryBuilder implements StepBuilder {
       id: releaseContentStepId,
       name: 'Generate release content',
       ifExpression: versionUpdate.eq(const Expression.literal('true')),
-      run: '''
+      run:
+          '''
 set -e
 package_name=\$(cat pubspec.yaml | yq e ".name" -)
 package_version=\$(cat pubspec.yaml | yq e ".version" -)

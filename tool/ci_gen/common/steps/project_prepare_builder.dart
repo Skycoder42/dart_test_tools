@@ -12,10 +12,12 @@ base mixin ProjectPrepareConfig
     on JobConfig, SdkJobConfig, UpdateOverridesConfig {
   bool get withBuildRunner => true;
 
-  late final buildRunner =
-      withBuildRunner ? inputContext(WorkflowInputs.buildRunner) : null;
-  late final buildRunnerArgs =
-      withBuildRunner ? inputContext(WorkflowInputs.buildRunnerArgs) : null;
+  late final buildRunner = withBuildRunner
+      ? inputContext(WorkflowInputs.buildRunner)
+      : null;
+  late final buildRunnerArgs = withBuildRunner
+      ? inputContext(WorkflowInputs.buildRunnerArgs)
+      : null;
   bool get releaseMode => false;
 }
 
@@ -45,11 +47,11 @@ class ProjectPrepareBuilder implements StepBuilder {
       Step.run(
         id: checkGenerateStepId,
         name: 'Check if localizations generation is required',
-        ifExpression:
-            config.ifExpression != null
-                ? config.ifExpression! & _onlyIfFlutter
-                : _onlyIfFlutter,
-        run: '''
+        ifExpression: config.ifExpression != null
+            ? config.ifExpression! & _onlyIfFlutter
+            : _onlyIfFlutter,
+        run:
+            '''
           set -eo pipefail
           if [ -f l10n.yaml ]; then
             ${generateOutput.bashSetter('true')}

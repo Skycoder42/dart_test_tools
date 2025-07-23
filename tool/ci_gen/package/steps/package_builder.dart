@@ -47,7 +47,8 @@ class PackageBuilder implements StepBuilder {
       uses: Tools.actionsUploadArtifact,
       withArgs: <String, dynamic>{
         'name': 'package-${_packageNameOutput.expression}',
-        'path': '''
+        'path':
+            '''
 ${config.workingDirectory}
 !${config.workingDirectory}/.*
 !${config.workingDirectory}/**/.*
