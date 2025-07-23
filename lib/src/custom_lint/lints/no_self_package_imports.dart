@@ -1,6 +1,6 @@
 import 'package:analyzer/dart/analysis/context_root.dart';
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/error/listener.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
 import 'package:meta/meta.dart';
@@ -34,7 +34,9 @@ class NoSelfPackageImports extends DartLintRule {
     CustomLintContext context,
   ) {
     context.registry.addNamespaceDirective((node) {
-      final contextRoot = node.element?.session?.analysisContext.contextRoot;
+      final contextRoot = _import(
+        node,
+      )?.libraryFragment.element.session.analysisContext.contextRoot;
       if (contextRoot == null) {
         print('WARNING: Unable to resolve context root for ${resolver.path}');
         return;
@@ -59,7 +61,7 @@ class NoSelfPackageImports extends DartLintRule {
     ContextRoot contextRoot,
     NamespaceDirective directive,
   ) {
-    final importUri = _directiveUri(directive);
+    final importUri = _directiveUri(_import(directive));
     if (importUri is! DirectiveUriWithSource) {
       return true;
     }
@@ -106,13 +108,11 @@ class NoSelfPackageImports extends DartLintRule {
     return false;
   }
 
-  DirectiveUri? _directiveUri(NamespaceDirective directive) {
-    if (directive is ImportDirective) {
-      return directive.element?.uri;
-    } else if (directive is ExportDirective) {
-      return directive.element?.uri;
-    } else {
-      return null;
-    }
-  }
+  ElementDirective? _import(NamespaceDirective directive) =>
+      switch (directive) {
+        ImportDirective(:final libraryImport) => libraryImport,
+        ExportDirective(:final libraryExport) => libraryExport,
+      };
+
+  DirectiveUri? _directiveUri(ElementDirective? directive) => directive?.uri;
 }

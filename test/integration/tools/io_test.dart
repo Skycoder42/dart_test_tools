@@ -47,10 +47,10 @@ void main() {
       final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
       addTearDown(server.close);
 
-      server.listen((request) {
+      server.listen((request) async {
         request.response.statusCode = HttpStatus.ok;
         request.response.write(request.requestedUri.toString());
-        request.response.close();
+        await request.response.close();
       });
 
       final uri = Uri.http(
@@ -85,13 +85,12 @@ void main() {
         final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
         addTearDown(server.close);
 
-        server.listen((request) {
-          request.response.statusCode =
-              request.method == 'HEAD'
-                  ? HttpStatus.ok
-                  : HttpStatus.methodNotAllowed;
+        server.listen((request) async {
+          request.response.statusCode = request.method == 'HEAD'
+              ? HttpStatus.ok
+              : HttpStatus.methodNotAllowed;
           request.response.headers.add(headerName, headerValue);
-          request.response.close();
+          await request.response.close();
         });
 
         final uri = Uri.http('${server.address.address}:${server.port}', '/');
@@ -110,12 +109,11 @@ void main() {
         final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
         addTearDown(server.close);
 
-        server.listen((request) {
-          request.response.statusCode =
-              request.method == 'HEAD'
-                  ? HttpStatus.ok
-                  : HttpStatus.methodNotAllowed;
-          request.response.close();
+        server.listen((request) async {
+          request.response.statusCode = request.method == 'HEAD'
+              ? HttpStatus.ok
+              : HttpStatus.methodNotAllowed;
+          await request.response.close();
         });
 
         final uri = Uri.http('${server.address.address}:${server.port}', '/');

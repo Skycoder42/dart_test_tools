@@ -4,7 +4,7 @@ import 'package:analyzer/dart/analysis/context_root.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/error/listener.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
 import 'package:meta/meta.dart';
@@ -67,28 +67,27 @@ class SrcLibraryNotExported extends DartLintRule {
         context.sharedState[_packageExportsKey]! as Set<String>;
 
     context.registry.addCompilationUnit((node) {
-      final element = node.declaredElement;
-      if (element == null) {
+      final fragment = node.declaredFragment;
+      if (fragment == null) {
         return;
       }
 
-      final exportableElements =
-          node.declarations
-              .expand(_declaredElements)
-              .where((e) => e.isExportable)
-              .toList();
+      final exportableElements = node.declarations
+          .expand(_declaredElements)
+          .where((e) => e.isExportable)
+          .toList();
 
       if (exportableElements.isEmpty) {
         return;
       }
 
-      final libraryPath = element.librarySource.fullName;
+      final libraryPath = fragment.source.fullName;
       if (exportedLibraries.contains(libraryPath)) {
         return;
       }
 
       for (final element in exportableElements) {
-        reporter.atElement(element, _code);
+        reporter.atElement2(element, _code);
       }
     });
   }
@@ -96,15 +95,15 @@ class SrcLibraryNotExported extends DartLintRule {
   bool _isPublished(CustomLintContext context) =>
       context.pubspec.publishTo != 'none';
 
-  Iterable<Element> _declaredElements(CompilationUnitMember declaration) {
-    final Iterable<Element?> elements;
+  Iterable<Element2> _declaredElements(CompilationUnitMember declaration) {
+    final Iterable<Element2?> elements;
     if (declaration is TopLevelVariableDeclaration) {
-      elements = declaration.variables.variables.map((v) => v.declaredElement);
+      elements = declaration.variables.variables.map((v) => v.declaredElement2);
     } else {
-      elements = [declaration.declaredElement];
+      elements = [declaration.declaredFragment?.element];
     }
 
-    return elements.whereType<Element>();
+    return elements.whereType<Element2>();
   }
 
   Future<Set<String>> _loadPackageExports(AnalysisSession session) async {
@@ -150,7 +149,7 @@ class SrcLibraryNotExported extends DartLintRule {
     final exportedSources = unit.directives
         .whereType<ExportDirective>()
         .expand((e) sync* {
-          yield e.element?.uri;
+          yield e.libraryExport?.uri;
           yield* e.configurations.map((c) => c.resolvedUri);
         })
         .whereType<DirectiveUriWithSource>()
@@ -182,10 +181,12 @@ class SrcLibraryNotExported extends DartLintRule {
   }
 }
 
-extension _ElementX on Element {
+extension _ElementX on Element2 {
   bool get isExportable =>
       isPublic &&
-      !hasInternal &&
-      !hasVisibleForTesting &&
-      !hasVisibleForOverriding;
+      !_metadata.hasInternal &&
+      !_metadata.hasVisibleForTesting &&
+      !_metadata.hasVisibleForOverriding;
+
+  Metadata get _metadata => (this as Annotatable).metadata2;
 }

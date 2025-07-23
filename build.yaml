@@ -8,10 +8,6 @@ builders:
         - "lib/gen/package_metadata.dart"
     auto_apply: none
     build_to: source
-    defaults:
-      options:
-        generateApi: true
-        generateClient: true
 
 targets:
   $default:

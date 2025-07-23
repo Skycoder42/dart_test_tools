@@ -43,13 +43,11 @@ class _NeedsConverter implements JsonConverter<Set<JobId>?, List<String>?> {
 
   @override
   Set<JobId>? fromJson(List<String>? json) =>
-      json != null
-          ? {...json.map((j) => const JobIdConverter().fromJson(j)!)}
-          : null;
+      json != null ? {...json.map(JobId.fromJson)} : null;
 
   @override
   List<String>? toJson(Set<JobId>? needs) =>
-      needs?.map((id) => const JobIdConverter().toJson(id)!).toList();
+      needs?.map((id) => id.toJson()).toList();
 }
 
 @freezed
