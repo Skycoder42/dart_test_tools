@@ -57,9 +57,9 @@ flutter_version=$(flutter --version | grep Flutter | cut -d ' ' -f2 | xargs)
 
 for pubspec in $(find . -name pubspec.yaml); do
   echo "Updating SDK versions in $pubspec"
-  yq -i ".environment.sdk = ^$dart_version" "$pubspec"
-  if yq ".environment | has(\"flutter\")" "$pubspec" | grep -q true; then
-    yq -i ".environment.flutter = \">=$dart_version\"" "$pubspec"
+  sed -i "s/sdk: \([^\"]*\)/sdk: ^$dart_version/" "$pubspec"
+  if grep -q 'flutter:' "$pubspec"; then
+    sed -i "s/flutter: .*/flutter: '>=$flutter_version'/" "$pubspec"
   fi
 done
 ''',
