@@ -37,6 +37,7 @@ final class AutoUpdateJobBuilder extends SdkJobBuilder<AutoUpdateJobConfig>
   Job build() => Job(
     name: 'Automatic dependency updates',
     runsOn: RunsOn.ubuntuLatest.id,
+    permissions: const {'contents': 'write', 'pull-requests': 'write'},
     steps: [
       ...buildSetupSdkSteps(),
       ...InstallToolsBuilder(config: config).build(),
