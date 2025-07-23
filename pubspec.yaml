@@ -4,7 +4,7 @@ version: 6.1.2
 homepage: https://github.com/Skycoder42/dart_test_tools
 
 environment:
-  sdk: ^3.8.0
+  sdk: ^3.8.1
 
 executables:
   generate-build-number: generate_build_number
