@@ -7,6 +7,7 @@ import '../api/job_config.dart';
 import '../api/working_directory_config.dart';
 import '../inputs.dart';
 import '../steps/analyze_builder.dart';
+import '../steps/install_tools_builder.dart';
 import '../steps/project_prepare_builder.dart';
 import '../steps/project_setup_builder.dart';
 import '../steps/run_publish_builder.dart';
@@ -16,6 +17,7 @@ import 'sdk_job_builder.dart';
 abstract base class AnalyzeJobConfig extends JobConfig
     with
         SdkJobConfig,
+        InstallToolsConfig,
         WorkingDirectoryConfig,
         UpdateOverridesConfig,
         ProjectPrepareConfig,

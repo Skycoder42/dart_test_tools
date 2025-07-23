@@ -1,0 +1,85 @@
+on:
+  workflow_call:
+    inputs:
+      flutterSdkChannel:
+        type: string
+        required: false
+        default: stable
+        description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action".
+      workingDirectory:
+        type: string
+        required: false
+        default: .
+        description: The root directory of the dart package to build and test.
+jobs:
+  auto-update:
+    name: Automatic dependency updates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
+      - name: Download flutter binary artifacts
+        run: flutter precache --universal
+      - name: Install scoop
+        if: runner.os == 'Windows'
+        run: |
+          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
+        shell: pwsh
+      - name: Install yq (Windows)
+        if: runner.os == 'Windows'
+        run: scoop install yq
+      - name: Install yq and coreutils (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install yq coreutils
+          echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+      - name: Restore dart packages
+        run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Update SDK versions
+        run: |
+          set -euo pipefail
+
+          dart_version=$(dart --version | cut -d: -f2 | cut '-d(' -f1 | xargs)
+          flutter_version=$(flutter --version | grep Flutter | cut -d ' ' -f2 | xargs)
+
+          for pubspec in $(find . -name pubspec.yaml); do
+            echo "Updating SDK versions in $pubspec"
+            yq -i ".environment.sdk = ^$dart_version" "$pubspec"
+            if yq ".environment | has(\"flutter\")" "$pubspec" | grep -q true; then
+              yq -i ".environment.flutter = \">=$dart_version\"" "$pubspec"
+            fi
+          done
+        working-directory: ${{ inputs.workingDirectory }}
+      - id: check_for_flutter_test
+        name: Install flutter_test if needed
+        run: |
+          set -euo pipefail
+
+          if flutter pub deps --json | jq '.packages | any(.name == "flutter_test")' | grep -q true; then
+            echo "was_installed=false" >> $GITHUB_OUTPUT
+          else
+            flutter pub add 'dev:flutter_test:{sdk: flutter}'
+            echo "was_installed=true" >> $GITHUB_OUTPUT
+          fi
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Upgrade all dependencies
+        run: flutter pub upgrade --major-versions --tighten
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Remove flutter_test
+        if: steps.check_for_flutter_test.outputs.was_installed == 'true'
+        run: flutter pub remove flutter_test
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Regenerate lockfiles
+        if: steps.check_for_flutter_test.outputs.was_installed == 'true'
+        run: flutter pub upgrade
+        working-directory: ${{ inputs.workingDirectory }}

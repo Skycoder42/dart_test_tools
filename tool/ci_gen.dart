@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:yaml_writer/yaml_writer.dart';
 
 import 'ci_gen/aur/aur_workflow.dart';
+import 'ci_gen/auto_update/auto_update_workflow.dart';
 import 'ci_gen/common/api/workflow_builder.dart';
 import 'ci_gen/compile/compile_workflow.dart';
 import 'ci_gen/dart/dart_workflow.dart';
@@ -37,6 +38,7 @@ Future<void> main() async {
     BuildMacosWorkflow(),
     BuildWindowsWorkflow(),
     BuildWebWorkflow(),
+    AutoUpdateWorkflow(),
   ];
 
   for (final workflow in workflows) {

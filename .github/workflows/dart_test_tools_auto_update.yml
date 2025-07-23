@@ -1,0 +1,9 @@
+name: Automatic dependency updates
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ci:
+    name: Updates
+    uses: Skycoder42/dart_test_tools/.github/workflows/auto-update.yml@main
