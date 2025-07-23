@@ -69,8 +69,7 @@ abstract class Tools {
   static const googleGithubActionsSetupGcloud =
       'google-github-actions/setup-gcloud@v2';
 
-  static const installHurl =
-      'Skycoder42/dart_test_tools/.github/actions/install-hurl@main';
-
-  static const hurl = 'Skycoder42/dart_test_tools/.github/actions/hurl@main';
+  /// https://github.com/peter-evans/create-pull-request/releases
+  static const peterEvansCreatePullRequest =
+      'peter-evans/create-pull-request@v7';
 }

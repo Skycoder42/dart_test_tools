@@ -1,8 +1,10 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/working_directory_config.dart';
+import '../../common/contexts.dart';
 import '../../common/jobs/sdk_job_builder.dart';
 import '../../common/steps/checkout_builder.dart';
 import '../../common/steps/install_tools_builder.dart';
+import '../../common/tools.dart';
 import '../../flutter/jobs/flutter_sdk_job_builder_mixin.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
@@ -83,7 +85,14 @@ fi
       ),
       Step.run(
         name: 'Upgrade all dependencies',
-        run: '${config.pubTool} upgrade --major-versions --tighten',
+        run:
+            '''
+set -euo pipefail
+
+echo '```' > ${Runner.temp}/update_log.md
+${config.pubTool} upgrade --major-versions --tighten | tee -a ${Runner.temp}/update_log.md
+echo '```' >> ${Runner.temp}/update_log.md
+''',
         workingDirectory: config.workingDirectory.toString(),
       ),
       Step.run(
@@ -106,6 +115,16 @@ fi
         name: 'Display changes',
         run: 'git diff',
         workingDirectory: config.workingDirectory.toString(),
+      ),
+      Step.uses(
+        name: 'Create pull request',
+        uses: Tools.peterEvansCreatePullRequest,
+        withArgs: {
+          'branch': 'automatic-dependency-updates',
+          'commit-message': 'Automatic dependency updates',
+          'title': 'Automatic dependency updates',
+          'body-path': '${Runner.temp}/update_log.md',
+        },
       ),
     ],
   );

@@ -73,7 +73,12 @@ jobs:
           fi
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upgrade all dependencies
-        run: flutter pub upgrade --major-versions --tighten
+        run: |
+          set -euo pipefail
+
+          echo '```' > ${{ runner.temp }}/update_log.md
+          flutter pub upgrade --major-versions --tighten | tee -a ${{ runner.temp }}/update_log.md
+          echo '```' >> ${{ runner.temp }}/update_log.md
         working-directory: ${{ inputs.workingDirectory }}
       - name: Remove flutter_test
         if: steps.check_for_flutter_test.outputs.was_installed == 'true'
@@ -86,3 +91,10 @@ jobs:
       - name: Display changes
         run: git diff
         working-directory: ${{ inputs.workingDirectory }}
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: automatic-dependency-updates
+          commit-message: Automatic dependency updates
+          title: Automatic dependency updates
+          body-path: ${{ runner.temp }}/update_log.md
