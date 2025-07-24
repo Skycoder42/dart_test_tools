@@ -16,8 +16,52 @@ on:
         required: true
         description: The personal access token to create new releases with. Is required, as the default github workflow token does not trigger workflows when creating releases.
 jobs:
+  check-update-required:
+    name: Check if updates are required
+    outputs:
+      has_outdated: ${{ steps.check_auto_update.outputs.has_outdated }}
+      has_security_issues: ${{ steps.check_auto_update.outputs.has_security_issues }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
+      - name: Download flutter binary artifacts
+        run: flutter precache --universal
+      - name: Install scoop
+        if: runner.os == 'Windows'
+        run: |
+          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
+        shell: pwsh
+      - name: Install yq (Windows)
+        if: runner.os == 'Windows'
+        run: scoop install yq
+      - name: Install yq and coreutils (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install yq coreutils
+          echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+      - name: Install dart_test_tools
+        run: dart pub global activate dart_test_tools ^6.1.2
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+      - name: Restore dart packages
+        run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - id: check_auto_update
+        name: Check if updates are needed
+        run: flutter pub global run dart_test_tools:auto_update '${{ inputs.workingDirectory }}'
   auto-update:
     name: Automatic dependency updates
+    needs:
+      - check-update-required
+    if: needs.check-update-required.outputs.has_outdated || needs.check-update-required.outputs.has_security_issues
     permissions:
       contents: write
       pull-requests: write

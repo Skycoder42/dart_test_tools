@@ -31,7 +31,14 @@ final class AutoUpdateJobBuilder extends SdkJobBuilder<AutoUpdateJobConfig>
     'was_installed',
   );
 
-  AutoUpdateJobBuilder({required super.config});
+  final JobIdOutput hasOutdated;
+  final JobIdOutput hasSecurityIssues;
+
+  AutoUpdateJobBuilder({
+    required this.hasOutdated,
+    required this.hasSecurityIssues,
+    required super.config,
+  });
 
   @override
   JobId get id => const JobId('auto-update');
@@ -39,6 +46,8 @@ final class AutoUpdateJobBuilder extends SdkJobBuilder<AutoUpdateJobConfig>
   @override
   Job build() => Job(
     name: 'Automatic dependency updates',
+    needs: {hasOutdated.jobId, hasSecurityIssues.jobId},
+    ifExpression: hasOutdated.expression | hasSecurityIssues.expression,
     runsOn: RunsOn.ubuntuLatest.id,
     permissions: const {'contents': 'write', 'pull-requests': 'write'},
     steps: [

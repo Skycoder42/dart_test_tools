@@ -13,6 +13,7 @@ executables:
   flatpak-repo-init: flatpak_repo_init
   export-xml-changelog: export_xml_changelog
   generate-cask: generate_cask
+  auto-update: auto_update
 
 dependencies:
   analyzer: ^7.6.0
