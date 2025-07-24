@@ -2,6 +2,7 @@ import '../../common/api/job_config.dart';
 import '../../common/api/working_directory_config.dart';
 import '../../common/contexts.dart';
 import '../../common/jobs/sdk_job_builder.dart';
+import '../../common/secrets.dart';
 import '../../common/steps/checkout_builder.dart';
 import '../../common/steps/install_tools_builder.dart';
 import '../../common/tools.dart';
@@ -19,6 +20,8 @@ final class AutoUpdateJobConfig extends JobConfig
         InstallToolsConfig,
         WorkingDirectoryConfig {
   AutoUpdateJobConfig(super.inputContext, super.secretContext);
+
+  late final githubToken = secretContext(WorkflowSecrets.githubToken);
 }
 
 final class AutoUpdateJobBuilder extends SdkJobBuilder<AutoUpdateJobConfig>
@@ -125,6 +128,7 @@ echo '```' >> ${Runner.temp}/update_log.md
           'commit-message': 'Automatic dependency updates',
           'title': 'Automatic dependency updates',
           'body-path': '${Runner.temp}/update_log.md',
+          'token': config.githubToken.toString(),
         },
       ),
     ],

@@ -11,6 +11,10 @@ on:
         required: false
         default: .
         description: The root directory of the dart package to build and test.
+    secrets:
+      githubToken:
+        required: true
+        description: The personal access token to create new releases with. Is required, as the default github workflow token does not trigger workflows when creating releases.
 jobs:
   auto-update:
     name: Automatic dependency updates
@@ -101,3 +105,4 @@ jobs:
           commit-message: Automatic dependency updates
           title: Automatic dependency updates
           body-path: ${{ runner.temp }}/update_log.md
+          token: ${{ secrets.githubToken }}
