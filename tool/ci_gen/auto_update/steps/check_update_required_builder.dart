@@ -4,13 +4,12 @@ import '../../common/api/working_directory_config.dart';
 import '../../common/jobs/sdk_job_builder.dart';
 import '../../common/steps/checkout_builder.dart';
 import '../../common/steps/install_dart_test_tools_builder.dart';
-import '../../common/steps/install_tools_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 
 base mixin CheckUpdateRequiredConfig
-    on JobConfig, SdkJobConfig, InstallToolsConfig, WorkingDirectoryConfig {}
+    on JobConfig, SdkJobConfig, WorkingDirectoryConfig {}
 
 class CheckUpdateRequiredBuilder implements StepBuilder {
   static const checkStepId = StepId('check_auto_update');
@@ -23,7 +22,6 @@ class CheckUpdateRequiredBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() sync* {
-    yield* InstallToolsBuilder(config: config).build();
     yield* const InstallDartTestToolsBuilder().build();
     yield* const CheckoutBuilder(
       fetchDepth: 0,
