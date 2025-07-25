@@ -148,5 +148,5 @@ jobs:
       - name: Mention assignees
         uses: thollander/actions-comment-pull-request@v3
         with:
-          pr-number: 'IdOutput.step(stepId: create-pull-request, name: pull-request-number)'
+          pr-number: ${{ steps.create-pull-request.outputs.pull-request-number }}
           message: Your review has been requested @${{ github.repository_owner }}
