@@ -72,4 +72,8 @@ abstract class Tools {
   /// https://github.com/peter-evans/create-pull-request/releases
   static const peterEvansCreatePullRequest =
       'peter-evans/create-pull-request@v7';
+
+  /// https://github.com/thollander/actions-comment-pull-request/releases
+  static const thollanderActionsCommentPullRequest =
+      'thollander/actions-comment-pull-request@v3';
 }

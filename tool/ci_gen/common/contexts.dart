@@ -22,6 +22,8 @@ abstract base class Github {
   static const actor = Expression('github.actor');
 
   static const repository = Expression('github.repository');
+
+  static const repositoryOwner = Expression('github.repository_owner');
 }
 
 abstract base class Functions {

@@ -2,11 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:meta/meta.dart';
+import 'package:pubspec_parse/pubspec_parse.dart';
 
 import '../tools/github.dart';
+import '../tools/io.dart';
 import 'models/dependency_source.dart';
 import 'models/pub/deps/dependencies.dart';
 import 'models/pub/outdated/outdated_info.dart';
+import 'models/pub/workspace/workspaces.dart';
 
 @internal
 class PubWrapper {
@@ -23,6 +26,12 @@ class PubWrapper {
         isFlutter: await _isFlutterProject(workingDirectory),
       );
 
+  Future<Pubspec> pubspec() async {
+    final file = workingDirectory.subFile('pubspec.yaml');
+    final yaml = await file.readAsString();
+    return Pubspec.parse(yaml, sourceUrl: file.uri);
+  }
+
   Future<void> upgrade() async => await _exec('upgrade');
 
   Future<void> downgrade() async => await _exec('downgrade');
@@ -34,6 +43,9 @@ class PubWrapper {
     '--show-all',
     '--dev-dependencies',
   ]).map(OutdatedInfo.fromJson).single;
+
+  Future<Workspaces> workspaceList() async =>
+      await _execJson('workspace', ['list']).map(Workspaces.fromJson).single;
 
   Future<void> _exec(String command, [List<String> args = const []]) =>
       Github.exec(

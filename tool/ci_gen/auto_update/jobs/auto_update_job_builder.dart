@@ -4,6 +4,7 @@ import '../../common/contexts.dart';
 import '../../common/jobs/sdk_job_builder.dart';
 import '../../common/secrets.dart';
 import '../../common/steps/checkout_builder.dart';
+import '../../common/steps/install_dart_test_tools_builder.dart';
 import '../../common/steps/install_tools_builder.dart';
 import '../../common/tools.dart';
 import '../../flutter/jobs/flutter_sdk_job_builder_mixin.dart';
@@ -26,19 +27,15 @@ final class AutoUpdateJobConfig extends JobConfig
 
 final class AutoUpdateJobBuilder extends SdkJobBuilder<AutoUpdateJobConfig>
     with FlutterSdkJobBuilderMixin {
-  static const testCheckStepId = StepId('check_for_flutter_test');
-  static final flutterTestWasInstalled = testCheckStepId.output(
-    'was_installed',
-  );
+  static const testCheckStepId = StepId('check-for-flutter-test');
+  static final flutterTestWasInstalled = testCheckStepId.output('wasInstalled');
 
-  final JobIdOutput hasOutdated;
-  final JobIdOutput hasSecurityIssues;
+  static const createPrStepId = StepId('create-pull-request');
+  static final pullRequestNumber = createPrStepId.output('pull-request-number');
 
-  AutoUpdateJobBuilder({
-    required this.hasOutdated,
-    required this.hasSecurityIssues,
-    required super.config,
-  });
+  final JobIdOutput needsUpdate;
+
+  AutoUpdateJobBuilder({required this.needsUpdate, required super.config});
 
   @override
   JobId get id => const JobId('auto-update');
@@ -46,13 +43,14 @@ final class AutoUpdateJobBuilder extends SdkJobBuilder<AutoUpdateJobConfig>
   @override
   Job build() => Job(
     name: 'Automatic dependency updates',
-    needs: {hasOutdated.jobId, hasSecurityIssues.jobId},
-    ifExpression: hasOutdated.expression | hasSecurityIssues.expression,
+    needs: {needsUpdate.jobId},
+    ifExpression: needsUpdate.expression.eq(const Expression.literal('true')),
     runsOn: RunsOn.ubuntuLatest.id,
     permissions: const {'contents': 'write', 'pull-requests': 'write'},
     steps: [
       ...buildSetupSdkSteps(),
       ...InstallToolsBuilder(config: config).build(),
+      ...const InstallDartTestToolsBuilder().build(),
       ...const CheckoutBuilder(
         fetchDepth: 0,
         persistCredentials: ExpressionOrValue.value(true),
@@ -124,20 +122,38 @@ echo '```' >> ${Runner.temp}/update_log.md
         run: '${config.pubTool} upgrade',
         workingDirectory: config.workingDirectory.toString(),
       ),
-      Step.run(
-        name: 'Display changes',
-        run: 'git diff',
-        workingDirectory: config.workingDirectory.toString(),
+      const Step.run(
+        name: 'Update changelog and bump build number',
+        run: '''
+set -euo pipefail
+
+dart pub global run dart_test_tools:cider log changed 'Updated dependencies'
+dart pub global run dart_test_tools:cider bump patch
+dart pub global run dart_test_tools:cider version-sync
+dart pub global run dart_test_tools:cider release
+''',
       ),
       Step.uses(
+        id: createPrStepId,
         name: 'Create pull request',
         uses: Tools.peterEvansCreatePullRequest,
         withArgs: {
           'branch': 'automatic-dependency-updates',
+          'delete-branch': true,
           'commit-message': 'Automatic dependency updates',
           'title': 'Automatic dependency updates',
           'body-path': '${Runner.temp}/update_log.md',
+          'assignees': Github.repositoryOwner.toString(),
           'token': config.githubToken.toString(),
+        },
+      ),
+      Step.uses(
+        name: 'Mention assignees',
+        uses: Tools.thollanderActionsCommentPullRequest,
+        withArgs: {
+          'pr-number': pullRequestNumber.toString(),
+          'message':
+              'Your review has been requested @${Github.repositoryOwner}',
         },
       ),
     ],

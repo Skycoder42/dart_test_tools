@@ -26,18 +26,13 @@ final class CheckUpdateRequiredJobBuilder
   @override
   JobId get id => const JobId('check-update-required');
 
-  JobIdOutput get hasOutdated => id.output('has_outdated');
-
-  JobIdOutput get hasSecurityIssues => id.output('has_security_issues');
+  JobIdOutput get needsUpdate => id.output('needs_update');
 
   @override
   Job build() => Job(
     name: 'Check if updates are required',
     runsOn: RunsOn.ubuntuLatest.id,
-    outputs: {
-      hasOutdated: CheckUpdateRequiredBuilder.hasOutdated,
-      hasSecurityIssues: CheckUpdateRequiredBuilder.hasSecurityIssues,
-    },
+    outputs: {needsUpdate: CheckUpdateRequiredBuilder.needsUpdate},
     steps: [
       ...buildSetupSdkSteps(),
       ...CheckUpdateRequiredBuilder(config: config).build(),

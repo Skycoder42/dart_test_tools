@@ -13,8 +13,7 @@ base mixin CheckUpdateRequiredConfig
 
 class CheckUpdateRequiredBuilder implements StepBuilder {
   static const checkStepId = StepId('check_auto_update');
-  static final hasOutdated = checkStepId.output('has_outdated');
-  static final hasSecurityIssues = checkStepId.output('has_security_issues');
+  static final needsUpdate = checkStepId.output('needs_update');
 
   final CheckUpdateRequiredConfig config;
 

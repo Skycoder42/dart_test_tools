@@ -23,8 +23,7 @@ class AutoUpdateWorkflow implements WorkflowBuilder {
     );
 
     final autoUpdateJobBuilder = AutoUpdateJobBuilder(
-      hasOutdated: checkUpdateRequiredJobBuilder.hasOutdated,
-      hasSecurityIssues: checkUpdateRequiredJobBuilder.hasSecurityIssues,
+      needsUpdate: checkUpdateRequiredJobBuilder.needsUpdate,
       config: AutoUpdateJobConfig(inputContext, secretContext),
     );
 
