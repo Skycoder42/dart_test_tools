@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.1.3-pre.2] - 2025-07-25
 ## [6.1.3-pre.1] - 2025-07-24
 ### Added
 - Automatic dependency updates
@@ -418,6 +419,7 @@ have been added:
 ### Added
 - Initial release
 
+[6.1.3-pre.2]: https://github.com/Skycoder42/dart_test_tools/compare/v6.1.3-pre.1...v6.1.3-pre.2
 [6.1.3-pre.1]: https://github.com/Skycoder42/dart_test_tools/compare/v6.1.2...v6.1.3-pre.1
 [6.1.2]: https://github.com/Skycoder42/dart_test_tools/compare/v6.1.1...v6.1.2
 [6.1.1]: https://github.com/Skycoder42/dart_test_tools/compare/v6.1.0...v6.1.1
