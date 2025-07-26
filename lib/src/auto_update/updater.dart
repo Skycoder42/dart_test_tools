@@ -11,36 +11,34 @@ class Updater {
   static const _flutterTestPackageName = 'flutter_test';
 
   final bool bumpVersion;
+  final String? reportPath;
 
-  const Updater({required this.bumpVersion});
+  IOSink? _reportSink;
+
+  Updater({required this.bumpVersion, required this.reportPath});
 
   Future<void> call(Directory targetDirectory) async {
+    if (reportPath case final String path) {
+      _reportSink = File(path).openWrite();
+    }
+
     final pub = PubWrapper(targetDirectory, isFlutter: true);
 
     await _updateSdks(pub);
 
-    final hasFlutterTest = await _hasFlutterTest(pub);
-    if (!hasFlutterTest) {
-      await pub.add(
-        _flutterTestPackageName,
-        dev: true,
-        config: {'sdk': 'flutter'},
-      );
-    }
-
-    await pub.upgrade(majorVersions: true, tighten: true);
-
-    if (!hasFlutterTest) {
-      await pub.remove(_flutterTestPackageName);
-      await pub.upgrade();
-    }
+    await _updateDependencies(pub);
 
     if (bumpVersion) {
       await _bumpVersion(pub);
     }
+
+    await _reportSink?.flush();
+    await _reportSink?.close();
+    _reportSink = null;
   }
 
   Future<void> _updateSdks(PubWrapper pub) async {
+    _reportSink?.writeln('### SDK Updates');
     final sdkIterator = SdkIterator(pub);
     await sdkIterator.iterate((name, pub, dartVersion, flutterVersion) async {
       final pubspec = await pub.pubspec();
@@ -67,7 +65,9 @@ class Updater {
     await pub.pubspecEdit(
       (editor) => editor.update(['environment', sdk], constraint.toString()),
     );
-    Github.logInfo('Settings $sdk version for $name to $constraint');
+    final message = 'Settings $sdk version for $name to $constraint';
+    _reportSink?.writeln('- $message');
+    Github.logInfo(message);
 
     if (bumpVersion) {
       await pub.globalRun('dart_test_tools:cider', [
@@ -75,6 +75,32 @@ class Updater {
         'changed',
         'Updated min $sdk version to $constraint',
       ]);
+    }
+  }
+
+  Future<void> _updateDependencies(PubWrapper pub) async {
+    final hasFlutterTest = await _hasFlutterTest(pub);
+    if (!hasFlutterTest) {
+      await pub.add(
+        _flutterTestPackageName,
+        dev: true,
+        config: {'sdk': 'flutter'},
+      );
+    }
+
+    final changes = pub.upgradeMajor();
+    _reportSink
+      ?..writeln('### Dependency Updates')
+      ..writeln('```');
+    await for (final line in changes) {
+      _reportSink?.writeln(line);
+      print(line);
+    }
+    _reportSink?.writeln('```');
+
+    if (!hasFlutterTest) {
+      await pub.remove(_flutterTestPackageName);
+      await pub.upgrade();
     }
   }
 

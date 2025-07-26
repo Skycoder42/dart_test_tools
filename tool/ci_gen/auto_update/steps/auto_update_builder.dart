@@ -52,8 +52,9 @@ class AutoUpdateBuilder implements StepBuilder {
       run:
           '${config.pubTool} global run dart_test_tools:auto_update '
           '--mode update '
+          "--target '${config.workingDirectory}' "
           '--bump-version '
-          "--target '${config.workingDirectory}'",
+          "--report '${Runner.temp}/update_log.md'",
     );
   }
 

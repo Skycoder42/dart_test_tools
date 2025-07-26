@@ -30,7 +30,7 @@ jobs:
       - name: Download flutter binary artifacts
         run: flutter precache --universal
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^6.1.3-pre.3
+        run: dart pub global activate dart_test_tools ^6.1.3-pre.4
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -74,7 +74,7 @@ jobs:
           brew install yq coreutils
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^6.1.3-pre.3
+        run: dart pub global activate dart_test_tools ^6.1.3-pre.4
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -84,7 +84,7 @@ jobs:
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}
       - name: Update dependencies
-        run: flutter pub global run dart_test_tools:auto_update --mode update --bump-version --target '${{ inputs.workingDirectory }}'
+        run: flutter pub global run dart_test_tools:auto_update --mode update --target '${{ inputs.workingDirectory }}' --bump-version --report '${{ runner.temp }}/update_log.md'
       - id: create-pull-request
         name: Create pull request
         uses: peter-evans/create-pull-request@v7

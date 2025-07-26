@@ -43,13 +43,10 @@ class PubWrapper {
     }
   }
 
-  Future<void> upgrade({
-    bool majorVersions = false,
-    bool tighten = false,
-  }) async => await _exec('upgrade', [
-    if (majorVersions) '--major-versions',
-    if (tighten) '--tighten',
-  ]);
+  Future<void> upgrade() async => await _exec('upgrade');
+
+  Stream<String> upgradeMajor() =>
+      _execLines('upgrade', ['--major-versions', '--tighten']);
 
   Future<void> downgrade() async => await _exec('downgrade');
 
@@ -98,15 +95,21 @@ class PubWrapper {
         runInShell: Platform.isWindows,
       );
 
+  Stream<String> _execLines(String command, [List<String> args = const []]) =>
+      Github.execLines(
+        _executable,
+        ['pub', command, ...args],
+        workingDirectory: workingDirectory,
+        runInShell: Platform.isWindows,
+      );
+
   Stream<Map<String, dynamic>> _execJson(
     String command, [
     List<String> args = const [],
-  ]) => Github.execLines(
-    _executable,
-    ['pub', command, ...args, '--json'],
-    workingDirectory: workingDirectory,
-    runInShell: Platform.isWindows,
-  ).transform(json.decoder).cast<Map<String, dynamic>>();
+  ]) => _execLines(command, [
+    ...args,
+    '--json',
+  ]).transform(json.decoder).cast<Map<String, dynamic>>();
 
   static Future<bool> _isFlutterProject(Directory workingDirectory) async {
     final wrapper = PubWrapper(workingDirectory, isFlutter: false);

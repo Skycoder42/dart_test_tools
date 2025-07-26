@@ -33,6 +33,12 @@ void main(List<String> args) => Github.runZoned(() async {
           abbr: 'b',
           help: 'Use cider to create a changelog message and bump the version',
         )
+        ..addOption(
+          'report',
+          abbr: 'r',
+          valueHelp: 'path',
+          help: 'Create a markdown report of the update result',
+        )
         ..addFlag('help', abbr: 'h', negatable: false, help: 'Show this help.');
 
   try {
@@ -53,7 +59,10 @@ void main(List<String> args) => Github.runZoned(() async {
       case UpdateMode.check:
         await const UpdateChecker()(target);
       case UpdateMode.update:
-        await Updater(bumpVersion: options['bump-version'] as bool)(target);
+        await Updater(
+          bumpVersion: options['bump-version'] as bool,
+          reportPath: options['report'] as String?,
+        )(target);
     }
   } on FormatException catch (e) {
     stderr
