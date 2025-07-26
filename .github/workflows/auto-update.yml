@@ -30,7 +30,7 @@ jobs:
       - name: Download flutter binary artifacts
         run: flutter precache --universal
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^6.1.3-pre.4
+        run: dart pub global activate dart_test_tools ^6.1.3-pre.5
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -74,7 +74,7 @@ jobs:
           brew install yq coreutils
           echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^6.1.3-pre.4
+        run: dart pub global activate dart_test_tools ^6.1.3-pre.5
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
