@@ -112,6 +112,14 @@ class Updater {
   Future<void> _bumpVersion(PubWrapper pub) async {
     final sdkIterator = SdkIterator(pub);
     await sdkIterator.iterate((name, pub, _, _) async {
+      final pubspec = await pub.pubspec();
+      if (pubspec.workspace case List(isEmpty: false)) {
+        // Do not run for workspace packages
+        Github.logDebug('Skipping workspace package $name');
+        return;
+      }
+
+      Github.logInfo('Bumping patch version of $name');
       await pub.globalRun('dart_test_tools:cider', [
         'log',
         'changed',
