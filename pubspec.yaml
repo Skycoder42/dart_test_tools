@@ -1,10 +1,10 @@
 name: dart_test_tools
 description: Additional tools and helpers for writing dart unit tests and GitHub Actions Workflows.
-version: 6.1.3-pre.4
+version: 6.1.3
 homepage: https://github.com/Skycoder42/dart_test_tools
 
 environment:
-  sdk: ^3.8.1
+  sdk: ^3.8.0
 
 executables:
   generate-build-number: generate_build_number
@@ -26,7 +26,7 @@ dependencies:
   code_builder: ^4.10.1
   collection: ^1.19.1
   crypto: ^3.0.6
-  custom_lint_builder: ^0.7.6
+  custom_lint_builder: ^0.8.0
   dotenv: ^4.2.0
   freezed_annotation: ^3.1.0
   json_annotation: ^4.9.0
