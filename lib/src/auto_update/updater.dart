@@ -26,10 +26,13 @@ class Updater {
 
     await _updateSdks(pub);
 
+    if (bumpVersion) {
+      await _bumpVersion(pub);
+    }
     await _updateDependencies(pub);
 
     if (bumpVersion) {
-      await _bumpVersion(pub);
+      await _releaseVersion(pub);
     }
 
     await _reportSink?.flush();
@@ -69,7 +72,7 @@ class Updater {
     _reportSink?.writeln('- $message');
     Github.logInfo(message);
 
-    if (bumpVersion) {
+    if (pubspec.workspace case null || [] when bumpVersion) {
       await pub.globalRun('dart_test_tools:cider', [
         'log',
         'changed',
@@ -120,13 +123,27 @@ class Updater {
       }
 
       Github.logInfo('Bumping patch version of $name');
+      await pub.globalRun('dart_test_tools:cider', ['bump', 'patch']);
+      await pub.globalRun('dart_test_tools:cider', ['version-sync']);
+    });
+  }
+
+  Future<void> _releaseVersion(PubWrapper pub) async {
+    final sdkIterator = SdkIterator(pub);
+    await sdkIterator.iterate((name, pub, _, _) async {
+      final pubspec = await pub.pubspec();
+      if (pubspec.workspace case List(isEmpty: false)) {
+        // Do not run for workspace packages
+        Github.logDebug('Skipping workspace package $name');
+        return;
+      }
+
+      Github.logInfo('Creating update for $name');
       await pub.globalRun('dart_test_tools:cider', [
         'log',
         'changed',
         'Updated dependencies',
       ]);
-      await pub.globalRun('dart_test_tools:cider', ['bump', 'patch']);
-      await pub.globalRun('dart_test_tools:cider', ['version-sync']);
       await pub.globalRun('dart_test_tools:cider', ['release']);
     });
   }
