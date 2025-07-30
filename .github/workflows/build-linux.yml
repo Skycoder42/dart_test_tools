@@ -82,7 +82,7 @@ jobs:
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^6.1.2
+        run: dart pub global activate dart_test_tools ^6.2.0
       - name: Manually install yq
         run: |
           set -eo pipefail
