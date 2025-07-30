@@ -10,12 +10,17 @@ import 'sdk_iterator.dart';
 class Updater {
   static const _flutterTestPackageName = 'flutter_test';
 
+  final bool flutterCompat;
   final bool bumpVersion;
   final String? reportPath;
 
   IOSink? _reportSink;
 
-  Updater({required this.bumpVersion, required this.reportPath});
+  Updater({
+    required this.flutterCompat,
+    required this.bumpVersion,
+    required this.reportPath,
+  });
 
   Future<void> call(Directory targetDirectory) async {
     if (reportPath case final String path) {
@@ -82,8 +87,8 @@ class Updater {
   }
 
   Future<void> _updateDependencies(PubWrapper pub) async {
-    final hasFlutterTest = await _hasFlutterTest(pub);
-    if (!hasFlutterTest) {
+    final needsFlutterTest = await _needsFlutterTest(pub);
+    if (needsFlutterTest) {
       await pub.add(
         _flutterTestPackageName,
         dev: true,
@@ -101,15 +106,19 @@ class Updater {
     }
     _reportSink?.writeln('```');
 
-    if (!hasFlutterTest) {
+    if (needsFlutterTest) {
       await pub.remove(_flutterTestPackageName);
       await pub.upgrade();
     }
   }
 
-  Future<bool> _hasFlutterTest(PubWrapper pub) async {
+  Future<bool> _needsFlutterTest(PubWrapper pub) async {
+    if (!flutterCompat) {
+      return false;
+    }
+
     final deps = await pub.deps();
-    return deps.packages.any((p) => p.name == _flutterTestPackageName);
+    return !deps.packages.any((p) => p.name == _flutterTestPackageName);
   }
 
   Future<void> _bumpVersion(PubWrapper pub) async {

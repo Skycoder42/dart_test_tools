@@ -29,6 +29,14 @@ void main(List<String> args) => Github.runZoned(() async {
           help: 'The <operation> to execute.',
         )
         ..addFlag(
+          'flutter-compat',
+          abbr: 'f',
+          defaultsTo: true,
+          help:
+              'Ensures the package stays compatible with the current flutter '
+              'sdk, even if that means some dependencies cannot be updated.',
+        )
+        ..addFlag(
           'bump-version',
           abbr: 'b',
           help: 'Use cider to create a changelog message and bump the version',
@@ -60,6 +68,7 @@ void main(List<String> args) => Github.runZoned(() async {
         await const UpdateChecker()(target);
       case UpdateMode.update:
         await Updater(
+          flutterCompat: options['flutter-compat'] as bool,
           bumpVersion: options['bump-version'] as bool,
           reportPath: options['report'] as String?,
         )(target);
