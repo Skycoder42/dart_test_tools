@@ -4,12 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [6.1.3-pre.6] - 2025-07-29
-## [6.1.3-pre.5] - 2025-07-26
-## [6.1.3-pre.4] - 2025-07-26
-## [6.1.3-pre.3] - 2025-07-25
-## [6.1.3-pre.2] - 2025-07-25
-## [6.1.3-pre.1] - 2025-07-24
+## [6.2.0] - 2025-07-30
 ### Added
 - Automatic dependency updates
 
@@ -423,12 +418,7 @@ have been added:
 ### Added
 - Initial release
 
-[6.1.3-pre.6]: https://github.com/Skycoder42/dart_test_tools/compare/v6.1.3-pre.5...v6.1.3-pre.6
-[6.1.3-pre.5]: https://github.com/Skycoder42/dart_test_tools/compare/v6.1.3-pre.4...v6.1.3-pre.5
-[6.1.3-pre.4]: https://github.com/Skycoder42/dart_test_tools/compare/v6.1.3-pre.3...v6.1.3-pre.4
-[6.1.3-pre.3]: https://github.com/Skycoder42/dart_test_tools/compare/v6.1.3-pre.2...v6.1.3-pre.3
-[6.1.3-pre.2]: https://github.com/Skycoder42/dart_test_tools/compare/v6.1.3-pre.1...v6.1.3-pre.2
-[6.1.3-pre.1]: https://github.com/Skycoder42/dart_test_tools/compare/v6.1.2...v6.1.3-pre.1
+[6.2.0]: https://github.com/Skycoder42/dart_test_tools/compare/v6.1.2...v6.2.0
 [6.1.2]: https://github.com/Skycoder42/dart_test_tools/compare/v6.1.1...v6.1.2
 [6.1.1]: https://github.com/Skycoder42/dart_test_tools/compare/v6.1.0...v6.1.1
 [6.1.0]: https://github.com/Skycoder42/dart_test_tools/compare/v6.0.3...v6.1.0
