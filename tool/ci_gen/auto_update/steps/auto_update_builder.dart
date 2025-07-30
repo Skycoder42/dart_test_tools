@@ -2,6 +2,7 @@ import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/api/working_directory_config.dart';
 import '../../common/contexts.dart';
+import '../../common/inputs.dart';
 import '../../common/jobs/sdk_job_builder.dart';
 import '../../common/secrets.dart';
 import '../../common/steps/checkout_builder.dart';
@@ -14,6 +15,7 @@ import '../../types/step.dart';
 
 base mixin AutoUpdateConfig
     on JobConfig, SdkJobConfig, InstallToolsConfig, WorkingDirectoryConfig {
+  late final flutterCompat = inputContext(WorkflowInputs.flutterCompat);
   late final githubToken = secretContext(WorkflowSecrets.githubToken);
 }
 
@@ -47,12 +49,16 @@ class AutoUpdateBuilder implements StepBuilder {
   }
 
   Iterable<Step> _updateDependencies() sync* {
+    final flutterCompatOption =
+        config.flutterCompat & const Expression.literal('--flutter-compat') |
+        const Expression.literal('--no-flutter-compat');
     yield Step.run(
       name: 'Update dependencies',
       run:
           '${config.pubTool} global run dart_test_tools:auto_update '
           '--mode update '
           "--target '${config.workingDirectory}' "
+          '$flutterCompatOption '
           '--bump-version '
           "--report '${Runner.temp}/update_log.md'",
     );

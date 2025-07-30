@@ -553,4 +553,16 @@ Example:
       description: 'Specify if submodules should be initialized or not.',
     ),
   );
+
+  static const flutterCompat = WorkflowInput(
+    name: 'flutterCompat',
+    input: Input(
+      type: Type.boolean,
+      required: false,
+      defaultValue: true,
+      description:
+          'Whether the update needs to ensure the package stays compatible '
+          'to the latest flutter or not.',
+    ),
+  );
 }
