@@ -86,6 +86,7 @@ class ProjectPrepareBuilder implements StepBuilder {
             '''
 set -euo pipefail
 for package in $buildDependencies; do
+  echo ">> Running build_runner for \$package"
   path=\$(
     dart pub workspace list --json \\
       | jq -r \\
@@ -97,6 +98,7 @@ for package in $buildDependencies; do
 done
 ''',
         workingDirectory: config.workingDirectory.toString(),
+        shell: 'bash',
       ),
     if (config.buildRunner case final Expression buildRunner)
       Step.run(

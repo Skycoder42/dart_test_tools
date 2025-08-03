@@ -135,6 +135,7 @@ jobs:
         run: |
           set -euo pipefail
           for package in ${{ inputs.buildDependencies }}; do
+            echo ">> Running build_runner for $package"
             path=$(
               dart pub workspace list --json \
                 | jq -r \
@@ -145,6 +146,7 @@ jobs:
             ${{ steps.tools.outputs.pubRun }} build_runner build --delete-conflicting-outputs
           done
         working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Create build files
         if: inputs.buildRunner
         run: ${{ steps.tools.outputs.pubRun }} build_runner build --release ${{ inputs.buildRunnerArgs }}

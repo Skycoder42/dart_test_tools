@@ -152,6 +152,7 @@ jobs:
         run: |
           set -euo pipefail
           for package in ${{ inputs.buildDependencies }}; do
+            echo ">> Running build_runner for $package"
             path=$(
               dart pub workspace list --json \
                 | jq -r \
@@ -162,6 +163,7 @@ jobs:
             dart run build_runner build --delete-conflicting-outputs
           done
         working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Create build files
         if: inputs.buildRunner
         run: dart run build_runner build ${{ inputs.buildRunnerArgs }}
@@ -276,6 +278,7 @@ jobs:
         run: |
           set -euo pipefail
           for package in ${{ inputs.buildDependencies }}; do
+            echo ">> Running build_runner for $package"
             path=$(
               dart pub workspace list --json \
                 | jq -r \
@@ -286,6 +289,7 @@ jobs:
             dart run build_runner build --delete-conflicting-outputs
           done
         working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Create build files
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.buildRunner
         run: dart run build_runner build ${{ inputs.buildRunnerArgs }}
@@ -428,6 +432,7 @@ jobs:
         run: |
           set -euo pipefail
           for package in ${{ inputs.buildDependencies }}; do
+            echo ">> Running build_runner for $package"
             path=$(
               dart pub workspace list --json \
                 | jq -r \
@@ -438,6 +443,7 @@ jobs:
             dart run build_runner build --delete-conflicting-outputs
           done
         working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Create build files
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.buildRunner
         run: dart run build_runner build ${{ inputs.buildRunnerArgs }}
