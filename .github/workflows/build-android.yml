@@ -21,21 +21,11 @@ on:
         required: false
         default: en-US
         description: The default locale of the app. This is used to set the language of the generated changelogs
-      removePubspecOverrides:
-        type: boolean
-        required: false
-        default: true
-        description: Disables pubspec_overrides.yaml cleanup if set to false.
       artifactDependencies:
         type: string
         required: false
         default: ""
         description: A space-separated list of package names that should be downloaded from the artifacts and overwritten for the workflow. The packages should be space separated and placed in a single line. You can use the YAML ">-" for that.
-      localResolution:
-        type: boolean
-        required: false
-        default: true
-        description: Disables workspaces if set to true (the default).
       buildRunner:
         type: boolean
         required: false
@@ -89,11 +79,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Remove pubspec_overrides.yaml
-        if: inputs.removePubspecOverrides
-        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Download artifacts
         if: inputs.artifactDependencies != ''
         uses: actions/download-artifact@v4
@@ -110,14 +95,6 @@ jobs:
           for package in ${{ inputs.artifactDependencies }}; do
             yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
           done
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
-      - name: Switch to local resolution
-        if: inputs.localResolution
-        run: |
-          set -eo pipefail
-          touch pubspec_overrides.yaml
-          yq -i '.resolution=null' pubspec_overrides.yaml
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages

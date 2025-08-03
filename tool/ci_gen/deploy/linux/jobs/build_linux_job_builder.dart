@@ -28,16 +28,6 @@ final class BuildLinuxJobConfig extends JobConfig
   );
 
   @override
-  late final removePubspecOverrides = ExpressionOrValue.expression(
-    inputContext(WorkflowInputs.removePubspecOverrides),
-  );
-
-  @override
-  late final localResolution = ExpressionOrValue.expression(
-    inputContext(WorkflowInputs.localResolution),
-  );
-
-  @override
   late final artifactDependencies = inputContext(
     WorkflowInputs.artifactDependencies,
   );

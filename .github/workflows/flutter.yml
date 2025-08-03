@@ -21,26 +21,16 @@ on:
         required: false
         default: false
         description: Specify if submodules should be initialized or not.
-      removePubspecOverrides:
-        type: boolean
-        required: false
-        default: true
-        description: Disables pubspec_overrides.yaml cleanup if set to false.
-      workingDirectory:
-        type: string
-        required: false
-        default: .
-        description: The root directory of the dart package to build and test.
       artifactDependencies:
         type: string
         required: false
         default: ""
         description: A space-separated list of package names that should be downloaded from the artifacts and overwritten for the workflow. The packages should be space separated and placed in a single line. You can use the YAML ">-" for that.
-      localResolution:
-        type: boolean
+      workingDirectory:
+        type: string
         required: false
-        default: true
-        description: Disables workspaces if set to true (the default).
+        default: .
+        description: The root directory of the dart package to build and test.
       buildRunner:
         type: boolean
         required: false
@@ -149,11 +139,6 @@ jobs:
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
-      - name: Remove pubspec_overrides.yaml
-        if: inputs.removePubspecOverrides
-        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Download artifacts
         if: inputs.artifactDependencies != ''
         uses: actions/download-artifact@v4
@@ -170,14 +155,6 @@ jobs:
           for package in ${{ inputs.artifactDependencies }}; do
             yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
           done
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
-      - name: Switch to local resolution
-        if: inputs.localResolution
-        run: |
-          set -eo pipefail
-          touch pubspec_overrides.yaml
-          yq -i '.resolution=null' pubspec_overrides.yaml
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
@@ -293,11 +270,6 @@ jobs:
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
-      - name: Remove pubspec_overrides.yaml
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.removePubspecOverrides
-        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Download artifacts
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.artifactDependencies != ''
         uses: actions/download-artifact@v4
@@ -314,14 +286,6 @@ jobs:
           for package in ${{ inputs.artifactDependencies }}; do
             yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
           done
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
-      - name: Switch to local resolution
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.localResolution
-        run: |
-          set -eo pipefail
-          touch pubspec_overrides.yaml
-          yq -i '.resolution=null' pubspec_overrides.yaml
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
@@ -449,11 +413,6 @@ jobs:
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
-      - name: Remove pubspec_overrides.yaml
-        if: inputs.removePubspecOverrides
-        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Download artifacts
         if: inputs.artifactDependencies != ''
         uses: actions/download-artifact@v4
@@ -470,14 +429,6 @@ jobs:
           for package in ${{ inputs.artifactDependencies }}; do
             yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
           done
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
-      - name: Switch to local resolution
-        if: inputs.localResolution
-        run: |
-          set -eo pipefail
-          touch pubspec_overrides.yaml
-          yq -i '.resolution=null' pubspec_overrides.yaml
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
@@ -504,11 +455,6 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Validate flutter setup
         run: flutter doctor -v
-      - name: Remove pubspec_overrides.yaml (Integration test project)
-        if: inputs.removePubspecOverrides && inputs.integrationTestProject != ''
-        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
-        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
-        shell: bash
       - name: Restore dart packages (Integration test project)
         if: inputs.integrationTestProject != ''
         run: flutter pub get
@@ -598,11 +544,6 @@ jobs:
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
-      - name: Remove pubspec_overrides.yaml
-        if: inputs.removePubspecOverrides
-        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Download artifacts
         if: inputs.artifactDependencies != ''
         uses: actions/download-artifact@v4
@@ -619,14 +560,6 @@ jobs:
           for package in ${{ inputs.artifactDependencies }}; do
             yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
           done
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
-      - name: Switch to local resolution
-        if: inputs.localResolution
-        run: |
-          set -eo pipefail
-          touch pubspec_overrides.yaml
-          yq -i '.resolution=null' pubspec_overrides.yaml
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
@@ -653,11 +586,6 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Validate flutter setup
         run: flutter doctor -v
-      - name: Remove pubspec_overrides.yaml (Integration test project)
-        if: inputs.removePubspecOverrides && inputs.integrationTestProject != ''
-        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
-        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
-        shell: bash
       - name: Restore dart packages (Integration test project)
         if: inputs.integrationTestProject != ''
         run: flutter pub get
@@ -764,11 +692,6 @@ jobs:
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
-      - name: Remove pubspec_overrides.yaml
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.removePubspecOverrides
-        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Download artifacts
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.artifactDependencies != ''
         uses: actions/download-artifact@v4
@@ -785,14 +708,6 @@ jobs:
           for package in ${{ inputs.artifactDependencies }}; do
             yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
           done
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
-      - name: Switch to local resolution
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.localResolution
-        run: |
-          set -eo pipefail
-          touch pubspec_overrides.yaml
-          yq -i '.resolution=null' pubspec_overrides.yaml
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
@@ -822,11 +737,6 @@ jobs:
       - name: Validate flutter setup
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: flutter doctor -v
-      - name: Remove pubspec_overrides.yaml (Integration test project)
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.removePubspecOverrides && inputs.integrationTestProject != ''
-        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
-        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
-        shell: bash
       - name: Restore dart packages (Integration test project)
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.integrationTestProject != ''
         run: flutter pub get
@@ -874,11 +784,6 @@ jobs:
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
-      - name: Remove pubspec_overrides.yaml
-        if: inputs.removePubspecOverrides
-        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Download artifacts
         if: inputs.artifactDependencies != ''
         uses: actions/download-artifact@v4
@@ -895,14 +800,6 @@ jobs:
           for package in ${{ inputs.artifactDependencies }}; do
             yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
           done
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
-      - name: Switch to local resolution
-        if: inputs.localResolution
-        run: |
-          set -eo pipefail
-          touch pubspec_overrides.yaml
-          yq -i '.resolution=null' pubspec_overrides.yaml
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Restore dart packages
@@ -929,11 +826,6 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Validate flutter setup
         run: flutter doctor -v
-      - name: Remove pubspec_overrides.yaml (Integration test project)
-        if: inputs.removePubspecOverrides && inputs.integrationTestProject != ''
-        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
-        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
-        shell: bash
       - name: Restore dart packages (Integration test project)
         if: inputs.integrationTestProject != ''
         run: flutter pub get

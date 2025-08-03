@@ -23,16 +23,6 @@ base mixin PrepareIntegrationTestConfig on ProjectSetupConfig {
   );
 
   @override
-  late final removePubspecOverrides = ExpressionOrValue.expression(
-    inputContext(WorkflowInputs.removePubspecOverrides),
-  );
-
-  @override
-  late final localResolution = ExpressionOrValue.expression(
-    inputContext(WorkflowInputs.localResolution),
-  );
-
-  @override
   late final artifactDependencies = inputContext(
     WorkflowInputs.artifactDependencies,
   );
@@ -69,12 +59,6 @@ final class _TestProjectConfig extends JobConfig
 
   @override
   bool get withBuildRunner => false;
-
-  @override
-  late final removePubspecOverrides = baseConfig.removePubspecOverrides;
-
-  @override
-  late final localResolution = const ExpressionOrValue.value(false);
 
   @override
   late final ifExpression = baseConfig.integrationTestProject.ne(

@@ -32,16 +32,6 @@ base mixin CompileConfig on JobConfig, ProjectSetupConfig {
   late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
 
   @override
-  late final removePubspecOverrides = ExpressionOrValue.expression(
-    inputContext(WorkflowInputs.removePubspecOverrides),
-  );
-
-  @override
-  late final localResolution = ExpressionOrValue.expression(
-    inputContext(WorkflowInputs.localResolution),
-  );
-
-  @override
   late final artifactDependencies = inputContext(
     WorkflowInputs.artifactDependencies,
   );

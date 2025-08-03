@@ -3,7 +3,6 @@ import '../../common/api/step_builder.dart';
 import '../../common/inputs.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../common/tools.dart';
-import '../../types/expression.dart';
 import '../../types/step.dart';
 import 'flutter_build_builder.dart';
 import 'generate_build_number_builder.dart';
@@ -21,16 +20,6 @@ base mixin BuildAppConfig
 
   @override
   bool get releaseMode => true;
-
-  @override
-  late final removePubspecOverrides = ExpressionOrValue.expression(
-    inputContext(WorkflowInputs.removePubspecOverrides),
-  );
-
-  @override
-  late final localResolution = ExpressionOrValue.expression(
-    inputContext(WorkflowInputs.localResolution),
-  );
 
   @override
   late final artifactDependencies = inputContext(

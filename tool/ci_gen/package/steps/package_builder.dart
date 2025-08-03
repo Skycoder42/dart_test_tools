@@ -3,18 +3,12 @@ import '../../common/api/step_builder.dart';
 import '../../common/inputs.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../common/tools.dart';
-import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 
 base mixin PackageConfig on JobConfig, ProjectSetupConfig {
   @override
   late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
-
-  @override
-  late final removePubspecOverrides = ExpressionOrValue.expression(
-    inputContext(WorkflowInputs.removePubspecOverrides),
-  );
 
   @override
   late final artifactDependencies = inputContext(

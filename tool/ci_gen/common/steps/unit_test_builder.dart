@@ -1,4 +1,3 @@
-import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../api/job_config.dart';
 import '../api/matrix_job_builder_mixin.dart';
@@ -15,16 +14,6 @@ base mixin UnitTestConfig
 
   @override
   late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
-
-  @override
-  late final removePubspecOverrides = ExpressionOrValue.expression(
-    inputContext(WorkflowInputs.removePubspecOverrides),
-  );
-
-  @override
-  late final localResolution = ExpressionOrValue.expression(
-    inputContext(WorkflowInputs.localResolution),
-  );
 
   @override
   late final artifactDependencies = inputContext(

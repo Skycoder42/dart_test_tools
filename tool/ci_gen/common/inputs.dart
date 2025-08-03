@@ -340,26 +340,6 @@ Example:
     ),
   );
 
-  static const removePubspecOverrides = WorkflowInput(
-    name: 'removePubspecOverrides',
-    input: Input(
-      type: Type.boolean,
-      required: false,
-      defaultValue: true,
-      description: 'Disables pubspec_overrides.yaml cleanup if set to false.',
-    ),
-  );
-
-  static const localResolution = WorkflowInput(
-    name: 'localResolution',
-    input: Input(
-      type: Type.boolean,
-      required: false,
-      defaultValue: true,
-      description: 'Disables workspaces if set to true (the default).',
-    ),
-  );
-
   static const enabledPlatforms = WorkflowInput(
     name: 'enabledPlatforms',
     input: Input(

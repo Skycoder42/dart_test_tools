@@ -107,17 +107,6 @@ jobs:
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
-      - name: Remove pubspec_overrides.yaml
-        run: find . -type f -name "pubspec_overrides.yaml" -exec git rm -f {} \;
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
-      - name: Switch to local resolution
-        run: |
-          set -eo pipefail
-          touch pubspec_overrides.yaml
-          yq -i '.resolution=null' pubspec_overrides.yaml
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Restore dart packages
         run: ${{ steps.tools.outputs.pub }} get
         working-directory: ${{ inputs.workingDirectory }}
