@@ -123,7 +123,8 @@ jobs:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install pana
         run: dart pub global activate pana
-      - uses: ./.github/actions/install-tools
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
           withDartTestTools: "false"
       - name: Checkout repository
@@ -241,8 +242,9 @@ jobs:
         uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
-      - if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
-        uses: ./.github/actions/install-tools
+      - name: Install tools
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
           withDartTestTools: "false"
       - name: Checkout repository
@@ -390,8 +392,9 @@ jobs:
         uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
-      - if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
-        uses: ./.github/actions/install-tools
+      - name: Install tools
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
           withDartTestTools: "false"
       - name: Checkout repository

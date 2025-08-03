@@ -70,7 +70,8 @@ jobs:
         uses: actions/setup-node@v4
       - name: Install appdmg
         run: npm install -g appdmg
-      - uses: ./.github/actions/install-tools
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
           withDartTestTools: "true"
       - name: Checkout repository

@@ -112,8 +112,9 @@ jobs:
         uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
-      - if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
-        uses: ./.github/actions/install-tools
+      - name: Install tools
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
           withDartTestTools: "false"
       - name: Checkout repository

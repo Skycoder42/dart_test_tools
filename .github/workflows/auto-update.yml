@@ -34,7 +34,8 @@ jobs:
           cache: true
       - name: Download flutter binary artifacts
         run: flutter precache --universal
-      - uses: ./.github/actions/install-tools
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
           withDartTestTools: "true"
       - name: Checkout repository
@@ -65,7 +66,8 @@ jobs:
           cache: true
       - name: Download flutter binary artifacts
         run: flutter precache --universal
-      - uses: ./.github/actions/install-tools
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
           withDartTestTools: "true"
       - name: Checkout repository

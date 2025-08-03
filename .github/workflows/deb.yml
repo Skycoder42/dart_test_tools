@@ -38,7 +38,8 @@ jobs:
         run: sudo apt-get update
       - name: Install needed packages
         run: sudo apt-get install -y dart makedeb
-      - uses: ./.github/actions/install-tools
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
           withDartTestTools: "true"
       - name: Checkout repository

@@ -15,7 +15,7 @@ sealed class Step with _$Step {
 
   const factory Step.run({
     @JsonKey(includeIfNull: false) StepId? id,
-    @JsonKey(includeIfNull: false) required String? name,
+    required String name,
     @JsonKey(name: 'if', includeIfNull: false)
     @ExpressionConverter()
     Expression? ifExpression,
@@ -30,7 +30,7 @@ sealed class Step with _$Step {
 
   const factory Step.uses({
     @JsonKey(includeIfNull: false) StepId? id,
-    @JsonKey(includeIfNull: false) required String? name,
+    required String name,
     @JsonKey(name: 'if', includeIfNull: false)
     @ExpressionConverter()
     Expression? ifExpression,

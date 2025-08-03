@@ -98,7 +98,8 @@ jobs:
             echo "pub=dart pub" >> $GITHUB_OUTPUT
             echo "pubRun=dart run" >> $GITHUB_OUTPUT
           fi
-      - uses: ./.github/actions/install-tools
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
           withDartTestTools: "false"
       - name: Checkout repository

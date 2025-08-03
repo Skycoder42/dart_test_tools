@@ -140,7 +140,8 @@ jobs:
         run: flutter precache --universal
       - name: Install pana
         run: flutter pub global activate pana
-      - uses: ./.github/actions/install-tools
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
           withDartTestTools: "false"
       - name: Checkout repository
@@ -281,8 +282,9 @@ jobs:
       - name: Download flutter binary artifacts
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: flutter precache --universal
-      - if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
-        uses: ./.github/actions/install-tools
+      - name: Install tools
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
           withDartTestTools: "false"
       - name: Checkout repository
@@ -438,7 +440,8 @@ jobs:
           cache: true
       - name: Download flutter binary artifacts
         run: flutter precache --universal --android
-      - uses: ./.github/actions/install-tools
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
           withDartTestTools: "false"
       - name: Checkout repository
@@ -586,7 +589,8 @@ jobs:
         run: flutter precache --universal --ios
       - name: Enable swift package manager
         run: flutter config --enable-swift-package-manager
-      - uses: ./.github/actions/install-tools
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
           withDartTestTools: "false"
       - name: Checkout repository
@@ -749,8 +753,9 @@ jobs:
           set -e
           sudo apt-get -qq update
           sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
-      - if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
-        uses: ./.github/actions/install-tools
+      - name: Install tools
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
           withDartTestTools: "false"
       - name: Checkout repository
@@ -860,7 +865,8 @@ jobs:
           cache: true
       - name: Download flutter binary artifacts
         run: flutter precache --universal --web
-      - uses: ./.github/actions/install-tools
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
           withDartTestTools: "false"
       - name: Checkout repository

@@ -30,9 +30,9 @@ class InstallToolsActionBuilder implements ActionBuilder {
     required bool withDartTestTools,
   }) => Step.uses(
     id: id,
-    name: name,
+    name: name ?? 'Install tools',
     ifExpression: ifExpression,
-    uses: './.github/actions/$_actionName',
+    uses: 'Skycoder42/dart_test_tools/.github/actions/$_actionName@main',
     continueOnError: continueOnError,
     withArgs: {_withDartTestToolsInput.name: withDartTestTools.toString()},
   );
