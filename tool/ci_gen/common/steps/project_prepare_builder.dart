@@ -18,6 +18,11 @@ base mixin ProjectPrepareConfig
   late final buildRunnerArgs = withBuildRunner
       ? inputContext(WorkflowInputs.buildRunnerArgs)
       : null;
+
+  late final Expression? buildDependencies = withBuildRunner
+      ? inputContext(WorkflowInputs.buildDependencies)
+      : null;
+
   bool get releaseMode => false;
 }
 
@@ -72,6 +77,27 @@ class ProjectPrepareBuilder implements StepBuilder {
         workingDirectory: config.workingDirectory.toString(),
       ),
     ],
+    if (config.buildDependencies case final Expression buildDependencies)
+      Step.run(
+        name: 'Run build_runner for workspace dependencies',
+        ifExpression:
+            buildDependencies.ne(Expression.empty) & config.ifExpression,
+        run:
+            '''
+set -euo pipefail
+for package in $buildDependencies; do
+  path=\$(
+    dart pub workspace list --json \\
+      | jq -r \\
+        --arg package "\$package" \\
+        '.packages[] | select(.name == \$package) | .path'
+  )
+  cd "\$path"
+  ${config.runTool} build_runner build --delete-conflicting-outputs
+done
+''',
+        workingDirectory: config.workingDirectory.toString(),
+      ),
     if (config.buildRunner case final Expression buildRunner)
       Step.run(
         name: 'Create build files$_titleSuffix',

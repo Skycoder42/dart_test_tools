@@ -30,6 +30,10 @@ on:
         required: false
         default: .
         description: The root directory of the dart package to build and test.
+      buildDependencies:
+        type: string
+        required: false
+        description: A spaces separated list of other packages within this workspace that make use of build_runner and need to be built before this package.
       buildRunner:
         type: boolean
         required: false
@@ -134,6 +138,21 @@ jobs:
       - name: Restore dart packages
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
         run: dart pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Run build_runner for workspace dependencies
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && inputs.buildDependencies != ''
+        run: |
+          set -euo pipefail
+          for package in ${{ inputs.buildDependencies }}; do
+            path=$(
+              dart pub workspace list --json \
+                | jq -r \
+                  --arg package "$package" \
+                  '.packages[] | select(.name == $package) | .path'
+            )
+            cd "$path"
+            dart run build_runner build --delete-conflicting-outputs
+          done
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create build files
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && inputs.buildRunner

@@ -38,6 +38,18 @@ abstract base class WorkflowInputs {
     ),
   );
 
+  static const buildDependencies = WorkflowInput(
+    name: 'buildDependencies',
+    input: Input(
+      type: Type.string,
+      required: false,
+      description:
+          'A spaces separated list of other packages within this workspace '
+          'that make use of build_runner and need to be built before this '
+          'package.',
+    ),
+  );
+
   static const dartSdkVersion = WorkflowInput(
     name: 'dartSdkVersion',
     input: Input(
