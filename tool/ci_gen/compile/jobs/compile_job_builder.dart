@@ -3,7 +3,6 @@ import '../../common/api/matrix_job_builder_mixin.dart';
 import '../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../common/api/working_directory_config.dart';
 import '../../common/jobs/sdk_job_builder.dart';
-import '../../common/steps/install_tools_builder.dart';
 import '../../common/steps/project_prepare_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../common/steps/update_overrides_builder.dart';
@@ -17,7 +16,6 @@ import '../steps/compile_builder.dart';
 final class CompileJobConfig extends JobConfig
     with
         SdkJobConfig,
-        InstallToolsConfig,
         WorkingDirectoryConfig,
         UpdateOverridesConfig,
         ProjectPrepareConfig,

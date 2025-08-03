@@ -1,0 +1,30 @@
+name: Install tools
+description: Installs required operating system tools
+inputs:
+  withDartTestTools:
+    required: false
+    default: "false"
+    description: Also install dart_test_tools as global dart tool.
+runs:
+  steps:
+    - name: Install scoop
+      if: runner.os == 'Windows'
+      run: |
+        iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+        Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
+      shell: pwsh
+    - name: Install yq (Windows)
+      if: runner.os == 'Windows'
+      run: scoop install yq
+      shell: pwsh
+    - name: Install coreutils (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        brew install coreutils
+        echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+      shell: bash
+    - name: Install dart_test_tools
+      if: inputs.withDartTestTools == 'true'
+      run: dart pub global activate dart_test_tools ^6.2.1
+      shell: bash
+  using: composite

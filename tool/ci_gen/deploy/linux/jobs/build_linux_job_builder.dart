@@ -1,9 +1,9 @@
+import '../../../common/actions/install_tools_action_builder.dart';
 import '../../../common/api/job_config.dart';
 import '../../../common/api/matrix_job_builder_mixin.dart';
 import '../../../common/api/working_directory_config.dart';
 import '../../../common/inputs.dart';
 import '../../../common/jobs/sdk_job_builder.dart';
-import '../../../common/steps/install_dart_test_tools_builder.dart';
 import '../../../common/steps/update_overrides_builder.dart';
 import '../../../dart/jobs/dart_sdk_job_builder_mixin.dart';
 import '../../../types/container.dart';
@@ -105,7 +105,7 @@ final class BuildLinuxJobBuilder extends SdkJobBuilder<BuildLinuxJobConfig>
     ),
     steps: [
       ...buildSetupSdkSteps(),
-      ...const InstallDartTestToolsBuilder().build(),
+      InstallToolsActionBuilder.step(withDartTestTools: true),
       ...BuildFlatpakBundleBuilder(
         config: config,
         arch: matrix.arch,

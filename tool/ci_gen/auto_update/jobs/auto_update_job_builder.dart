@@ -1,7 +1,6 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/working_directory_config.dart';
 import '../../common/jobs/sdk_job_builder.dart';
-import '../../common/steps/install_tools_builder.dart';
 import '../../flutter/jobs/flutter_sdk_job_builder_mixin.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
@@ -13,7 +12,6 @@ final class AutoUpdateJobConfig extends JobConfig
     with
         SdkJobConfig,
         FlutterSdkJobConfig,
-        InstallToolsConfig,
         WorkingDirectoryConfig,
         AutoUpdateConfig {
   AutoUpdateJobConfig(super.inputContext, super.secretContext);

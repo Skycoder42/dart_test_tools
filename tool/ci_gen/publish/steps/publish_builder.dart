@@ -31,9 +31,6 @@ base mixin PublishConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
   late final runTool = PublishBuilder.toolsPubRun.expression.toString();
 
   @override
-  bool get skipYqInstall => true;
-
-  @override
   bool get releaseMode => true;
 }
 

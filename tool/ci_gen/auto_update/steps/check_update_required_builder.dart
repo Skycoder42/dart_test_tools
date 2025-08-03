@@ -1,9 +1,9 @@
+import '../../common/actions/install_tools_action_builder.dart';
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/api/working_directory_config.dart';
 import '../../common/jobs/sdk_job_builder.dart';
 import '../../common/steps/checkout_builder.dart';
-import '../../common/steps/install_dart_test_tools_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
@@ -21,7 +21,7 @@ class CheckUpdateRequiredBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() sync* {
-    yield* const InstallDartTestToolsBuilder().build();
+    yield InstallToolsActionBuilder.step(withDartTestTools: true);
     yield* const CheckoutBuilder(
       fetchDepth: 0,
       persistCredentials: ExpressionOrValue.value(true),

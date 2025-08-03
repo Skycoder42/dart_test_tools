@@ -24,7 +24,14 @@ sealed class Input with _$Input {
     @JsonKey(name: 'default', includeIfNull: false) dynamic defaultValue,
     @JsonKey(includeIfNull: false) String? description,
     @JsonKey(includeIfNull: false) String? deprecationMessage,
-  }) = _Input;
+  }) = _NormalInput;
+
+  const factory Input.action({
+    required bool required,
+    @JsonKey(name: 'default', includeIfNull: false) String? defaultValue,
+    required String? description,
+    @JsonKey(includeIfNull: false) String? deprecationMessage,
+  }) = _ActionInput;
 
   factory Input.json({
     required bool required,

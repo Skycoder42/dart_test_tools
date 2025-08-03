@@ -2,7 +2,6 @@ import '../../../common/api/job_config.dart';
 import '../../../common/api/working_directory_config.dart';
 import '../../../common/inputs.dart';
 import '../../../common/jobs/sdk_job_builder.dart';
-import '../../../common/steps/install_tools_builder.dart';
 import '../../../common/steps/project_prepare_builder.dart';
 import '../../../common/steps/project_setup_builder.dart';
 import '../../../common/steps/update_overrides_builder.dart';
@@ -20,7 +19,6 @@ import '../steps/build_android_app_builder.dart';
 final class BuildAndroidJobConfig extends JobConfig
     with
         SdkJobConfig,
-        InstallToolsConfig,
         WorkingDirectoryConfig,
         UpdateOverridesConfig,
         ProjectPrepareConfig,

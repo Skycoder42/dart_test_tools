@@ -140,20 +140,9 @@ jobs:
         run: flutter precache --universal
       - name: Install pana
         run: flutter pub global activate pana
-      - name: Install scoop
-        if: runner.os == 'Windows'
-        run: |
-          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
-          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
-        shell: pwsh
-      - name: Install yq (Windows)
-        if: runner.os == 'Windows'
-        run: scoop install yq
-      - name: Install yq and coreutils (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install yq coreutils
-          echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+      - uses: ./.github/actions/install-tools
+        with:
+          withDartTestTools: "false"
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -292,20 +281,10 @@ jobs:
       - name: Download flutter binary artifacts
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: flutter precache --universal
-      - name: Install scoop
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && runner.os == 'Windows'
-        run: |
-          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
-          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
-        shell: pwsh
-      - name: Install yq (Windows)
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && runner.os == 'Windows'
-        run: scoop install yq
-      - name: Install yq and coreutils (macOS)
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && runner.os == 'macOS'
-        run: |
-          brew install yq coreutils
-          echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+      - if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
+        uses: ./.github/actions/install-tools
+        with:
+          withDartTestTools: "false"
       - name: Checkout repository
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         uses: actions/checkout@v4
@@ -459,20 +438,9 @@ jobs:
           cache: true
       - name: Download flutter binary artifacts
         run: flutter precache --universal --android
-      - name: Install scoop
-        if: runner.os == 'Windows'
-        run: |
-          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
-          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
-        shell: pwsh
-      - name: Install yq (Windows)
-        if: runner.os == 'Windows'
-        run: scoop install yq
-      - name: Install yq and coreutils (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install yq coreutils
-          echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+      - uses: ./.github/actions/install-tools
+        with:
+          withDartTestTools: "false"
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -618,20 +586,9 @@ jobs:
         run: flutter precache --universal --ios
       - name: Enable swift package manager
         run: flutter config --enable-swift-package-manager
-      - name: Install scoop
-        if: runner.os == 'Windows'
-        run: |
-          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
-          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
-        shell: pwsh
-      - name: Install yq (Windows)
-        if: runner.os == 'Windows'
-        run: scoop install yq
-      - name: Install yq and coreutils (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install yq coreutils
-          echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+      - uses: ./.github/actions/install-tools
+        with:
+          withDartTestTools: "false"
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -792,20 +749,10 @@ jobs:
           set -e
           sudo apt-get -qq update
           sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
-      - name: Install scoop
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && runner.os == 'Windows'
-        run: |
-          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
-          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
-        shell: pwsh
-      - name: Install yq (Windows)
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && runner.os == 'Windows'
-        run: scoop install yq
-      - name: Install yq and coreutils (macOS)
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && runner.os == 'macOS'
-        run: |
-          brew install yq coreutils
-          echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+      - if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
+        uses: ./.github/actions/install-tools
+        with:
+          withDartTestTools: "false"
       - name: Checkout repository
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         uses: actions/checkout@v4
@@ -913,20 +860,9 @@ jobs:
           cache: true
       - name: Download flutter binary artifacts
         run: flutter precache --universal --web
-      - name: Install scoop
-        if: runner.os == 'Windows'
-        run: |
-          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
-          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
-        shell: pwsh
-      - name: Install yq (Windows)
-        if: runner.os == 'Windows'
-        run: scoop install yq
-      - name: Install yq and coreutils (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install yq coreutils
-          echo "$(brew --prefix)/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+      - uses: ./.github/actions/install-tools
+        with:
+          withDartTestTools: "false"
       - name: Checkout repository
         uses: actions/checkout@v4
         with:

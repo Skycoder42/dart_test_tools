@@ -1,3 +1,4 @@
+import '../../common/actions/install_tools_action_builder.dart';
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/api/working_directory_config.dart';
@@ -6,15 +7,12 @@ import '../../common/inputs.dart';
 import '../../common/jobs/sdk_job_builder.dart';
 import '../../common/secrets.dart';
 import '../../common/steps/checkout_builder.dart';
-import '../../common/steps/install_dart_test_tools_builder.dart';
-import '../../common/steps/install_tools_builder.dart';
 import '../../common/tools.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 
-base mixin AutoUpdateConfig
-    on JobConfig, SdkJobConfig, InstallToolsConfig, WorkingDirectoryConfig {
+base mixin AutoUpdateConfig on JobConfig, SdkJobConfig, WorkingDirectoryConfig {
   late final flutterCompat = inputContext(WorkflowInputs.flutterCompat);
   late final githubToken = secretContext(WorkflowSecrets.githubToken);
 }
@@ -35,8 +33,7 @@ class AutoUpdateBuilder implements StepBuilder {
   }
 
   Iterable<Step> _setup() sync* {
-    yield* InstallToolsBuilder(config: config).build();
-    yield* const InstallDartTestToolsBuilder().build();
+    yield InstallToolsActionBuilder.step(withDartTestTools: true);
     yield* const CheckoutBuilder(
       fetchDepth: 0,
       persistCredentials: ExpressionOrValue.value(true),

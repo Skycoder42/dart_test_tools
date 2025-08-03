@@ -1,3 +1,4 @@
+import '../../../common/actions/install_tools_action_builder.dart';
 import '../../../common/api/job_config.dart';
 import '../../../common/api/step_builder.dart';
 import '../../../common/api/working_directory_config.dart';
@@ -6,7 +7,6 @@ import '../../../common/inputs.dart';
 import '../../../common/jobs/sdk_job_builder.dart';
 import '../../../common/secrets.dart';
 import '../../../common/steps/checkout_builder.dart';
-import '../../../common/steps/install_dart_test_tools_builder.dart';
 import '../../../types/env.dart';
 import '../../../types/expression.dart';
 import '../../../types/id.dart';
@@ -32,7 +32,7 @@ class DeployToTapBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-    ...const InstallDartTestToolsBuilder().build(),
+    InstallToolsActionBuilder.step(withDartTestTools: true),
     ...const CheckoutBuilder(path: 'src').build(),
     ...CheckoutBuilder(
       repository: config.targetRepo,

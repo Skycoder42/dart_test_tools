@@ -15,7 +15,7 @@ sealed class Step with _$Step {
 
   const factory Step.run({
     @JsonKey(includeIfNull: false) StepId? id,
-    required String name,
+    @JsonKey(includeIfNull: false) required String? name,
     @JsonKey(name: 'if', includeIfNull: false)
     @ExpressionConverter()
     Expression? ifExpression,
@@ -26,11 +26,11 @@ sealed class Step with _$Step {
     @JsonKey(name: 'working-directory', includeIfNull: false)
     String? workingDirectory,
     @JsonKey(includeIfNull: false) String? shell,
-  }) = _RunStep;
+  }) = RunStep;
 
   const factory Step.uses({
     @JsonKey(includeIfNull: false) StepId? id,
-    required String name,
+    @JsonKey(includeIfNull: false) required String? name,
     @JsonKey(name: 'if', includeIfNull: false)
     @ExpressionConverter()
     Expression? ifExpression,
@@ -39,7 +39,7 @@ sealed class Step with _$Step {
     @JsonKey(includeIfNull: false) Map<String, String>? env,
     required String uses,
     @JsonKey(name: 'with', includeIfNull: false) Map<String, dynamic>? withArgs,
-  }) = _UsesStep;
+  }) = UsesStep;
 
   factory Step.fromJson(Map<String, dynamic> json) => _$StepFromJson(json);
 }

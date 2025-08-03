@@ -1,7 +1,6 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/inputs.dart';
-import '../../common/steps/install_dart_test_tools_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../common/tools.dart';
 import '../../types/expression.dart';
@@ -16,6 +15,9 @@ base mixin BuildAppConfig
         GenerateBuildNumberConfig,
         FlutterBuildConfig {
   String get artifactDir;
+
+  @override
+  bool get withDartTestTools => true;
 
   @override
   bool get releaseMode => true;
@@ -51,7 +53,6 @@ class BuildAppBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-    ...const InstallDartTestToolsBuilder().build(),
     ...ProjectSetupBuilder(config: config).build(),
     ...GenerateBuildNumberBuilder(config: config).build(),
     ...FlutterBuildBuilder(

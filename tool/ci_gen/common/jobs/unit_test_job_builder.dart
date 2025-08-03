@@ -7,7 +7,6 @@ import '../api/platform_matrix_job_builder_mixin.dart';
 import '../api/working_directory_config.dart';
 import '../steps/coverage_builder_mixin.dart';
 import '../steps/coverage_collector_builder.dart';
-import '../steps/install_tools_builder.dart';
 import '../steps/project_prepare_builder.dart';
 import '../steps/project_setup_builder.dart';
 import '../steps/unit_test_builder.dart';
@@ -17,7 +16,6 @@ import 'sdk_job_builder.dart';
 abstract base class UnitTestJobConfig extends JobConfig
     with
         SdkJobConfig,
-        InstallToolsConfig,
         WorkingDirectoryConfig,
         UpdateOverridesConfig,
         ProjectPrepareConfig,

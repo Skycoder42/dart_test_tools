@@ -24,8 +24,9 @@ jobs:
         uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
-      - name: Install dart_test_tools
-        run: dart pub global activate dart_test_tools ^6.2.1
+      - uses: ./.github/actions/install-tools
+        with:
+          withDartTestTools: "true"
       - name: Create build user
         run: |
           set -eo pipefail

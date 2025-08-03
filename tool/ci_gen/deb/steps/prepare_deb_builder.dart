@@ -1,5 +1,5 @@
+import '../../common/actions/install_tools_action_builder.dart';
 import '../../common/api/step_builder.dart';
-import '../../common/steps/install_dart_test_tools_builder.dart';
 import '../../types/step.dart';
 
 class PrepareDebBuilder implements StepBuilder {
@@ -28,6 +28,6 @@ echo 'deb [signed-by=/usr/share/keyrings/makedeb-archive-keyring.gpg arch=all] h
       name: 'Install needed packages',
       run: 'sudo apt-get install -y dart makedeb',
     ),
-    ...const InstallDartTestToolsBuilder().build(),
+    InstallToolsActionBuilder.step(withDartTestTools: true),
   ];
 }
