@@ -6,11 +6,21 @@ on:
         required: false
         default: ubuntu-latest
         description: The Runner-Image to use for the analyze step. Uses ubuntu-latest by default.
+      needsFlutterSdk:
+        type: boolean
+        required: false
+        default: false
+        description: Specifies whether this dart package needs the flutter SDK. This can be the case if the package is part of a workspace that also contains a flutter package.
       dartSdkVersion:
         type: string
         required: false
         default: stable
         description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
+      flutterSdkChannel:
+        type: string
+        required: false
+        default: stable
+        description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action".
       withSubmodules:
         type: boolean
         required: false
@@ -112,9 +122,19 @@ jobs:
     runs-on: ${{ inputs.analyzeImage }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
+        if: '!inputs.needsFlutterSdk'
         uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        if: inputs.needsFlutterSdk
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
+      - name: Download flutter binary artifacts
+        if: inputs.needsFlutterSdk
+        run: flutter precache --universal
       - name: Install pana
         run: dart pub global activate pana
       - name: Install tools
@@ -236,10 +256,19 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && !inputs.needsFlutterSdk
         uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.needsFlutterSdk
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
+      - name: Download flutter binary artifacts
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.needsFlutterSdk
+        run: flutter precache --universal
       - name: Install tools
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
@@ -390,10 +419,19 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && !inputs.needsFlutterSdk
         uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.needsFlutterSdk
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
+      - name: Download flutter binary artifacts
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.needsFlutterSdk
+        run: flutter precache --universal
       - name: Install tools
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main

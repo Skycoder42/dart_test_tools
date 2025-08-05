@@ -62,6 +62,19 @@ abstract base class WorkflowInputs {
     ),
   );
 
+  static const needsFlutterSdk = WorkflowInput(
+    name: 'needsFlutterSdk',
+    input: Input(
+      type: Type.boolean,
+      required: false,
+      defaultValue: false,
+      description:
+          'Specifies whether this dart package needs the flutter SDK. '
+          'This can be the case if the package is part of a workspace that '
+          'also contains a flutter package.',
+    ),
+  );
+
   static const flutterSdkChannel = WorkflowInput(
     name: 'flutterSdkChannel',
     input: Input(

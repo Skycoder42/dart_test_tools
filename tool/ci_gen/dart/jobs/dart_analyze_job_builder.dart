@@ -1,9 +1,17 @@
+import '../../common/inputs.dart';
 import '../../common/jobs/analyze_job_builder.dart';
+import '../../types/expression.dart';
 import '../../types/step.dart';
 import 'dart_sdk_job_builder_mixin.dart';
 
 final class DartAnalyzeJobConfig extends AnalyzeJobConfig
     with DartSdkJobConfig {
+  @override
+  // ignore: overridden_fields to replace default value
+  late final needsFlutterSdk = ExpressionOrValue.expression(
+    inputContext(WorkflowInputs.needsFlutterSdk),
+  );
+
   DartAnalyzeJobConfig(super.inputContext, super.secretContext);
 }
 

@@ -42,7 +42,7 @@ abstract class Tools {
       'VeryGoodOpenSource/very_good_coverage@v3';
 
   /// https://github.com/lpenz/ghaction-packagecloud/releases
-  static const lpenzGhactionPackagecloud = 'lpenz/ghaction-packagecloud@v0.4';
+  static const lpenzGhactionPackagecloud = 'lpenz/ghaction-packagecloud@v0.5';
 
   /// https://github.com/flatpak/flatpak-github-actions/releases
   static const flatpakFlatpakGithubActionsFlatpakBuilder =
@@ -50,7 +50,7 @@ abstract class Tools {
 
   /// https://github.com/stefanzweifel/git-auto-commit-action/releases
   static const stefanzweifelGitAutoCommitAction =
-      'stefanzweifel/git-auto-commit-action@v5';
+      'stefanzweifel/git-auto-commit-action@v6';
 
   /// https://github.com/actions/setup-node/releases
   static const actionsSetupNode = 'actions/setup-node@v4';
@@ -60,7 +60,7 @@ abstract class Tools {
 
   /// https://github.com/apple-actions/import-codesign-certs/releases
   static const appleActionsImportCodesignCerts =
-      'apple-actions/import-codesign-certs@v3';
+      'apple-actions/import-codesign-certs@v5';
 
   /// https://github.com/google-github-actions/auth/releases
   static const googleGithubActionsAuth = 'google-github-actions/auth@v2';
