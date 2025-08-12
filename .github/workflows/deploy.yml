@@ -133,7 +133,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Download all binary artifacts
         if: steps.version.outputs.update == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: artifacts
           pattern: app-deployment-*
@@ -190,7 +190,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
       - name: Download android app artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: app-deployment-appbundle
           path: build
@@ -241,7 +241,7 @@ jobs:
           path: repo
           ref: gh-pages
       - name: Download flatpak bundle artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: flatpak-bundle-*
           path: bundles
@@ -380,7 +380,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Download windows app artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: app-deployment-windows
           path: ${{ inputs.workingDirectory }}/build/windows/msix
