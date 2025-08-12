@@ -119,7 +119,7 @@ jobs:
           submodules: ${{ inputs.withSubmodules }}
       - name: Download artifacts
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && inputs.artifactDependencies != ''
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: package-*
           path: ${{ runner.temp }}/.artifacts
@@ -238,7 +238,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Download all binary artifacts
         if: steps.version.outputs.update == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: artifacts
           pattern: ${{ inputs.archivePrefix }}-*
