@@ -85,7 +85,7 @@ jobs:
       - name: Install flatpak flutter SDK
         run: flatpak install --system -y --noninteractive /tmp/flutter.flatpak
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
       - name: Download artifacts

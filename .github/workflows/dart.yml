@@ -142,7 +142,7 @@ jobs:
         with:
           withDartTestTools: "false"
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
@@ -276,7 +276,7 @@ jobs:
           withDartTestTools: "false"
       - name: Checkout repository
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
@@ -357,7 +357,7 @@ jobs:
           sudo apt-get -qq update
           sudo apt-get -qq install lcov dos2unix
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
       - name: Download coverage data
@@ -439,7 +439,7 @@ jobs:
           withDartTestTools: "false"
       - name: Checkout repository
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}

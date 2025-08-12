@@ -113,7 +113,7 @@ jobs:
           withDartTestTools: "false"
       - name: Checkout repository
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
@@ -216,7 +216,7 @@ jobs:
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: ${{ inputs.persistCredentials }}
       - id: version
