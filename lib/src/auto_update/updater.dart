@@ -51,7 +51,14 @@ class Updater {
     await sdkIterator.iterate((name, pub, dartVersion, flutterVersion) async {
       final pubspec = await pub.pubspec();
       await _updateSdk(name, pub, pubspec, 'sdk', dartVersion);
-      await _updateSdk(name, pub, pubspec, 'flutter', flutterVersion);
+      await _updateSdk(
+        name,
+        pub,
+        pubspec,
+        'flutter',
+        flutterVersion,
+        useGreaterEquals: true,
+      );
     });
   }
 
@@ -60,16 +67,18 @@ class Updater {
     PubWrapper pub,
     Pubspec pubspec,
     String sdk,
-    Version? version,
-  ) async {
+    Version? version, {
+    bool useGreaterEquals = false,
+  }) async {
     if (version == null || !pubspec.environment.containsKey(sdk)) {
       Github.logDebug('Skipping $name for $sdk - No version configured');
       return;
     }
 
-    final constraint = VersionConstraint.compatibleWith(
-      Version(version.major, version.minor, 0),
-    );
+    final minVersion = Version(version.major, version.minor, 0);
+    final constraint = useGreaterEquals
+        ? VersionRange(min: minVersion)
+        : VersionConstraint.compatibleWith(minVersion);
     await pub.pubspecEdit(
       (editor) => editor.update(['environment', sdk], constraint.toString()),
     );
