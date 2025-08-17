@@ -65,14 +65,13 @@ fi
         withArgs: <String, dynamic>{
           'path': 'artifacts',
           'pattern': binaryArtifactsPattern,
+          'merge-multiple': true,
         },
       ),
     ...ReleaseEntryBuilder(
       config: config,
       versionUpdate: updateOutput.expression,
-      files: config.binaryArtifactsPattern != null
-          ? 'artifacts/${config.binaryArtifactsPattern}/*'
-          : null,
+      files: config.binaryArtifactsPattern != null ? 'artifacts/*' : null,
     ).build(),
   ];
 }

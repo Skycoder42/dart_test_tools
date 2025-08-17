@@ -82,7 +82,8 @@ ${releaseContentBodyPath.bashSetter(r'$version_changelog_file')}
         'name': releaseContentReleaseName.expression.toString(),
         'body_path': releaseContentBodyPath.expression.toString(),
         'target_commitish': Github.sha.toString(),
-        if (files != null) 'files': files,
+        'files': ?files,
+        if (files != null) 'fail_on_unmatched_files': true,
       },
     ),
   ];

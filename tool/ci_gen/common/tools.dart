@@ -2,13 +2,13 @@ abstract class Tools {
   Tools._();
 
   /// https://github.com/actions/checkout/releases
-  static const actionsCheckout = 'actions/checkout@v4';
+  static const actionsCheckout = 'actions/checkout@v5';
 
   /// https://github.com/actions/upload-artifact/releases
   static const actionsUploadArtifact = 'actions/upload-artifact@v4';
 
   /// https://github.com/actions/download-artifact/releases
-  static const actionsDownloadArtifact = 'actions/download-artifact@v4';
+  static const actionsDownloadArtifact = 'actions/download-artifact@v5';
 
   /// https://github.com/actions/cache/releases
   static const actionsCache = 'actions/cache@v4';

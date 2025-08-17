@@ -242,6 +242,7 @@ jobs:
         with:
           path: artifacts
           pattern: ${{ inputs.archivePrefix }}-*
+          merge-multiple: true
       - name: Activate cider
         if: steps.version.outputs.update == 'true'
         run: dart pub global activate cider
@@ -273,4 +274,5 @@ jobs:
           name: ${{ steps.release_content.outputs.release_name }}
           body_path: ${{ steps.release_content.outputs.body_path }}
           target_commitish: ${{ github.sha }}
-          files: artifacts/${{ inputs.archivePrefix }}-*/*
+          files: artifacts/*
+          fail_on_unmatched_files: true

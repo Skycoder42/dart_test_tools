@@ -137,6 +137,7 @@ jobs:
         with:
           path: artifacts
           pattern: app-deployment-*
+          merge-multiple: true
       - name: Activate cider
         if: steps.version.outputs.update == 'true'
         run: dart pub global activate cider
@@ -168,7 +169,8 @@ jobs:
           name: ${{ steps.release_content.outputs.release_name }}
           body_path: ${{ steps.release_content.outputs.body_path }}
           target_commitish: ${{ github.sha }}
-          files: artifacts/app-deployment-*/*
+          files: artifacts/*
+          fail_on_unmatched_files: true
   deploy_android:
     name: Deploy android app to Google Play
     needs:
