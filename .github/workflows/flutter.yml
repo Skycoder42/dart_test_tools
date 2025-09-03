@@ -536,7 +536,7 @@ jobs:
         run: ./gradlew app:assembleAndroidTest
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}/android
       - name: Google Cloud Sign In
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           credentials_json: ${{ secrets.firebaseCredentials }}
       - name: Setup gcloud
@@ -700,7 +700,7 @@ jobs:
         run: zip -r --must-match app-release.zip Release-iphoneos *.xctestrun
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}/build/ios_integration/Build/Products
       - name: Google Cloud Sign In
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           credentials_json: ${{ secrets.firebaseCredentials }}
       - name: Setup gcloud
