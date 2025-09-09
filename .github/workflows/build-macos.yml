@@ -61,7 +61,7 @@ jobs:
       - name: Enable swift package manager
         run: flutter config --enable-swift-package-manager
       - name: Setup NodeJS
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
       - name: Install appdmg
         run: npm install -g appdmg
       - name: Install tools
