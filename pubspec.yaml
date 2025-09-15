@@ -18,7 +18,7 @@ executables:
 dependencies:
   analyzer: '>=7.6.0 <9.0.0'
   args: ^2.7.0
-  build: ^3.0.2
+  build: ">=3.0.2 <5.0.0"
   build_config: ^1.2.0
   change: ^0.7.5
   checked_yaml: ^2.0.4
