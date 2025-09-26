@@ -369,6 +369,7 @@ jobs:
         run: |
           set -e
           LCOV_ARGS=""
+          find coverage
           for dir in coverage/coverage-info-*; do
             dos2unix $dir/lcov.info
             LCOV_ARGS="$LCOV_ARGS --add-tracefile $dir/lcov.info"
