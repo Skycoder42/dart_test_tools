@@ -14,7 +14,7 @@ abstract class Tools {
   static const actionsCache = 'actions/cache@v4';
 
   /// https://github.com/actions/setup-java/releases
-  static const actionsSetupJava = 'actions/setup-java@v4';
+  static const actionsSetupJava = 'actions/setup-java@v5';
 
   /// https://github.com/dart-lang/setup-dart/releases
   static const dartLangSetupDart = 'dart-lang/setup-dart@v1';
@@ -53,7 +53,7 @@ abstract class Tools {
       'stefanzweifel/git-auto-commit-action@v6';
 
   /// https://github.com/actions/setup-node/releases
-  static const actionsSetupNode = 'actions/setup-node@v4';
+  static const actionsSetupNode = 'actions/setup-node@v5';
 
   /// https://github.com/microsoft/setup-msstore-cli/releases
   static const microsoftSetupMsstoreCli = 'microsoft/setup-msstore-cli@v1';
@@ -63,11 +63,11 @@ abstract class Tools {
       'apple-actions/import-codesign-certs@v5';
 
   /// https://github.com/google-github-actions/auth/releases
-  static const googleGithubActionsAuth = 'google-github-actions/auth@v2';
+  static const googleGithubActionsAuth = 'google-github-actions/auth@v3';
 
   /// https://github.com/google-github-actions/setup-gcloud/releases
   static const googleGithubActionsSetupGcloud =
-      'google-github-actions/setup-gcloud@v2';
+      'google-github-actions/setup-gcloud@v3';
 
   /// https://github.com/peter-evans/create-pull-request/releases
   static const peterEvansCreatePullRequest =
