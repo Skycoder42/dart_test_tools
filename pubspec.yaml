@@ -1,6 +1,6 @@
 name: dart_test_tools
 description: Additional tools and helpers for writing dart unit tests and GitHub Actions Workflows.
-version: 6.2.3
+version: 6.2.3+1
 homepage: https://github.com/Skycoder42/dart_test_tools
 
 environment:
@@ -19,7 +19,7 @@ dependencies:
   # TODO remove deprecation ignore once the lower constraint can be raised to 8.0.0
   analyzer: '>=7.6.0 <9.0.0'
   args: ^2.7.0
-  build: ^3.1.0
+  build: '>=3.1.0 <5.0.0'
   build_config: ^1.2.0
   change: ^0.7.5
   checked_yaml: ^2.0.4
