@@ -8,7 +8,6 @@ import '../../common/jobs/sdk_job_builder.dart';
 import '../../common/steps/project_prepare_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../common/steps/run_publish_builder.dart';
-import '../../common/steps/update_overrides_builder.dart';
 import '../../dart/jobs/dart_sdk_job_builder_mixin.dart';
 import '../../dart/steps/dart_sdk_builder.dart';
 import '../../flutter/jobs/flutter_sdk_job_builder_mixin.dart';
@@ -23,7 +22,6 @@ final class PublishJobConfig extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
-        UpdateOverridesConfig,
         ProjectPrepareConfig,
         ProjectSetupConfig,
         RunPublishConfig,

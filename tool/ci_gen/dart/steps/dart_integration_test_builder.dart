@@ -27,11 +27,6 @@ base mixin DartIntegrationTestConfig on JobConfig, ProjectSetupConfig {
 
   @override
   late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
-
-  @override
-  late final artifactDependencies = inputContext(
-    WorkflowInputs.artifactDependencies,
-  );
 }
 
 final class DartTestArgsMatrixProperty

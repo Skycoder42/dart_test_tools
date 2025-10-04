@@ -9,11 +9,6 @@ import '../../types/step.dart';
 base mixin PackageConfig on JobConfig, ProjectSetupConfig {
   @override
   late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
-
-  @override
-  late final artifactDependencies = inputContext(
-    WorkflowInputs.artifactDependencies,
-  );
 }
 
 class PackageBuilder implements StepBuilder {

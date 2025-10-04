@@ -4,7 +4,6 @@ import '../../../common/api/matrix_job_builder_mixin.dart';
 import '../../../common/api/working_directory_config.dart';
 import '../../../common/inputs.dart';
 import '../../../common/jobs/sdk_job_builder.dart';
-import '../../../common/steps/update_overrides_builder.dart';
 import '../../../dart/jobs/dart_sdk_job_builder_mixin.dart';
 import '../../../types/container.dart';
 import '../../../types/expression.dart';
@@ -18,18 +17,12 @@ final class BuildLinuxJobConfig extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
-        UpdateOverridesConfig,
         GenerateBuildNumberConfig,
         WithGpgKeyConfig,
         BuildFlatpakBundleConfig,
         DartSdkJobConfig {
   late final flatpakPlatformImage = inputContext(
     WorkflowInputs.flatpakPlatformImage,
-  );
-
-  @override
-  late final artifactDependencies = inputContext(
-    WorkflowInputs.artifactDependencies,
   );
 
   BuildLinuxJobConfig(super.inputContext, super.secretContext);

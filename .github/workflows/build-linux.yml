@@ -16,21 +16,16 @@ on:
         required: false
         default: "24.08"
         description: The version of the freedesktop sdk and runtime being used.
-      artifactDependencies:
-        type: string
-        required: false
-        default: ""
-        description: A space-separated list of package names that should be downloaded from the artifacts and overwritten for the workflow. The packages should be space separated and placed in a single line. You can use the YAML ">-" for that.
-      workingDirectory:
-        type: string
-        required: false
-        default: .
-        description: The root directory of the dart package to build and test.
       buildNumberArgs:
         type: string
         required: false
         default: ""
         description: Additional args for the build number generator.
+      workingDirectory:
+        type: string
+        required: false
+        default: .
+        description: The root directory of the dart package to build and test.
       bundleName:
         type: string
         required: true
@@ -88,24 +83,6 @@ jobs:
         uses: actions/checkout@v5
         with:
           persist-credentials: false
-      - name: Download artifacts
-        if: inputs.artifactDependencies != ''
-        uses: actions/download-artifact@v5
-        with:
-          pattern: package-*
-          path: ./.artifacts
-      - name: Create pubspec_overrides.yaml for artifact packages
-        if: inputs.artifactDependencies != ''
-        run: |
-          set -eo pipefail
-          if [[ ! -f pubspec_overrides.yaml ]]; then
-            yq '{"dependency_overrides": .dependency_overrides}' pubspec.yaml > pubspec_overrides.yaml
-          fi
-          for package in ${{ inputs.artifactDependencies }}; do
-            yq -i ".dependency_overrides.$package.path=\"./.artifacts/package-$package\"" pubspec_overrides.yaml
-          done
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - id: generateBuildNumber
         name: Generate build number
         run: dart pub global run dart_test_tools:generate_build_number ${{ inputs.buildNumberArgs }} --env

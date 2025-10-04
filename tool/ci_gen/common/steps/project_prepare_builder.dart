@@ -3,14 +3,17 @@ import '../../types/id.dart';
 import '../../types/step.dart';
 import '../api/job_config.dart';
 import '../api/step_builder.dart';
-import '../contexts.dart';
+import '../api/working_directory_config.dart';
 import '../inputs.dart';
 import '../jobs/sdk_job_builder.dart';
-import 'update_overrides_builder.dart';
 
 base mixin ProjectPrepareConfig
-    on JobConfig, SdkJobConfig, UpdateOverridesConfig {
+    on JobConfig, WorkingDirectoryConfig, SdkJobConfig {
   bool get withBuildRunner => true;
+  bool get localResolution => false;
+  bool get releaseMode => false;
+
+  Expression? get ifExpression => null;
 
   late final buildRunner = withBuildRunner
       ? inputContext(WorkflowInputs.buildRunner)
@@ -19,11 +22,9 @@ base mixin ProjectPrepareConfig
       ? inputContext(WorkflowInputs.buildRunnerArgs)
       : null;
 
-  late final Expression? buildDependencies = withBuildRunner
+  late final Expression? buildDependencies = withBuildRunner && !localResolution
       ? inputContext(WorkflowInputs.buildDependencies)
       : null;
-
-  bool get releaseMode => false;
 }
 
 class ProjectPrepareBuilder implements StepBuilder {
@@ -37,11 +38,14 @@ class ProjectPrepareBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-    ...UpdateOverridesBuilder(
-      titleSuffix: _titleSuffix,
-      config: config,
-      artifactTargetDir: Runner.temp.toString(),
-    ).build(),
+    if (config.localResolution) ...[
+      Step.run(
+        name: 'Enforce local resolution',
+        run: "echo 'resolution:' > pubspec_overrides.yaml",
+        workingDirectory: config.workingDirectory.toString(),
+        shell: 'bash',
+      ),
+    ],
     Step.run(
       name: 'Restore dart packages$_titleSuffix',
       ifExpression: config.ifExpression,

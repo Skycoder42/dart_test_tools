@@ -351,20 +351,6 @@ Example:
     ),
   );
 
-  static const artifactDependencies = WorkflowInput(
-    name: 'artifactDependencies',
-    input: Input(
-      type: Type.string,
-      required: false,
-      defaultValue: '',
-      description:
-          'A space-separated list of package names that should be '
-          'downloaded from the artifacts and overwritten for the workflow. '
-          'The packages should be space separated and placed in a single line. '
-          'You can use the YAML ">-" for that.',
-    ),
-  );
-
   static const enabledPlatforms = WorkflowInput(
     name: 'enabledPlatforms',
     input: Input(

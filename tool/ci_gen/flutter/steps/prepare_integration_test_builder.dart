@@ -6,7 +6,6 @@ import '../../common/jobs/sdk_job_builder.dart';
 import '../../common/steps/cache_builder.dart';
 import '../../common/steps/project_prepare_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
-import '../../common/steps/update_overrides_builder.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
@@ -22,21 +21,12 @@ base mixin PrepareIntegrationTestConfig on ProjectSetupConfig {
     WorkflowInputs.integrationTestCacheConfig,
   );
 
-  @override
-  late final artifactDependencies = inputContext(
-    WorkflowInputs.artifactDependencies,
-  );
-
   String get integrationTestWorkingDirectory =>
       '$workingDirectory/$integrationTestProject';
 }
 
 final class _TestProjectConfig extends JobConfig
-    with
-        SdkJobConfig,
-        WorkingDirectoryConfig,
-        UpdateOverridesConfig,
-        ProjectPrepareConfig {
+    with SdkJobConfig, WorkingDirectoryConfig, ProjectPrepareConfig {
   final PrepareIntegrationTestConfig baseConfig;
 
   @override

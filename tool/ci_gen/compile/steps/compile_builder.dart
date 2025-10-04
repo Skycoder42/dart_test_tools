@@ -32,11 +32,6 @@ base mixin CompileConfig on JobConfig, ProjectSetupConfig {
   late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
 
   @override
-  late final artifactDependencies = inputContext(
-    WorkflowInputs.artifactDependencies,
-  );
-
-  @override
   bool get releaseMode => true;
 }
 

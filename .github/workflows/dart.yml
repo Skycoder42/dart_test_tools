@@ -26,11 +26,6 @@ on:
         required: false
         default: false
         description: Specify if submodules should be initialized or not.
-      artifactDependencies:
-        type: string
-        required: false
-        default: ""
-        description: A space-separated list of package names that should be downloaded from the artifacts and overwritten for the workflow. The packages should be space separated and placed in a single line. You can use the YAML ">-" for that.
       workingDirectory:
         type: string
         required: false
@@ -146,24 +141,6 @@ jobs:
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
-      - name: Download artifacts
-        if: inputs.artifactDependencies != ''
-        uses: actions/download-artifact@v5
-        with:
-          pattern: package-*
-          path: ${{ runner.temp }}/.artifacts
-      - name: Create pubspec_overrides.yaml for artifact packages
-        if: inputs.artifactDependencies != ''
-        run: |
-          set -eo pipefail
-          if [[ ! -f pubspec_overrides.yaml ]]; then
-            yq '{"dependency_overrides": .dependency_overrides}' pubspec.yaml > pubspec_overrides.yaml
-          fi
-          for package in ${{ inputs.artifactDependencies }}; do
-            yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
-          done
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Restore dart packages
         run: dart pub get
         working-directory: ${{ inputs.workingDirectory }}
@@ -280,24 +257,6 @@ jobs:
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
-      - name: Download artifacts
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.artifactDependencies != ''
-        uses: actions/download-artifact@v5
-        with:
-          pattern: package-*
-          path: ${{ runner.temp }}/.artifacts
-      - name: Create pubspec_overrides.yaml for artifact packages
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.artifactDependencies != ''
-        run: |
-          set -eo pipefail
-          if [[ ! -f pubspec_overrides.yaml ]]; then
-            yq '{"dependency_overrides": .dependency_overrides}' pubspec.yaml > pubspec_overrides.yaml
-          fi
-          for package in ${{ inputs.artifactDependencies }}; do
-            yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
-          done
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Restore dart packages
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: dart pub get
@@ -369,7 +328,6 @@ jobs:
         run: |
           set -e
           LCOV_ARGS=""
-          find coverage
           for dir in coverage/coverage-info-*; do
             dos2unix $dir/lcov.info
             LCOV_ARGS="$LCOV_ARGS --add-tracefile $dir/lcov.info"
@@ -444,24 +402,6 @@ jobs:
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
-      - name: Download artifacts
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.artifactDependencies != ''
-        uses: actions/download-artifact@v5
-        with:
-          pattern: package-*
-          path: ${{ runner.temp }}/.artifacts
-      - name: Create pubspec_overrides.yaml for artifact packages
-        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.artifactDependencies != ''
-        run: |
-          set -eo pipefail
-          if [[ ! -f pubspec_overrides.yaml ]]; then
-            yq '{"dependency_overrides": .dependency_overrides}' pubspec.yaml > pubspec_overrides.yaml
-          fi
-          for package in ${{ inputs.artifactDependencies }}; do
-            yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
-          done
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Restore dart packages
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform))
         run: dart pub get

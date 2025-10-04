@@ -3,7 +3,6 @@ import '../../../common/api/working_directory_config.dart';
 import '../../../common/jobs/sdk_job_builder.dart';
 import '../../../common/steps/project_prepare_builder.dart';
 import '../../../common/steps/project_setup_builder.dart';
-import '../../../common/steps/update_overrides_builder.dart';
 import '../../../flutter/flutter_platform.dart';
 import '../../../flutter/jobs/flutter_sdk_job_builder_mixin.dart';
 import '../../../types/expression.dart';
@@ -19,7 +18,6 @@ final class BuildWindowsJobConfig extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
-        UpdateOverridesConfig,
         ProjectPrepareConfig,
         ProjectSetupConfig,
         GenerateBuildNumberConfig,

@@ -10,14 +10,12 @@ import '../steps/coverage_collector_builder.dart';
 import '../steps/project_prepare_builder.dart';
 import '../steps/project_setup_builder.dart';
 import '../steps/unit_test_builder.dart';
-import '../steps/update_overrides_builder.dart';
 import 'sdk_job_builder.dart';
 
 abstract base class UnitTestJobConfig extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
-        UpdateOverridesConfig,
         ProjectPrepareConfig,
         ProjectSetupConfig,
         CoverageBuilderConfig,

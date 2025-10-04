@@ -11,11 +11,6 @@ on:
         required: false
         default: .
         description: The root directory of the dart package to build and test.
-      artifactDependencies:
-        type: string
-        required: false
-        default: ""
-        description: A space-separated list of package names that should be downloaded from the artifacts and overwritten for the workflow. The packages should be space separated and placed in a single line. You can use the YAML ">-" for that.
       buildDependencies:
         type: string
         required: false
@@ -67,24 +62,6 @@ jobs:
         uses: actions/checkout@v5
         with:
           persist-credentials: false
-      - name: Download artifacts
-        if: inputs.artifactDependencies != ''
-        uses: actions/download-artifact@v5
-        with:
-          pattern: package-*
-          path: ${{ runner.temp }}/.artifacts
-      - name: Create pubspec_overrides.yaml for artifact packages
-        if: inputs.artifactDependencies != ''
-        run: |
-          set -eo pipefail
-          if [[ ! -f pubspec_overrides.yaml ]]; then
-            yq '{"dependency_overrides": .dependency_overrides}' pubspec.yaml > pubspec_overrides.yaml
-          fi
-          for package in ${{ inputs.artifactDependencies }}; do
-            yq -i ".dependency_overrides.$package.path=\"${{ runner.temp }}/.artifacts/package-$package\"" pubspec_overrides.yaml
-          done
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Restore dart packages
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}

@@ -4,18 +4,13 @@ import '../../../common/api/step_builder.dart';
 import '../../../common/contexts.dart';
 import '../../../common/inputs.dart';
 import '../../../common/steps/checkout_builder.dart';
-import '../../../common/steps/update_overrides_builder.dart';
 import '../../../common/tools.dart';
 import '../../../types/step.dart';
 import '../../steps/generate_build_number_builder.dart';
 import 'with_gpg_key.dart';
 
 base mixin BuildFlatpakBundleConfig
-    on
-        JobConfig,
-        UpdateOverridesConfig,
-        GenerateBuildNumberConfig,
-        WithGpgKeyConfig {
+    on JobConfig, GenerateBuildNumberConfig, WithGpgKeyConfig {
   late final sdkVersion = inputContext(WorkflowInputs.flatpakSdkVersion);
   late final bundleName = inputContext(WorkflowInputs.bundleName);
   late final manifestPath = inputContext(WorkflowInputs.manifestPath);
@@ -86,7 +81,6 @@ chmod +x /usr/bin/yq
           '/tmp/flutter.flatpak',
     ),
     ...const CheckoutBuilder().build(),
-    ...UpdateOverridesBuilder(config: config, artifactTargetDir: '.').build(),
     ...GenerateBuildNumberBuilder(config: config, asEnv: true).build(),
     const Step.run(
       name: 'Prepare flatpak repo',

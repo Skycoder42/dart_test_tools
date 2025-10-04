@@ -32,6 +32,9 @@ base mixin PublishConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
 
   @override
   bool get releaseMode => true;
+
+  @override
+  bool get localResolution => true;
 }
 
 class PublishBuilder implements StepBuilder {

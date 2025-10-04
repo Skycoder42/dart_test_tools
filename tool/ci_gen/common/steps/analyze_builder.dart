@@ -14,11 +14,6 @@ base mixin AnalyzeConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
 
   @override
   late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
-
-  @override
-  late final artifactDependencies = inputContext(
-    WorkflowInputs.artifactDependencies,
-  );
 }
 
 class AnalyzeBuilder implements StepBuilder {

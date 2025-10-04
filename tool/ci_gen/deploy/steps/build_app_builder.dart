@@ -1,6 +1,5 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
-import '../../common/inputs.dart';
 import '../../common/steps/project_setup_builder.dart';
 import '../../common/tools.dart';
 import '../../types/step.dart';
@@ -20,11 +19,6 @@ base mixin BuildAppConfig
 
   @override
   bool get releaseMode => true;
-
-  @override
-  late final artifactDependencies = inputContext(
-    WorkflowInputs.artifactDependencies,
-  );
 }
 
 class BuildAppBuilder implements StepBuilder {
