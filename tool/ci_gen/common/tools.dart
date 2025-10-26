@@ -50,10 +50,10 @@ abstract class Tools {
 
   /// https://github.com/stefanzweifel/git-auto-commit-action/releases
   static const stefanzweifelGitAutoCommitAction =
-      'stefanzweifel/git-auto-commit-action@v6';
+      'stefanzweifel/git-auto-commit-action@v7';
 
   /// https://github.com/actions/setup-node/releases
-  static const actionsSetupNode = 'actions/setup-node@v5';
+  static const actionsSetupNode = 'actions/setup-node@v6';
 
   /// https://github.com/microsoft/setup-msstore-cli/releases
   static const microsoftSetupMsstoreCli = 'microsoft/setup-msstore-cli@v1';

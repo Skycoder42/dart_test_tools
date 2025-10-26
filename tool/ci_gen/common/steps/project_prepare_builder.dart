@@ -41,7 +41,13 @@ class ProjectPrepareBuilder implements StepBuilder {
     if (config.localResolution) ...[
       Step.run(
         name: 'Enforce local resolution',
-        run: "echo 'resolution:' > pubspec_overrides.yaml",
+        run: '''
+set -euo pipefail
+echo 'resolution:' > pubspec_overrides.yaml
+if [ -f example/pubspec.yaml ]; then
+  echo 'resolution:' > example/pubspec_overrides.yaml
+fi
+''',
         workingDirectory: config.workingDirectory.toString(),
         shell: 'bash',
       ),
