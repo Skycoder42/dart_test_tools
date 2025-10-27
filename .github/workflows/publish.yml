@@ -141,7 +141,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Download additional artifacts
         if: inputs.extraArtifacts != ''
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: ${{ fromJSON(inputs.extraArtifacts)['name'] }}
           path: ${{ fromJSON(inputs.extraArtifacts)['path'] }}
