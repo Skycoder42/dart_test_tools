@@ -64,7 +64,7 @@ jobs:
           upload-artifact: false
           arch: ${{ matrix.arch }}
       - name: Upload flatpak bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: flatpak-bundle-${{ matrix.arch }}
           path: org.freedesktop.Sdk.Extension.flutter_${{ env.SDK_VERSION }}_${{ matrix.arch }}.flatpak

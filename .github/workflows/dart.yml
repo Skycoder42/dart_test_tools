@@ -297,7 +297,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload coverage data
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.minCoverage > 0
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coverage-info-${{ matrix.platform }}
           path: ${{ inputs.workingDirectory }}/coverage/lcov.info
@@ -341,7 +341,7 @@ jobs:
         run: genhtml --no-function-coverage --synthesize-missing -o coverage/html coverage/cleaned.info
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload coverage HTML report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coverage-html
           path: ${{ inputs.workingDirectory }}/coverage/html
