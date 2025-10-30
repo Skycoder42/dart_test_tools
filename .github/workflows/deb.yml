@@ -61,7 +61,7 @@ jobs:
         run: makedeb -s --no-confirm
         working-directory: deb
       - name: Upload debian package to artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: debian-package
           path: deb/*.deb

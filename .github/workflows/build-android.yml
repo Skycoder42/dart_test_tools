@@ -156,7 +156,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Upload app and debug info
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: app-deployment-appbundle
           path: ${{ inputs.workingDirectory }}/build/app/outputs

@@ -130,7 +130,7 @@ jobs:
           appdmg '${{ inputs.dmgConfigPath }}' "build/macos/dmg/$title.dmg"
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload app and debug info
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: app-deployment-macos
           path: ${{ inputs.workingDirectory }}/build/macos/dmg
