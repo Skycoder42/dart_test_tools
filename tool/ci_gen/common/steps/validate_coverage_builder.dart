@@ -39,11 +39,11 @@ sudo apt-get -qq install lcov dos2unix
     Step.run(
       name: 'Merge coverage data',
       run: r'''
-set -e
+set -euo pipefail
 LCOV_ARGS=""
-for dir in coverage/coverage-info-*; do
-  dos2unix $dir/lcov.info
-  LCOV_ARGS="$LCOV_ARGS --add-tracefile $dir/lcov.info"
+for f in $(find coverage -iname '*.info'); do
+  dos2unix "$f"
+  LCOV_ARGS="$LCOV_ARGS --add-tracefile $f"
 done
 lcov $LCOV_ARGS --output-file coverage/combined.info
 ''',
