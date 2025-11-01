@@ -327,6 +327,7 @@ jobs:
       - name: Merge coverage data
         run: |
           set -e
+          find coverage
           LCOV_ARGS=""
           for dir in coverage/coverage-info-*; do
             dos2unix $dir/lcov.info
