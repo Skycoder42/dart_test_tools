@@ -35,9 +35,9 @@ class AnalysisOptionsWriter {
   void _writeRecursive(IOSink sink, int level, dynamic data) {
     late final dynamic encodedData;
     try {
-      // ignore: avoid_dynamic_calls
+      // ignore: avoid_dynamic_calls workaround to call toJson if it exists
       encodedData = data.toJson();
-      // ignore: avoid_catching_errors
+      // ignore: avoid_catching_errors workaround to call toJson if it exists
     } on NoSuchMethodError {
       encodedData = data;
     }

@@ -3,7 +3,7 @@ library;
 
 import 'dart:io';
 
-// ignore: test_library_import
+// ignore: test_library_import for integration tests
 import 'package:dart_test_tools/aur.dart';
 import 'package:path/path.dart';
 import 'package:test/test.dart';
@@ -29,7 +29,7 @@ void main() {
     await testDir.delete(recursive: true);
   });
 
-  // ignore: avoid_positional_boolean_parameters
+  // ignore: avoid_positional_boolean_parameters because is first
   Future<void> createSources(bool minimal) async {
     final writer = YamlWriter();
     final pubspecYaml = writer.write({

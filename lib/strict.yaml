@@ -53,3 +53,7 @@ linter:
     remove_deprecations_in_breaking_versions: true
     switch_on_type: true
     unnecessary_unawaited: true
+    avoid_equals_and_hash_code_on_mutable_classes: true
+    avoid_null_checks_in_equality_operators: true
+    document_ignores: true
+    prefer_asserts_with_message: true

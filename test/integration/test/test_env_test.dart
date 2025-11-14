@@ -1,4 +1,4 @@
-// ignore: test_library_import
+// ignore: test_library_import for integration tests
 import 'package:dart_test_tools/test.dart';
 import 'package:test/test.dart';
 

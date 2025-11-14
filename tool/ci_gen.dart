@@ -86,7 +86,7 @@ Future<int> _writeToFile(File file, dynamic content) async {
 
 YamlWriter _createYamlWriter() => YamlWriter(
   toEncodable: (dynamic data) {
-    // ignore: avoid_dynamic_calls
+    // ignore: avoid_dynamic_calls for json manipulation
     final dynamic jsonData = data.toJson != null ? data.toJson() : data;
     if (jsonData is Map) {
       return <dynamic, dynamic>{...jsonData}..remove('runtimeType');

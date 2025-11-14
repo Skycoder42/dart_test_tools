@@ -161,11 +161,11 @@ class PkgBuildGenerator {
     return PkgProperty.list(multiLine: true, [
       PkgProperty.interpolate('sources.tar.gz::$repoUri'),
       PkgProperty.interpolate(
-        // ignore: lines_longer_than_80_chars
+        // ignore: lines_longer_than_80_chars for readability
         'bin.tar.xz::${binariesBaseUri.resolve('${options.aurOptions.binariesArchivePrefix}-linux.tar.xz')}',
       ),
       PkgProperty.interpolate(
-        // ignore: lines_longer_than_80_chars
+        // ignore: lines_longer_than_80_chars for readability
         'debug.tar.xz::${binariesBaseUri.resolve('${options.aurOptions.binariesArchivePrefix}-linux-debug-symbols.tar.xz')}',
       ),
       for (final extraSource in options.aurOptions.extraSources)
@@ -184,7 +184,7 @@ class PkgBuildGenerator {
 
     yield* options.executables.entries.map(
       (entry) =>
-          // ignore: prefer_interpolation_to_compose_strings
+          // ignore: prefer_interpolation_to_compose_strings for readability
           'install -D -m755 ' +
           (options.executables.length > 1
               ? "'bin/${entry.key}' "
@@ -227,7 +227,7 @@ class PkgBuildGenerator {
 
     yield* options.executables.entries.map(
       (entry) =>
-          // ignore: prefer_interpolation_to_compose_strings
+          // ignore: prefer_interpolation_to_compose_strings for readability
           'install -D -m644 ' +
           (options.executables.length > 1
               ? "'debug/${entry.key}.sym' "

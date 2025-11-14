@@ -11,8 +11,8 @@ sealed class Expression with _$Expression {
   const factory Expression(String value) = _Expression;
 
   @Assert(
-    // ignore: lines_longer_than_80_chars
-    'rawValue is String || rawValue is num || rawValue is bool || rawValue is Null',
+    'rawValue is String || rawValue is num || rawValue is bool || '
+        'rawValue is Null',
     'Only YAML primitives (string, number, bool, null) are allowed',
   )
   const factory Expression.literal(dynamic rawValue) = _LiteralExpression;

@@ -1,4 +1,4 @@
-// ignore_for_file: invalid_annotation_target
+// ignore_for_file: invalid_annotation_target for freezed
 
 import 'dart:collection';
 

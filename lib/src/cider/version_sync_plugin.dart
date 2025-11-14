@@ -1,4 +1,4 @@
-// ignore_for_file: implementation_imports
+// ignore_for_file: implementation_imports for plugin interface
 
 import 'dart:async';
 import 'dart:io';

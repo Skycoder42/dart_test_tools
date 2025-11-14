@@ -16,6 +16,6 @@ enum DartPlatform implements IPlatformMatrixSelector {
   @override
   final bool isWeb;
 
-  // ignore: avoid_positional_boolean_parameters
+  // ignore: avoid_positional_boolean_parameters private constructor
   const DartPlatform(this.platform, this.os, this.isWeb);
 }

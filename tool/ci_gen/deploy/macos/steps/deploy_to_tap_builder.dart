@@ -56,7 +56,7 @@ class DeployToTapBuilder implements StepBuilder {
       name: 'Commit tap update',
       run:
           "git -c user.name='github-actions[bot]' "
-          // ignore: missing_whitespace_between_adjacent_strings
+          // ignore: missing_whitespace_between_adjacent_strings no space required
           '-c user.email='
           "'41898282+github-actions[bot]@users.noreply.github.com' "
           'commit -m '

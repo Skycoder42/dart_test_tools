@@ -42,7 +42,7 @@ final class _TestProjectConfig extends JobConfig
   String get runTool => baseConfig.runTool;
 
   @override
-  // ignore: overridden_fields
+  // ignore: overridden_fields to enforce fake
   late final workingDirectory = Expression.fake(
     '${baseConfig.workingDirectory}/${baseConfig.integrationTestProject}',
   );
