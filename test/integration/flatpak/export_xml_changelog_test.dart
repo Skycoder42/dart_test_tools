@@ -7,7 +7,7 @@ import 'package:dart_test_tools/src/flatpak/export_xml_changelog/export_xml_chan
 import 'package:path/path.dart';
 import 'package:test/test.dart';
 
-class _TestOverrides extends IOOverrides {
+final class _TestOverrides extends IOOverrides {
   final Directory testDir;
 
   _TestOverrides(this.testDir);

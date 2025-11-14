@@ -4,7 +4,7 @@ import 'package:analyzer/dart/analysis/context_root.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/error/listener.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
 import 'package:meta/meta.dart';
@@ -56,7 +56,7 @@ class SrcLibraryNotExported extends DartLintRule {
   @override
   void run(
     CustomLintResolver resolver,
-    ErrorReporter reporter,
+    DiagnosticReporter reporter,
     CustomLintContext context,
   ) {
     if (!_isPublished(context)) {
@@ -95,15 +95,15 @@ class SrcLibraryNotExported extends DartLintRule {
   bool _isPublished(CustomLintContext context) =>
       context.pubspec.publishTo != 'none';
 
-  Iterable<Element2> _declaredElements(CompilationUnitMember declaration) {
-    final Iterable<Element2?> elements;
+  Iterable<Element> _declaredElements(CompilationUnitMember declaration) {
+    final Iterable<Element?> elements;
     if (declaration is TopLevelVariableDeclaration) {
-      elements = declaration.variables.variables.map((v) => v.declaredElement2);
+      elements = declaration.variables.variables.map((v) => v.declaredElement);
     } else {
       elements = [declaration.declaredFragment?.element];
     }
 
-    return elements.whereType<Element2>();
+    return elements.whereType<Element>();
   }
 
   Future<Set<String>> _loadPackageExports(AnalysisSession session) async {
@@ -181,12 +181,10 @@ class SrcLibraryNotExported extends DartLintRule {
   }
 }
 
-extension _ElementX on Element2 {
+extension _ElementX on Element {
   bool get isExportable =>
       isPublic &&
-      !_metadata.hasInternal &&
-      !_metadata.hasVisibleForTesting &&
-      !_metadata.hasVisibleForOverriding;
-
-  Metadata get _metadata => (this as Annotatable).metadata2;
+      !metadata.hasInternal &&
+      !metadata.hasVisibleForTesting &&
+      !metadata.hasVisibleForOverriding;
 }
