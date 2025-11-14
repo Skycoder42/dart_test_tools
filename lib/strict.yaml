@@ -52,3 +52,6 @@ linter:
     unnecessary_ignore: true
     use_null_aware_elements: true
     # new rules
+    remove_deprecations_in_breaking_versions: true
+    switch_on_type: true
+    unnecessary_unawaited: true

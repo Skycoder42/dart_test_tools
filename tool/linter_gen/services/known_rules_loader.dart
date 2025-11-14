@@ -54,7 +54,7 @@ class KnownRulesLoader {
       rulesPageResponse.body,
       sourceUrl: _rulesPageUri.toString(),
     );
-    final sourceCode = rulesDom.querySelectorAll('pre.shiki').single.text;
+    final sourceCode = rulesDom.querySelectorAll('pre.opal').single.text;
     return checkedYamlDecode(
       sourceCode,
       AnalysisOptions.fromYaml,
