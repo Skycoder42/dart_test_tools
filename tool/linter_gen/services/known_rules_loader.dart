@@ -10,10 +10,12 @@ import 'analysis_options_loader.dart';
 import 'analysis_options_writer.dart';
 
 class KnownRulesLoader {
+  static final _rulesPageUri = Uri.https('dart.dev', '/tools/linter-rules/all');
+
   final AnalysisOptionsLoader analysisOptionsLoader;
   final AnalysisOptionsWriter analysisOptionsWriter;
 
-  final _rulesPageUri = Uri.https('dart.dev', '/tools/linter-rules/all');
+  Set<String>? _cachedNewRules;
 
   KnownRulesLoader({
     required this.analysisOptionsLoader,
@@ -21,6 +23,10 @@ class KnownRulesLoader {
   });
 
   Future<Set<String>> loadNewRules() async {
+    if (_cachedNewRules case final rules?) {
+      return rules;
+    }
+
     const knownRulesCacheFile = AnalysisOptionsRef.local(
       'tool/linter_gen/known_rules.yaml',
     );
@@ -38,7 +44,7 @@ class KnownRulesLoader {
     final oldRules =
         previousKnownOptions.linter?.ruleMap.keys.toSet() ?? const {};
     final newRules = newKnownOptions.linter?.ruleMap.keys.toSet() ?? const {};
-    return newRules.difference(oldRules);
+    return _cachedNewRules = newRules.difference(oldRules);
   }
 
   Future<AnalysisOptions> _loadKnownRules() async {

@@ -29,8 +29,8 @@ sealed class Matrix with _$Matrix {
   dynamic toJson() => switch (this) {
     _Matrix(:final matrix, :final include, :final exclude) => {
       ...matrix,
-      if (include != null) 'include': include,
-      if (exclude != null) 'exclude': exclude,
+      'include': ?include,
+      'exclude': ?exclude,
     },
     _MatrixExpression(:final expression) => expression.toString(),
   };

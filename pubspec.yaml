@@ -48,7 +48,7 @@ dependencies:
   yaml_writer: ^2.1.0
 
 dev_dependencies:
-  build_runner: ^2.10.2
+  build_runner: ^2.10.3
   flutter_lints: ^6.0.0
   freezed: ^3.2.3
   html: ^0.15.6

@@ -45,7 +45,6 @@ extension StepIdX on StepId {}
 sealed class IdOutput with _$IdOutput {
   const IdOutput._();
 
-  // ignore: unused_element
   const factory IdOutput.step(StepId stepId, String name) = StepIdOutput;
   const factory IdOutput.job(JobId jobId, String name) = JobIdOutput;
 

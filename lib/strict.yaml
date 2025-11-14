@@ -1,4 +1,7 @@
-include: package:lint/strict.yaml
+include:
+  - package:lints/recommended.yaml
+  - package:flutter_lints/flutter.yaml
+  - package:lint/strict.yaml
 analyzer:
   language:
     strict-casts: true
@@ -6,15 +9,10 @@ analyzer:
     strict-raw-types: true
   plugins:
     - custom_lint
+  errors:
+    included_file_warning: ignore
 linter:
   rules:
-    # rules from package:lints/recommended.yaml
-    avoid_renaming_method_parameters: true
-    library_private_types_in_public_api: true
-    prefer_adjacent_string_concatenation: true
-    unnecessary_constructor_name: true
-    # rules from package:flutter_lints/flutter.yaml
-    use_key_in_widget_constructors: true
     # custom rules
     always_use_package_imports: false # overwritten
     avoid_classes_with_only_static_members: false # overwritten

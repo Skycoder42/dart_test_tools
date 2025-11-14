@@ -1,5 +1,7 @@
 // ignore_for_file: invalid_annotation_target
 
+import 'dart:collection';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'analysis_options_ref.dart';
@@ -7,11 +9,13 @@ import 'analysis_options_ref.dart';
 part 'analysis_options.freezed.dart';
 part 'analysis_options.g.dart';
 
+enum DiagnosticLevel { error, warning, info, ignore }
+
 @freezed
 sealed class AnalysisOptions with _$AnalysisOptions {
   @JsonSerializable(anyMap: true, checked: true)
   const factory AnalysisOptions({
-    AnalysisOptionsRef? include,
+    ListOrValue<AnalysisOptionsRef>? include,
     AnalysisOptionsAnalyzer? analyzer,
     AnalysisOptionsLinter? linter,
   }) = _AnalysisOptions;
@@ -29,6 +33,7 @@ sealed class AnalysisOptionsAnalyzer with _$AnalysisOptionsAnalyzer {
   const factory AnalysisOptionsAnalyzer({
     @JsonKey(includeIfNull: false) Map<String, dynamic>? language,
     @JsonKey(includeIfNull: false) List<String>? plugins,
+    @JsonKey(includeIfNull: false) Map<String, DiagnosticLevel>? errors,
   }) = _AnalysisOptionsAnalyzer;
 
   factory AnalysisOptionsAnalyzer.fromJson(Map<String, dynamic> json) =>
@@ -63,3 +68,70 @@ sealed class AnalysisOptionsLinter with _$AnalysisOptionsLinter {
 
   List<String> get ruleList => ruleMap.keys.toList();
 }
+
+@Freezed(fromJson: false, toJson: false)
+sealed class ListOrValue<T>
+    with _$ListOrValue<T>, ListMixin<T>, _UnmodifiableListMixin<T> {
+  const factory ListOrValue.list(List<T> list) = _List;
+  const factory ListOrValue.value(T value) = _ListValue;
+
+  factory ListOrValue.fromJson(
+    dynamic json,
+    T Function(dynamic json) fromJsonT,
+  ) {
+    if (_implements<T, List<dynamic>>() && json is List) {
+      final allChildrenAreLists = json.every((e) => e is List);
+      return allChildrenAreLists
+          ? ListOrValue.list(json.map(fromJsonT).toList())
+          : ListOrValue.value(fromJsonT(json));
+    } else {
+      return json is List
+          ? ListOrValue.list(json.map(fromJsonT).toList())
+          : ListOrValue.value(fromJsonT(json));
+    }
+  }
+
+  const ListOrValue._();
+
+  bool get isList => switch (this) {
+    _List() => true,
+    _ListValue() => false,
+  };
+
+  @override
+  int get length => switch (this) {
+    _List(list: List(:final length)) => length,
+    _ListValue() => 1,
+  };
+
+  @override
+  T operator [](int index) => switch (this) {
+    _List(:final list) => list[index],
+    _ListValue(:final value) when index == 0 => value,
+    _ListValue(:final value) => throw RangeError.index(index, [value]),
+  };
+
+  @override
+  String toString() => switch (this) {
+    _List(:final list) => list.toString(),
+    _ListValue(:final value) => value.toString(),
+  };
+
+  dynamic toJson(dynamic Function(T value) toJsonT) => switch (this) {
+    _List(:final list) => list.map(toJsonT).toList(),
+    _ListValue(:final value) => toJsonT(value),
+  };
+}
+
+mixin _UnmodifiableListMixin<T> on ListMixin<T> {
+  @override
+  set length(int length) => throw UnsupportedError(
+    'Cannot change the length of an unmodifiable list',
+  );
+
+  @override
+  void operator []=(int index, T value) =>
+      throw UnsupportedError('Cannot modify an unmodifiable list');
+}
+
+bool _implements<TDerived, TBase>() => <TDerived>[] is List<TBase>;
