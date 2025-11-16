@@ -16,7 +16,8 @@ executables:
   auto-update: auto_update
 
 dependencies:
-  analyzer: '>=8.1.1 <10.0.0'
+  analysis_server_plugin: ^0.3.3
+  analyzer: ">=8.4.0 <10.0.0"
   args: ^2.7.0
   build: ^4.0.2
   build_config: ^1.2.0
@@ -26,7 +27,6 @@ dependencies:
   code_builder: ^4.11.0
   collection: ^1.19.1
   crypto: ^3.0.7
-  custom_lint_builder: ^0.8.1
   dotenv: ^4.2.0
   freezed_annotation: ^3.1.0
   json_annotation: ^4.9.0

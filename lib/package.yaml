@@ -1,9 +1,6 @@
 include:
   - package:lint/package.yaml
   - strict.yaml
-analyzer:
-  plugins:
-    - custom_lint
 linter:
   rules:
     # custom rules
