@@ -6,7 +6,7 @@ import 'package:analysis_server_plugin/registry.dart';
 import 'package:logging/logging.dart';
 
 import 'gen/package_metadata.dart' as metadata;
-import 'src/analyzer_plugin/no_self_package_imports.dart';
+import 'src/analyzer_plugin/rules/no_self_package_imports.dart';
 
 // entrypoint for the analyzer plugin
 final plugin = DartTestToolsPlugin();
@@ -21,11 +21,11 @@ class DartTestToolsPlugin extends Plugin {
 
   @override
   Future<void> start() async {
-    final logFile = File('/home/sky/repos/dart/dart_test_tools/plugin.log');
-    await _loggerSink?.close();
-    final loggerSink = _loggerSink = logFile.openWrite(
-      mode: FileMode.writeOnlyAppend,
+    final logFile = File(
+      '/home/sky/repo/dart-packages/dart_test_tools/plugin.log',
     );
+    await _loggerSink?.close();
+    final loggerSink = _loggerSink = logFile.openWrite(mode: FileMode.append);
 
     Logger.root
       ..level = Level.ALL

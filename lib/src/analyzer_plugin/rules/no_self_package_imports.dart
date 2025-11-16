@@ -5,7 +5,6 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/error/error.dart';
-import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 
 @internal
@@ -16,8 +15,6 @@ class NoSelfPackageImports extends AnalysisRule {
         'import package library files from lib.',
     correctionMessage: 'Import the library from the src folder instead.',
   );
-
-  final _logger = Logger('$NoSelfPackageImports');
 
   NoSelfPackageImports()
     : super(name: _code.name, description: _code.problemMessage);
@@ -34,7 +31,6 @@ class NoSelfPackageImports extends AnalysisRule {
       return;
     }
 
-    _logger.fine('Scanning ${context.definingUnit.file}:');
     final visitor = _Visitor(this, context);
     registry
       ..addImportDirective(this, visitor)
@@ -55,54 +51,13 @@ class NoSelfPackageImports extends AnalysisRule {
     final isInTool = root
         .getChildAssumingFolder('tool')
         .contains(context.definingUnit.file.path);
-    return isInLibSrc || isInTest || isInTool;
+    final hasIntegrationFolder = context.definingUnit.file
+        .toUri()
+        .pathSegments
+        .contains('integration');
+
+    return isInLibSrc || (isInTest && !hasIntegrationFolder) || isInTool;
   }
-
-  // @override
-  // void run(
-  //   CustomLintResolver resolver,
-  //   DiagnosticReporter reporter,
-  //   CustomLintContext context,
-  // ) {
-  //   context.registry.addNamespaceDirective((node) {
-  //     final contextRoot = _import(
-  //       node,
-  //     )?.libraryFragment.element.session.analysisContext.contextRoot;
-  //     if (contextRoot == null) {
-  //       print('WARNING: Unable to resolve context root for ${resolver.path}');
-  //       return;
-  //     }
-
-  //     if (!_directiveIsValid(contextRoot, node)) {
-  //       reporter.atNode(node.uri, _code);
-  //     }
-
-  //     for (final configuration in node.configurations) {
-  //       if (!_configurationIsValid(contextRoot, configuration)) {
-  //         reporter.atNode(configuration.uri, _code);
-  //       }
-  //     }
-  //   });
-  // }
-
-  // @override
-  // List<Fix> getFixes() => [RemoveDirective()];
-
-  // bool _configurationIsValid(
-  //   ContextRoot contextRoot,
-  //   Configuration configuration,
-  // ) {
-  //   final resolvedUri = configuration.resolvedUri;
-  //   if (resolvedUri is! DirectiveUriWithSource) {
-  //     return true;
-  //   }
-
-  //   if (_directiveSourceIsValid(contextRoot, resolvedUri)) {
-  //     return true;
-  //   }
-
-  //   return false;
-  // }
 }
 
 class _Visitor extends SimpleAstVisitor<void> {
@@ -120,38 +75,47 @@ class _Visitor extends SimpleAstVisitor<void> {
       _scanDirective(node, node.libraryExport?.uri);
 
   void _scanDirective(NamespaceDirective node, DirectiveUri? uri) {
-    if (!_directiveIsValid(uri)) {
+    if (!_directiveIsAllowed(uri)) {
       _rule.reportAtNode(node);
     }
 
     for (final configuration in node.configurations) {
-      if (!_directiveIsValid(configuration.resolvedUri)) {
+      if (!_directiveIsAllowed(configuration.resolvedUri)) {
         _rule.reportAtNode(node);
       }
     }
   }
 
-  bool _directiveIsValid(DirectiveUri? uri) {
+  bool _directiveIsAllowed(DirectiveUri? uri) {
     if (uri is! DirectiveUriWithSource) {
       return true;
     }
 
-    // only scan import of the analyzed package
+    // only scan imports that belong to the analyzed package
     final belongsToPackage = _context.package?.contains(uri.source) ?? false;
     if (!belongsToPackage) {
       return true;
     }
 
-    // ignore imports from lib/src
-    final srcDir = _context.package?.root
-        .getChildAssumingFolder('lib')
-        .getChildAssumingFolder('src');
-    if (srcDir?.contains(uri.source.fullName) ?? false) {
-      _rule._logger.finest('${uri.relativeUriString}: OK');
+    // disallowed imports are all from lib
+    final libDir = _context.package?.root.getChildAssumingFolder('lib');
+    if (!(libDir?.contains(uri.source.fullName) ?? false)) {
       return true;
     }
 
-    _rule._logger.finest('${uri.relativeUriString}: FAIL');
+    // ... excluding lib/src
+    final srcDir = libDir?.getChildAssumingFolder('src');
+    if (srcDir?.contains(uri.source.fullName) ?? false) {
+      return true;
+    }
+
+    // ... excluding lib/gen
+    final genDir = libDir?.getChildAssumingFolder('gen');
+    if (genDir?.contains(uri.source.fullName) ?? false) {
+      return true;
+    }
+
+    // so, anything remaining in lib is not allowed
     return false;
   }
 }

@@ -3,7 +3,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:dart_test_tools/tools.dart';
+import 'package:dart_test_tools/src/tools/archive.dart';
+import 'package:dart_test_tools/src/tools/github.dart';
+import 'package:dart_test_tools/src/tools/io.dart';
 
 Future<void> main(List<String> args) async {
   final client = HttpClient();
