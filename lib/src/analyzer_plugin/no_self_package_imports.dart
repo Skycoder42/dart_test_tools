@@ -5,6 +5,7 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/error/error.dart';
+import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 
 @internal
@@ -15,6 +16,8 @@ class NoSelfPackageImports extends AnalysisRule {
         'import package library files from lib.',
     correctionMessage: 'Import the library from the src folder instead.',
   );
+
+  final _logger = Logger('$NoSelfPackageImports');
 
   NoSelfPackageImports()
     : super(name: _code.name, description: _code.problemMessage);
@@ -31,6 +34,7 @@ class NoSelfPackageImports extends AnalysisRule {
       return;
     }
 
+    _logger.finer('Scanning file: ${context.definingUnit.file.path}');
     final visitor = _Visitor(this, context);
     registry
       ..addImportDirective(this, visitor)
@@ -100,22 +104,26 @@ class _Visitor extends SimpleAstVisitor<void> {
     // disallowed imports are all from lib
     final libDir = _context.package?.root.getChildAssumingFolder('lib');
     if (!(libDir?.contains(uri.source.fullName) ?? false)) {
+      _rule._logger.finest('${uri.relativeUriString}: OK');
       return true;
     }
 
     // ... excluding lib/src
     final srcDir = libDir?.getChildAssumingFolder('src');
     if (srcDir?.contains(uri.source.fullName) ?? false) {
+      _rule._logger.finest('${uri.relativeUriString}: OK');
       return true;
     }
 
     // ... excluding lib/gen
     final genDir = libDir?.getChildAssumingFolder('gen');
     if (genDir?.contains(uri.source.fullName) ?? false) {
+      _rule._logger.finest('${uri.relativeUriString}: OK');
       return true;
     }
 
     // so, anything remaining in lib is not allowed
+    _rule._logger.finest('${uri.relativeUriString}: FAIL');
     return false;
   }
 }
