@@ -8,6 +8,8 @@ import 'package:analyzer/error/error.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 
+import 'utils/workspace_pacakge_extensions.dart';
+
 @internal
 class NoSelfPackageImports extends AnalysisRule {
   static const _code = LintCode(
@@ -42,19 +44,14 @@ class NoSelfPackageImports extends AnalysisRule {
   }
 
   bool _shouldScan(RuleContext context) {
-    final root = context.package?.root;
-    if (root == null) {
+    final package = context.package;
+    if (package == null) {
       return false;
     }
 
-    final isInLibSrc = root
-        .getChildAssumingFolder('lib')
-        .getChildAssumingFolder('src')
-        .contains(context.definingUnit.file.path);
+    final isInLibSrc = package.libSrc.contains(context.definingUnit.file.path);
     final isInTest = context.isInTestDirectory;
-    final isInTool = root
-        .getChildAssumingFolder('tool')
-        .contains(context.definingUnit.file.path);
+    final isInTool = package.tool.contains(context.definingUnit.file.path);
     final hasIntegrationFolder = context.definingUnit.file
         .toUri()
         .pathSegments
@@ -102,22 +99,19 @@ class _Visitor extends SimpleAstVisitor<void> {
     }
 
     // disallowed imports are all from lib
-    final libDir = _context.package?.root.getChildAssumingFolder('lib');
-    if (!(libDir?.contains(uri.source.fullName) ?? false)) {
+    if (!(_context.package?.lib.contains(uri.source.fullName) ?? false)) {
       _rule._logger.finest('${uri.relativeUriString}: OK');
       return true;
     }
 
     // ... excluding lib/src
-    final srcDir = libDir?.getChildAssumingFolder('src');
-    if (srcDir?.contains(uri.source.fullName) ?? false) {
+    if (_context.package?.libSrc.contains(uri.source.fullName) ?? false) {
       _rule._logger.finest('${uri.relativeUriString}: OK');
       return true;
     }
 
     // ... excluding lib/gen
-    final genDir = libDir?.getChildAssumingFolder('gen');
-    if (genDir?.contains(uri.source.fullName) ?? false) {
+    if (_context.package?.libGen.contains(uri.source.fullName) ?? false) {
       _rule._logger.finest('${uri.relativeUriString}: OK');
       return true;
     }

@@ -1,0 +1,110 @@
+## testing
+exports:
+  name: auto_export_test
+  exports:
+    - src/auto_export/**.dart
+
+## full
+# exports:
+#   - name: ''
+#     exports:
+#       - src/aur/**.dart
+#       - '!src/aur/**_test.dart'
+#       - uri: src/aur/pkgbuild.dart
+#         show:
+#           - Pkgbuild
+#           - PkgbuildOption
+#         if:
+#           - define: dart.library.ffi
+#             uri: src/aur/pkgbuild.ffi.dart
+#           - define: dart.library.ffi
+#             equals: 'false'
+#             uri: src/aur/pkgbuild.no_ffi.dart
+#   - name: aur1
+#     exports:
+#       - src/aur/**.dart
+#       - '!src/aur/**_test.dart'
+#       - uri: src/aur/pkgbuild.dart
+#         hide: PkgbuildField
+#         if:
+#           dart.library.ffi: src/aur/pkgbuild.ffi.dart
+#           dart.library.js: src/aur/pkgbuild.js.dart
+#   - name: aur2
+#     exports:
+#       uri: src/aur/pkgbuild.dart
+#   - name: aur3
+#     exports: src/aur/**.dart
+
+# ## minimal
+# exports:
+#   - src/aur/**.dart
+#   - '!src/aur/**_test.dart'
+
+# ##
+# s_v_g:
+#   exports: src/aur/**.dart
+# s_v_s:
+#   exports:
+#     uri: src/aur/pkgbuild.dart
+# s_l_g:
+#   exports:
+#     - src/aur/**.dart
+#     - '!src/aur/**_test.dart'
+# s_l_s:
+#   exports:
+#     - uri: src/aur/pkgbuild.dart
+# ##
+# m_v_v_g:
+#   exports:
+#     name: aur
+#     exports: src/aur/**.dart
+# m_v_v_s:
+#   exports:
+#     name: aur
+#     exports:
+#       uri: src/aur/pkgbuild.dart
+# m_v_l_g:
+#   exports:
+#     name: aur
+#     exports:
+#       - src/aur/**.dart
+#       - '!src/aur/**_test.dart'
+# m_v_l_s:
+#   exports:
+#     name: aur
+#     exports:
+#       - uri: src/aur/pkgbuild.dart
+# #
+# m_l_v_g:
+#   exports:
+#     - name: aur
+#       exports: src/aur/**.dart
+#     - name: cask
+#       exports: src/cask/**.dart
+# m_l_v_s:
+#   exports:
+#     - name: aur
+#       exports:
+#         uri: src/aur/pkgbuild.dart
+#     - name: cask
+#       exports:
+#         uri: src/cask/cask_generator.dart
+# m_l_l_g:
+#   exports:
+#     - name: aur
+#       exports:
+#         - src/aur/**.dart
+#         - '!src/aur/**_test.dart'
+#     - name: cask
+#       exports:
+#         - src/cask/**.dart
+#         - '!src/cask/**_test.dart'
+# m_l_l_s:
+#   exports:
+#     - name: aur
+#       exports:
+#         - uri: src/aur/pkgbuild.dart
+#     - name: cask
+#       exports:
+#         - uri: src/cask/cask_generator.dart
+
