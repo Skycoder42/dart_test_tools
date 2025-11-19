@@ -1,4 +1,6 @@
 // ignore_for_file: invalid_annotation_target for freezed
+@internal
+library;
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';

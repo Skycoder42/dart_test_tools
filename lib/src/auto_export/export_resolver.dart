@@ -15,6 +15,8 @@ import 'unresolved_export.dart';
 import 'yaml_serializable.dart';
 
 class ExportResolver {
+  const ExportResolver();
+
   Stream<SingleExportDefinition> resolveExports(
     Directory relativeTo,
     Iterable<ExportDefinition> exports,
@@ -22,13 +24,17 @@ class ExportResolver {
     final pwd = Directory.current;
     try {
       Directory.current = relativeTo;
-      final definitions = await _collectDefinitions(exports).toList();
+      final definitions = await _eliminateDuplicates(
+        _collectDefinitions(exports),
+      );
+
       final analysisContextCollection = AnalysisContextCollection(
         includedPaths: definitions
             .whereType<UnresolvedGlobExport>()
             .map((e) => path.normalize(e.fse.absolute.path))
             .toList(),
       );
+
       yield* Stream.fromIterable(definitions)
           .asyncMap((d) => _resolveExport(analysisContextCollection, d))
           .where((e) => e != null)
@@ -58,6 +64,7 @@ class ExportResolver {
     switch (definition) {
       case final SingleExportDefinition simple:
         yield* definitions;
+
         yield UnresolvedExport.single(simple);
       case GlobExportDefinition(
         pattern: ExportPattern(:final pattern, negated: false),
@@ -89,6 +96,31 @@ class ExportResolver {
     }
   }
 
+  Future<List<UnresolvedExport>> _eliminateDuplicates(
+    Stream<UnresolvedExport> definitions,
+  ) async {
+    final result = <UnresolvedExport>[];
+    await for (final export in definitions) {
+      final existingIndex = result.indexWhere((e) => e.uri == export.uri);
+
+      // no existing, just add
+      if (existingIndex < 0) {
+        result.add(export);
+        continue;
+      }
+
+      // a simple export always overrules whatever is already there
+      if (export is UnresolvedSimpleExport) {
+        result[existingIndex] = export;
+        continue;
+      }
+
+      // otherwise keep existing
+    }
+
+    return result;
+  }
+
   Future<SingleExportDefinition?> _resolveExport(
     AnalysisContextCollection contextCollection,
     UnresolvedExport export,
@@ -115,14 +147,17 @@ class ExportResolver {
           return null;
         }
 
-        final anyPublicSymbols = result.libraryElement.children.any(
+        final exportedElements =
+            result.libraryElement.exportNamespace.definedNames2;
+
+        final anyPublicSymbols = exportedElements.values.any(
           (e) => e.isPublic && !_isHidden(e),
         );
         if (!anyPublicSymbols) {
           return null;
         }
 
-        final symbolsToHide = result.libraryElement.children
+        final symbolsToHide = exportedElements.values
             .where(_isHidden)
             .map((e) => e.name)
             .nonNulls

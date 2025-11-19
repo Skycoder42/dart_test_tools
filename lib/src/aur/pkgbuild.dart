@@ -1,3 +1,6 @@
+@internal
+library;
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'pkgbuild.freezed.dart';
