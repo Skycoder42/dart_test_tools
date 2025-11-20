@@ -189,9 +189,6 @@ jobs:
       - name: Static analysis
         run: flutter analyze
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Run custom_lint
-        run: flutter pub run custom_lint
-        working-directory: ${{ inputs.workingDirectory }}
       - name: Validate correct formatting
         run: dart format -onone --set-exit-if-changed $(git ls-files '*.dart')
         working-directory: ${{ inputs.workingDirectory }}

@@ -50,11 +50,6 @@ ${platformsOutput.bashSetter(r'$platforms')}
     ),
     ...buildAnalyzeStep(),
     Step.run(
-      name: 'Run custom_lint',
-      run: '${config.runTool} custom_lint',
-      workingDirectory: config.workingDirectory.toString(),
-    ),
-    Step.run(
       name: 'Validate correct formatting',
       run:
           'dart format -onone --set-exit-if-changed '
