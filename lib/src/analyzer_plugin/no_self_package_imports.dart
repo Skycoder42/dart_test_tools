@@ -12,7 +12,8 @@ import 'utils/workspace_pacakge_extensions.dart';
 
 @internal
 class NoSelfPackageImports extends AnalysisRule {
-  static const _code = LintCode(
+  @visibleForTesting
+  static const code = LintCode(
     'no_self_package_imports',
     'Libraries in lib/src, test or tool should not '
         'import package library files from lib.',
@@ -22,10 +23,10 @@ class NoSelfPackageImports extends AnalysisRule {
   final _logger = Logger('$NoSelfPackageImports');
 
   NoSelfPackageImports()
-    : super(name: _code.name, description: _code.problemMessage);
+    : super(name: code.name, description: code.problemMessage);
 
   @override
-  LintCode get diagnosticCode => _code;
+  LintCode get diagnosticCode => code;
 
   @override
   void registerNodeProcessors(

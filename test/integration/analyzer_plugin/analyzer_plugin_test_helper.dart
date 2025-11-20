@@ -2,17 +2,29 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:analyzer/error/error.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 typedef TypeMatcherCb<T> = TypeMatcher<T> Function(TypeMatcher<T> match);
 
+typedef AnalysisLine = ({
+  String level,
+  String type,
+  String name,
+  String path,
+  int line,
+  int column,
+  int length,
+  String message,
+});
+
 @isTest
-void customLintTest(
+void analyzerPluginTest(
   String description, {
+  required LintCode code,
   Map<String, String> files = const {},
-  required int expectedExitCode,
   required Matcher expectedOutput,
   String? testOn,
   Timeout? timeout,
@@ -35,8 +47,8 @@ void customLintTest(
     }
 
     await _expectDart(
-      const ['run', 'custom_lint'],
-      expectedExitCode: expectedExitCode,
+      const ['analyze', '--fatal-infos', '--format', 'machine'],
+      codeName: code.name.toUpperCase(),
       expectedOutput: expectedOutput,
       workingDirectory: dartDir,
     );
@@ -51,34 +63,24 @@ void customLintTest(
   retry: retry,
 );
 
-Matcher emitsNoIssues() =>
-    emitsInOrder(<dynamic>['Analyzing...', '', 'No issues found!', emitsDone]);
+Matcher emitsNoIssues() => emitsInOrder(<dynamic>[emitsDone]);
 
-Matcher customLint(String lint, String location) {
+Matcher _isLint(String location, int line, int column) {
   final realLocation = location.replaceAll('/', path.separator);
-  return matches(
-    RegExp(
-      '^\\s*${RegExp.escape(realLocation)} • .* • ${RegExp.escape(lint)} • INFO\\s*\$',
-    ),
-  );
+  return isA<AnalysisLine>()
+      .having((m) => m.type, 'type', 'STATIC_WARNING')
+      .having((m) => m.level, 'level', 'INFO')
+      .having((m) => m.path, 'path', endsWith(realLocation))
+      .having((m) => m.line, 'line', line)
+      .having((m) => m.column, 'column', column);
 }
 
-Matcher emitsCustomLint(String lint, List<String> locations) =>
-    emitsCustomLints({lint: locations});
-
-Matcher emitsCustomLints(Map<String, List<String>> lints) {
-  final issuesCount = lints.values.fold(0, (p, l) => p + l.length);
-  return emitsInAnyOrder(<dynamic>[
-    'Analyzing...',
-    '',
-    ...lints.entries.expand<Matcher>(
-      (e) => e.value.map((location) => customLint(e.key, location)),
-    ),
-    '',
-    if (issuesCount == 1) '1 issue found.' else '$issuesCount issues found.',
-    emitsDone,
-  ]);
-}
+Matcher emitsLints(List<(String, int, int)> locations) =>
+    emitsInAnyOrder(<dynamic>[
+      for (final location in locations)
+        _isLint(location.$1, location.$2, location.$3),
+      emitsDone,
+    ]);
 
 Future<Directory> _setup() async {
   final testDir = await Directory.systemTemp.createTemp();
@@ -99,7 +101,6 @@ Future<Directory> _setup() async {
     'pub',
     'add',
     'meta',
-    'dev:custom_lint',
     'dev:dart_test_tools:${json.encode(dartTestToolsConfig)}',
   ], dartDir);
 
@@ -107,9 +108,9 @@ Future<Directory> _setup() async {
     dartDir.uri.resolve('analysis_options.yaml'),
   );
   await analysisOptionsFile.writeAsString(mode: FileMode.append, '''
-analyzer:
-  plugins:
-    - custom_lint
+plugins:
+  dart_test_tools:
+    path: ${Directory.current.path}
 ''');
 
   await Directory.fromUri(dartDir.uri.resolve('lib')).delete(recursive: true);
@@ -127,7 +128,7 @@ Future<void> _cleanup(Directory dartDir) async {
 
 Future<void> _expectDart(
   List<String> arguments, {
-  required int expectedExitCode,
+  required String codeName,
   required Matcher expectedOutput,
   Directory? workingDirectory,
 }) async {
@@ -142,10 +143,26 @@ Future<void> _expectDart(
       .listen((event) => print('dart ${arguments.join(' ')}: $event'));
 
   await expectLater(
-    dartProc.stdout.transform(utf8.decoder).transform(const LineSplitter()),
+    dartProc.stdout
+        .transform(utf8.decoder)
+        .transform(const LineSplitter())
+        .map((line) => line.split('|'))
+        .map<AnalysisLine>(
+          (line) => (
+            level: line[0],
+            type: line[1],
+            name: line[2],
+            path: line[3],
+            line: int.parse(line[4]),
+            column: int.parse(line[5]),
+            length: int.parse(line[6]),
+            message: line[7],
+          ),
+        )
+        .where((r) => r.name == codeName),
     expectedOutput,
   );
-  await expectLater(dartProc.exitCode, completion(expectedExitCode));
+  await expectLater(dartProc.exitCode, completes);
 }
 
 Future<void> _runDart(
