@@ -4,11 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [7.0.0] - 2025-11-21
+### Added
+- Added new `auto-export` tool to generate exports for library packages
+
 ### Changed
 - Updated min sdk version to ^3.10.0
 - Updated dependencies
 - Updated linter rules
+- Updated custom linter rules
+  - Are now based on the new analyzer plugin system instead of custom lint
+
+### Removed
+- Dropped support for custom\_lint
+- Removed some custom linter rules
+  - freezed\_classes\_must\_be\_sealed: Not needed anymore, part of freezed now
+  - src\_library\_not\_exported: Replace with `auto-export` tool
 
 ## [6.2.3+1] - 2025-09-28
 ### Changed
@@ -442,7 +453,7 @@ have been added:
 ### Added
 - Initial release
 
-[Unreleased]: https://github.com/Skycoder42/dart_test_tools/compare/v6.2.3+1...vHEAD
+[7.0.0]: https://github.com/Skycoder42/dart_test_tools/compare/v6.2.3+1...v7.0.0
 [6.2.3+1]: https://github.com/Skycoder42/dart_test_tools/compare/v6.2.3...v6.2.3+1
 [6.2.3]: https://github.com/Skycoder42/dart_test_tools/compare/v6.2.2...v6.2.3
 [6.2.2]: https://github.com/Skycoder42/dart_test_tools/compare/v6.2.1...v6.2.2
