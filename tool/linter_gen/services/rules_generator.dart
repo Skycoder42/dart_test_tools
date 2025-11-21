@@ -20,7 +20,6 @@ class RulesGenerator {
     required List<AnalysisOptionsRef> baseOptions,
     AnalysisOptionsRef? relativeTo,
     AnalysisOptionsRef? customOptions,
-    bool withAnalyzerRules = false,
   }) async {
     final newRules = await knownRulesLoader.loadNewRules();
 
@@ -41,19 +40,6 @@ class RulesGenerator {
       include: baseOptions.length == 1
           ? ListOrValue.value(baseOptions.single)
           : ListOrValue.list(baseOptions),
-      analyzer: AnalysisOptionsAnalyzer(
-        plugins: const ['custom_lint'],
-        language: withAnalyzerRules
-            ? const {
-                'strict-casts': true,
-                'strict-inference': true,
-                'strict-raw-types': true,
-              }
-            : null,
-        errors: withAnalyzerRules
-            ? const {'included_file_warning': DiagnosticLevel.ignore}
-            : null,
-      ),
       linter: AnalysisOptionsLinter(rules: appliedRules),
     );
   }

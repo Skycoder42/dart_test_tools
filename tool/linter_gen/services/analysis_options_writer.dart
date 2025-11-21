@@ -71,6 +71,11 @@ class AnalysisOptionsWriter {
           _writeRecursive(sink, level + 1, element);
         }
       }
+    } else if (encodedData case String() when encodedData.startsWith('*')) {
+      sink
+        ..write('"')
+        ..write(encodedData)
+        ..writeln('"');
     } else {
       sink.writeln(encodedData);
     }

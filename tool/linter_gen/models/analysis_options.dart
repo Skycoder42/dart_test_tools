@@ -15,9 +15,10 @@ enum DiagnosticLevel { error, warning, info, ignore }
 sealed class AnalysisOptions with _$AnalysisOptions {
   @JsonSerializable(anyMap: true, checked: true)
   const factory AnalysisOptions({
-    ListOrValue<AnalysisOptionsRef>? include,
-    AnalysisOptionsAnalyzer? analyzer,
-    AnalysisOptionsLinter? linter,
+    @JsonKey(includeIfNull: false) ListOrValue<AnalysisOptionsRef>? include,
+    @JsonKey(includeIfNull: false) Map<String, dynamic>? plugins,
+    @JsonKey(includeIfNull: false) AnalysisOptionsAnalyzer? analyzer,
+    @JsonKey(includeIfNull: false) AnalysisOptionsLinter? linter,
   }) = _AnalysisOptions;
 
   factory AnalysisOptions.fromJson(Map<String, dynamic> json) =>
@@ -32,7 +33,7 @@ sealed class AnalysisOptionsAnalyzer with _$AnalysisOptionsAnalyzer {
   @JsonSerializable(anyMap: true, checked: true)
   const factory AnalysisOptionsAnalyzer({
     @JsonKey(includeIfNull: false) Map<String, dynamic>? language,
-    @JsonKey(includeIfNull: false) List<String>? plugins,
+    @JsonKey(includeIfNull: false) List<String>? exclude,
     @JsonKey(includeIfNull: false) Map<String, DiagnosticLevel>? errors,
   }) = _AnalysisOptionsAnalyzer;
 

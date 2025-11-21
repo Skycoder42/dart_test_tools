@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:dart_test_tools/gen/package_metadata.dart' as metadata;
 import 'package:yaml_writer/yaml_writer.dart';
 
+import 'linter_gen/models/analysis_options.dart';
 import 'linter_gen/models/analysis_options_ref.dart';
 import 'linter_gen/services/analysis_options_loader.dart';
 import 'linter_gen/services/analysis_options_writer.dart';
@@ -31,7 +33,7 @@ Future<void> _writeStrictOptions(
 ) async {
   const strictOptionsRef = AnalysisOptionsRef.local('lib/strict.yaml');
   stdout.writeln('Generating $strictOptionsRef');
-  final normalOptions = await generator.generateRules(
+  var normalOptions = await generator.generateRules(
     baseOptions: const [
       AnalysisOptionsRef.package(
         packageName: 'lints',
@@ -44,7 +46,17 @@ Future<void> _writeStrictOptions(
       AnalysisOptionsRef.package(packageName: 'lint', path: 'strict.yaml'),
     ],
     customOptions: strictOptionsRef,
-    withAnalyzerRules: true,
+  );
+  normalOptions = normalOptions.copyWith(
+    plugins: const {'dart_test_tools': '^${metadata.version}'},
+    analyzer: const AnalysisOptionsAnalyzer(
+      language: {
+        'strict-casts': true,
+        'strict-inference': true,
+        'strict-raw-types': true,
+      },
+      errors: {'included_file_warning': DiagnosticLevel.ignore},
+    ),
   );
   await writer.saveAnalysisOptions(strictOptionsRef, normalOptions);
 }
@@ -72,9 +84,17 @@ Future<void> _writeSelfOptions(
 ) async {
   const selfOptionsRef = AnalysisOptionsRef.local('analysis_options.yaml');
   stdout.writeln('Generating $selfOptionsRef');
-  final normalOptions = await generator.generateRules(
+  var selfOptions = await generator.generateRules(
     baseOptions: const [AnalysisOptionsRef.local('lib/package.yaml')],
     customOptions: selfOptionsRef,
   );
-  await writer.saveAnalysisOptions(selfOptionsRef, normalOptions);
+  selfOptions = selfOptions.copyWith(
+    plugins: const {
+      'dart_test_tools': {'path': '.'},
+    },
+    analyzer: const AnalysisOptionsAnalyzer(
+      exclude: ['**/*.freezed.dart', '**/*.g.dart'],
+    ),
+  );
+  await writer.saveAnalysisOptions(selfOptionsRef, selfOptions);
 }
