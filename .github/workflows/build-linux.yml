@@ -80,7 +80,7 @@ jobs:
       - name: Install flatpak flutter SDK
         run: flatpak install --system -y --noninteractive /tmp/flutter.flatpak
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
       - id: generateBuildNumber
