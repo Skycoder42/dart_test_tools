@@ -30,7 +30,12 @@ final class LcovCleanCommandMatrixProperty
       os: RunsOn.macos13,
     ) => r'sed -i "" "s#SF:$PWD/#SF:#g" coverage/lcov.info',
     IPlatformMatrixSelector(os: RunsOn.windowsLatest) =>
-      r'(Get-Content coverage\lcov.info).replace("SF:$PWD\", "SF:").replace("\", "/") | Set-Content coverage\lcov.info',
+      r'''
+(Get-Content coverage\lcov.info -ErrorAction SilentlyContinue | ForEach-Object {
+    $pp = (Get-Location).Path + "\"
+    $_.Replace("SF:$pp", "SF:").Replace("\", "/")
+}) | Set-Content coverage\lcov.info
+''',
   };
 }
 

@@ -223,16 +223,10 @@ jobs:
           - platform: windows
             os: windows-latest
             lcovCleanCommand: |
-              Get-ItemProperty coverage\lcov.info
-              Get-Content coverage\lcov.info
-
-              $path = (Get-Location).Path + "\"
-              $search = "SF:$path"
-
-              $original = Get-Content coverage\lcov.info
-              $rep1 = $original.Replace($search, "SF:")
-              $rep2 = $rep1.Replace("\", "/")
-              $rep2 | Set-Content coverage\lcov.info
+              (Get-Content coverage\lcov.info -ErrorAction SilentlyContinue | ForEach-Object {
+                  $pp = (Get-Location).Path + "\"
+                  $_.Replace("SF:$pp", "SF:").Replace("\", "/")
+              }) | Set-Content coverage\lcov.info
           - platform: web
             os: ubuntu-latest
             dartTestArgs: --platform chrome
@@ -298,9 +292,6 @@ jobs:
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.minCoverage > 0
         run: dart run coverage:format_coverage --lcov --check-ignore --in=coverage --out=coverage/lcov.info --report-on=lib
         working-directory: ${{ inputs.workingDirectory }}
-      - run: cat coverage/lcov.info
-        working-directory: ${{ inputs.workingDirectory }}
-        shell: bash
       - name: Normalize coverage paths
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.minCoverage > 0
         run: ${{ matrix.lcovCleanCommand }}
