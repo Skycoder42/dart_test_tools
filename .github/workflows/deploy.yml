@@ -111,7 +111,7 @@ jobs:
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           persist-credentials: ${{ inputs.persistCredentials }}
       - id: version
@@ -187,7 +187,7 @@ jobs:
           fi
         shell: bash
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -237,7 +237,7 @@ jobs:
           fi
         shell: bash
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           persist-credentials: true
           path: repo
@@ -303,12 +303,12 @@ jobs:
         with:
           withDartTestTools: "true"
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
           path: src
       - name: Checkout ${{ inputs.targetRepo }}
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           persist-credentials: true
           path: tap
@@ -378,7 +378,7 @@ jobs:
       - name: Install msstore cli
         uses: microsoft/setup-msstore-cli@v1
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: Download windows app artifact

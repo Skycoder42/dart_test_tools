@@ -43,7 +43,7 @@ jobs:
           wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${{ matrix.yqArch }} -O /usr/bin/yq
           chmod +x /usr/bin/yq
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: Configure Flatpak runtime version
