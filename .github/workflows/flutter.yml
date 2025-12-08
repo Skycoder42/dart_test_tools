@@ -602,7 +602,7 @@ jobs:
         run: ${{ fromJSON(inputs.integrationTestSetup)['ios'] }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Install Signing Identity
-        uses: apple-actions/import-codesign-certs@v5
+        uses: apple-actions/import-codesign-certs@v6
         with:
           p12-file-base64: ${{ secrets.signingIdentity }}
           p12-password: ${{ secrets.signingIdentityPassphrase }}
