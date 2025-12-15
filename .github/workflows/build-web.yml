@@ -126,7 +126,7 @@ jobs:
           tar -cJvf "web-archive/$archive_name Web.tar.xz" web
         working-directory: ${{ inputs.workingDirectory }}/build
       - name: Upload app and debug info
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: app-deployment-web
           path: ${{ inputs.workingDirectory }}/build/web-archive
