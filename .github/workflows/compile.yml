@@ -215,7 +215,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Download all binary artifacts
         if: steps.version.outputs.update == 'true'
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           path: artifacts
           pattern: ${{ inputs.archivePrefix }}-*
