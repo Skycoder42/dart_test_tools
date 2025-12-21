@@ -86,7 +86,7 @@ jobs:
       contents: write
     steps:
       - name: Download flatpak bundles
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           path: bundles
           pattern: flatpak-bundle-*
