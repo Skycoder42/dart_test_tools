@@ -431,7 +431,7 @@ jobs:
       - id: test-setup-cache
         name: Restore integration test cache
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)[matrix.platform] != ''
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           key: ${{ matrix.platform }}-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
           path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}

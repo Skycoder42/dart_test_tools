@@ -459,7 +459,7 @@ jobs:
       - id: test-setup-cache
         name: Restore integration test cache
         if: inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)['android'] != ''
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           key: android-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
           path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}
@@ -589,7 +589,7 @@ jobs:
       - id: test-setup-cache
         name: Restore integration test cache
         if: inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)['ios'] != ''
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           key: ios-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
           path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}
@@ -739,7 +739,7 @@ jobs:
       - id: test-setup-cache
         name: Restore integration test cache
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)[matrix.platform] != ''
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           key: ${{ matrix.platform }}-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
           path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}
@@ -827,7 +827,7 @@ jobs:
       - id: test-setup-cache
         name: Restore integration test cache
         if: inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)['web'] != ''
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           key: web-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
           path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}
