@@ -82,7 +82,7 @@ jobs:
         run: flutter pub global run dart_test_tools:auto_update --mode update --target '${{ inputs.workingDirectory }}' ${{ inputs.flutterCompat && '--flutter-compat' || '--no-flutter-compat' }} --bump-version --report '${{ runner.temp }}/update_log.md'
       - id: create-pull-request
         name: Create pull request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           branch: automatic-dependency-updates
           delete-branch: true
