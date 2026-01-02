@@ -4,7 +4,6 @@ library;
 import 'dart:io';
 
 import 'package:cider/cider.dart';
-import 'package:cider/src/cli/channel.dart';
 // ignore: test_library_import for integration tests
 import 'package:dart_test_tools/cider.dart';
 import 'package:mocktail/mocktail.dart';
