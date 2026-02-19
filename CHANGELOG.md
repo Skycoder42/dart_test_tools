@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.0.2] - 2026-02-16
+### Changed
+- Updated min sdk version to ^3.11.0
+- Updated dependencies
+
 ## [7.0.1] - 2025-11-22
 ### Fixed
 - Promoted `lints` and `flutter_lints` to normal dependencies to, as they are
@@ -458,6 +463,7 @@ have been added:
 ### Added
 - Initial release
 
+[7.0.2]: https://github.com/Skycoder42/dart_test_tools/compare/v7.0.1...v7.0.2
 [7.0.1]: https://github.com/Skycoder42/dart_test_tools/compare/v7.0.0...v7.0.1
 [7.0.0]: https://github.com/Skycoder42/dart_test_tools/compare/v6.2.3+1...v7.0.0
 [6.2.3+1]: https://github.com/Skycoder42/dart_test_tools/compare/v6.2.3...v6.2.3+1

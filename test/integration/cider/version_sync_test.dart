@@ -33,7 +33,7 @@ void main() {
 
     await _createTestProject(testDir, testVersion);
 
-    buildGradle = File.fromUri(testDir.uri.resolve('android/build.gradle'));
+    buildGradle = File.fromUri(testDir.uri.resolve('android/build.gradle.kts'));
     darwinPodspec = File.fromUri(
       testDir.uri.resolve('darwin/version_sync_test.podspec'),
     );

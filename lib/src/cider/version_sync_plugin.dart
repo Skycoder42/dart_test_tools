@@ -60,7 +60,7 @@ class VersionSyncCommand extends CiderCommand {
     Pubspec pubspec,
   ) async {
     final buildGradle = File.fromUri(
-      rootDir.uri.resolve('android/build.gradle'),
+      rootDir.uri.resolve('android/build.gradle.kts'),
     );
     if (!buildGradle.existsSync()) {
       stdout.writeln('Skipping android');
