@@ -8,7 +8,7 @@ import 'package:analyzer/error/error.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 
-import 'utils/workspace_pacakge_extensions.dart';
+import 'utils/workspace_package_extensions.dart';
 
 @internal
 class NoSelfPackageImports extends AnalysisRule {
@@ -23,7 +23,7 @@ class NoSelfPackageImports extends AnalysisRule {
   final _logger = Logger('$NoSelfPackageImports');
 
   NoSelfPackageImports()
-    : super(name: code.name, description: code.problemMessage);
+    : super(name: code.lowerCaseName, description: code.problemMessage);
 
   @override
   LintCode get diagnosticCode => code;

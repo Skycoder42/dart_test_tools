@@ -48,7 +48,7 @@ void analyzerPluginTest(
 
     await _expectDart(
       const ['analyze', '--fatal-infos', '--format', 'machine'],
-      codeName: code.name.toUpperCase(),
+      codeName: code.lowerCaseName.toUpperCase(),
       expectedOutput: expectedOutput,
       workingDirectory: dartDir,
     );
