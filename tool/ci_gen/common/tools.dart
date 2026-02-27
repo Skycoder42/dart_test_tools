@@ -2,16 +2,16 @@ abstract class Tools {
   Tools._();
 
   /// https://github.com/actions/checkout/releases
-  static const actionsCheckout = 'actions/checkout@v5';
+  static const actionsCheckout = 'actions/checkout@v6';
 
   /// https://github.com/actions/upload-artifact/releases
-  static const actionsUploadArtifact = 'actions/upload-artifact@v5';
+  static const actionsUploadArtifact = 'actions/upload-artifact@v6';
 
   /// https://github.com/actions/download-artifact/releases
-  static const actionsDownloadArtifact = 'actions/download-artifact@v6';
+  static const actionsDownloadArtifact = 'actions/download-artifact@v7';
 
   /// https://github.com/actions/cache/releases
-  static const actionsCache = 'actions/cache@v4';
+  static const actionsCache = 'actions/cache@v5';
 
   /// https://github.com/actions/setup-java/releases
   static const actionsSetupJava = 'actions/setup-java@v5';
@@ -60,7 +60,7 @@ abstract class Tools {
 
   /// https://github.com/apple-actions/import-codesign-certs/releases
   static const appleActionsImportCodesignCerts =
-      'apple-actions/import-codesign-certs@v5';
+      'apple-actions/import-codesign-certs@v6';
 
   /// https://github.com/google-github-actions/auth/releases
   static const googleGithubActionsAuth = 'google-github-actions/auth@v3';
@@ -71,7 +71,7 @@ abstract class Tools {
 
   /// https://github.com/peter-evans/create-pull-request/releases
   static const peterEvansCreatePullRequest =
-      'peter-evans/create-pull-request@v7';
+      'peter-evans/create-pull-request@v8';
 
   /// https://github.com/thollander/actions-comment-pull-request/releases
   static const thollanderActionsCommentPullRequest =

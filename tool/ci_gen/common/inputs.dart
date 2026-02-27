@@ -556,4 +556,14 @@ Example:
           'to the latest flutter or not.',
     ),
   );
+
+  static final env = WorkflowInput(
+    name: 'env',
+    input: Input.json(
+      required: false,
+      defaultValue: const <String, dynamic>{},
+      description:
+          'Optional environment variables to be set for the whole workflow.',
+    ),
+  );
 }

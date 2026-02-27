@@ -2,8 +2,11 @@ import '../common/api/workflow_builder.dart';
 import '../common/api/workflow_input.dart';
 import '../common/api/workflow_output.dart';
 import '../common/api/workflow_secret.dart';
+import '../common/inputs.dart';
 import '../common/jobs/validate_coverage_job_builder.dart';
 import '../common/outputs.dart';
+import '../types/env.dart';
+import '../types/expression.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
@@ -46,6 +49,8 @@ class DartWorkflow implements WorkflowBuilder {
       config: DartIntegrationTestJobConfig(inputContext, secretContext),
     );
 
+    final env = inputContext(WorkflowInputs.env);
+
     return Workflow(
       jobs: {
         analyzeJobBuilder.id: analyzeJobBuilder.build(),
@@ -60,6 +65,7 @@ class DartWorkflow implements WorkflowBuilder {
           outputs: outputContext.createOutputs(),
         ),
       ),
+      env: Env.expression(const Expression('fromJSON')([env])),
     );
   }
 }

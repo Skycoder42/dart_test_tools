@@ -1,6 +1,11 @@
 on:
   workflow_call:
     inputs:
+      env:
+        type: string
+        required: false
+        default: '{}'
+        description: Optional environment variables to be set for the whole workflow.
       analyzeImage:
         type: string
         required: false
@@ -109,6 +114,7 @@ on:
 
           Example:
           MY_API_KEY=<reference secret here>"
+env: ${{ fromJSON(inputs.env) }}
 jobs:
   analyze:
     name: Analyze
