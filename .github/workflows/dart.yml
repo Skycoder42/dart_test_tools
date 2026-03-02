@@ -327,7 +327,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Download coverage data
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           path: ${{ inputs.workingDirectory }}/coverage
           pattern: coverage-info-*
