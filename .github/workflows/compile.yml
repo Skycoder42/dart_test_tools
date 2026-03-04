@@ -10,6 +10,11 @@ on:
         required: false
         default: binaries
         description: The prefix of the binary archive files that contain the actual binaries. Will be suffixed with the platform name.
+      env:
+        type: string
+        required: false
+        default: '{}'
+        description: Optional environment variables to be set for the whole workflow.
       dartSdkVersion:
         type: string
         required: false
@@ -60,6 +65,7 @@ on:
       releaseVersion:
         value: ${{ jobs.release.outputs.version }}
         description: Holds the version number of the created release, if the releaseCreated output is true. Otherwise, it is not set.
+env: ${{ fromJSON(inputs.env) }}
 jobs:
   compile:
     name: Create compiled artifacts

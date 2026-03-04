@@ -5,6 +5,8 @@ import '../common/api/workflow_secret.dart';
 import '../common/inputs.dart';
 import '../common/jobs/tag_release_job_builder.dart';
 import '../common/outputs.dart';
+import '../types/env.dart';
+import '../types/expression.dart';
 import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
@@ -40,6 +42,8 @@ class CompileWorkflow implements WorkflowBuilder {
       ..add(WorkflowOutputs.releaseCreated, releaseJobBuilder.updateOutput)
       ..add(WorkflowOutputs.releaseVersion, releaseJobBuilder.versionOutput);
 
+    final env = inputContext(WorkflowInputs.env);
+
     return Workflow(
       jobs: {
         compileJobBuilder.id: compileJobBuilder.build(),
@@ -52,6 +56,7 @@ class CompileWorkflow implements WorkflowBuilder {
           outputs: outputContext.createOutputs(),
         ),
       ),
+      env: Env.expression(const Expression('fromJSON')([env])),
     );
   }
 }

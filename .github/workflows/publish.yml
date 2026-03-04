@@ -1,6 +1,11 @@
 on:
   workflow_call:
     inputs:
+      env:
+        type: string
+        required: false
+        default: '{}'
+        description: Optional environment variables to be set for the whole workflow.
       tagPrefix:
         type: string
         required: false
@@ -57,6 +62,7 @@ on:
         type: string
         required: false
         description: A command to be run before publishing the package
+env: ${{ fromJSON(inputs.env) }}
 jobs:
   publish:
     name: Publish to pub.dev

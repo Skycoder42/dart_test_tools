@@ -1,6 +1,11 @@
 on:
   workflow_call:
     inputs:
+      env:
+        type: string
+        required: false
+        default: '{}'
+        description: Optional environment variables to be set for the whole workflow.
       analyzeImage:
         type: string
         required: false
@@ -113,6 +118,7 @@ on:
       signingIdentityPassphrase:
         required: false
         description: The passphrase to decrypt the signingIdentity PKCS#12 file.
+env: ${{ fromJSON(inputs.env) }}
 jobs:
   analyze:
     name: Analyze
