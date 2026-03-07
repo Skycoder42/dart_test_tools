@@ -23,12 +23,19 @@ final class IosIntegrationTestJobConfig extends CommonIntegrationTestJobConfig
 final class IosIntegrationTestJobBuilder
     extends SdkJobBuilder<IosIntegrationTestJobConfig>
     with FlutterSdkJobBuilderMixin<IosIntegrationTestJobConfig> {
-  final JobIdOutput enabledPlatformsOutput;
+  final Expression enabledPlatforms;
+  final Set<JobId>? needs;
 
   IosIntegrationTestJobBuilder({
-    required this.enabledPlatformsOutput,
+    required JobIdOutput enabledPlatformsOutput,
     required super.config,
-  });
+  }) : enabledPlatforms = enabledPlatformsOutput.expression,
+       needs = {enabledPlatformsOutput.jobId};
+
+  IosIntegrationTestJobBuilder.direct({
+    required this.enabledPlatforms,
+    required super.config,
+  }) : needs = null;
 
   @override
   JobId get id => const JobId('integration_tests_ios');
@@ -39,11 +46,11 @@ final class IosIntegrationTestJobBuilder
     ifExpression:
         config.integrationTestPaths.ne(Expression.empty) &
         EnabledPlatforms.check(
-          enabledPlatformsOutput.expression,
+          enabledPlatforms,
           Expression.literal(FlutterPlatform.ios.platform),
         ) &
         config.firebaseProjectId.ne(Expression.empty),
-    needs: {enabledPlatformsOutput.jobId},
+    needs: needs,
     runsOn: FlutterPlatform.ios.os.id,
     steps: [
       ...ValidateInputsBuilder({

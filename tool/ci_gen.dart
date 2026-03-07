@@ -18,6 +18,7 @@ import 'ci_gen/deploy/macos/build_macos_workflow.dart';
 import 'ci_gen/deploy/web/build_web_workflow.dart';
 import 'ci_gen/deploy/windows/build_windows_workflow.dart';
 import 'ci_gen/docker/docker_workflow.dart';
+import 'ci_gen/flutter/flutter_integration_workflow.dart';
 import 'ci_gen/flutter/flutter_workflow.dart';
 import 'ci_gen/package/package_workflow.dart';
 import 'ci_gen/publish/publish_workflow.dart';
@@ -28,6 +29,7 @@ Future<void> main() async {
   const workflows = [
     DartWorkflow(),
     FlutterWorkflow(),
+    FlutterIntegrationWorkflow(),
     ReleaseWorkflow(),
     PublishWorkflow(),
     CompileWorkflow(),

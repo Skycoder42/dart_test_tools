@@ -5,10 +5,10 @@ abstract class Tools {
   static const actionsCheckout = 'actions/checkout@v6';
 
   /// https://github.com/actions/upload-artifact/releases
-  static const actionsUploadArtifact = 'actions/upload-artifact@v6';
+  static const actionsUploadArtifact = 'actions/upload-artifact@v7';
 
   /// https://github.com/actions/download-artifact/releases
-  static const actionsDownloadArtifact = 'actions/download-artifact@v7';
+  static const actionsDownloadArtifact = 'actions/download-artifact@v8';
 
   /// https://github.com/actions/cache/releases
   static const actionsCache = 'actions/cache@v5';

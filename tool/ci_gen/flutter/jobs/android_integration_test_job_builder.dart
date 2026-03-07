@@ -24,12 +24,19 @@ final class AndroidIntegrationTestJobConfig
 final class AndroidIntegrationTestJobBuilder
     extends SdkJobBuilder<AndroidIntegrationTestJobConfig>
     with FlutterSdkJobBuilderMixin<AndroidIntegrationTestJobConfig> {
-  final JobIdOutput enabledPlatformsOutput;
+  final Expression enabledPlatforms;
+  final Set<JobId>? needs;
 
   AndroidIntegrationTestJobBuilder({
-    required this.enabledPlatformsOutput,
+    required JobIdOutput enabledPlatformsOutput,
     required super.config,
-  });
+  }) : enabledPlatforms = enabledPlatformsOutput.expression,
+       needs = {enabledPlatformsOutput.jobId};
+
+  AndroidIntegrationTestJobBuilder.direct({
+    required this.enabledPlatforms,
+    required super.config,
+  }) : needs = null;
 
   @override
   JobId get id => const JobId('integration_tests_android');
@@ -40,11 +47,11 @@ final class AndroidIntegrationTestJobBuilder
     ifExpression:
         config.integrationTestPaths.ne(Expression.empty) &
         EnabledPlatforms.check(
-          enabledPlatformsOutput.expression,
+          enabledPlatforms,
           Expression.literal(FlutterPlatform.android.platform),
         ) &
         config.firebaseProjectId.ne(Expression.empty),
-    needs: {enabledPlatformsOutput.jobId},
+    needs: needs,
     runsOn: FlutterPlatform.android.os.id,
     steps: [
       ...ValidateInputsBuilder({

@@ -16,12 +16,19 @@ final class WebIntegrationTestJobConfig extends CommonIntegrationTestJobConfig
 final class WebIntegrationTestJobBuilder
     extends SdkJobBuilder<WebIntegrationTestJobConfig>
     with FlutterSdkJobBuilderMixin<WebIntegrationTestJobConfig> {
-  final JobIdOutput enabledPlatformsOutput;
+  final Expression enabledPlatforms;
+  final Set<JobId>? needs;
 
   WebIntegrationTestJobBuilder({
-    required this.enabledPlatformsOutput,
+    required JobIdOutput enabledPlatformsOutput,
     required super.config,
-  });
+  }) : enabledPlatforms = enabledPlatformsOutput.expression,
+       needs = {enabledPlatformsOutput.jobId};
+
+  WebIntegrationTestJobBuilder.direct({
+    required this.enabledPlatforms,
+    required super.config,
+  }) : needs = null;
 
   @override
   JobId get id => const JobId('integration_tests_web');
@@ -32,10 +39,10 @@ final class WebIntegrationTestJobBuilder
     ifExpression:
         config.integrationTestPaths.ne(Expression.empty) &
         EnabledPlatforms.check(
-          enabledPlatformsOutput.expression,
+          enabledPlatforms,
           Expression.literal(FlutterPlatform.web.platform),
         ),
-    needs: {enabledPlatformsOutput.jobId},
+    needs: needs,
     runsOn: FlutterPlatform.web.os.id,
     steps: [
       ...buildSetupSdkSteps(

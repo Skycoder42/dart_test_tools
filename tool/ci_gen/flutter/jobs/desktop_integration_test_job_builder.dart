@@ -39,18 +39,25 @@ final class DesktopIntegrationTestJobBuilder
           IPlatformMatrixSelector
         >,
         PlatformJobBuilderMixin<FlutterIntegrationTestMatrix> {
-  final JobIdOutput enabledPlatformsOutput;
+  @override
+  final Expression enabledPlatforms;
+  final Set<JobId>? needs;
 
   DesktopIntegrationTestJobBuilder({
-    required this.enabledPlatformsOutput,
+    required JobIdOutput enabledPlatformsOutput,
     required super.config,
-  }) : matrix = const FlutterIntegrationTestMatrix();
+  }) : enabledPlatforms = enabledPlatformsOutput.expression,
+       needs = {enabledPlatformsOutput.jobId},
+       matrix = const FlutterIntegrationTestMatrix();
+
+  DesktopIntegrationTestJobBuilder.direct({
+    required this.enabledPlatforms,
+    required super.config,
+  }) : needs = null,
+       matrix = const FlutterIntegrationTestMatrix();
 
   @override
   JobId get id => const JobId('integration_tests_desktop');
-
-  @override
-  Expression get enabledPlatforms => enabledPlatformsOutput.expression;
 
   @override
   final FlutterIntegrationTestMatrix matrix;
@@ -59,7 +66,7 @@ final class DesktopIntegrationTestJobBuilder
   Job buildGeneric(String runsOn) => Job(
     name: 'Integration tests (desktop)',
     ifExpression: config.integrationTestPaths.ne(Expression.empty),
-    needs: {enabledPlatformsOutput.jobId},
+    needs: needs,
     runsOn: runsOn,
     steps: [
       ...buildSetupSdkSteps(

@@ -1,0 +1,557 @@
+on:
+  workflow_call:
+    inputs:
+      enabledPlatforms:
+        type: string
+        required: true
+        description: A JSON-encoded list of all platforms that this project can build/run for.
+      env:
+        type: string
+        required: false
+        default: '{}'
+        description: Optional environment variables to be set for the whole workflow.
+      integrationTestPaths:
+        type: string
+        required: false
+        description: Specify directories or paths of integration tests to run. By default, no integration test are run.
+      firebaseProjectId:
+        type: string
+        required: false
+        description: The firebase project id to run the test on.
+      flutterSdkChannel:
+        type: string
+        required: false
+        default: stable
+        description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action".
+      javaJdkVersion:
+        type: number
+        required: false
+        default: 21
+        description: The Java-SDK version (mayor only). Passed as "java-version" to "actions/setup-java".
+      withSubmodules:
+        type: boolean
+        required: false
+        default: false
+        description: Specify if submodules should be initialized or not.
+      workingDirectory:
+        type: string
+        required: false
+        default: .
+        description: The root directory of the dart package to build and test.
+      buildDependencies:
+        type: string
+        required: false
+        description: A spaces separated list of other packages within this workspace that make use of build_runner and need to be built before this package.
+      buildRunner:
+        type: boolean
+        required: false
+        default: false
+        description: Specify whether build_runner is used in the project (defaults to false).
+      buildRunnerArgs:
+        type: string
+        required: false
+        description: Optional additional arguments to be passed to the build runner.
+      integrationTestProject:
+        type: string
+        required: false
+        description: Specifies the project in which integration tests are placed. Useful in case of flutter libraries, where integration tests are typically inside the example instead of the package itself
+      integrationTestCacheConfig:
+        type: string
+        required: false
+        description: |
+          A JSON-Matrix a caching configuration, if needed. Can be used to enable caching
+          for expensive integration test setup scenarios.
+
+          Example:
+          {
+            "key": "test-cache-key",
+            "path": "path/to/cache-dir"
+          }
+      integrationTestSetup:
+        type: string
+        required: false
+        default: '{}'
+        description: |
+          A JSON-Matrix with extra setup steps for each platform.
+          contains key-value pairs for each platform with a command to be invoked.
+          The possible keys are the same as the platforms defined in 'platforms'.
+
+          Example:
+          {
+            "linux": "dart run tools/install-deps.dart",
+            "web": "./setup-web.sh"
+          }
+    secrets:
+      firebaseCredentials:
+        required: false
+        description: The firebase credentials JSON.
+      provisioningProfile:
+        required: false
+        description: The base64 encoded provisioning profile to be used to sign the app.
+      signingIdentity:
+        required: false
+        description: The base64 encoded PKCS#12 container with the code signing certificate and private key to sign the app. Must be a certificate that is allowed by the provisioningProfile. Use the signingIdentityPassphrase secret to specify the passphrase that is needed to decrypt the PKCS#12 file.
+      signingIdentityPassphrase:
+        required: false
+        description: The passphrase to decrypt the signingIdentity PKCS#12 file.
+env: ${{ fromJSON(inputs.env) }}
+jobs:
+  integration_tests_android:
+    name: Integration tests (android)
+    if: inputs.integrationTestPaths != '' && (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), 'android')) && inputs.firebaseProjectId != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: '[Validate Inputs] Ensure firebaseCredentials is set'
+        run: |
+          if [[ '${{ secrets.firebaseCredentials }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input firebaseCredentials is not set'
+            exit 1
+          fi
+        shell: bash
+      - name: Install JDK Version ${{ inputs.javaJdkVersion }}
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ inputs.javaJdkVersion }}
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
+      - name: Download flutter binary artifacts
+        run: flutter precache --universal --android
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
+        with:
+          withDartTestTools: "false"
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          submodules: ${{ inputs.withSubmodules }}
+      - name: Restore dart packages
+        run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - id: checkGenerate
+        name: Check if localizations generation is required
+        run: |
+          set -eo pipefail
+          if [ -f l10n.yaml ]; then
+            echo "generate=true" >> $GITHUB_OUTPUT
+          else
+            echo "generate=false" >> $GITHUB_OUTPUT
+          fi
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Generate localization files
+        if: steps.checkGenerate.outputs.generate == 'true'
+        run: flutter gen-l10n
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Run build_runner for workspace dependencies
+        if: inputs.buildDependencies != ''
+        run: |
+          set -euo pipefail
+          for package in ${{ inputs.buildDependencies }}; do
+            echo ">> Running build_runner for $package"
+            path=$(
+              dart pub workspace list --json \
+                | jq -r \
+                  --arg package "$package" \
+                  '.packages[] | select(.name == $package) | .path'
+            )
+            cd "$path"
+            flutter pub run build_runner build --delete-conflicting-outputs
+          done
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Create build files
+        if: inputs.buildRunner
+        run: flutter pub run build_runner build ${{ inputs.buildRunnerArgs }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Validate flutter setup
+        run: flutter doctor -v
+      - name: Restore dart packages (Integration test project)
+        if: inputs.integrationTestProject != ''
+        run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+      - id: test-setup-cache
+        name: Restore integration test cache
+        if: inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)['android'] != ''
+        uses: actions/cache@v5
+        with:
+          key: android-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
+          path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}
+          restore-keys: ${{ fromJSON(inputs.integrationTestCacheConfig)['restore-keys'] }}
+          upload-chunk-size: ${{ fromJSON(inputs.integrationTestCacheConfig)['upload-chunk-size'] }}
+      - name: Run platform test setup
+        if: fromJSON(inputs.integrationTestSetup)['android'] != ''
+        env:
+          CACHE_HIT: ${{ steps.test-setup-cache.outputs.cache-hit }}
+        run: ${{ fromJSON(inputs.integrationTestSetup)['android'] }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Build integration test app
+        run: flutter build apk --debug --target '${{ inputs.integrationTestPaths }}'
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+      - name: Build test instrumentation app
+        run: ./gradlew app:assembleAndroidTest
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}/android
+      - name: Google Cloud Sign In
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: ${{ secrets.firebaseCredentials }}
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v3
+        with:
+          project_id: ${{ inputs.firebaseProjectId }}
+      - name: Run integration tests
+        run: gcloud firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+  integration_tests_ios:
+    name: Integration tests (ios)
+    if: inputs.integrationTestPaths != '' && (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), 'ios')) && inputs.firebaseProjectId != ''
+    runs-on: macos-latest
+    steps:
+      - name: '[Validate Inputs] Ensure provisioningProfile is set'
+        run: |
+          if [[ '${{ secrets.provisioningProfile }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input provisioningProfile is not set'
+            exit 1
+          fi
+        shell: bash
+      - name: '[Validate Inputs] Ensure signingIdentity is set'
+        run: |
+          if [[ '${{ secrets.signingIdentity }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input signingIdentity is not set'
+            exit 1
+          fi
+        shell: bash
+      - name: '[Validate Inputs] Ensure signingIdentityPassphrase is set'
+        run: |
+          if [[ '${{ secrets.signingIdentityPassphrase }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input signingIdentityPassphrase is not set'
+            exit 1
+          fi
+        shell: bash
+      - name: '[Validate Inputs] Ensure firebaseCredentials is set'
+        run: |
+          if [[ '${{ secrets.firebaseCredentials }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input firebaseCredentials is not set'
+            exit 1
+          fi
+        shell: bash
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
+      - name: Download flutter binary artifacts
+        run: flutter precache --universal --ios
+      - name: Enable swift package manager
+        run: flutter config --enable-swift-package-manager
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
+        with:
+          withDartTestTools: "false"
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          submodules: ${{ inputs.withSubmodules }}
+      - name: Restore dart packages
+        run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - id: checkGenerate
+        name: Check if localizations generation is required
+        run: |
+          set -eo pipefail
+          if [ -f l10n.yaml ]; then
+            echo "generate=true" >> $GITHUB_OUTPUT
+          else
+            echo "generate=false" >> $GITHUB_OUTPUT
+          fi
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Generate localization files
+        if: steps.checkGenerate.outputs.generate == 'true'
+        run: flutter gen-l10n
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Run build_runner for workspace dependencies
+        if: inputs.buildDependencies != ''
+        run: |
+          set -euo pipefail
+          for package in ${{ inputs.buildDependencies }}; do
+            echo ">> Running build_runner for $package"
+            path=$(
+              dart pub workspace list --json \
+                | jq -r \
+                  --arg package "$package" \
+                  '.packages[] | select(.name == $package) | .path'
+            )
+            cd "$path"
+            flutter pub run build_runner build --delete-conflicting-outputs
+          done
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Create build files
+        if: inputs.buildRunner
+        run: flutter pub run build_runner build ${{ inputs.buildRunnerArgs }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Validate flutter setup
+        run: flutter doctor -v
+      - name: Restore dart packages (Integration test project)
+        if: inputs.integrationTestProject != ''
+        run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+      - id: test-setup-cache
+        name: Restore integration test cache
+        if: inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)['ios'] != ''
+        uses: actions/cache@v5
+        with:
+          key: ios-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
+          path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}
+          restore-keys: ${{ fromJSON(inputs.integrationTestCacheConfig)['restore-keys'] }}
+          upload-chunk-size: ${{ fromJSON(inputs.integrationTestCacheConfig)['upload-chunk-size'] }}
+      - name: Run platform test setup
+        if: fromJSON(inputs.integrationTestSetup)['ios'] != ''
+        env:
+          CACHE_HIT: ${{ steps.test-setup-cache.outputs.cache-hit }}
+        run: ${{ fromJSON(inputs.integrationTestSetup)['ios'] }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Install Signing Identity
+        uses: apple-actions/import-codesign-certs@v6
+        with:
+          p12-file-base64: ${{ secrets.signingIdentity }}
+          p12-password: ${{ secrets.signingIdentityPassphrase }}
+      - name: Install Provisioning Profile
+        run: |
+          set -eo pipefail
+          new_dir="$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
+          old_dir="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$new_dir" "$old_dir"
+          echo -n '${{ secrets.provisioningProfile }}' | base64 --decode > "$new_dir/app.mobileprovision"
+          ln -s "$new_dir/app.mobileprovision" "$old_dir/app.mobileprovision"
+      - name: Build integration test app
+        run: flutter build ios --release --config-only '${{ inputs.integrationTestPaths }}'
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+      - name: Build test instrumentation app
+        run: xcodebuild build-for-testing -workspace Runner.xcworkspace -scheme Runner -configuration Release -sdk iphoneos -derivedDataPath ../build/ios_integration
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}/ios
+      - name: Create integration test package
+        run: zip -r --must-match app-release.zip Release-iphoneos *.xctestrun
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}/build/ios_integration/Build/Products
+      - name: Google Cloud Sign In
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: ${{ secrets.firebaseCredentials }}
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v3
+        with:
+          project_id: ${{ inputs.firebaseProjectId }}
+      - name: Run integration tests
+        run: gcloud firebase test ios run --type xctest --test build/ios_integration/Build/Products/app-release.zip
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+  integration_tests_desktop:
+    name: Integration tests (desktop)
+    if: inputs.integrationTestPaths != ''
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux
+          - macos
+          - windows
+        include:
+          - platform: linux
+            os: ubuntu-latest
+            testArgs: -d linux
+            runPrefix: xvfb-run --auto-servernum
+          - platform: macos
+            os: macos-latest
+            testArgs: -d macos
+          - platform: windows
+            os: windows-latest
+            testArgs: -d windows
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
+      - name: Download flutter binary artifacts
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
+        run: flutter precache --universal --${{ matrix.platform }}
+      - name: Enable swift package manager
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && (matrix.platform == 'ios' || matrix.platform == 'macos')
+        run: flutter config --enable-swift-package-manager
+      - name: Install test dependencies (linux)
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && matrix.platform == 'linux'
+        run: |
+          set -e
+          sudo apt-get -qq update
+          sudo apt-get -qq install ninja-build libgtk-3-dev xvfb
+      - name: Install tools
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
+        with:
+          withDartTestTools: "false"
+      - name: Checkout repository
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          submodules: ${{ inputs.withSubmodules }}
+      - name: Restore dart packages
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
+        run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - id: checkGenerate
+        name: Check if localizations generation is required
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
+        run: |
+          set -eo pipefail
+          if [ -f l10n.yaml ]; then
+            echo "generate=true" >> $GITHUB_OUTPUT
+          else
+            echo "generate=false" >> $GITHUB_OUTPUT
+          fi
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Generate localization files
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && steps.checkGenerate.outputs.generate == 'true'
+        run: flutter gen-l10n
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Run build_runner for workspace dependencies
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && inputs.buildDependencies != ''
+        run: |
+          set -euo pipefail
+          for package in ${{ inputs.buildDependencies }}; do
+            echo ">> Running build_runner for $package"
+            path=$(
+              dart pub workspace list --json \
+                | jq -r \
+                  --arg package "$package" \
+                  '.packages[] | select(.name == $package) | .path'
+            )
+            cd "$path"
+            flutter pub run build_runner build --delete-conflicting-outputs
+          done
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Create build files
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && inputs.buildRunner
+        run: flutter pub run build_runner build ${{ inputs.buildRunnerArgs }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Validate flutter setup
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
+        run: flutter doctor -v
+      - name: Restore dart packages (Integration test project)
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && inputs.integrationTestProject != ''
+        run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+      - id: test-setup-cache
+        name: Restore integration test cache
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)[matrix.platform] != ''
+        uses: actions/cache@v5
+        with:
+          key: ${{ matrix.platform }}-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
+          path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}
+          restore-keys: ${{ fromJSON(inputs.integrationTestCacheConfig)['restore-keys'] }}
+          upload-chunk-size: ${{ fromJSON(inputs.integrationTestCacheConfig)['upload-chunk-size'] }}
+      - name: Run platform test setup
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && fromJSON(inputs.integrationTestSetup)[matrix.platform] != ''
+        env:
+          CACHE_HIT: ${{ steps.test-setup-cache.outputs.cache-hit }}
+        run: ${{ fromJSON(inputs.integrationTestSetup)[matrix.platform] }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Run integration tests
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
+        run: ${{ matrix.runPrefix }} flutter test ${{ matrix.testArgs }} --reporter expanded ${{ inputs.integrationTestPaths }} || [ $? = 79 ]
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+        shell: bash
+  integration_tests_web:
+    name: Integration tests (web)
+    if: inputs.integrationTestPaths != '' && (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), 'web'))
+    runs-on: windows-latest
+    steps:
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
+      - name: Download flutter binary artifacts
+        run: flutter precache --universal --web
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
+        with:
+          withDartTestTools: "false"
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          submodules: ${{ inputs.withSubmodules }}
+      - name: Restore dart packages
+        run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - id: checkGenerate
+        name: Check if localizations generation is required
+        run: |
+          set -eo pipefail
+          if [ -f l10n.yaml ]; then
+            echo "generate=true" >> $GITHUB_OUTPUT
+          else
+            echo "generate=false" >> $GITHUB_OUTPUT
+          fi
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Generate localization files
+        if: steps.checkGenerate.outputs.generate == 'true'
+        run: flutter gen-l10n
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Run build_runner for workspace dependencies
+        if: inputs.buildDependencies != ''
+        run: |
+          set -euo pipefail
+          for package in ${{ inputs.buildDependencies }}; do
+            echo ">> Running build_runner for $package"
+            path=$(
+              dart pub workspace list --json \
+                | jq -r \
+                  --arg package "$package" \
+                  '.packages[] | select(.name == $package) | .path'
+            )
+            cd "$path"
+            flutter pub run build_runner build --delete-conflicting-outputs
+          done
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Create build files
+        if: inputs.buildRunner
+        run: flutter pub run build_runner build ${{ inputs.buildRunnerArgs }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Validate flutter setup
+        run: flutter doctor -v
+      - name: Restore dart packages (Integration test project)
+        if: inputs.integrationTestProject != ''
+        run: flutter pub get
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+      - id: test-setup-cache
+        name: Restore integration test cache
+        if: inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)['web'] != ''
+        uses: actions/cache@v5
+        with:
+          key: web-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
+          path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}
+          restore-keys: ${{ fromJSON(inputs.integrationTestCacheConfig)['restore-keys'] }}
+          upload-chunk-size: ${{ fromJSON(inputs.integrationTestCacheConfig)['upload-chunk-size'] }}
+      - name: Run platform test setup
+        if: fromJSON(inputs.integrationTestSetup)['web'] != ''
+        env:
+          CACHE_HIT: ${{ steps.test-setup-cache.outputs.cache-hit }}
+        run: ${{ fromJSON(inputs.integrationTestSetup)['web'] }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Run integration tests
+        run: $ChromeWebDriver/chromedriver --port=4444 & flutter drive --driver test_driver/integration_test.dart --target '${{ inputs.integrationTestPaths }}' --release -d chrome --browser-name chrome || [ $? = 79 ]
+        working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
+        shell: bash

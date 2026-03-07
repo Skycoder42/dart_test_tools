@@ -39,8 +39,6 @@ class JobId extends Id {
   JobIdOutput output(String name) => JobIdOutput(this, name);
 }
 
-extension StepIdX on StepId {}
-
 @freezed
 sealed class IdOutput with _$IdOutput {
   const IdOutput._();
