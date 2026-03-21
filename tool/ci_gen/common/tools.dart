@@ -20,16 +20,16 @@ abstract class Tools {
   static const dartLangSetupDart = 'dart-lang/setup-dart@v1';
 
   /// https://github.com/docker/setup-qemu-action/releases
-  static const dockerSetupQemuAction = 'docker/setup-qemu-action@v3';
+  static const dockerSetupQemuAction = 'docker/setup-qemu-action@v4';
 
   /// https://github.com/docker/setup-buildx-action/releases
-  static const dockerSetupBuildxAction = 'docker/setup-buildx-action@v3';
+  static const dockerSetupBuildxAction = 'docker/setup-buildx-action@v4';
 
   /// https://github.com/docker/login-action/releases
-  static const dockerLoginAction = 'docker/login-action@v3';
+  static const dockerLoginAction = 'docker/login-action@v4';
 
   /// https://github.com/docker/build-push-action/releases
-  static const dockerBuildAndPushAction = 'docker/build-push-action@v6';
+  static const dockerBuildAndPushAction = 'docker/build-push-action@v7';
 
   /// https://github.com/subosito/flutter-action/releases
   static const subositoFlutterAction = 'subosito/flutter-action@v2';
@@ -76,4 +76,7 @@ abstract class Tools {
   /// https://github.com/thollander/actions-comment-pull-request/releases
   static const thollanderActionsCommentPullRequest =
       'thollander/actions-comment-pull-request@v3';
+
+  /// https://github.com/benc-uk/workflow-dispatch/releases
+  static const bencUkWorkflowDispatch = 'benc-uk/workflow-dispatch@v1.3.1';
 }

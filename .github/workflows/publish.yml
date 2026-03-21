@@ -11,6 +11,10 @@ on:
         required: false
         default: v
         description: The prefix of git tags. The tag is the prefix, followed by the package version.
+      version:
+        type: string
+        required: true
+        description: The previously released version to deploy.
       dartSdkVersion:
         type: string
         required: false
@@ -66,7 +70,7 @@ env: ${{ fromJSON(inputs.env) }}
 jobs:
   publish:
     name: Publish to pub.dev
-    if: startsWith(github.ref, format('refs/tags/{0}', inputs.tagPrefix))
+    if: github.ref == format('refs/tags/{0}{1}', inputs.tagPrefix, inputs.version)
     environment: pub-deploy
     permissions:
       id-token: write
@@ -145,6 +149,18 @@ jobs:
         if: inputs.buildRunner
         run: ${{ steps.tools.outputs.pubRun }} build_runner build --release ${{ inputs.buildRunnerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
+      - name: Validate version to be deployed
+        run: |
+          set -euo pipefail
+          expected='${{ inputs.version }}'
+          actual=$(yq -r '.version' pubspec.yaml)
+          if [[ "$actual" != "$expected" ]]; then
+            echo "Version mismatch!"
+            echo "Expected: $expected"
+            echo "Actual:   $actual"
+            exit 1
+          fi
+        shell: bash
       - name: Download additional artifacts
         if: inputs.extraArtifacts != ''
         uses: actions/download-artifact@v8

@@ -21,6 +21,10 @@ on:
         required: false
         default: v
         description: The prefix of git tags. The tag is the prefix, followed by the package version.
+      publishWorkflow:
+        type: string
+        required: true
+        description: The name or id of the workflow that executes the deployment to pub.dev. Will be invoked one the newly created tag with the "version" as parameter.
     outputs:
       releaseCreated:
         value: ${{ jobs.release.outputs.update }}
@@ -28,10 +32,6 @@ on:
       releaseVersion:
         value: ${{ jobs.release.outputs.version }}
         description: Holds the version number of the created release, if the releaseCreated output is true. Otherwise, it is not set.
-    secrets:
-      githubToken:
-        required: true
-        description: The personal access token to create new releases with. Is required, as the default github workflow token does not trigger workflows when creating releases.
 jobs:
   release:
     name: Create release if needed
@@ -101,8 +101,13 @@ jobs:
         if: steps.version.outputs.update == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          token: ${{ secrets.githubToken }}
           tag_name: ${{ steps.release_content.outputs.tag_name }}
           name: ${{ steps.release_content.outputs.release_name }}
           body_path: ${{ steps.release_content.outputs.body_path }}
           target_commitish: ${{ github.sha }}
+      - name: Trigger deployment
+        uses: benc-uk/workflow-dispatch@v1.3.1
+        with:
+          workflow: ${{ inputs.publishWorkflow }}
+          ref: refs/tags/${{ inputs.tagPrefix }}${{ steps.version.outputs.version }}
+          inputs: '{"version":"${{ steps.version.outputs.version }}"}'

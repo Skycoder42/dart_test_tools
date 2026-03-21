@@ -45,13 +45,13 @@ class PublishJobBuilder implements JobBuilder {
   Job build() => Job(
     name: 'Publish to pub.dev',
     environment: Environments.pubDeploy,
-    ifExpression: const Expression('startsWith')([
-      Github.ref,
+    ifExpression: Github.ref.eq(
       const Expression('format')([
-        const Expression.literal('refs/tags/{0}'),
+        const Expression.literal('refs/tags/{0}{1}'),
         config.tagPrefix,
+        config.version,
       ]),
-    ]),
+    ),
     permissions: const {'id-token': 'write'},
     runsOn: 'ubuntu-latest',
     steps: [

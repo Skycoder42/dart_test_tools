@@ -7,13 +7,15 @@ import '../../common/steps/release_entry_builder.dart';
 import '../../types/id.dart';
 import '../../types/job.dart';
 import '../steps/release_builder.dart';
+import '../steps/trigger_deploy_builder.dart';
 
 final class ReleaseJobConfig extends JobConfig
-    with WorkingDirectoryConfig, ReleaseEntryConfig, ReleaseConfig {
+    with
+        WorkingDirectoryConfig,
+        ReleaseEntryConfig,
+        TriggerDeployConfig,
+        ReleaseConfig {
   late final releaseRef = inputContext(WorkflowInputs.releaseRef);
-
-  @override
-  bool get withToken => true;
 
   ReleaseJobConfig(super.inputContext, super.secretContext);
 }

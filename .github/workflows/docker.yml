@@ -4,7 +4,7 @@ on:
       version:
         type: string
         required: true
-        description: The released version to upload additional files to or images for.
+        description: The previously released version to deploy.
       extraTags:
         type: string
         required: false

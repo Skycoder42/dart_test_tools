@@ -5,8 +5,9 @@ import '../../common/steps/release_entry_builder.dart';
 import '../../dart/steps/dart_sdk_builder.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
+import 'trigger_deploy_builder.dart';
 
-base mixin ReleaseConfig on ReleaseEntryConfig {
+base mixin ReleaseConfig on ReleaseEntryConfig, TriggerDeployConfig {
   late final dartSdkVersion = inputContext(WorkflowInputs.dartSdkVersion);
 }
 
@@ -57,6 +58,10 @@ fi
       changelogExtra:
           "The package and it's documentation are available at "
           r'[pub.dev](https://pub.dev/packages/$package_name/versions/$package_version).',
+    ).build(),
+    ...TriggerDeployBuilder(
+      config: config,
+      versionOutput: versionOutput.expression,
     ).build(),
   ];
 }

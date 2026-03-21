@@ -11,6 +11,7 @@ import '../../types/step.dart';
 base mixin PublishConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
   late final prePublish = inputContext(WorkflowInputs.prePublish);
   late final extraArtifacts = inputContext(WorkflowInputs.extraArtifacts);
+  late final version = inputContext(WorkflowInputs.version);
 
   @override
   late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
@@ -63,6 +64,22 @@ fi
 ''',
     ),
     ...ProjectSetupBuilder(config: config).build(),
+    Step.run(
+      name: 'Validate version to be deployed',
+      shell: 'bash',
+      run:
+          '''
+set -euo pipefail
+expected='${config.version}'
+actual=\$(yq -r '.version' pubspec.yaml)
+if [[ "\$actual" != "\$expected" ]]; then
+  echo "Version mismatch!"
+  echo "Expected: \$expected"
+  echo "Actual:   \$actual"
+  exit 1
+fi
+''',
+    ),
     Step.uses(
       name: 'Download additional artifacts',
       ifExpression: config.extraArtifacts.ne(Expression.empty),

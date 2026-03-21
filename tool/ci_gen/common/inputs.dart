@@ -346,8 +346,7 @@ Example:
     input: Input(
       type: Type.string,
       required: true,
-      description:
-          'The released version to upload additional files to or images for.',
+      description: 'The previously released version to deploy.',
     ),
   );
 
@@ -564,6 +563,18 @@ Example:
       defaultValue: const <String, dynamic>{},
       description:
           'Optional environment variables to be set for the whole workflow.',
+    ),
+  );
+
+  static const publishWorkflow = WorkflowInput(
+    name: 'publishWorkflow',
+    input: Input(
+      type: Type.string,
+      required: true,
+      description:
+          'The name or id of the workflow that executes the deployment to '
+          'pub.dev. Will be invoked one the newly created tag with the '
+          '"version" as parameter.',
     ),
   );
 }
