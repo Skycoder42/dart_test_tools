@@ -31,6 +31,10 @@ abstract base class Functions {
 
   static const always = Expression('always()');
 
+  static const success = Expression('success()');
+
+  static const failure = Expression('failure()');
+
   static Expression format(String message, List<Expression> args) =>
       Expression("format('$message', ${args.map((e) => e.value).join(', ')})");
 

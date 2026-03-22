@@ -6,16 +6,10 @@ import '../api/step_builder.dart';
 import '../api/working_directory_config.dart';
 import '../contexts.dart';
 import '../inputs.dart';
-import '../secrets.dart';
 import '../tools.dart';
 
 base mixin ReleaseEntryConfig on JobConfig, WorkingDirectoryConfig {
-  bool get withToken => false;
-
   late final tagPrefix = inputContext(WorkflowInputs.tagPrefix);
-  late final githubToken = withToken
-      ? secretContext(WorkflowSecrets.githubToken)
-      : null;
 }
 
 class ReleaseEntryBuilder implements StepBuilder {
@@ -76,8 +70,6 @@ ${releaseContentBodyPath.bashSetter(r'$version_changelog_file')}
       ifExpression: versionUpdate.eq(const Expression.literal('true')),
       uses: Tools.softpropsActionGhRelease,
       withArgs: <String, dynamic>{
-        if (config.githubToken case final Expression token)
-          'token': token.toString(),
         'tag_name': releaseContentTagName.expression.toString(),
         'name': releaseContentReleaseName.expression.toString(),
         'body_path': releaseContentBodyPath.expression.toString(),

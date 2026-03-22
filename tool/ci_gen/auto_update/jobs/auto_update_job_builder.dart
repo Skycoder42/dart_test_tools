@@ -32,7 +32,11 @@ final class AutoUpdateJobBuilder extends SdkJobBuilder<AutoUpdateJobConfig>
     needs: {needsUpdate.jobId},
     ifExpression: needsUpdate.expression.eq(const Expression.literal('true')),
     runsOn: RunsOn.ubuntuLatest.id,
-    permissions: const {'contents': 'write', 'pull-requests': 'write'},
+    permissions: const {
+      'contents': 'write',
+      'pull-requests': 'write',
+      'actions': 'write',
+    },
     steps: [
       ...buildSetupSdkSteps(),
       ...AutoUpdateBuilder(config: config).build(),

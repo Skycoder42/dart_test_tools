@@ -5,7 +5,6 @@ import '../../common/api/working_directory_config.dart';
 import '../../common/contexts.dart';
 import '../../common/inputs.dart';
 import '../../common/jobs/sdk_job_builder.dart';
-import '../../common/secrets.dart';
 import '../../common/steps/checkout_builder.dart';
 import '../../common/tools.dart';
 import '../../types/expression.dart';
@@ -14,12 +13,15 @@ import '../../types/step.dart';
 
 base mixin AutoUpdateConfig on JobConfig, SdkJobConfig, WorkingDirectoryConfig {
   late final flutterCompat = inputContext(WorkflowInputs.flutterCompat);
-  late final githubToken = secretContext(WorkflowSecrets.githubToken);
+  late final validationWorkflow = inputContext(
+    WorkflowInputs.validationWorkflow,
+  );
 }
 
 class AutoUpdateBuilder implements StepBuilder {
   static const createPrStepId = StepId('create-pull-request');
   static final pullRequestNumber = createPrStepId.output('pull-request-number');
+  static final pullRequestBranch = createPrStepId.output('pull-request-branch');
 
   final AutoUpdateConfig config;
 
@@ -73,15 +75,38 @@ class AutoUpdateBuilder implements StepBuilder {
         'title': 'Automatic dependency updates',
         'body-path': '${Runner.temp}/update_log.md',
         'assignees': Github.repositoryOwner.toString(),
-        'token': config.githubToken.toString(),
+      },
+    );
+    yield Step.uses(
+      name: 'Manually validate pull request',
+      uses: Tools.bencUkWorkflowDispatch,
+      withArgs: {
+        'workflow': config.validationWorkflow.toString(),
+        'ref': 'refs/heads/${pullRequestBranch.expression}',
+        'wait-for-completion': true,
+        'sync-status': true,
+        'wait-timeout-seconds': 3600,
       },
     );
     yield Step.uses(
       name: 'Mention assignees',
       uses: Tools.thollanderActionsCommentPullRequest,
+      ifExpression: Functions.success,
       withArgs: {
         'pr-number': pullRequestNumber.expression.toString(),
         'message': 'Your review has been requested @${Github.repositoryOwner}',
+      },
+    );
+    yield Step.uses(
+      name: 'Mention assignees',
+      uses: Tools.thollanderActionsCommentPullRequest,
+      ifExpression:
+          Functions.failure & pullRequestNumber.expression.ne(Expression.empty),
+      withArgs: {
+        'pr-number': pullRequestNumber.expression.toString(),
+        'message':
+            'Automatic validation of pull request failed! '
+            '@${Github.repositoryOwner} please validate it manually.',
       },
     );
   }

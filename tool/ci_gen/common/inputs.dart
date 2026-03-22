@@ -577,4 +577,15 @@ Example:
           '"version" as parameter.',
     ),
   );
+
+  static const validationWorkflow = WorkflowInput(
+    name: 'validationWorkflow',
+    input: Input(
+      type: Type.string,
+      required: true,
+      description:
+          'The name or id of the workflow that must be run and succeed for '
+          'the pull request to be able to merge.',
+    ),
+  );
 }

@@ -16,10 +16,10 @@ on:
         required: false
         default: true
         description: Whether the update needs to ensure the package stays compatible to the latest flutter or not.
-    secrets:
-      githubToken:
+      validationWorkflow:
+        type: string
         required: true
-        description: The personal access token to create new releases with. Is required, as the default github workflow token does not trigger workflows when creating releases.
+        description: The name or id of the workflow that must be run and succeed for the pull request to be able to merge.
 jobs:
   check-update-required:
     name: Check if updates are required
@@ -57,6 +57,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      actions: write
     runs-on: ubuntu-latest
     steps:
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
@@ -90,9 +91,23 @@ jobs:
           title: Automatic dependency updates
           body-path: ${{ runner.temp }}/update_log.md
           assignees: ${{ github.repository_owner }}
-          token: ${{ secrets.githubToken }}
+      - name: Manually validate pull request
+        uses: benc-uk/workflow-dispatch@v1.3.1
+        with:
+          workflow: ${{ inputs.validationWorkflow }}
+          ref: refs/heads/${{ steps.create-pull-request.outputs.pull-request-branch }}
+          wait-for-completion: true
+          sync-status: true
+          wait-timeout-seconds: 3600
       - name: Mention assignees
+        if: success()
         uses: thollander/actions-comment-pull-request@v3
         with:
           pr-number: ${{ steps.create-pull-request.outputs.pull-request-number }}
           message: Your review has been requested @${{ github.repository_owner }}
+      - name: Mention assignees
+        if: failure() && steps.create-pull-request.outputs.pull-request-number != ''
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          pr-number: ${{ steps.create-pull-request.outputs.pull-request-number }}
+          message: Automatic validation of pull request failed! @${{ github.repository_owner }} please validate it manually.

@@ -48,17 +48,6 @@ MY_API_KEY=<reference secret here>"
     ),
   );
 
-  static const githubToken = WorkflowSecret(
-    name: 'githubToken',
-    secret: Secret(
-      required: true,
-      description:
-          'The personal access token to create new releases with. '
-          'Is required, as the default github workflow token does not '
-          'trigger workflows when creating releases.',
-    ),
-  );
-
   static const dartDefines = WorkflowSecret(
     name: 'dartDefines',
     secret: Secret(
