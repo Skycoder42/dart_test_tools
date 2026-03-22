@@ -36,6 +36,9 @@ jobs:
   release:
     name: Create release if needed
     if: github.ref == inputs.releaseRef
+    permissions:
+      contents: write
+      actions: write
     outputs:
       update: ${{ steps.version.outputs.update }}
       version: ${{ steps.version.outputs.version }}
@@ -106,6 +109,7 @@ jobs:
           body_path: ${{ steps.release_content.outputs.body_path }}
           target_commitish: ${{ github.sha }}
       - name: Trigger deployment
+        if: steps.version.outputs.update == 'true'
         uses: benc-uk/workflow-dispatch@v1.3.1
         with:
           workflow: ${{ inputs.publishWorkflow }}

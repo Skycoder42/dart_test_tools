@@ -61,6 +61,7 @@ fi
     ).build(),
     ...TriggerDeployBuilder(
       config: config,
+      versionUpdate: versionUpdate.expression,
       versionOutput: versionOutput.expression,
     ).build(),
   ];

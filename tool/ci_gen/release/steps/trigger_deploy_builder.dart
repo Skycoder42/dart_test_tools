@@ -14,15 +14,21 @@ base mixin TriggerDeployConfig on JobConfig {
 
 class TriggerDeployBuilder implements StepBuilder {
   final TriggerDeployConfig config;
+  final Expression versionUpdate;
   final Expression versionOutput;
 
-  TriggerDeployBuilder({required this.config, required this.versionOutput});
+  TriggerDeployBuilder({
+    required this.config,
+    required this.versionUpdate,
+    required this.versionOutput,
+  });
 
   @override
   Iterable<Step> build() => [
     Step.uses(
       name: 'Trigger deployment',
       uses: Tools.bencUkWorkflowDispatch,
+      ifExpression: versionUpdate.eq(const Expression.literal('true')),
       withArgs: {
         'workflow': config.publishWorkflow.toString(),
         'ref': 'refs/tags/${config.tagPrefix}$versionOutput',

@@ -39,5 +39,8 @@ jobs:
     needs:
       - ci
     uses: Skycoder42/dart_test_tools/.github/workflows/release.yml@main
+    permissions:
+      contents: write
+      actions: write
     with:
       publishWorkflow: dart_test_tools_cd.yml

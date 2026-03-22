@@ -41,6 +41,7 @@ class ReleaseJobBuilder implements JobBuilder {
       updateOutput: ReleaseBuilder.versionUpdate,
       versionOutput: ReleaseBuilder.versionOutput,
     },
+    permissions: const {'contents': 'write', 'actions': 'write'},
     steps: [...ReleaseBuilder(config: config).build()],
   );
 }
