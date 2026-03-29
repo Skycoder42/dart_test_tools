@@ -1,3 +1,4 @@
+import '../../common/actions/create_validated_pr_action_builder.dart';
 import '../../common/actions/install_tools_action_builder.dart';
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
@@ -6,7 +7,6 @@ import '../../common/contexts.dart';
 import '../../common/inputs.dart';
 import '../../common/jobs/sdk_job_builder.dart';
 import '../../common/steps/checkout_builder.dart';
-import '../../common/tools.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
@@ -64,50 +64,12 @@ class AutoUpdateBuilder implements StepBuilder {
   }
 
   Iterable<Step> _createPr() sync* {
-    yield Step.uses(
-      id: createPrStepId,
-      name: 'Create pull request',
-      uses: Tools.peterEvansCreatePullRequest,
-      withArgs: {
-        'branch': 'automatic-dependency-updates',
-        'delete-branch': true,
-        'commit-message': 'Automatic dependency updates',
-        'title': 'Automatic dependency updates',
-        'body-path': '${Runner.temp}/update_log.md',
-        'assignees': Github.repositoryOwner.toString(),
-      },
-    );
-    yield Step.uses(
-      name: 'Manually validate pull request',
-      uses: Tools.bencUkWorkflowDispatch,
-      withArgs: {
-        'workflow': config.validationWorkflow.toString(),
-        'ref': 'refs/heads/${pullRequestBranch.expression}',
-        'wait-for-completion': true,
-        'sync-status': true,
-        'wait-timeout-seconds': 3600,
-      },
-    );
-    yield Step.uses(
-      name: 'Mention assignees',
-      uses: Tools.thollanderActionsCommentPullRequest,
-      ifExpression: Functions.success,
-      withArgs: {
-        'pr-number': pullRequestNumber.expression.toString(),
-        'message': 'Your review has been requested @${Github.repositoryOwner}',
-      },
-    );
-    yield Step.uses(
-      name: 'Mention assignees',
-      uses: Tools.thollanderActionsCommentPullRequest,
-      ifExpression:
-          Functions.failure & pullRequestNumber.expression.ne(Expression.empty),
-      withArgs: {
-        'pr-number': pullRequestNumber.expression.toString(),
-        'message':
-            'Automatic validation of pull request failed! '
-            '@${Github.repositoryOwner} please validate it manually.',
-      },
+    yield CreateValidatedPrActionBuilder.step(
+      prBranchName: const .value('automatic-dependency-updates'),
+      prCommitMessage: const .value('Automatic dependency updates'),
+      prBodyIsPath: true,
+      prBody: .value('${Runner.temp}/update_log.md'),
+      validationWorkflow: .expression(config.validationWorkflow),
     );
   }
 }

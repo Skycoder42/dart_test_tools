@@ -36,8 +36,18 @@ abstract base class Functions {
   static const failure = Expression('failure()');
 
   static Expression format(String message, List<Expression> args) =>
-      Expression("format('$message', ${args.map((e) => e.value).join(', ')})");
+      Expression.invoke('format', [Expression.literal(message), ...args]);
 
   static Expression fromJson(Expression jsonString) =>
-      Expression('fromJson(${jsonString.value})');
+      Expression.invoke('fromJson', [jsonString]);
+
+  static Expression case$(
+    List<(Expression, ExpressionOrValue)> cases, [
+    ExpressionOrValue? default$,
+  ]) => Expression.invoke(
+    'case',
+    cases.expand((c) => [c.$1, c.$2.asExpression]).followedBy([
+      default$?.asExpression ?? .null$,
+    ]),
+  );
 }

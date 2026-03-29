@@ -81,33 +81,11 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Update dependencies
         run: flutter pub global run dart_test_tools:auto_update --mode update --target '${{ inputs.workingDirectory }}' ${{ inputs.flutterCompat && '--flutter-compat' || '--no-flutter-compat' }} --bump-version --report '${{ runner.temp }}/update_log.md'
-      - id: create-pull-request
-        name: Create pull request
-        uses: peter-evans/create-pull-request@v8
+      - name: Create validated pull request
+        uses: Skycoder42/dart_test_tools/.github/actions/create-validated-pr@main
         with:
-          branch: automatic-dependency-updates
-          delete-branch: true
-          commit-message: Automatic dependency updates
-          title: Automatic dependency updates
-          body-path: ${{ runner.temp }}/update_log.md
-          assignees: ${{ github.repository_owner }}
-      - name: Manually validate pull request
-        uses: benc-uk/workflow-dispatch@v1.3.1
-        with:
-          workflow: ${{ inputs.validationWorkflow }}
-          ref: refs/heads/${{ steps.create-pull-request.outputs.pull-request-branch }}
-          wait-for-completion: true
-          sync-status: true
-          wait-timeout-seconds: 3600
-      - name: Mention assignees
-        if: success()
-        uses: thollander/actions-comment-pull-request@v3
-        with:
-          pr-number: ${{ steps.create-pull-request.outputs.pull-request-number }}
-          message: Your review has been requested @${{ github.repository_owner }}
-      - name: Mention assignees
-        if: failure() && steps.create-pull-request.outputs.pull-request-number != ''
-        uses: thollander/actions-comment-pull-request@v3
-        with:
-          pr-number: ${{ steps.create-pull-request.outputs.pull-request-number }}
-          message: Automatic validation of pull request failed! @${{ github.repository_owner }} please validate it manually.
+          prBranchName: automatic-dependency-updates
+          prCommitMessage: Automatic dependency updates
+          prBody: ${{ runner.temp }}/update_log.md
+          prBodyIsPath: "true"
+          validationWorkflow: ${{ inputs.validationWorkflow }}

@@ -7,6 +7,7 @@ part 'expression.freezed.dart';
 @freezed
 sealed class Expression with _$Expression {
   static const empty = Expression.literal('');
+  static const null$ = Expression('null');
 
   const factory Expression(String value) = _Expression;
 
@@ -20,6 +21,9 @@ sealed class Expression with _$Expression {
   const factory Expression.json(Object? jsonValue) = _JsonExpression;
 
   const factory Expression.fake(String fakeValue) = _FakeExpression;
+
+  factory Expression.invoke(String name, [Iterable<Expression>? params]) =>
+      Expression('$name(${params?.map((p) => p.value).join(', ') ?? ''})');
 
   const Expression._();
 
@@ -72,6 +76,8 @@ sealed class Expression with _$Expression {
 
 @freezed
 sealed class ExpressionOrValue with _$ExpressionOrValue {
+  static const empty = ExpressionOrValue.value('');
+
   const factory ExpressionOrValue.expression(Expression expression) =
       ExpressionOrValueExpression;
 

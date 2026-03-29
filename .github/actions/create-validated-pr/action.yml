@@ -1,0 +1,60 @@
+name: Create validated pull request
+description: Creates a PR against the current branch and validates it.
+inputs:
+  prBranchName:
+    required: true
+    description: The name of the pr branch to be created or updated.
+  prCommitMessage:
+    required: true
+    description: The commit message of the pull request.
+  prTitle:
+    required: false
+    description: The title of the pull request. If unset, the commit message will be used as title.
+  prBody:
+    required: true
+    description: The description body of the pull request or the path to a markdown file containing it. You need to set "prBodyIsPath" for the second variant as well.
+  prBodyIsPath:
+    required: false
+    default: "false"
+    description: Whether the "prBody" is simple text (false) or the path to a markdown file (true).
+  validationWorkflow:
+    required: true
+    description: The name or id of the workflow that must be run and succeed for the pull request to be able to merge.
+  validationTimeout:
+    required: false
+    default: "3600"
+    description: The timeout (in seconds) to wait for the validation to complete.
+runs:
+  steps:
+    - id: create-pull-request
+      name: Create pull request
+      uses: peter-evans/create-pull-request@v8
+      with:
+        branch: ${{ inputs.prBranchName }}
+        delete-branch: true
+        commit-message: ${{ inputs.prCommitMessage }}
+        title: ${{ case(inputs.prTitle != '', inputs.prTitle, inputs.prCommitMessage) }}
+        body: ${{ case(inputs.prBodyIsPath == 'false', inputs.prBody, null) }}
+        body-path: ${{ case(inputs.prBodyIsPath == 'true', inputs.prBody, null) }}
+        assignees: ${{ github.repository_owner }}
+    - name: Manually validate pull request
+      uses: benc-uk/workflow-dispatch@v1.3.1
+      with:
+        workflow: ${{ inputs.validationWorkflow }}
+        ref: refs/heads/${{ steps.create-pull-request.outputs.pull-request-branch }}
+        wait-for-completion: true
+        sync-status: true
+        wait-timeout-seconds: ${{ inputs.validationTimeout }}
+    - name: Mention assignees
+      if: success()
+      uses: thollander/actions-comment-pull-request@v3
+      with:
+        pr-number: ${{ steps.create-pull-request.outputs.pull-request-number }}
+        message: Your review has been requested @${{ github.repository_owner }}
+    - name: Mention assignees
+      if: failure() && steps.create-pull-request.outputs.pull-request-number != ''
+      uses: thollander/actions-comment-pull-request@v3
+      with:
+        pr-number: ${{ steps.create-pull-request.outputs.pull-request-number }}
+        message: Automatic validation of pull request failed! @${{ github.repository_owner }} please validate it manually.
+  using: composite
