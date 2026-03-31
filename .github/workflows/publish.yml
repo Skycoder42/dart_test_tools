@@ -160,6 +160,7 @@ jobs:
             echo "Actual:   $actual"
             exit 1
           fi
+        working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Download additional artifacts
         if: inputs.extraArtifacts != ''
