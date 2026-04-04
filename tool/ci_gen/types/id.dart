@@ -65,9 +65,9 @@ sealed class IdOutput with _$IdOutput {
 
   String pwshSetter(String value, {bool isCommand = false}) => switch (this) {
     StepIdOutput(:final name) when isCommand =>
-      'Add-Content -Path \$Env:GITHUB_OUTPUT -Value "$name=\$($value)',
+      'Add-Content -Path \$Env:GITHUB_OUTPUT -Value "$name=\$($value)"',
     StepIdOutput(:final name) when !isCommand =>
-      'Add-Content -Path \$Env:GITHUB_OUTPUT -Value "$name=$value',
+      'Add-Content -Path \$Env:GITHUB_OUTPUT -Value "$name=$value"',
     _ => throw UnsupportedError('Cannot create a pwsh setter for $this'),
   };
 

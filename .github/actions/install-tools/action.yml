@@ -13,7 +13,7 @@ runs:
         $dataHomePath = Join-Path $env:RUNNER_TOOL_CACHE "dart"
         Add-Content -Path $Env:GITHUB_ENV -Value "DART_DATA_HOME=$dataHomePath"
         Add-Content -Path $Env:GITHUB_PATH -Value (Join-Path $dataHomePath "install" "bin")
-        Add-Content -Path $Env:GITHUB_OUTPUT -Value "dart-version=$(Get-Content (Join-Path (Split-Path (Split-Path (Get-Command dart).Source)) "version"))
+        Add-Content -Path $Env:GITHUB_OUTPUT -Value "dart-version=$(Get-Content (Join-Path (Split-Path (Split-Path (Get-Command dart).Source)) "version"))"
       shell: pwsh
     - name: Cache dart install tools
       uses: actions/cache@v5
