@@ -10,6 +10,7 @@ runs:
     - id: setup-dart-install
       name: Setup dart install path
       run: |
+        $ErrorActionPreference = "Stop"
         $dataHomePath = Join-Path $env:RUNNER_TOOL_CACHE "dart"
         Add-Content -Path $Env:GITHUB_ENV -Value "DART_DATA_HOME=$dataHomePath"
         Add-Content -Path $Env:GITHUB_PATH -Value (Join-Path $dataHomePath "install" "bin")
@@ -18,7 +19,7 @@ runs:
     - name: Cache dart install tools
       uses: actions/cache@v5
       with:
-        key: ${{ runner.os }}-${{ steps.setup-dart-install.outputs.dart-version }}
+        key: dart_tools-${{ runner.os }}-${{ steps.setup-dart-install.outputs.dart-version }}
         path: ${{ runner.tool_cache }}/dart/install
     - name: Install scoop
       if: runner.os == 'Windows'

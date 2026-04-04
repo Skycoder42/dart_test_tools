@@ -60,6 +60,7 @@ class InstallToolsActionBuilder implements ActionBuilder {
           shell: 'pwsh',
           run:
               '''
+\$ErrorActionPreference = "Stop"
 \$dataHomePath = Join-Path \$env:RUNNER_TOOL_CACHE "dart"
 Add-Content -Path \$Env:GITHUB_ENV -Value "DART_DATA_HOME=\$dataHomePath"
 Add-Content -Path \$Env:GITHUB_PATH -Value (Join-Path \$dataHomePath "install" "bin")
@@ -70,7 +71,7 @@ ${dartVersionOutput.pwshSetter('Get-Content (Join-Path (Split-Path (Split-Path (
           name: 'Cache dart install tools',
           uses: Tools.actionsCache,
           withArgs: {
-            'key': '${Runner.os}-${dartVersionOutput.expression}',
+            'key': 'dart_tools-${Runner.os}-${dartVersionOutput.expression}',
             'path': '${Runner.toolCache}/dart/install',
           },
         ),
