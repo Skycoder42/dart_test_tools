@@ -30,8 +30,8 @@ class AnalyzeBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-    const Step.run(name: 'Install pana', run: 'dart install pana'),
     ...ProjectSetupBuilder(config: config).build(),
+    const Step.run(name: 'Install pana', run: 'dart install pana'),
     Step.run(
       id: checkPlatformsStepId,
       name: 'Check supported platforms',

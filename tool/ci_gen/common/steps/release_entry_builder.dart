@@ -1,6 +1,7 @@
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
+import '../actions/install_tools_action_builder.dart';
 import '../api/job_config.dart';
 import '../api/step_builder.dart';
 import '../api/working_directory_config.dart';
@@ -36,11 +37,7 @@ class ReleaseEntryBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-    Step.run(
-      name: 'Activate cider',
-      ifExpression: versionUpdate.eq(const Expression.literal('true')),
-      run: 'dart install cider',
-    ),
+    InstallToolsActionBuilder.step(withDartTestTools: true),
     Step.run(
       id: releaseContentStepId,
       name: 'Generate release content',

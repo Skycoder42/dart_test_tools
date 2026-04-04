@@ -136,8 +136,6 @@ jobs:
       - name: Download flutter binary artifacts
         if: inputs.needsFlutterSdk
         run: flutter precache --universal
-      - name: Install pana
-        run: dart install pana
       - name: Install tools
         uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
@@ -171,6 +169,8 @@ jobs:
         if: inputs.buildRunner
         run: dart run build_runner build ${{ inputs.buildRunnerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
+      - name: Install pana
+        run: dart install pana
       - id: checkPlatforms
         name: Check supported platforms
         run: |

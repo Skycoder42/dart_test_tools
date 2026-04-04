@@ -76,9 +76,10 @@ jobs:
             echo "version=$package_version" >> $GITHUB_OUTPUT
           fi
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Activate cider
-        if: steps.version.outputs.update == 'true'
-        run: dart install cider
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
+        with:
+          withDartTestTools: "true"
       - id: release_content
         name: Generate release content
         if: steps.version.outputs.update == 'true'
