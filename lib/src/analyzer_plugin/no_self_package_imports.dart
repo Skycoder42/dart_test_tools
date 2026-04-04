@@ -23,8 +23,7 @@ class NoSelfPackageImports extends AnalysisRule {
   final _logger = Logger('$NoSelfPackageImports');
 
   NoSelfPackageImports()
-    // ignore: deprecated_member_use until minimum version is upgraded
-    : super(name: code.name, description: code.problemMessage);
+    : super(name: code.lowerCaseName, description: code.problemMessage);
 
   @override
   LintCode get diagnosticCode => code;

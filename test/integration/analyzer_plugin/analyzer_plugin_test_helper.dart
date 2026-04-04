@@ -48,8 +48,7 @@ void analyzerPluginTest(
 
     await _expectDart(
       const ['analyze', '--fatal-infos', '--format', 'machine'],
-      // ignore: deprecated_member_use until minimum version is upgraded
-      codeName: code.name.toUpperCase(),
+      codeName: code.lowerCaseName.toUpperCase(),
       expectedOutput: expectedOutput,
       workingDirectory: dartDir,
     );
