@@ -134,7 +134,7 @@ jobs:
       - name: Download flutter binary artifacts
         run: flutter precache --universal
       - name: Install pana
-        run: flutter pub global activate pana
+        run: dart install pana
       - name: Install tools
         uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
@@ -216,7 +216,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Validate pana score
         if: steps.checkPublish.outputs.publish == 'true'
-        run: flutter pub global run pana --exit-code-threshold ${{ inputs.panaScoreThreshold }} .
+        run: pana --exit-code-threshold ${{ inputs.panaScoreThreshold }} .
         working-directory: ${{ inputs.workingDirectory }}
   unit_tests:
     name: Unit tests

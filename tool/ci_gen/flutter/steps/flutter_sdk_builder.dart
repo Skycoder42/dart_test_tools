@@ -19,7 +19,7 @@ class FlutterSdkBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-    if (_maybeSetupJdk() case final Step step) step,
+    ?_maybeSetupJdk(),
     Step.uses(
       name: 'Install Flutter-SDK ($flutterSdkChannel)',
       ifExpression: ifExpression,
@@ -34,7 +34,7 @@ class FlutterSdkBuilder implements StepBuilder {
       ifExpression: ifExpression,
       run: 'flutter precache --universal$_preCachePlatformArgs',
     ),
-    if (_maybeEnableSwiftPackageManger() case final Step step) step,
+    ?_maybeEnableSwiftPackageManger(),
   ];
 
   String get _preCachePlatformArgs =>

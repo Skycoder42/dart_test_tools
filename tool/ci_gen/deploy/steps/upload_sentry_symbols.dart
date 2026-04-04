@@ -23,7 +23,7 @@ class UploadSentrySymbolsBuilder implements StepBuilder {
     Step.run(
       name: 'Install sentry_dart_plugin',
       ifExpression: config.sentryAuthToken.ne(Expression.empty),
-      run: '${config.pubTool} global activate sentry_dart_plugin',
+      run: 'dart pub global activate sentry_dart_plugin',
     ),
     Step.run(
       name: 'Upload debug symbols',

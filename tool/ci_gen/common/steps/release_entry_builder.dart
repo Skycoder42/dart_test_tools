@@ -39,7 +39,7 @@ class ReleaseEntryBuilder implements StepBuilder {
     Step.run(
       name: 'Activate cider',
       ifExpression: versionUpdate.eq(const Expression.literal('true')),
-      run: 'dart pub global activate cider',
+      run: 'dart install cider',
     ),
     Step.run(
       id: releaseContentStepId,
@@ -59,7 +59,7 @@ ${releaseContentReleaseName.bashSetter(r'$release_name')}
 
 version_changelog_file=\$(mktemp)
 echo "# Changelog" > \$version_changelog_file
-dart pub global run cider describe "\$package_version" >> \$version_changelog_file
+cider describe "\$package_version" >> \$version_changelog_file
 echo "" >> \$version_changelog_file${changelogExtra != null ? '\necho "$changelogExtra" >> \$version_changelog_file' : ''}
 ${releaseContentBodyPath.bashSetter(r'$version_changelog_file')}
 ''',

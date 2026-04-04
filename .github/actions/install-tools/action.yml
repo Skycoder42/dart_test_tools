@@ -7,6 +7,19 @@ inputs:
     description: Also install dart_test_tools as global dart tool.
 runs:
   steps:
+    - id: setup-dart-install
+      name: Setup dart install path
+      run: |
+        $dataHomePath = Join-Path $env:RUNNER_TOOL_CACHE "dart"
+        Add-Content -Path $Env:GITHUB_ENV -Value "DART_DATA_HOME=$dataHomePath"
+        Add-Content -Path $Env:GITHUB_PATH -Value (Join-Path $dataHomePath "install" "bin")
+        Add-Content -Path $Env:GITHUB_OUTPUT -Value "dart-version=$(Get-Content (Join-Path (Split-Path (Split-Path (Get-Command dart).Source)) "version"))
+      shell: pwsh
+    - name: Cache dart install tools
+      uses: actions/cache@v5
+      with:
+        key: ${{ runner.os }}-${{ steps.setup-dart-install.outputs.dart-version }}
+        path: ${{ runner.tool_cache }}/dart/install
     - name: Install scoop
       if: runner.os == 'Windows'
       run: |
@@ -25,6 +38,6 @@ runs:
       shell: bash
     - name: Install dart_test_tools
       if: inputs.withDartTestTools == 'true'
-      run: dart pub global activate dart_test_tools ^7.0.2+1
+      run: dart install dart_test_tools ^7.0.2+1
       shell: bash
   using: composite

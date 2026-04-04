@@ -17,8 +17,9 @@ class MakedebBuilder implements StepBuilder {
     Step.run(
       name: 'Generate PKGBUILD from dart package',
       run:
-          'dart pub global run dart_test_tools:generate_pkgbuild '
-          '--input src/${config.workingDirectory} --output deb --makedeb',
+          'generate-pkgbuild '
+          '--input src/${config.workingDirectory} '
+          '--output deb --makedeb',
     ),
     const Step.run(
       name: 'Update source checksums',

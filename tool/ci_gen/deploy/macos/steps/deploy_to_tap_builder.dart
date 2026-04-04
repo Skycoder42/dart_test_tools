@@ -44,8 +44,9 @@ class DeployToTapBuilder implements StepBuilder {
       id: generateCaskStepId,
       name: 'Generate cask formula',
       run:
-          '${config.pubTool} global run dart_test_tools:generate_cask '
-          "--input 'src/${config.workingDirectory}' --output tap",
+          'generate-cask '
+          "--input 'src/${config.workingDirectory}' "
+          '--output tap',
     ),
     Step.run(
       name: 'Stage cask update',

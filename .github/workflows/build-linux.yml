@@ -85,7 +85,7 @@ jobs:
           persist-credentials: false
       - id: generateBuildNumber
         name: Generate build number
-        run: dart pub global run dart_test_tools:generate_build_number ${{ inputs.buildNumberArgs }} --env
+        run: generate-build-number ${{ inputs.buildNumberArgs }} --env
         working-directory: ${{ inputs.workingDirectory }}
       - name: Prepare flatpak repo
         run: |

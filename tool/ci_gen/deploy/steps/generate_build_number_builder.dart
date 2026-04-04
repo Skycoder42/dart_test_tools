@@ -24,7 +24,7 @@ class GenerateBuildNumberBuilder implements StepBuilder {
       id: stepId,
       name: 'Generate build number',
       run:
-          'dart pub global run dart_test_tools:generate_build_number '
+          'generate-build-number '
           '${config.buildNumberArgs}${asEnv ? ' --env' : ''}',
       workingDirectory: config.workingDirectory.toString(),
     ),

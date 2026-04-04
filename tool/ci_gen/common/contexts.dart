@@ -6,6 +6,8 @@ abstract base class Runner {
   static const temp = Expression('runner.temp');
 
   static const os = Expression('runner.os');
+
+  static const toolCache = Expression('runner.tool_cache');
 }
 
 abstract base class Github {

@@ -103,7 +103,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - id: generateBuildNumber
         name: Generate build number
-        run: dart pub global run dart_test_tools:generate_build_number ${{ inputs.buildNumberArgs }}
+        run: generate-build-number ${{ inputs.buildNumberArgs }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Prepare dart defines
         run: echo '${{ secrets.dartDefines }}' > '${{ runner.temp }}/dart-defines.env'

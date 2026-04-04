@@ -30,10 +30,7 @@ class AnalyzeBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-    Step.run(
-      name: 'Install pana',
-      run: '${config.pubTool} global activate pana',
-    ),
+    const Step.run(name: 'Install pana', run: 'dart install pana'),
     ...ProjectSetupBuilder(config: config).build(),
     Step.run(
       id: checkPlatformsStepId,
@@ -85,9 +82,7 @@ fi
       ifExpression: checkPublishOutput.expression.eq(
         const Expression.literal('true'),
       ),
-      run:
-          '${config.pubTool} global run pana '
-          '--exit-code-threshold ${config.panaScoreThreshold} .',
+      run: 'pana --exit-code-threshold ${config.panaScoreThreshold} .',
       workingDirectory: config.workingDirectory.toString(),
     ),
   ];

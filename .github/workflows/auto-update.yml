@@ -48,7 +48,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - id: check_auto_update
         name: Check if updates are needed
-        run: flutter pub global run dart_test_tools:auto_update --mode check --target '${{ inputs.workingDirectory }}'
+        run: auto-update --mode check --target '${{ inputs.workingDirectory }}'
   auto-update:
     name: Automatic dependency updates
     needs:
@@ -80,7 +80,7 @@ jobs:
         run: flutter pub get
         working-directory: ${{ inputs.workingDirectory }}
       - name: Update dependencies
-        run: flutter pub global run dart_test_tools:auto_update --mode update --target '${{ inputs.workingDirectory }}' ${{ inputs.flutterCompat && '--flutter-compat' || '--no-flutter-compat' }} --bump-version --report '${{ runner.temp }}/update_log.md'
+        run: auto-update --mode update --target '${{ inputs.workingDirectory }}' ${{ inputs.flutterCompat && '--flutter-compat' || '--no-flutter-compat' }} --bump-version --report '${{ runner.temp }}/update_log.md'
       - name: Create validated pull request
         uses: Skycoder42/dart_test_tools/.github/actions/create-validated-pr@main
         with:

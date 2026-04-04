@@ -54,7 +54,7 @@ class AutoUpdateBuilder implements StepBuilder {
     yield Step.run(
       name: 'Update dependencies',
       run:
-          '${config.pubTool} global run dart_test_tools:auto_update '
+          'auto-update '
           '--mode update '
           "--target '${config.workingDirectory}' "
           '$flutterCompatOption '

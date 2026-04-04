@@ -140,7 +140,7 @@ jobs:
           merge-multiple: true
       - name: Activate cider
         if: steps.version.outputs.update == 'true'
-        run: dart pub global activate cider
+        run: dart install cider
       - id: release_content
         name: Generate release content
         if: steps.version.outputs.update == 'true'
@@ -157,7 +157,7 @@ jobs:
 
           version_changelog_file=$(mktemp)
           echo "# Changelog" > $version_changelog_file
-          dart pub global run cider describe "$package_version" >> $version_changelog_file
+          cider describe "$package_version" >> $version_changelog_file
           echo "" >> $version_changelog_file
           echo "body_path=$version_changelog_file" >> $GITHUB_OUTPUT
         working-directory: ${{ inputs.workingDirectory }}
@@ -316,7 +316,7 @@ jobs:
           token: ${{ secrets.targetRepoToken }}
       - id: generate-cask
         name: Generate cask formula
-        run: dart pub global run dart_test_tools:generate_cask --input 'src/${{ inputs.workingDirectory }}' --output tap
+        run: generate-cask --input 'src/${{ inputs.workingDirectory }}' --output tap
       - name: Stage cask update
         run: git add Casks/${{ steps.generate-cask.outputs.caskName }}.rb
         working-directory: tap

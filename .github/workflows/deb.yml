@@ -50,7 +50,7 @@ jobs:
       - name: Create deb dir
         run: mkdir deb
       - name: Generate PKGBUILD from dart package
-        run: dart pub global run dart_test_tools:generate_pkgbuild --input src/${{ inputs.workingDirectory }} --output deb --makedeb
+        run: generate-pkgbuild --input src/${{ inputs.workingDirectory }} --output deb --makedeb
       - name: Update source checksums
         run: makedeb --gen-integ >> PKGBUILD
         working-directory: deb

@@ -34,10 +34,7 @@ class CheckUpdateRequiredBuilder implements StepBuilder {
     yield Step.run(
       id: checkStepId,
       name: 'Check if updates are needed',
-      run:
-          '${config.pubTool} global run dart_test_tools:auto_update '
-          '--mode check '
-          "--target '${config.workingDirectory}'",
+      run: "auto-update --mode check --target '${config.workingDirectory}'",
     );
   }
 }

@@ -79,6 +79,7 @@ if [[ "\$actual" != "\$expected" ]]; then
   exit 1
 fi
 ''',
+      workingDirectory: config.workingDirectory.toString(),
     ),
     Step.uses(
       name: 'Download additional artifacts',
