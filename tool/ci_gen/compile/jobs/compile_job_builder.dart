@@ -24,12 +24,10 @@ final class CompileJobConfig extends JobConfig
 }
 
 final class CompileMatrix extends PlatformMatrix {
-  const CompileMatrix() : super(DartPlatform.values);
+  CompileMatrix() : super(DartPlatform.values.where((p) => !p.isWeb).toList());
 
-  BinaryTypeMatrixProperty get binaryType => const BinaryTypeMatrixProperty();
-
-  CompileArgsMatrixProperty get compileArgs =>
-      const CompileArgsMatrixProperty();
+  ExecutableSuffixProperty get executableSuffix =>
+      const ExecutableSuffixProperty();
 
   ArchiveTypeMatrixProperty get archiveType =>
       const ArchiveTypeMatrixProperty();
@@ -37,8 +35,7 @@ final class CompileMatrix extends PlatformMatrix {
   @override
   List<IMatrixProperty<IPlatformMatrixSelector>> get includeProperties => [
     ...super.includeProperties,
-    binaryType,
-    compileArgs,
+    executableSuffix,
     archiveType,
   ];
 }
@@ -55,7 +52,7 @@ final class CompileJobBuilder extends SdkJobBuilder<CompileJobConfig>
   final Expression enabledPlatforms;
 
   CompileJobBuilder({required this.enabledPlatforms, required super.config})
-    : matrix = const CompileMatrix();
+    : matrix = CompileMatrix();
 
   @override
   final CompileMatrix matrix;
@@ -70,8 +67,7 @@ final class CompileJobBuilder extends SdkJobBuilder<CompileJobConfig>
       ...CompileBuilder(
         config: config,
         platform: matrix.platform,
-        binaryType: matrix.binaryType,
-        compileArgs: matrix.compileArgs,
+        executableSuffix: matrix.executableSuffix,
         archiveType: matrix.archiveType,
       ).build(),
     ],

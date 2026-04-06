@@ -9,13 +9,6 @@ import '../../dart/dart_platform.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
-enum BinaryType {
-  exe,
-  js;
-
-  String toJson() => name;
-}
-
 enum ArchiveType {
   tar,
   zip;
@@ -35,32 +28,16 @@ base mixin CompileConfig on JobConfig, ProjectSetupConfig {
   bool get releaseMode => true;
 }
 
-final class BinaryTypeMatrixProperty extends IMatrixProperty<DartPlatform> {
-  const BinaryTypeMatrixProperty();
+final class ExecutableSuffixProperty extends IMatrixProperty<DartPlatform> {
+  const ExecutableSuffixProperty();
 
   @override
-  String get name => 'binaryType';
+  String get name => 'executableSuffix';
 
   @override
-  Object? valueFor(DartPlatform selector) => switch (selector) {
-    DartPlatform(isWeb: true) => BinaryType.js,
-    _ => BinaryType.exe,
-  };
-}
-
-final class CompileArgsMatrixProperty extends IMatrixProperty<DartPlatform> {
-  const CompileArgsMatrixProperty();
-
-  @override
-  String get name => 'compileArgs';
-
-  @override
-  Object? valueFor(DartPlatform selector) => switch (selector) {
-    DartPlatform.linux || DartPlatform.macos =>
-      r'-S "build/bin/$executableName.sym" -o "build/bin/$executableName"',
-    DartPlatform.windows =>
-      r'-S "build/bin/$executableName.sym" -o "build/bin/$executableName.exe"',
-    DartPlatform.web => r'-O2 --server-mode -o "build/bin/$executableName.js"',
+  String valueFor(DartPlatform selector) => switch (selector) {
+    .windows => '.exe',
+    _ => '',
   };
 }
 
@@ -71,31 +48,22 @@ final class ArchiveTypeMatrixProperty extends IMatrixProperty<DartPlatform> {
   String get name => 'archiveType';
 
   @override
-  Object? valueFor(DartPlatform selector) => switch (selector) {
-    DartPlatform.windows || DartPlatform.web => ArchiveType.zip,
-    _ => ArchiveType.tar,
+  ArchiveType valueFor(DartPlatform selector) => switch (selector) {
+    .windows || .web => .zip,
+    _ => .tar,
   };
-}
-
-abstract interface class ICompileMatrix {
-  Expression get platform;
-  Expression get binaryType;
-  Expression get compileArgs;
-  Expression get archiveType;
 }
 
 class CompileBuilder implements StepBuilder {
   final CompileConfig config;
   final PlatformMatrixProperty platform;
-  final BinaryTypeMatrixProperty binaryType;
-  final CompileArgsMatrixProperty compileArgs;
+  final ExecutableSuffixProperty executableSuffix;
   final ArchiveTypeMatrixProperty archiveType;
 
   CompileBuilder({
     required this.config,
     required this.platform,
-    required this.binaryType,
-    required this.compileArgs,
+    required this.executableSuffix,
     required this.archiveType,
   });
 
@@ -106,42 +74,38 @@ class CompileBuilder implements StepBuilder {
       name: 'Compile executables',
       run:
           '''
-set -eo pipefail
-mkdir -p build/bin
+set -euo pipefail
 yq ".executables.[] | key" pubspec.yaml | while read executableName; do
   dartScript=\$(yq ".executables.[\\"\$executableName\\"] // \\"\$executableName\\"" pubspec.yaml)
-  dart compile ${binaryType.expression} ${compileArgs.expression} "bin/\$dartScript.dart"
+  dart build cli -t "bin/\$dartScript.dart" -o build
+  mv "build/bundle/bin/\$dartScript$executableSuffix" "build/bundle/bin/\$executableName$executableSuffix"
 done
 ''',
       workingDirectory: config.workingDirectory.toString(),
       shell: 'bash',
     ),
     Step.run(
-      name: 'Create release archives (${ArchiveType.tar.name})',
+      name: 'Create release archive (${ArchiveType.tar.name})',
       ifExpression: archiveType.expression.eq(ArchiveType.tar.expression),
       run:
           '''
-set -eo pipefail
-shopt -s extglob
+set -euo pipefail
 mkdir -p ../artifacts
-tar -cavf '../artifacts/${config.archivePrefix}-${platform.expression}.tar.xz' !(*.*)
-tar -cavf '../artifacts/${config.archivePrefix}-${platform.expression}-debug-symbols.tar.xz' *.sym
+tar -cavf '../artifacts/${config.archivePrefix}-${platform.expression}.tar.xz' .
 ''',
-      workingDirectory: '${config.workingDirectory}/build/bin',
+      workingDirectory: '${config.workingDirectory}/build/bundle',
       shell: 'bash',
     ),
     Step.run(
-      name: 'Create release archives (${ArchiveType.zip.name})',
+      name: 'Create release archive (${ArchiveType.zip.name})',
       ifExpression: archiveType.expression.eq(ArchiveType.zip.expression),
       run:
           '''
 set -eo pipefail
-shopt -s nullglob
 mkdir -p ../artifacts
-7z a -y '../artifacts/${config.archivePrefix}-${platform.expression}.zip' *.exe *.js
-7z a -y '../artifacts/${config.archivePrefix}-${platform.expression}-debug-symbols.zip' *.sym *.js.*
+7z a -y '../artifacts/${config.archivePrefix}-${platform.expression}.zip' .
 ''',
-      workingDirectory: '${config.workingDirectory}/build/bin',
+      workingDirectory: '${config.workingDirectory}/build/bundle',
       shell: 'bash',
     ),
     Step.uses(

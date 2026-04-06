@@ -78,27 +78,18 @@ jobs:
           - linux
           - macos
           - windows
-          - web
         include:
           - platform: linux
             os: ubuntu-latest
-            binaryType: exe
-            compileArgs: -S "build/bin/$executableName.sym" -o "build/bin/$executableName"
+            executableSuffix: ""
             archiveType: tar
           - platform: macos
             os: macos-latest
-            binaryType: exe
-            compileArgs: -S "build/bin/$executableName.sym" -o "build/bin/$executableName"
+            executableSuffix: ""
             archiveType: tar
           - platform: windows
             os: windows-latest
-            binaryType: exe
-            compileArgs: -S "build/bin/$executableName.sym" -o "build/bin/$executableName.exe"
-            archiveType: zip
-          - platform: web
-            os: ubuntu-latest
-            binaryType: js
-            compileArgs: -O2 --server-mode -o "build/bin/$executableName.js"
+            executableSuffix: .exe
             archiveType: zip
     runs-on: ${{ matrix.os }}
     steps:
@@ -146,33 +137,29 @@ jobs:
       - name: Compile executables
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
         run: |
-          set -eo pipefail
-          mkdir -p build/bin
+          set -euo pipefail
           yq ".executables.[] | key" pubspec.yaml | while read executableName; do
             dartScript=$(yq ".executables.[\"$executableName\"] // \"$executableName\"" pubspec.yaml)
-            dart compile ${{ matrix.binaryType }} ${{ matrix.compileArgs }} "bin/$dartScript.dart"
+            dart build cli -t "bin/$dartScript.dart" -o build
+            mv "build/bundle/bin/$dartScriptInstance of 'ExecutableSuffixProperty'" "build/bundle/bin/$executableNameInstance of 'ExecutableSuffixProperty'"
           done
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
-      - name: Create release archives (tar)
+      - name: Create release archive (tar)
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && matrix.archiveType == 'tar'
         run: |
-          set -eo pipefail
-          shopt -s extglob
+          set -euo pipefail
           mkdir -p ../artifacts
-          tar -cavf '../artifacts/${{ inputs.archivePrefix }}-${{ matrix.platform }}.tar.xz' !(*.*)
-          tar -cavf '../artifacts/${{ inputs.archivePrefix }}-${{ matrix.platform }}-debug-symbols.tar.xz' *.sym
-        working-directory: ${{ inputs.workingDirectory }}/build/bin
+          tar -cavf '../artifacts/${{ inputs.archivePrefix }}-${{ matrix.platform }}.tar.xz' .
+        working-directory: ${{ inputs.workingDirectory }}/build/bundle
         shell: bash
-      - name: Create release archives (zip)
+      - name: Create release archive (zip)
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && matrix.archiveType == 'zip'
         run: |
           set -eo pipefail
-          shopt -s nullglob
           mkdir -p ../artifacts
-          7z a -y '../artifacts/${{ inputs.archivePrefix }}-${{ matrix.platform }}.zip' *.exe *.js
-          7z a -y '../artifacts/${{ inputs.archivePrefix }}-${{ matrix.platform }}-debug-symbols.zip' *.sym *.js.*
-        working-directory: ${{ inputs.workingDirectory }}/build/bin
+          7z a -y '../artifacts/${{ inputs.archivePrefix }}-${{ matrix.platform }}.zip' .
+        working-directory: ${{ inputs.workingDirectory }}/build/bundle
         shell: bash
       - name: Upload compiled binaries artifact
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
