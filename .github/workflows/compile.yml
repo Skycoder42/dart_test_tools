@@ -8,8 +8,7 @@ on:
       archivePrefix:
         type: string
         required: false
-        default: binaries
-        description: The prefix of the binary archive files that contain the actual binaries. Will be suffixed with the platform name.
+        description: The prefix of the binary archive files that contain the actual binaries. Will be suffixed with the platform name. If left empty, it will fallback to "<package_name>-<package-version>".
       env:
         type: string
         required: false
@@ -134,15 +133,34 @@ jobs:
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && inputs.buildRunner
         run: dart run build_runner build --release ${{ inputs.buildRunnerArgs }}
         working-directory: ${{ inputs.workingDirectory }}
+      - id: detect-archive-name
+        name: Detect archive name
+        if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && inputs.archivePrefix == ''
+        run: |
+          set -euo pipefail
+          package_name=$(yq -r .name pubspec.yaml)
+          package_version=$(yq -r .version pubspec.yaml)
+          echo "archive-name=$package_name-$package_version" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Compile executables
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
         run: |
           set -euo pipefail
           yq ".executables.[] | key" pubspec.yaml | while read executableName; do
+            echo "::group::Compiling $executableName"
             dartScript=$(yq ".executables.[\"$executableName\"] // \"$executableName\"" pubspec.yaml)
-            dart build cli -t "bin/$dartScript.dart" -o build
-            mv "build/bundle/bin/$dartScriptInstance of 'ExecutableSuffixProperty'" "build/bundle/bin/$executableNameInstance of 'ExecutableSuffixProperty'"
+            dart build cli -t "bin/$dartScript.dart" -o build/cli
+            if [[ "$executableName" != "$dartScript" ]]; then
+              echo ">> Renaming $dartScript to $executableName"
+              mv \
+                "build/cli/bundle/bin/$dartScript${{ matrix.executableSuffix }}" \
+                "build/cli/bundle/bin/$executableName${{ matrix.executableSuffix }}"
+            fi
+            echo "::endgroup::"
           done
+          echo '>> Renaming bundle directory to ${{ inputs.archivePrefix || steps.detect-archive-name.outputs.archive-name }}'
+          mv build/cli/bundle 'build/cli/${{ inputs.archivePrefix || steps.detect-archive-name.outputs.archive-name }}'
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Create release archive (tar)
@@ -150,16 +168,16 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p ../artifacts
-          tar -cavf '../artifacts/${{ inputs.archivePrefix }}-${{ matrix.platform }}.tar.xz' .
-        working-directory: ${{ inputs.workingDirectory }}/build/bundle
+          tar -cavf '../artifacts/${{ inputs.archivePrefix || steps.detect-archive-name.outputs.archive-name }}-${{ matrix.platform }}.tar.xz' .
+        working-directory: ${{ inputs.workingDirectory }}/build/cli
         shell: bash
       - name: Create release archive (zip)
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && matrix.archiveType == 'zip'
         run: |
           set -eo pipefail
           mkdir -p ../artifacts
-          7z a -y '../artifacts/${{ inputs.archivePrefix }}-${{ matrix.platform }}.zip' .
-        working-directory: ${{ inputs.workingDirectory }}/build/bundle
+          7z a -y '../artifacts/${{ inputs.archivePrefix || steps.detect-archive-name.outputs.archive-name }}-${{ matrix.platform }}.zip' .
+        working-directory: ${{ inputs.workingDirectory }}/build/cli
         shell: bash
       - name: Upload compiled binaries artifact
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))

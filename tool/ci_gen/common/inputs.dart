@@ -411,10 +411,10 @@ Example:
     input: Input(
       type: Type.string,
       required: false,
-      defaultValue: 'binaries',
       description:
-          'The prefix of the binary archive files that contain '
-          'the actual binaries. Will be suffixed with the platform name.',
+          'The prefix of the binary archive files that contain the actual '
+          'binaries. Will be suffixed with the platform name. If left empty, '
+          'it will fallback to "<package_name>-<package-version>".',
     ),
   );
 

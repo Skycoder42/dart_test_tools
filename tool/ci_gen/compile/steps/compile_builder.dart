@@ -7,6 +7,7 @@ import '../../common/steps/project_setup_builder.dart';
 import '../../common/tools.dart';
 import '../../dart/dart_platform.dart';
 import '../../types/expression.dart';
+import '../../types/id.dart';
 import '../../types/step.dart';
 
 enum ArchiveType {
@@ -55,6 +56,9 @@ final class ArchiveTypeMatrixProperty extends IMatrixProperty<DartPlatform> {
 }
 
 class CompileBuilder implements StepBuilder {
+  static const detectArchiveNameId = StepId('detect-archive-name');
+  static final archiveNameOutput = detectArchiveNameId.output('archive-name');
+
   final CompileConfig config;
   final PlatformMatrixProperty platform;
   final ExecutableSuffixProperty executableSuffix;
@@ -71,15 +75,38 @@ class CompileBuilder implements StepBuilder {
   Iterable<Step> build() => [
     ...ProjectSetupBuilder(config: config).build(),
     Step.run(
+      id: detectArchiveNameId,
+      name: 'Detect archive name',
+      ifExpression: config.archivePrefix.eq(.empty),
+      run:
+          '''
+set -euo pipefail
+package_name=\$(yq -r .name pubspec.yaml)
+package_version=\$(yq -r .version pubspec.yaml)
+${archiveNameOutput.bashSetter(r'$package_name-$package_version')}
+''',
+      workingDirectory: config.workingDirectory.toString(),
+      shell: 'bash',
+    ),
+    Step.run(
       name: 'Compile executables',
       run:
           '''
 set -euo pipefail
 yq ".executables.[] | key" pubspec.yaml | while read executableName; do
+  echo "::group::Compiling \$executableName"
   dartScript=\$(yq ".executables.[\\"\$executableName\\"] // \\"\$executableName\\"" pubspec.yaml)
-  dart build cli -t "bin/\$dartScript.dart" -o build
-  mv "build/bundle/bin/\$dartScript$executableSuffix" "build/bundle/bin/\$executableName$executableSuffix"
+  dart build cli -t "bin/\$dartScript.dart" -o build/cli
+  if [[ "\$executableName" != "\$dartScript" ]]; then
+    echo ">> Renaming \$dartScript to \$executableName"
+    mv \\
+      "build/cli/bundle/bin/\$dartScript${executableSuffix.expression}" \\
+      "build/cli/bundle/bin/\$executableName${executableSuffix.expression}"
+  fi
+  echo "::endgroup::"
 done
+echo '>> Renaming bundle directory to ${config.archivePrefix | archiveNameOutput.expression}'
+mv build/cli/bundle 'build/cli/${config.archivePrefix | archiveNameOutput.expression}'
 ''',
       workingDirectory: config.workingDirectory.toString(),
       shell: 'bash',
@@ -91,9 +118,9 @@ done
           '''
 set -euo pipefail
 mkdir -p ../artifacts
-tar -cavf '../artifacts/${config.archivePrefix}-${platform.expression}.tar.xz' .
+tar -cavf '../artifacts/${config.archivePrefix | archiveNameOutput.expression}-${platform.expression}.tar.xz' .
 ''',
-      workingDirectory: '${config.workingDirectory}/build/bundle',
+      workingDirectory: '${config.workingDirectory}/build/cli',
       shell: 'bash',
     ),
     Step.run(
@@ -103,9 +130,9 @@ tar -cavf '../artifacts/${config.archivePrefix}-${platform.expression}.tar.xz' .
           '''
 set -eo pipefail
 mkdir -p ../artifacts
-7z a -y '../artifacts/${config.archivePrefix}-${platform.expression}.zip' .
+7z a -y '../artifacts/${config.archivePrefix | archiveNameOutput.expression}-${platform.expression}.zip' .
 ''',
-      workingDirectory: '${config.workingDirectory}/build/bundle',
+      workingDirectory: '${config.workingDirectory}/build/cli',
       shell: 'bash',
     ),
     Step.uses(
