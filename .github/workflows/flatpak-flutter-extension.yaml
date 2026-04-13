@@ -91,7 +91,7 @@ jobs:
           path: bundles
           pattern: flatpak-bundle-*
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: flatpak-flutter-extension/${{ env.SDK_VERSION }}
           name: Flatpak Flutter Extension - ${{ env.SDK_VERSION }}
