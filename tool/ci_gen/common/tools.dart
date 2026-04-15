@@ -35,7 +35,7 @@ abstract class Tools {
   static const subositoFlutterAction = 'subosito/flutter-action@v2';
 
   /// https://github.com/softprops/action-gh-release/releases
-  static const softpropsActionGhRelease = 'softprops/action-gh-release@v2';
+  static const softpropsActionGhRelease = 'softprops/action-gh-release@v3';
 
   /// https://github.com/VeryGoodOpenSource/very_good_coverage/releases
   static const veryGoodOpenSourceVeryGoodCoverage =
