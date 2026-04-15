@@ -50,7 +50,7 @@ sealed class AurOptions with _$AurOptions {
     String? pkgname,
     int? epoch,
     @Default(1) int pkgrel,
-    @Default(defaultTagPrefix) String tagPrefix,
+    @Default(AurOptions.defaultTagPrefix) String tagPrefix,
     @Default('custom') String license,
     @Default([]) List<String> depends,
     String? sourcesDir,
