@@ -81,13 +81,20 @@ class PkgBuildGenerator {
     final backup =
         (makedebMode ? options.aurOptions.makedeb?.backup : null) ??
         options.aurOptions.backup;
-    final pkgBase = options.aurOptions.pkgname ?? options.pubspec.name;
+    final pkgName = options.aurOptions.pkgname ?? options.pubspec.name;
+    final tagPrefix = options.aurOptions.tagPrefix;
+    final pkgDirTagPrefix = tagPrefix == AurOptions.defaultTagPrefix
+        ? ''
+        : tagPrefix;
+    final pkgDir = '$pkgName-$pkgDirTagPrefix$version'.replaceAll(
+      RegExp(r'(?:\+|\/)'),
+      '-',
+    );
 
     final pkgBuild = Pkgbuild(
       maintainer: options.aurOptions.maintainer,
       properties: {
-        'pkgbase': PkgProperty(pkgBase),
-        'pkgname': PkgProperty.literalList([pkgBase, '$pkgBase-debug']),
+        'pkgname': PkgProperty(pkgName),
         'pkgdesc': PkgProperty(options.pubspec.description),
         'pkgver': PkgProperty(version.toString().replaceAll('-', '_')),
         'pkgrel': PkgProperty(options.aurOptions.pkgrel),
@@ -102,7 +109,7 @@ class PkgBuildGenerator {
         'source': _getSourceUrls(options),
         'b2sums': PkgProperty.literalList(
           List.filled(
-            3 + options.aurOptions.extraSources.length,
+            2 + options.aurOptions.extraSources.length,
             'PLACEHOLDER',
           ),
           multiLine: true,
@@ -116,16 +123,13 @@ class PkgBuildGenerator {
           // See https://github.com/makedeb/makedeb/blob/alpha/src/main.sh#L130
           'extensions': PkgProperty.literalList(const ['zipman']),
         if (options.aurOptions.sourcesDir case final String dir)
-          '_pkgdir': PkgProperty.interpolate(dir)
+          '_pkgdir': PkgProperty('$pkgDir/$dir')
         else
-          '_pkgdir': const PkgProperty.interpolate(r'$pkgbase-$pkgver'),
+          '_pkgdir': PkgProperty(pkgDir),
       },
       functions: {
-        'package_$pkgBase': PkgFunction(
+        'package_$pkgName': PkgFunction(
           _getInstallSteps(options, licenseFileName, makedebMode).toList(),
-        ),
-        'package_$pkgBase-debug': PkgFunction(
-          _getDebugInstallSteps(options, pkgBase).toList(),
         ),
       },
     );
@@ -134,40 +138,31 @@ class PkgBuildGenerator {
   }
 
   PkgProperty _getSourceUrls(PubspecWithAur options) {
-    final baseRepo = options.pubspec.repository ?? options.pubspec.homepage;
-    if (baseRepo == null) {
+    final baseRepoString =
+        options.pubspec.repository?.toString() ?? options.pubspec.homepage;
+    if (baseRepoString == null) {
       throw Exception('Either repository or homepage must be set!');
     }
-    final baseRepoString = baseRepo.toString();
-    final tagPrefix = Uri.encodeComponent(options.aurOptions.tagPrefix);
+    final baseRepo = Uri.parse(
+      baseRepoString.endsWith('/') ? baseRepoString : '$baseRepoString/',
+    );
 
-    final repoUri =
-        Uri.parse(
-          baseRepoString.endsWith('/') ? baseRepoString : '$baseRepoString/',
-        ).resolveUri(
-          Uri(
-            path:
-                'archive/refs/tags/$tagPrefix${options.pubspec.version}.tar.gz',
-          ),
-        );
+    const sourcesPrefix = r'${pkgname}-${pkgver}';
+    final encodedTag = Uri.encodeComponent(
+      options.aurOptions.tagPrefix + options.pubspec.version.toString(),
+    );
+    final encodedBinaries = Uri.encodeComponent(
+      '${options.archivePrefix}-linux.tar.xz',
+    );
 
-    final binariesBaseUri =
-        Uri.parse(
-          baseRepoString.endsWith('/') ? baseRepoString : '$baseRepoString/',
-        ).resolveUri(
-          Uri(path: 'releases/download/$tagPrefix${options.pubspec.version}/'),
-        );
+    final sourcesUri = baseRepo.resolve('archive/refs/tags/$encodedTag.tar.gz');
+    final binariesUri = baseRepo.resolveUri(
+      Uri(path: 'releases/download/$encodedTag/$encodedBinaries'),
+    );
 
     return PkgProperty.list(multiLine: true, [
-      PkgProperty.interpolate('sources.tar.gz::$repoUri'),
-      PkgProperty.interpolate(
-        // ignore: lines_longer_than_80_chars for readability
-        'bin.tar.xz::${binariesBaseUri.resolve('${options.aurOptions.binariesArchivePrefix}-linux.tar.xz')}',
-      ),
-      PkgProperty.interpolate(
-        // ignore: lines_longer_than_80_chars for readability
-        'debug.tar.xz::${binariesBaseUri.resolve('${options.aurOptions.binariesArchivePrefix}-linux-debug-symbols.tar.xz')}',
-      ),
+      PkgProperty.interpolate('$sourcesPrefix-sources.tar.gz::$sourcesUri'),
+      PkgProperty.interpolate('$sourcesPrefix-linux.tar.xz::$binariesUri'),
       for (final extraSource in options.aurOptions.extraSources)
         PkgProperty.interpolate('${extraSource.name}::${extraSource.url}'),
     ]);
@@ -182,13 +177,13 @@ class PkgBuildGenerator {
       throw Exception('Must define at least one executable!');
     }
 
+    yield r'install -d "$pkgdir/opt/$pkgname"';
+    yield 'cp -a \'${options.archivePrefix}/.\' "\$pkgdir/opt/\$pkgname/"';
+    yield r'install -d "$pkgdir/usr/bin"';
     yield* options.executables.entries.map(
       (entry) =>
-          // ignore: prefer_interpolation_to_compose_strings for readability
-          'install -D -m755 ' +
-          (options.executables.length > 1
-              ? "'bin/${entry.key}' "
-              : "'${entry.key}' ") +
+          'ln -s '
+          "\"/opt/\$pkgname/bin/\"'${entry.key}' "
           "\"\$pkgdir/usr/bin/\"'${entry.key}'",
     );
 
@@ -215,28 +210,5 @@ class PkgBuildGenerator {
           "'$licenseFileName' "
           "\"\$pkgdir/usr/share/licenses/\$pkgname/\"'$licenseFileName'";
     }
-  }
-
-  Iterable<String> _getDebugInstallSteps(
-    PubspecWithAur options,
-    String pkgBase,
-  ) sync* {
-    if (options.executables.isEmpty) {
-      throw Exception('Must define at least one executable!');
-    }
-
-    yield* options.executables.entries.map(
-      (entry) =>
-          // ignore: prefer_interpolation_to_compose_strings for readability
-          'install -D -m644 ' +
-          (options.executables.length > 1
-              ? "'debug/${entry.key}.sym' "
-              : "'${entry.key}.sym' ") +
-          "\"\$pkgdir/usr/lib/debug/usr/bin/\"'${entry.key}'.sym",
-    );
-
-    yield r'cd "$_pkgdir"';
-    yield 'find . -exec '
-        r'install -D -m644 "{}" "$pkgdir/usr/src/debug/$pkgbase/{}" \;';
   }
 }

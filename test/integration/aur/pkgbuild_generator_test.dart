@@ -49,7 +49,7 @@ void main() {
         if (!minimal) 'license': 'MIT',
         if (!minimal)
           'depends': const ['dependency-a', 'dependency-b', 'dependency-c'],
-        if (!minimal) 'sourcesDir': r'test-package-sources-$pkgver/my_app',
+        if (!minimal) 'sourcesDir': 'my_app',
         if (!minimal) 'binariesArchivePrefix': 'my-app',
         if (!minimal)
           'extraSources': const [
@@ -234,40 +234,33 @@ Matcher hasBaseName(String name) =>
 
 const _minimalPkgbuild = r'''
 # Maintainer: Maintainer <maintainer@maintain.org>
-pkgbase='test_package'
-pkgname=('test_package' 'test_package-debug')
+pkgname='test_package'
 pkgver='1.2.3_dev+5'
 pkgrel=1
 arch=('x86_64')
 url='https://example.com/home'
 license=('custom')
 depends=()
-source=("sources.tar.gz::https://example.com/home/archive/refs/tags/v1.2.3-dev+5.tar.gz"
-        "bin.tar.xz::https://example.com/home/releases/download/v1.2.3-dev+5/binaries-linux.tar.xz"
-        "debug.tar.xz::https://example.com/home/releases/download/v1.2.3-dev+5/binaries-linux-debug-symbols.tar.xz")
+source=("${pkgname}-${pkgver}-sources.tar.gz::https://example.com/home/archive/refs/tags/v1.2.3-dev%2B5.tar.gz"
+        "${pkgname}-${pkgver}-linux.tar.xz::https://example.com/home/releases/download/v1.2.3-dev%2B5/test_package-1.2.3-dev%2B5-linux.tar.xz")
 b2sums=('PLACEHOLDER'
-        'PLACEHOLDER'
         'PLACEHOLDER')
 options=('!strip')
-_pkgdir="$pkgbase-$pkgver"
+_pkgdir='test_package-1.2.3-dev-5'
 
 package_test_package() {
-  install -D -m755 'exe_1' "$pkgdir/usr/bin/"'exe_1'
+  install -d "$pkgdir/opt/$pkgname"
+  cp -a 'test_package-1.2.3-dev+5/.' "$pkgdir/opt/$pkgname/"
+  install -d "$pkgdir/usr/bin"
+  ln -s "/opt/$pkgname/bin/"'exe_1' "$pkgdir/usr/bin/"'exe_1'
   cd "$_pkgdir"
-}
-
-package_test_package-debug() {
-  install -D -m644 'exe_1.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe_1'.sym
-  cd "$_pkgdir"
-  find . -exec install -D -m644 "{}" "$pkgdir/usr/src/debug/$pkgbase/{}" \;
 }
 
 ''';
 
 const _fullPkgbuild = r'''
 # Maintainer: Maintainer <maintainer@maintain.org>
-pkgbase='custom_package'
-pkgname=('custom_package' 'custom_package-debug')
+pkgname='custom_package'
 pkgdesc='This is a test package.'
 pkgver='1.2.3_dev+5'
 pkgrel=3
@@ -276,23 +269,24 @@ arch=('x86_64')
 url='https://example.com/home'
 license=('MIT')
 depends=('dependency-a' 'dependency-b' 'dependency-c')
-source=("sources.tar.gz::https://example.com/home/git/archive/refs/tags/my-app%2Fv1.2.3-dev+5.tar.gz"
-        "bin.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux.tar.xz"
-        "debug.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux-debug-symbols.tar.xz"
+source=("${pkgname}-${pkgver}-sources.tar.gz::https://example.com/home/git/archive/refs/tags/my-app%2Fv1.2.3-dev%2B5.tar.gz"
+        "${pkgname}-${pkgver}-linux.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev%2B5/my-app-linux.tar.xz"
         "extra-source.tar.gz::https://example.com/extra/source.tar.gz")
 b2sums=('PLACEHOLDER'
-        'PLACEHOLDER'
         'PLACEHOLDER'
         'PLACEHOLDER')
 install='custom_package.install'
 changelog='CHANGELOG.md'
 backup=('etc/config.json')
 options=('!strip')
-_pkgdir="test-package-sources-$pkgver/my_app"
+_pkgdir='custom_package-my-app-v1.2.3-dev-5/my_app'
 
 package_custom_package() {
-  install -D -m755 'bin/exe_1' "$pkgdir/usr/bin/"'exe_1'
-  install -D -m755 'bin/exe-two' "$pkgdir/usr/bin/"'exe-two'
+  install -d "$pkgdir/opt/$pkgname"
+  cp -a 'my-app/.' "$pkgdir/opt/$pkgname/"
+  install -d "$pkgdir/usr/bin"
+  ln -s "/opt/$pkgname/bin/"'exe_1' "$pkgdir/usr/bin/"'exe_1'
+  ln -s "/opt/$pkgname/bin/"'exe-two' "$pkgdir/usr/bin/"'exe-two'
   cd "$_pkgdir"
   install -D -m644 'config/config.json' "$pkgdir/etc/config.json"
   install -D -m600 'data/database.db' "$pkgdir/usr/share/$pkgname/core.db"
@@ -305,52 +299,38 @@ package_custom_package() {
   install -D -m644 'LICENSE.txt' "$pkgdir/usr/share/licenses/$pkgname/"'LICENSE.txt'
 }
 
-package_custom_package-debug() {
-  install -D -m644 'debug/exe_1.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe_1'.sym
-  install -D -m644 'debug/exe-two.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe-two'.sym
-  cd "$_pkgdir"
-  find . -exec install -D -m644 "{}" "$pkgdir/usr/src/debug/$pkgbase/{}" \;
-}
-
 ''';
 
 const _minimalDebPkgbuild = r'''
 # Maintainer: Maintainer <maintainer@maintain.org>
-pkgbase='test_package'
-pkgname=('test_package' 'test_package-debug')
+pkgname='test_package'
 pkgver='1.2.3_dev+5'
 pkgrel=1
 arch=('amd64')
 url='https://example.com/home'
 license=('custom')
 depends=()
-source=("sources.tar.gz::https://example.com/home/archive/refs/tags/v1.2.3-dev+5.tar.gz"
-        "bin.tar.xz::https://example.com/home/releases/download/v1.2.3-dev+5/binaries-linux.tar.xz"
-        "debug.tar.xz::https://example.com/home/releases/download/v1.2.3-dev+5/binaries-linux-debug-symbols.tar.xz")
+source=("${pkgname}-${pkgver}-sources.tar.gz::https://example.com/home/archive/refs/tags/v1.2.3-dev%2B5.tar.gz"
+        "${pkgname}-${pkgver}-linux.tar.xz::https://example.com/home/releases/download/v1.2.3-dev%2B5/test_package-1.2.3-dev%2B5-linux.tar.xz")
 b2sums=('PLACEHOLDER'
-        'PLACEHOLDER'
         'PLACEHOLDER')
 options=('!strip')
 extensions=('zipman')
-_pkgdir="$pkgbase-$pkgver"
+_pkgdir='test_package-1.2.3-dev-5'
 
 package_test_package() {
-  install -D -m755 'exe_1' "$pkgdir/usr/bin/"'exe_1'
+  install -d "$pkgdir/opt/$pkgname"
+  cp -a 'test_package-1.2.3-dev+5/.' "$pkgdir/opt/$pkgname/"
+  install -d "$pkgdir/usr/bin"
+  ln -s "/opt/$pkgname/bin/"'exe_1' "$pkgdir/usr/bin/"'exe_1'
   cd "$_pkgdir"
-}
-
-package_test_package-debug() {
-  install -D -m644 'exe_1.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe_1'.sym
-  cd "$_pkgdir"
-  find . -exec install -D -m644 "{}" "$pkgdir/usr/src/debug/$pkgbase/{}" \;
 }
 
 ''';
 
 const _fullDebPkgbuild = r'''
 # Maintainer: Maintainer <maintainer@maintain.org>
-pkgbase='custom_package'
-pkgname=('custom_package' 'custom_package-debug')
+pkgname='custom_package'
 pkgdesc='This is a test package.'
 pkgver='1.2.3_dev+5'
 pkgrel=3
@@ -359,12 +339,10 @@ arch=('amd64')
 url='https://example.com/home'
 license=('MIT')
 depends=('dependency-x' 'dependency-y' 'dependency-z')
-source=("sources.tar.gz::https://example.com/home/git/archive/refs/tags/my-app%2Fv1.2.3-dev+5.tar.gz"
-        "bin.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux.tar.xz"
-        "debug.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev+5/my-app-linux-debug-symbols.tar.xz"
+source=("${pkgname}-${pkgver}-sources.tar.gz::https://example.com/home/git/archive/refs/tags/my-app%2Fv1.2.3-dev%2B5.tar.gz"
+        "${pkgname}-${pkgver}-linux.tar.xz::https://example.com/home/git/releases/download/my-app%2Fv1.2.3-dev%2B5/my-app-linux.tar.xz"
         "extra-source.tar.gz::https://example.com/extra/source.tar.gz")
 b2sums=('PLACEHOLDER'
-        'PLACEHOLDER'
         'PLACEHOLDER'
         'PLACEHOLDER')
 install='custom_package.install'
@@ -372,24 +350,20 @@ changelog='CHANGELOG.md'
 backup=('/etc/config.json')
 options=('!strip')
 extensions=('zipman')
-_pkgdir="test-package-sources-$pkgver/my_app"
+_pkgdir='custom_package-my-app-v1.2.3-dev-5/my_app'
 
 package_custom_package() {
-  install -D -m755 'bin/exe_1' "$pkgdir/usr/bin/"'exe_1'
-  install -D -m755 'bin/exe-two' "$pkgdir/usr/bin/"'exe-two'
+  install -d "$pkgdir/opt/$pkgname"
+  cp -a 'my-app/.' "$pkgdir/opt/$pkgname/"
+  install -d "$pkgdir/usr/bin"
+  ln -s "/opt/$pkgname/bin/"'exe_1' "$pkgdir/usr/bin/"'exe_1'
+  ln -s "/opt/$pkgname/bin/"'exe-two' "$pkgdir/usr/bin/"'exe-two'
   cd "$_pkgdir"
   install -D -m644 'config/deb.json' "$pkgdir/etc/config.json"
   pushd 'data/deb-data'
   find . -type f -exec install -D -m755 "{}" "$pkgdir/usr/share/$pkgname/base/{}" \;
   popd
   install -D -m644 'LICENSE.txt' "$pkgdir/usr/share/licenses/$pkgname/"'LICENSE.txt'
-}
-
-package_custom_package-debug() {
-  install -D -m644 'debug/exe_1.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe_1'.sym
-  install -D -m644 'debug/exe-two.sym' "$pkgdir/usr/lib/debug/usr/bin/"'exe-two'.sym
-  cd "$_pkgdir"
-  find . -exec install -D -m644 "{}" "$pkgdir/usr/src/debug/$pkgbase/{}" \;
 }
 
 ''';

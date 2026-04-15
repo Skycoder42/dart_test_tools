@@ -16,6 +16,11 @@ sealed class PubspecWithAur with _$PubspecWithAur {
     required AurOptions aurOptions,
     required Map<String, String?> executables,
   }) = _PubspecWithAur;
+
+  const PubspecWithAur._();
+
+  String get archivePrefix =>
+      aurOptions.binariesArchivePrefix ?? '${pubspec.name}-${pubspec.version}';
 }
 
 @internal
@@ -37,17 +42,19 @@ sealed class AurOptionsPubspecView with _$AurOptionsPubspecView {
 @internal
 @freezed
 sealed class AurOptions with _$AurOptions {
+  static const defaultTagPrefix = 'v';
+
   @JsonSerializable(anyMap: true, checked: true, disallowUnrecognizedKeys: true)
   const factory AurOptions({
     @JsonKey(required: true) required String maintainer,
     String? pkgname,
     int? epoch,
     @Default(1) int pkgrel,
-    @Default('v') String tagPrefix,
+    @Default(defaultTagPrefix) String tagPrefix,
     @Default('custom') String license,
     @Default([]) List<String> depends,
     String? sourcesDir,
-    @Default('binaries') String binariesArchivePrefix,
+    String? binariesArchivePrefix,
     @Default([]) List<Source> extraSources,
     String? install,
     @Default([]) List<InstallTarget> files,
