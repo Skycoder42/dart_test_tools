@@ -27,9 +27,11 @@ class PrepareArchBuilder implements StepBuilder {
       name: 'Install powershell',
       run: '''
 set -euo pipefail
+useradd --no-create-home --shell=/bin/false build
 git clone https://aur.archlinux.org/powershell-bin.git
+chown -R build powershell-bin
 cd powershell-bin
-su nobody -c makepkg -f
+su - build makepkg -f
 pacman -U *.pkg.tar.*
 ''',
       workingDirectory: Runner.temp.toString(),
