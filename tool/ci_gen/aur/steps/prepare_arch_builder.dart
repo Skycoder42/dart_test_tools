@@ -29,7 +29,8 @@ class PrepareArchBuilder implements StepBuilder {
 set -euo pipefail
 git clone https://aur.archlinux.org/powershell-bin.git
 cd powershell-bin
-makepkg -sif
+su nobody -c makepkg -f
+pacman -U *.pkg.tar.*
 ''',
       workingDirectory: Runner.temp.toString(),
     ),

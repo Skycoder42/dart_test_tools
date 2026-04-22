@@ -25,7 +25,8 @@ jobs:
           set -euo pipefail
           git clone https://aur.archlinux.org/powershell-bin.git
           cd powershell-bin
-          makepkg -sif
+          su nobody -c makepkg -f
+          pacman -U *.pkg.tar.*
         working-directory: ${{ runner.temp }}
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         uses: dart-lang/setup-dart@v1
