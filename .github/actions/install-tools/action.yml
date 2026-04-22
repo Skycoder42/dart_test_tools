@@ -7,20 +7,22 @@ inputs:
     description: Also install dart_test_tools as global dart tool.
 runs:
   steps:
-    - id: setup-dart-install
-      name: Setup dart install path
+    - name: Setup dart install path
+      if: runner.os != 'Windows'
+      run: |
+        set -euo pipefail
+        dataHomePath="$RUNNER_TOOL_CACHE/dart"
+        echo "DART_DATA_HOME=$dataHomePath" >> $GITHUB_ENV
+        echo "$dataHomePath/install/bin" >> $GITHUB_PATH
+      shell: bash
+    - name: Setup dart install path
+      if: runner.os == 'Windows'
       run: |
         $ErrorActionPreference = "Stop"
         $dataHomePath = Join-Path $env:RUNNER_TOOL_CACHE "dart"
         Add-Content -Path $Env:GITHUB_ENV -Value "DART_DATA_HOME=$dataHomePath"
         Add-Content -Path $Env:GITHUB_PATH -Value (Join-Path $dataHomePath "install" "bin")
-        Add-Content -Path $Env:GITHUB_OUTPUT -Value "dart-version=$(Get-Content (Join-Path (Split-Path (Split-Path (Get-Command dart).Source)) "version"))"
       shell: pwsh
-    - name: Cache dart install tools
-      uses: actions/cache@v5
-      with:
-        key: dart_tools-${{ runner.os }}-${{ steps.setup-dart-install.outputs.dart-version }}
-        path: ${{ runner.tool_cache }}/dart/install
     - name: Install scoop
       if: runner.os == 'Windows'
       run: |

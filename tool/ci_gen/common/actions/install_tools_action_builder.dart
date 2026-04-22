@@ -8,7 +8,6 @@ import '../api/action_builder.dart';
 import '../api/workflow_input.dart';
 import '../contexts.dart';
 import '../globals.dart';
-import '../tools.dart';
 
 class InstallToolsActionBuilder implements ActionBuilder {
   static const _actionName = 'install-tools';
@@ -46,34 +45,32 @@ class InstallToolsActionBuilder implements ActionBuilder {
     final inputContext = WorkflowInputContext();
     final withDartTestTools = inputContext(_withDartTestToolsInput);
 
-    const setupDartInstallId = StepId('setup-dart-install');
-    final dartVersionOutput = setupDartInstallId.output('dart-version');
-
     return Action(
       name: 'Install tools',
       description: 'Installs required operating system tools',
       inputs: inputContext.createInputs(),
       runs: ActionsRuns.composite([
         Step.run(
-          id: setupDartInstallId,
           name: 'Setup dart install path',
-          shell: 'pwsh',
-          run:
-              '''
-\$ErrorActionPreference = "Stop"
-\$dataHomePath = Join-Path \$env:RUNNER_TOOL_CACHE "dart"
-Add-Content -Path \$Env:GITHUB_ENV -Value "DART_DATA_HOME=\$dataHomePath"
-Add-Content -Path \$Env:GITHUB_PATH -Value (Join-Path \$dataHomePath "install" "bin")
-${dartVersionOutput.pwshSetter('Get-Content (Join-Path (Split-Path (Split-Path (Get-Command dart).Source)) "version")', isCommand: true)}
+          ifExpression: Runner.os.ne(const Expression.literal('Windows')),
+          shell: 'bash',
+          run: r'''
+set -euo pipefail
+dataHomePath="$RUNNER_TOOL_CACHE/dart"
+echo "DART_DATA_HOME=$dataHomePath" >> $GITHUB_ENV
+echo "$dataHomePath/install/bin" >> $GITHUB_PATH
 ''',
         ),
-        Step.uses(
-          name: 'Cache dart install tools',
-          uses: Tools.actionsCache,
-          withArgs: {
-            'key': 'dart_tools-${Runner.os}-${dartVersionOutput.expression}',
-            'path': '${Runner.toolCache}/dart/install',
-          },
+        Step.run(
+          name: 'Setup dart install path',
+          ifExpression: Runner.os.eq(const Expression.literal('Windows')),
+          shell: 'pwsh',
+          run: r'''
+$ErrorActionPreference = "Stop"
+$dataHomePath = Join-Path $env:RUNNER_TOOL_CACHE "dart"
+Add-Content -Path $Env:GITHUB_ENV -Value "DART_DATA_HOME=$dataHomePath"
+Add-Content -Path $Env:GITHUB_PATH -Value (Join-Path $dataHomePath "install" "bin")
+''',
         ),
         Step.run(
           name: 'Install scoop',

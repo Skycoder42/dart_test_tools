@@ -20,16 +20,6 @@ jobs:
     steps:
       - name: Install pacman dependencies
         run: pacman -Syu --noconfirm git openssh go-yq pacman-contrib namcap unzip base-devel
-      - name: Install powershell
-        run: |
-          set -euo pipefail
-          useradd --no-create-home --shell=/bin/false build
-          git clone https://aur.archlinux.org/powershell-bin.git
-          chown -R build powershell-bin
-          cd powershell-bin
-          su - build makepkg -f
-          pacman -U *.pkg.tar.*
-        working-directory: ${{ runner.temp }}
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         uses: dart-lang/setup-dart@v1
         with:
