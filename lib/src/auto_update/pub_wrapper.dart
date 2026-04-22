@@ -84,9 +84,6 @@ class PubWrapper {
   Future<Workspaces> workspaceList() async =>
       await _execJson('workspace', ['list']).map(Workspaces.fromJson).single;
 
-  Future<void> globalRun(String name, [List<String> args = const []]) async =>
-      await _exec('global', ['run', name, ...args]);
-
   Future<void> _exec(String command, [List<String> args = const []]) =>
       Github.exec(
         _executable,

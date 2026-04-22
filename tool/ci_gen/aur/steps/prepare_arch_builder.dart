@@ -1,6 +1,7 @@
 import '../../common/actions/install_tools_action_builder.dart';
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/contexts.dart';
 import '../../common/inputs.dart';
 import '../../dart/steps/dart_sdk_builder.dart';
 import '../../types/step.dart';
@@ -20,7 +21,17 @@ class PrepareArchBuilder implements StepBuilder {
       name: 'Install pacman dependencies',
       run:
           'pacman -Syu --noconfirm '
-          'git openssh go-yq pacman-contrib namcap unzip',
+          'git openssh go-yq pacman-contrib namcap unzip base-devel',
+    ),
+    Step.run(
+      name: 'Install powershell',
+      run: '''
+set -euo pipefail
+git clone https://aur.archlinux.org/powershell-bin.git
+cd powershell-bin
+makepkg -sif
+''',
+      workingDirectory: Runner.temp.toString(),
     ),
     ...DartSdkBuilder(dartSdkVersion: config.dartSdkVersion).build(),
     InstallToolsActionBuilder.step(withDartTestTools: true),

@@ -87,7 +87,7 @@ class Updater {
     Github.logInfo(message);
 
     if (pubspec.workspace case null || [] when bumpVersion) {
-      await pub.globalRun('dart_test_tools:cider', [
+      await Github.exec('cider', [
         'log',
         'changed',
         'Updated min $sdk version to $constraint',
@@ -141,8 +141,8 @@ class Updater {
       }
 
       Github.logInfo('Bumping patch version of $name');
-      await pub.globalRun('dart_test_tools:cider', ['bump', 'patch']);
-      await pub.globalRun('dart_test_tools:cider', ['version-sync']);
+      await Github.exec('cider', ['bump', 'patch']);
+      await Github.exec('cider', ['version-sync']);
     });
   }
 
@@ -157,12 +157,8 @@ class Updater {
       }
 
       Github.logInfo('Creating update for $name');
-      await pub.globalRun('dart_test_tools:cider', [
-        'log',
-        'changed',
-        'Updated dependencies',
-      ]);
-      await pub.globalRun('dart_test_tools:cider', ['release']);
+      await Github.exec('cider', ['log', 'changed', 'Updated dependencies']);
+      await Github.exec('cider', ['release']);
     });
   }
 }
