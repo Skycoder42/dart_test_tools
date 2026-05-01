@@ -108,7 +108,7 @@ class _DescriptionVisitor extends NodeVisitor {
     final newElement = XmlElement.tag(
       element.tag,
       attributes: element.attributes.entries.map(
-        (e) => XmlAttribute(XmlName.fromString(e.key), e.value),
+        (e) => XmlAttribute(XmlName.qualified(e.key), e.value),
       ),
     );
     _currentElement.children.add(newElement);
