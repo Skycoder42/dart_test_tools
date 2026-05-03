@@ -1,22 +1,24 @@
 exports:
-  - name: 'aur'
+  - name: aur
     exports: src/aur/**.dart
-  - name: 'builders'
+  - name: builders
     exports: src/builders/**.dart
-  - name: 'cider'
+  - name: cider
     exports: src/cider/**.dart
-  - name: 'test'
+  - name: code_gen
+    exports: src/code_gen/**.dart
+  - name: test
     exports:
       - src/test/**.dart
-      - '!**.js.dart'
+      - "!**.js.dart"
       - uri: src/test/test_env.dart
         if:
           dart.library.js: src/test/test_env.js.dart
-  - name: 'tools'
+  - name: tools
     exports: src/tools/**.dart
-  - name: ''
+  - name: ""
     exports:
-      - '*.dart'
-      - '!dart_test_tools.dart'
-      - '!main.dart'
-      - '!builders.dart'
+      - "*.dart"
+      - "!dart_test_tools.dart"
+      - "!main.dart"
+      - "!builders.dart"
