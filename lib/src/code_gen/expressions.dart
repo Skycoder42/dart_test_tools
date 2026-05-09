@@ -65,17 +65,17 @@ extension RevivableX on Revivable {
 extension ExecutableElementExpressionX on ExecutableElement {
   Expression toExpression() => switch (this) {
     ConstructorElement(isDefaultConstructor: true, :final enclosingElement) =>
-      enclosingElement.toTypeReference(),
+      enclosingElement.toReference(),
     ConstructorElement(
       isDefaultConstructor: false,
       :final enclosingElement,
       :final name?,
     ) =>
-      enclosingElement.toTypeReference().property(name),
+      enclosingElement.toReference().property(name),
     MethodElement(:final enclosingElement?, :final name?) =>
-      enclosingElement.toTypeReference().property(name),
+      enclosingElement.toReference().property(name),
     PropertyAccessorElement(:final enclosingElement, :final name?) =>
-      enclosingElement.toTypeReference().property(name),
+      enclosingElement.toReference().property(name),
     ExecutableElement(:final name?) => refer(name),
     _ => throw InvalidGenerationSourceError(
       'Unsupported function type',

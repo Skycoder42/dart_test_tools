@@ -5,44 +5,72 @@ import 'package:code_builder/code_builder.dart' as cb;
 import 'package:source_helper/source_helper.dart';
 
 extension DartTypeCodeGenX on DartType {
-  Reference toTypeReference({
-    bool ignoreTypeArguments = false,
-    bool? nullable,
-  }) => switch (this) {
-    DynamicType() => CoreTypes.$dynamic,
-    VoidType() => CoreTypes.$void,
-    DartType(isDartCoreNull: true) => CoreTypes.$Null,
-    final RecordType r => cb.RecordType(
-      (b) => b
-        ..isNullable = nullable ?? r.isNullableType
-        ..positionalFieldTypes.addAll([
-          for (final field in r.positionalFields) field.type.toTypeReference(),
-        ])
-        ..namedFieldTypes.addAll({
-          for (final field in r.namedFields)
-            field.name: field.type.toTypeReference(),
-        }),
-    ),
-    DartType(:final element?) => TypeReference((b) {
-      b
-        ..symbol = element.name
-        ..url = element.library?.uri.toString()
-        ..isNullable = nullable ?? isNullableType;
+  Reference toReference({bool ignoreTypeArguments = false, bool? nullable}) =>
+      switch (this) {
+        DynamicType() => CoreTypes.$dynamic,
+        VoidType() => CoreTypes.$void,
+        DartType(isDartCoreNull: true) => CoreTypes.$Null,
+        final RecordType r => cb.RecordType(
+          (b) => b
+            ..isNullable = nullable ?? r.isNullableType
+            ..positionalFieldTypes.addAll([
+              for (final field in r.positionalFields) field.type.toReference(),
+            ])
+            ..namedFieldTypes.addAll({
+              for (final field in r.namedFields)
+                field.name: field.type.toReference(),
+            }),
+        ),
+        final FunctionType f => cb.FunctionType(
+          (b) => b
+            ..isNullable = nullable ?? f.isNullableType
+            ..types.addAll(f.typeImplementations.map((t) => t.toReference()))
+            ..returnType = f.returnType.toReference()
+            ..requiredParameters.addAll(
+              f.formalParameters
+                  .where((p) => p.isRequiredPositional)
+                  .map((p) => p.type.toReference()),
+            )
+            ..optionalParameters.addAll(
+              f.formalParameters
+                  .where((p) => p.isOptionalPositional)
+                  .map((p) => p.type.toReference()),
+            )
+            ..namedRequiredParameters.addAll(
+              Map.fromEntries(
+                f.formalParameters
+                    .where((p) => p.isRequiredNamed)
+                    .map((p) => MapEntry(p.name!, p.type.toReference())),
+              ),
+            )
+            ..namedParameters.addAll(
+              Map.fromEntries(
+                f.formalParameters
+                    .where((p) => p.isOptionalNamed)
+                    .map((p) => MapEntry(p.name!, p.type.toReference())),
+              ),
+            ),
+        ),
+        DartType(:final element?) => TypeReference((b) {
+          b
+            ..symbol = element.name
+            ..url = element.library?.uri.toString()
+            ..isNullable = nullable ?? isNullableType;
 
-      if (this case ParameterizedType(
-        :final typeArguments,
-      ) when !ignoreTypeArguments) {
-        b.types.addAll(typeArguments.map((t) => t.toTypeReference()));
-      }
-    }),
-    _ => throw UnsupportedError(
-      'Unable to convert type "$this" to a TypeReference',
-    ),
-  };
+          if (this case ParameterizedType(
+            :final typeArguments,
+          ) when !ignoreTypeArguments) {
+            b.types.addAll(typeArguments.map((t) => t.toReference()));
+          }
+        }),
+        _ => throw UnsupportedError(
+          'Unable to convert type "$this" to a TypeReference',
+        ),
+      };
 }
 
 extension ElementCodeGenX on Element {
-  TypeReference toTypeReference({
+  TypeReference toReference({
     bool ignoreTypeArguments = false,
     bool nullable = false,
   }) => TypeReference((b) {
@@ -52,24 +80,38 @@ extension ElementCodeGenX on Element {
       ..isNullable = nullable;
 
     if (this case TypeParameterElement(:final bound?)) {
-      b.bound = bound.toTypeReference();
+      b.bound = bound.toReference();
     }
 
     if (this case TypeParameterizedElement(
       :final typeParameters,
     ) when !ignoreTypeArguments) {
-      b.types.addAll(typeParameters.map((t) => t.toTypeReference()));
+      b.types.addAll(typeParameters.map((t) => t.toReference()));
     }
   });
 }
 
-extension TypesReferenceX on TypeReference {
+extension ReferenceX on Reference {
   // ignore: avoid_positional_boolean_parameters for single parameter
-  TypeReference asNullable(bool isNullable) => TypeReference(
-    (b) => b
-      ..replace(this)
-      ..isNullable = isNullable,
-  );
+  Reference asNullable(bool isNullable) => switch (type) {
+    TypeReference(symbol: 'void' || 'dynamic') => this,
+    final TypeReference ref => TypeReference(
+      (b) => b
+        ..replace(ref)
+        ..isNullable = isNullable,
+    ),
+    final cb.RecordType rec => cb.RecordType(
+      (b) => b
+        ..replace(rec)
+        ..isNullable = isNullable,
+    ),
+    final cb.FunctionType rec => cb.FunctionType(
+      (b) => b
+        ..replace(rec)
+        ..isNullable = isNullable,
+    ),
+    _ => throw UnsupportedError('Cannot change nullability of $runtimeType'),
+  };
 }
 
 sealed class CoreTypes {
@@ -350,105 +392,100 @@ sealed class CoreTypes {
       ..url = 'dart:core',
   );
 
-  static TypeReference $Comparable([TypeReference? type]) => TypeReference((b) {
+  static TypeReference $Comparable([Reference? type]) => TypeReference((b) {
     b
       ..symbol = 'Comparable'
       ..url = 'dart:core'
       ..types.addAll([?type]);
   });
 
-  static TypeReference $Comparator([TypeReference? type]) => TypeReference((b) {
+  static TypeReference $Comparator([Reference? type]) => TypeReference((b) {
     b
       ..symbol = 'Comparator'
       ..url = 'dart:core'
       ..types.addAll([?type]);
   });
 
-  static TypeReference $Iterable([TypeReference? type]) => TypeReference((b) {
+  static TypeReference $Iterable([Reference? type]) => TypeReference((b) {
     b
       ..symbol = 'Iterable'
       ..url = 'dart:core'
       ..types.addAll([?type]);
   });
 
-  static TypeReference $Iterator([TypeReference? type]) => TypeReference((b) {
+  static TypeReference $Iterator([Reference? type]) => TypeReference((b) {
     b
       ..symbol = 'Iterator'
       ..url = 'dart:core'
       ..types.addAll([?type]);
   });
 
-  static TypeReference $List([TypeReference? type]) => TypeReference((b) {
+  static TypeReference $List([Reference? type]) => TypeReference((b) {
     b
       ..symbol = 'List'
       ..url = 'dart:core'
       ..types.addAll([?type]);
   });
 
-  static TypeReference $Set([TypeReference? type]) => TypeReference((b) {
+  static TypeReference $Set([Reference? type]) => TypeReference((b) {
     b
       ..symbol = 'Set'
       ..url = 'dart:core'
       ..types.addAll([?type]);
   });
 
-  static TypeReference $Map({
-    TypeReference? keyType,
-    TypeReference? valueType,
-  }) => TypeReference((b) {
-    b
-      ..symbol = 'Map'
-      ..url = 'dart:core'
-      ..types.addAll(_validateTypes(keyType, valueType));
-  });
+  static TypeReference $Map({Reference? keyType, Reference? valueType}) =>
+      TypeReference((b) {
+        b
+          ..symbol = 'Map'
+          ..url = 'dart:core'
+          ..types.addAll(_validateTypes(keyType, valueType));
+      });
 
-  static TypeReference $MapEntry({
-    TypeReference? keyType,
-    TypeReference? valueType,
-  }) => TypeReference((b) {
-    b
-      ..symbol = 'MapEntry'
-      ..url = 'dart:core'
-      ..types.addAll(_validateTypes(keyType, valueType));
-  });
+  static TypeReference $MapEntry({Reference? keyType, Reference? valueType}) =>
+      TypeReference((b) {
+        b
+          ..symbol = 'MapEntry'
+          ..url = 'dart:core'
+          ..types.addAll(_validateTypes(keyType, valueType));
+      });
 
-  static TypeReference $Sink([TypeReference? type]) => TypeReference((b) {
+  static TypeReference $Sink([Reference? type]) => TypeReference((b) {
     b
       ..symbol = 'Sink'
       ..url = 'dart:core'
       ..types.addAll([?type]);
   });
 
-  static TypeReference $WeakReference([TypeReference? type]) =>
-      TypeReference((b) {
-        b
-          ..symbol = 'WeakReference'
-          ..url = 'dart:core'
-          ..types.addAll([?type]);
-      });
+  static TypeReference $WeakReference([Reference? type]) => TypeReference((b) {
+    b
+      ..symbol = 'WeakReference'
+      ..url = 'dart:core'
+      ..types.addAll([?type]);
+  });
 
-  static TypeReference $Expando([TypeReference? type]) => TypeReference((b) {
+  static TypeReference $Expando([Reference? type]) => TypeReference((b) {
     b
       ..symbol = 'Expando'
       ..url = 'dart:core'
       ..types.addAll([?type]);
   });
 
-  static TypeReference $Finalizer([TypeReference? type]) => TypeReference((b) {
+  static TypeReference $Finalizer([Reference? type]) => TypeReference((b) {
     b
       ..symbol = 'Finalizer'
       ..url = 'dart:core'
       ..types.addAll([?type]);
   });
 
-  static TypeReference $Future([TypeReference? type]) => TypeReference((b) {
+  static TypeReference $Future([Reference? type]) => TypeReference((b) {
     b
       ..symbol = 'Future'
       ..url = 'dart:core'
       ..types.addAll([?type]);
   });
 
-  static TypeReference $Stream([TypeReference? type]) => TypeReference((b) {
+  static TypeReference $Stream([Reference? type]) => TypeReference((b) {
     b
       ..symbol = 'Stream'
       ..url = 'dart:core'
@@ -456,8 +493,8 @@ sealed class CoreTypes {
   });
 
   static TypeReference $ParallelWaitError({
-    TypeReference? keyType,
-    TypeReference? valueType,
+    Reference? keyType,
+    Reference? valueType,
   }) => TypeReference((b) {
     b
       ..symbol = 'ParallelWaitError'
@@ -466,9 +503,9 @@ sealed class CoreTypes {
   });
 
   // helpers
-  static Iterable<TypeReference> _validateTypes(
-    TypeReference? type1,
-    TypeReference? type2,
+  static Iterable<Reference> _validateTypes(
+    Reference? type1,
+    Reference? type2,
   ) sync* {
     var hasType = false;
     for (final type in [type1, type2]) {
