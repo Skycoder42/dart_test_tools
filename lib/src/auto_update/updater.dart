@@ -87,7 +87,7 @@ class Updater {
     Github.logInfo(message);
 
     if (pubspec.workspace case null || [] when bumpVersion) {
-      await Github.exec('cider', [
+      await pub.cider([
         'log',
         'changed',
         'Updated min $sdk version to $constraint',
@@ -141,8 +141,8 @@ class Updater {
       }
 
       Github.logInfo('Bumping patch version of $name');
-      await Github.exec('cider', ['bump', 'patch']);
-      await Github.exec('cider', ['version-sync']);
+      await pub.cider(const ['bump', 'patch']);
+      await pub.cider(const ['version-sync']);
     });
   }
 
@@ -157,8 +157,8 @@ class Updater {
       }
 
       Github.logInfo('Creating update for $name');
-      await Github.exec('cider', ['log', 'changed', 'Updated dependencies']);
-      await Github.exec('cider', ['release']);
+      await pub.cider(const ['log', 'changed', 'Updated dependencies']);
+      await pub.cider(const ['release']);
     });
   }
 }

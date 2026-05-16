@@ -64,9 +64,9 @@ void main(List<String> args) => Github.runZoned(() async {
         : Github.env.githubWorkspace;
 
     switch (mode) {
-      case UpdateMode.check:
+      case .check:
         await const UpdateChecker()(target);
-      case UpdateMode.update:
+      case .update:
         await Updater(
           flutterCompat: options['flutter-compat'] as bool,
           bumpVersion: options['bump-version'] as bool,

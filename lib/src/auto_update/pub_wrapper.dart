@@ -84,6 +84,13 @@ class PubWrapper {
   Future<Workspaces> workspaceList() async =>
       await _execJson('workspace', ['list']).map(Workspaces.fromJson).single;
 
+  Future<void> cider(List<String> commands) => Github.exec(
+    'cider',
+    commands,
+    workingDirectory: workingDirectory,
+    runInShell: Platform.isWindows,
+  );
+
   Future<void> _exec(String command, [List<String> args = const []]) =>
       Github.exec(
         _executable,
