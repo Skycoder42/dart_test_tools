@@ -1,0 +1,87 @@
+on:
+  workflow_call:
+    inputs:
+      dartSdkVersion:
+        type: string
+        required: false
+        default: stable
+        description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
+      workingDirectory:
+        type: string
+        required: false
+        default: .
+        description: The root directory of the dart package to build and test.
+      buildDependencies:
+        type: string
+        required: false
+        description: A spaces separated list of other packages within this workspace that make use of build_runner and need to be built before this package.
+      buildRunner:
+        type: boolean
+        required: false
+        default: false
+        description: Specify whether build_runner is used in the project (defaults to false).
+      buildRunnerArgs:
+        type: string
+        required: false
+        description: Optional additional arguments to be passed to the build runner.
+      validationWorkflow:
+        type: string
+        required: true
+        description: The name or id of the workflow that must be run and succeed for the pull request to be able to merge.
+jobs:
+  update-actions:
+    name: Update GitHub Action versions
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
+        with:
+          sdk: ${{ inputs.dartSdkVersion }}
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+      - name: Restore dart packages
+        run: dart pub get
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Run build_runner for workspace dependencies
+        if: inputs.buildDependencies != ''
+        run: |
+          set -euo pipefail
+          for package in ${{ inputs.buildDependencies }}; do
+            echo ">> Running build_runner for $package"
+            path=$(
+              dart pub workspace list --json \
+                | jq -r \
+                  --arg package "$package" \
+                  '.packages[] | select(.name == $package) | .path'
+            )
+            cd "$path"
+            dart run build_runner build --delete-conflicting-outputs
+          done
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Create build files
+        if: inputs.buildRunner
+        run: dart run build_runner build ${{ inputs.buildRunnerArgs }}
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Update action version pins
+        run: dart run tool/ci_update_actions.dart
+      - name: Regenerate CI workflows
+        run: dart run tool/ci_gen.dart
+      - id: detect_changes
+        name: Detect changes
+        run: git diff --quiet && echo "has_changes=false" >> $GITHUB_OUTPUT || echo "has_changes=true" >> $GITHUB_OUTPUT
+      - name: Create validated pull request
+        if: steps.detect_changes.outputs.has_changes == 'true'
+        uses: Skycoder42/dart_test_tools/.github/actions/create-validated-pr@main
+        with:
+          prBranchName: update-actions
+          prCommitMessage: Update GitHub Action versions
+          prBody: Automated update of GitHub Action version pins and regenerated CI YAML.
+          validationWorkflow: ${{ inputs.validationWorkflow }}

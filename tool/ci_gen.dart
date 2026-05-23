@@ -25,6 +25,7 @@ import 'ci_gen/flutter/flutter_workflow.dart';
 import 'ci_gen/package/package_workflow.dart';
 import 'ci_gen/publish/publish_workflow.dart';
 import 'ci_gen/release/release_workflow.dart';
+import 'ci_gen/update_actions/update_actions_workflow.dart';
 
 Future<void> main() async {
   await Tools.setup();
@@ -51,6 +52,7 @@ Future<void> main() async {
     BuildWindowsWorkflow(),
     BuildWebWorkflow(),
     AutoUpdateWorkflow(),
+    UpdateActionsWorkflow(),
   ];
 
   for (final action in actions) {

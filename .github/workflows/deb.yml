@@ -86,6 +86,6 @@ jobs:
       - name: Upload debian package to packagecloud
         env:
           PACKAGECLOUD_TOKEN: ${{ secrets.packagecloudToken }}
-        uses: lpenz/ghaction-packagecloud@52cbd7c905fe97d5e01051ae1a5613be1943f7ff
+        uses: lpenz/ghaction-packagecloud@06503e2345ef4716a75a7f6557cc5caed158d947
         with:
           repository: ${{ inputs.packagecloudRepository }}/${{ matrix.code-name }}

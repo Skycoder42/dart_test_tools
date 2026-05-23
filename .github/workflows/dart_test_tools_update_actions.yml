@@ -1,0 +1,18 @@
+name: Update GitHub Actions
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "10 1 * * 1"
+
+jobs:
+  ci:
+    name: Update Actions
+    uses: Skycoder42/dart_test_tools/.github/workflows/update-actions.yml@main
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    with:
+      buildRunner: true
+      validationWorkflow: dart_test_tools_ci.yml
