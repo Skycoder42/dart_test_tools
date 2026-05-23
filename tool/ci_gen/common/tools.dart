@@ -60,7 +60,7 @@ abstract class Tools {
 
   /// https://github.com/apple-actions/import-codesign-certs/releases
   static const appleActionsImportCodesignCerts =
-      'apple-actions/import-codesign-certs@v6';
+      'apple-actions/import-codesign-certs@v7';
 
   /// https://github.com/google-github-actions/auth/releases
   static const googleGithubActionsAuth = 'google-github-actions/auth@v3';
@@ -78,5 +78,5 @@ abstract class Tools {
       'thollander/actions-comment-pull-request@v3';
 
   /// https://github.com/benc-uk/workflow-dispatch/releases
-  static const bencUkWorkflowDispatch = 'benc-uk/workflow-dispatch@v1.3.1';
+  static const bencUkWorkflowDispatch = 'benc-uk/workflow-dispatch@v1.3.2';
 }

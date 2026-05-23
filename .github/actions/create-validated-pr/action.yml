@@ -38,7 +38,7 @@ runs:
         body-path: ${{ case(inputs.prBodyIsPath == 'true', inputs.prBody, null) }}
         assignees: ${{ github.repository_owner }}
     - name: Manually validate pull request
-      uses: benc-uk/workflow-dispatch@v1.3.1
+      uses: benc-uk/workflow-dispatch@v1.3.2
       with:
         workflow: ${{ inputs.validationWorkflow }}
         ref: refs/heads/${{ steps.create-pull-request.outputs.pull-request-branch }}

@@ -41,6 +41,6 @@ runs:
       shell: bash
     - name: Install dart_test_tools
       if: inputs.withDartTestTools == 'true'
-      run: dart install dart_test_tools ^7.1.1
+      run: dart install dart_test_tools ^7.2.2
       shell: bash
   using: composite
