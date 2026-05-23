@@ -111,7 +111,7 @@ jobs:
           target_commitish: ${{ github.sha }}
       - name: Trigger deployment
         if: steps.version.outputs.update == 'true'
-        uses: benc-uk/workflow-dispatch@v1.3.1
+        uses: benc-uk/workflow-dispatch@v1.3.2
         with:
           workflow: ${{ inputs.publishWorkflow }}
           ref: refs/tags/${{ inputs.tagPrefix }}${{ steps.version.outputs.version }}
