@@ -75,50 +75,45 @@ abstract class Tools {
   /// https://github.com/benc-uk/workflow-dispatch/releases
   static late final String bencUkWorkflowDispatch;
 
+  // Keys are the action spec strings read by tool/ci_update_actions.dart.
+  static final toolSpecs = <String, void Function(String)>{
+    'actions/checkout@v6': (t) => actionsCheckout = t,
+    'actions/upload-artifact@v7': (t) => actionsUploadArtifact = t,
+    'actions/download-artifact@v8': (t) => actionsDownloadArtifact = t,
+    'actions/cache@v5': (t) => actionsCache = t,
+    'actions/setup-java@v5': (t) => actionsSetupJava = t,
+    'dart-lang/setup-dart@v1': (t) => dartLangSetupDart = t,
+    'docker/setup-qemu-action@v4': (t) => dockerSetupQemuAction = t,
+    'docker/setup-buildx-action@v4': (t) => dockerSetupBuildxAction = t,
+    'docker/login-action@v4': (t) => dockerLoginAction = t,
+    'docker/build-push-action@v7': (t) => dockerBuildAndPushAction = t,
+    'subosito/flutter-action@v2': (t) => subositoFlutterAction = t,
+    'softprops/action-gh-release@v3': (t) => softpropsActionGhRelease = t,
+    'VeryGoodOpenSource/very_good_coverage@v3': (t) =>
+        veryGoodOpenSourceVeryGoodCoverage = t,
+    'lpenz/ghaction-packagecloud@v0.6.0': (t) => lpenzGhactionPackagecloud = t,
+    'flatpak/flatpak-github-actions/flatpak-builder@v6': (t) =>
+        flatpakFlatpakGithubActionsFlatpakBuilder = t,
+    'stefanzweifel/git-auto-commit-action@v7': (t) =>
+        stefanzweifelGitAutoCommitAction = t,
+    'actions/setup-node@v6': (t) => actionsSetupNode = t,
+    'microsoft/setup-msstore-cli@v1': (t) => microsoftSetupMsstoreCli = t,
+    'apple-actions/import-codesign-certs@v7': (t) =>
+        appleActionsImportCodesignCerts = t,
+    'google-github-actions/auth@v3': (t) => googleGithubActionsAuth = t,
+    'google-github-actions/setup-gcloud@v3': (t) =>
+        googleGithubActionsSetupGcloud = t,
+    'peter-evans/create-pull-request@v8': (t) =>
+        peterEvansCreatePullRequest = t,
+    'thollander/actions-comment-pull-request@v3': (t) =>
+        thollanderActionsCommentPullRequest = t,
+    'benc-uk/workflow-dispatch@v1': (t) => bencUkWorkflowDispatch = t,
+  };
+
   static Future<void> setup() => Future.wait([
-        _resolve('actions/checkout@v6').then((v) => actionsCheckout = v),
-        _resolve('actions/upload-artifact@v7')
-            .then((v) => actionsUploadArtifact = v),
-        _resolve('actions/download-artifact@v8')
-            .then((v) => actionsDownloadArtifact = v),
-        _resolve('actions/cache@v5').then((v) => actionsCache = v),
-        _resolve('actions/setup-java@v5').then((v) => actionsSetupJava = v),
-        _resolve('dart-lang/setup-dart@v1').then((v) => dartLangSetupDart = v),
-        _resolve('docker/setup-qemu-action@v4')
-            .then((v) => dockerSetupQemuAction = v),
-        _resolve('docker/setup-buildx-action@v4')
-            .then((v) => dockerSetupBuildxAction = v),
-        _resolve('docker/login-action@v4').then((v) => dockerLoginAction = v),
-        _resolve('docker/build-push-action@v7')
-            .then((v) => dockerBuildAndPushAction = v),
-        _resolve('subosito/flutter-action@v2')
-            .then((v) => subositoFlutterAction = v),
-        _resolve('softprops/action-gh-release@v3')
-            .then((v) => softpropsActionGhRelease = v),
-        _resolve('VeryGoodOpenSource/very_good_coverage@v3')
-            .then((v) => veryGoodOpenSourceVeryGoodCoverage = v),
-        _resolve('lpenz/ghaction-packagecloud@v0.5')
-            .then((v) => lpenzGhactionPackagecloud = v),
-        _resolve('flatpak/flatpak-github-actions/flatpak-builder@v6')
-            .then((v) => flatpakFlatpakGithubActionsFlatpakBuilder = v),
-        _resolve('stefanzweifel/git-auto-commit-action@v7')
-            .then((v) => stefanzweifelGitAutoCommitAction = v),
-        _resolve('actions/setup-node@v6').then((v) => actionsSetupNode = v),
-        _resolve('microsoft/setup-msstore-cli@v1')
-            .then((v) => microsoftSetupMsstoreCli = v),
-        _resolve('apple-actions/import-codesign-certs@v7')
-            .then((v) => appleActionsImportCodesignCerts = v),
-        _resolve('google-github-actions/auth@v3')
-            .then((v) => googleGithubActionsAuth = v),
-        _resolve('google-github-actions/setup-gcloud@v3')
-            .then((v) => googleGithubActionsSetupGcloud = v),
-        _resolve('peter-evans/create-pull-request@v8')
-            .then((v) => peterEvansCreatePullRequest = v),
-        _resolve('thollander/actions-comment-pull-request@v3')
-            .then((v) => thollanderActionsCommentPullRequest = v),
-        _resolve('benc-uk/workflow-dispatch@v1.3.2')
-            .then((v) => bencUkWorkflowDispatch = v),
-      ]);
+    for (final entry in toolSpecs.entries)
+      _resolve(entry.key).then(entry.value),
+  ]);
 
   static Future<String> _resolve(String tool) async {
     final atIndex = tool.lastIndexOf('@');
