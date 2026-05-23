@@ -107,11 +107,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        uses: dart-lang/setup-dart@v1
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: ${{ inputs.persistCredentials }}
       - id: version
@@ -133,7 +133,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Download all binary artifacts
         if: steps.version.outputs.update == 'true'
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           path: artifacts
           pattern: app-deployment-*
@@ -164,7 +164,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create Release
         if: steps.version.outputs.update == 'true'
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda
         with:
           tag_name: ${{ steps.release_content.outputs.tag_name }}
           name: ${{ steps.release_content.outputs.release_name }}
@@ -188,12 +188,12 @@ jobs:
           fi
         shell: bash
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
           fetch-depth: 0
       - name: Download android app artifact
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: app-deployment-appbundle
           path: build
@@ -238,13 +238,13 @@ jobs:
           fi
         shell: bash
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: true
           path: repo
           ref: gh-pages
       - name: Download flatpak bundle artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           pattern: flatpak-bundle-*
           path: bundles
@@ -268,7 +268,7 @@ jobs:
         continue-on-error: true
         run: gpg --batch --yes --delete-secret-keys '${{ secrets.gpgKeyId }}'
       - name: Commit repository updates
-        uses: stefanzweifel/git-auto-commit-action@v7
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9
         with:
           branch: gh-pages
           repository: repo
@@ -296,7 +296,7 @@ jobs:
           fi
         shell: bash
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        uses: dart-lang/setup-dart@v1
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install tools
@@ -304,12 +304,12 @@ jobs:
         with:
           withDartTestTools: "true"
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
           path: src
       - name: Checkout ${{ inputs.targetRepo }}
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: true
           path: tap
@@ -370,20 +370,20 @@ jobs:
           fi
         shell: bash
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
           channel: ${{ inputs.flutterSdkChannel }}
           cache: true
       - name: Download flutter binary artifacts
         run: flutter precache --universal --windows
       - name: Install msstore cli
-        uses: microsoft/setup-msstore-cli@v1
+        uses: microsoft/setup-msstore-cli@3b2ec9136230357ce9abc02b9d056626fb248d3f
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
       - name: Download windows app artifact
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: app-deployment-windows
           path: ${{ inputs.workingDirectory }}/build/windows/msix

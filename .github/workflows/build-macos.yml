@@ -47,7 +47,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
           channel: ${{ inputs.flutterSdkChannel }}
           cache: true
@@ -56,7 +56,7 @@ jobs:
       - name: Enable swift package manager
         run: flutter config --enable-swift-package-manager
       - name: Setup NodeJS
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
       - name: Install appdmg
         run: npm install -g appdmg
       - name: Install tools
@@ -64,7 +64,7 @@ jobs:
         with:
           withDartTestTools: "true"
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
       - name: Restore dart packages
@@ -130,7 +130,7 @@ jobs:
           appdmg '${{ inputs.dmgConfigPath }}' "build/macos/dmg/$title.dmg"
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload app and debug info
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: app-deployment-macos
           path: ${{ inputs.workingDirectory }}/build/macos/dmg

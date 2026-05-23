@@ -78,12 +78,12 @@ jobs:
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         if: '!inputs.flutter'
-        uses: dart-lang/setup-dart@v1
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
         if: inputs.flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
           channel: ${{ inputs.flutterSdkChannel }}
           cache: true
@@ -113,7 +113,7 @@ jobs:
         with:
           withDartTestTools: "false"
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
@@ -164,7 +164,7 @@ jobs:
         shell: bash
       - name: Download additional artifacts
         if: inputs.extraArtifacts != ''
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: ${{ fromJSON(inputs.extraArtifacts)['name'] }}
           path: ${{ fromJSON(inputs.extraArtifacts)['path'] }}

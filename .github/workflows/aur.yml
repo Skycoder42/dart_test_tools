@@ -21,7 +21,7 @@ jobs:
       - name: Install pacman dependencies
         run: pacman -Syu --noconfirm git openssh go-yq pacman-contrib namcap unzip base-devel
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        uses: dart-lang/setup-dart@v1
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install tools
@@ -34,7 +34,7 @@ jobs:
           useradd -m build
           echo 'build ALL=(ALL:ALL) NOPASSWD: ALL' >> /etc/sudoers
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
           path: src

@@ -94,7 +94,7 @@ jobs:
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
-        uses: dart-lang/setup-dart@v1
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install tools
@@ -104,7 +104,7 @@ jobs:
           withDartTestTools: "false"
       - name: Checkout repository
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
@@ -181,7 +181,7 @@ jobs:
         shell: bash
       - name: Upload compiled binaries artifact
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: ${{ inputs.archivePrefix }}-${{ matrix.platform }}
           path: ${{ inputs.workingDirectory }}/build/artifacts/*
@@ -200,11 +200,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        uses: dart-lang/setup-dart@v1
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: ${{ inputs.persistCredentials }}
       - id: version
@@ -226,7 +226,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Download all binary artifacts
         if: steps.version.outputs.update == 'true'
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           path: artifacts
           pattern: ${{ inputs.archivePrefix }}-*
@@ -257,7 +257,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create Release
         if: steps.version.outputs.update == 'true'
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda
         with:
           tag_name: ${{ steps.release_content.outputs.tag_name }}
           name: ${{ steps.release_content.outputs.release_name }}

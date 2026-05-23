@@ -109,12 +109,12 @@ jobs:
           fi
         shell: bash
       - name: Install JDK Version ${{ inputs.javaJdkVersion }}
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654
         with:
           distribution: temurin
           java-version: ${{ inputs.javaJdkVersion }}
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
           channel: ${{ inputs.flutterSdkChannel }}
           cache: true
@@ -125,7 +125,7 @@ jobs:
         with:
           withDartTestTools: "false"
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
@@ -177,7 +177,7 @@ jobs:
       - id: test-setup-cache
         name: Restore integration test cache
         if: inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)['android'] != ''
-        uses: actions/cache@v5
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
         with:
           key: android-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
           path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}
@@ -196,11 +196,11 @@ jobs:
         run: ./gradlew app:assembleAndroidTest
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}/android
       - name: Google Cloud Sign In
-        uses: google-github-actions/auth@v3
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
         with:
           credentials_json: ${{ secrets.firebaseCredentials }}
       - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v3
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db
         with:
           project_id: ${{ inputs.firebaseProjectId }}
       - name: Run integration tests
@@ -240,7 +240,7 @@ jobs:
           fi
         shell: bash
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
           channel: ${{ inputs.flutterSdkChannel }}
           cache: true
@@ -253,7 +253,7 @@ jobs:
         with:
           withDartTestTools: "false"
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
@@ -305,7 +305,7 @@ jobs:
       - id: test-setup-cache
         name: Restore integration test cache
         if: inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)['ios'] != ''
-        uses: actions/cache@v5
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
         with:
           key: ios-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
           path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}
@@ -318,7 +318,7 @@ jobs:
         run: ${{ fromJSON(inputs.integrationTestSetup)['ios'] }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Install Signing Identity
-        uses: apple-actions/import-codesign-certs@v7
+        uses: apple-actions/import-codesign-certs@5142e029c445c10ffc7149d172e540235a065466
         with:
           p12-file-base64: ${{ secrets.signingIdentity }}
           p12-password: ${{ secrets.signingIdentityPassphrase }}
@@ -340,11 +340,11 @@ jobs:
         run: zip -r --must-match app-release.zip Release-iphoneos *.xctestrun
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}/build/ios_integration/Build/Products
       - name: Google Cloud Sign In
-        uses: google-github-actions/auth@v3
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
         with:
           credentials_json: ${{ secrets.firebaseCredentials }}
       - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v3
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db
         with:
           project_id: ${{ inputs.firebaseProjectId }}
       - name: Run integration tests
@@ -375,7 +375,7 @@ jobs:
     steps:
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
           channel: ${{ inputs.flutterSdkChannel }}
           cache: true
@@ -398,7 +398,7 @@ jobs:
           withDartTestTools: "false"
       - name: Checkout repository
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform))
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
@@ -453,7 +453,7 @@ jobs:
       - id: test-setup-cache
         name: Restore integration test cache
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)[matrix.platform] != ''
-        uses: actions/cache@v5
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
         with:
           key: ${{ matrix.platform }}-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
           path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}
@@ -476,7 +476,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
           channel: ${{ inputs.flutterSdkChannel }}
           cache: true
@@ -487,7 +487,7 @@ jobs:
         with:
           withDartTestTools: "false"
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
@@ -539,7 +539,7 @@ jobs:
       - id: test-setup-cache
         name: Restore integration test cache
         if: inputs.integrationTestCacheConfig != '' && fromJSON(inputs.integrationTestSetup)['web'] != ''
-        uses: actions/cache@v5
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
         with:
           key: web-${{ fromJSON(inputs.integrationTestCacheConfig)['key'] }}
           path: ${{ fromJSON(inputs.integrationTestCacheConfig)['path'] }}

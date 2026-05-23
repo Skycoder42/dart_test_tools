@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        uses: dart-lang/setup-dart@v1
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install tools
@@ -43,7 +43,7 @@ jobs:
         with:
           withDartTestTools: "false"
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
           submodules: ${{ inputs.withSubmodules }}
@@ -76,7 +76,7 @@ jobs:
         run: echo "package-name=$(yq .name pubspec.yaml)" >> $GITHUB_OUTPUT
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload compiled binaries artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: package-${{ steps.get-package-name.outputs.package-name }}
           path: |

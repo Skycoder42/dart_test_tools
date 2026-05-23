@@ -43,7 +43,7 @@ jobs:
         with:
           withDartTestTools: "true"
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
           path: src
@@ -61,7 +61,7 @@ jobs:
         run: makedeb -s --no-confirm
         working-directory: deb
       - name: Upload debian package to artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: debian-package
           path: deb/*.deb
@@ -79,13 +79,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download debian package
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: debian-package
           path: deb
       - name: Upload debian package to packagecloud
         env:
           PACKAGECLOUD_TOKEN: ${{ secrets.packagecloudToken }}
-        uses: lpenz/ghaction-packagecloud@v0.5
+        uses: lpenz/ghaction-packagecloud@52cbd7c905fe97d5e01051ae1a5613be1943f7ff
         with:
           repository: ${{ inputs.packagecloudRepository }}/${{ matrix.code-name }}

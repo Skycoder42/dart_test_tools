@@ -28,7 +28,7 @@ runs:
   steps:
     - id: create-pull-request
       name: Create pull request
-      uses: peter-evans/create-pull-request@v8
+      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1
       with:
         branch: ${{ inputs.prBranchName }}
         delete-branch: true
@@ -38,7 +38,7 @@ runs:
         body-path: ${{ case(inputs.prBodyIsPath == 'true', inputs.prBody, null) }}
         assignees: ${{ github.repository_owner }}
     - name: Manually validate pull request
-      uses: benc-uk/workflow-dispatch@v1.3.2
+      uses: benc-uk/workflow-dispatch@31e2b3319479a63f0ab15bf800eff9e913504e26
       with:
         workflow: ${{ inputs.validationWorkflow }}
         ref: refs/heads/${{ steps.create-pull-request.outputs.pull-request-branch }}
@@ -47,13 +47,13 @@ runs:
         wait-timeout-seconds: ${{ inputs.validationTimeout }}
     - name: Mention assignees
       if: success()
-      uses: thollander/actions-comment-pull-request@v3
+      uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b
       with:
         pr-number: ${{ steps.create-pull-request.outputs.pull-request-number }}
         message: Your review has been requested @${{ github.repository_owner }}
     - name: Mention assignees
       if: failure() && steps.create-pull-request.outputs.pull-request-number != ''
-      uses: thollander/actions-comment-pull-request@v3
+      uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b
       with:
         pr-number: ${{ steps.create-pull-request.outputs.pull-request-number }}
         message: Automatic validation of pull request failed! @${{ github.repository_owner }} please validate it manually.
