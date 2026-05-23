@@ -25,7 +25,7 @@ class DeployWindowsInstallerBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-    const Step.uses(
+    Step.uses(
       name: 'Install msstore cli',
       uses: Tools.microsoftSetupMsstoreCli,
     ),

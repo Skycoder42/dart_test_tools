@@ -36,7 +36,7 @@ class MakedebBuilder implements StepBuilder {
       run: 'makedeb -s --no-confirm',
       workingDirectory: 'deb',
     ),
-    const Step.uses(
+    Step.uses(
       name: 'Upload debian package to artifacts',
       uses: Tools.actionsUploadArtifact,
       withArgs: <String, dynamic>{

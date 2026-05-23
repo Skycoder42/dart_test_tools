@@ -32,8 +32,8 @@ class DockerImageBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-    const Step.uses(name: 'Setup QEMU', uses: Tools.dockerSetupQemuAction),
-    const Step.uses(
+    Step.uses(name: 'Setup QEMU', uses: Tools.dockerSetupQemuAction),
+    Step.uses(
       id: _setupBuildxId,
       name: 'Setup docker buildx',
       uses: Tools.dockerSetupBuildxAction,

@@ -9,6 +9,7 @@ import 'ci_gen/common/actions/create_validated_pr_action_builder.dart';
 import 'ci_gen/common/actions/install_tools_action_builder.dart';
 import 'ci_gen/common/api/action_builder.dart';
 import 'ci_gen/common/api/workflow_builder.dart';
+import 'ci_gen/common/tools.dart';
 import 'ci_gen/compile/compile_workflow.dart';
 import 'ci_gen/dart/dart_workflow.dart';
 import 'ci_gen/deb/deb_workflow.dart';
@@ -26,6 +27,8 @@ import 'ci_gen/publish/publish_workflow.dart';
 import 'ci_gen/release/release_workflow.dart';
 
 Future<void> main() async {
+  await Tools.setup();
+
   const actions = [
     InstallToolsActionBuilder(),
     CreateValidatedPrActionBuilder(),

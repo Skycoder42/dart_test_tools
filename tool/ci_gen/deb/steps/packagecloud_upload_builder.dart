@@ -36,7 +36,7 @@ class PackagecloudUploadBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-    const Step.uses(
+    Step.uses(
       name: 'Download debian package',
       uses: Tools.actionsDownloadArtifact,
       withArgs: {'name': 'debian-package', 'path': 'deb'},

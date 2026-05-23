@@ -30,7 +30,7 @@ class DeployAndroidAppBuilder implements StepBuilder {
   @override
   Iterable<Step> build() => [
     ...const CheckoutBuilder(fetchDepth: 0).build(),
-    const Step.uses(
+    Step.uses(
       name: 'Download android app artifact',
       uses: Tools.actionsDownloadArtifact,
       withArgs: {'name': 'app-deployment-appbundle', 'path': 'build'},

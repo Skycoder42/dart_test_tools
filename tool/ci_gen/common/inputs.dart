@@ -281,7 +281,7 @@ Example:
     ),
   );
 
-  static const dockerPlatforms = WorkflowInput(
+  static final dockerPlatforms = WorkflowInput(
     name: 'dockerPlatforms',
     input: Input(
       type: Type.string,
@@ -294,7 +294,7 @@ Example:
     ),
   );
 
-  static const dockerBuildArgs = WorkflowInput(
+  static final dockerBuildArgs = WorkflowInput(
     name: 'dockerBuildArgs',
     input: Input(
       type: Type.string,

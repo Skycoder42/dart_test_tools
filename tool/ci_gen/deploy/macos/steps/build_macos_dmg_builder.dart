@@ -22,7 +22,7 @@ class BuildMacosDmgBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
-    const Step.uses(name: 'Setup NodeJS', uses: Tools.actionsSetupNode),
+    Step.uses(name: 'Setup NodeJS', uses: Tools.actionsSetupNode),
     const Step.run(name: 'Install appdmg', run: 'npm install -g appdmg'),
     ...BuildAppBuilder(
       config: config,

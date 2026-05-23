@@ -25,7 +25,7 @@ class DeployToPagesBuilder implements StepBuilder {
       path: 'repo',
       persistCredentials: ExpressionOrValue.value(true),
     ).build(),
-    const Step.uses(
+    Step.uses(
       name: 'Download flatpak bundle artifacts',
       uses: Tools.actionsDownloadArtifact,
       withArgs: {'pattern': 'flatpak-bundle-*', 'path': 'bundles'},
@@ -59,7 +59,7 @@ done
         ),
       ],
     ).build(),
-    const Step.uses(
+    Step.uses(
       name: 'Commit repository updates',
       uses: Tools.stefanzweifelGitAutoCommitAction,
       withArgs: {
