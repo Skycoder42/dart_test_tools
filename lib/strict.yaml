@@ -3,7 +3,7 @@ include:
   - package:flutter_lints/flutter.yaml
   - package:lint/strict.yaml
 plugins:
-  dart_test_tools: ^7.0.0
+  dart_test_tools: ^7.2.2
 analyzer:
   language:
     strict-casts: true
@@ -48,8 +48,6 @@ linter:
     matching_super_parameters: true
     no_literal_bool_comparisons: true
     unnecessary_ignore: true
-    use_null_aware_elements: true
-    # new rules
     remove_deprecations_in_breaking_versions: true
     switch_on_type: true
     unnecessary_unawaited: true
@@ -57,3 +55,9 @@ linter:
     avoid_null_checks_in_equality_operators: true
     document_ignores: true
     prefer_asserts_with_message: true
+    # new rules
+    omit_obvious_local_variable_types: true
+    omit_obvious_property_types: true
+    simple_directive_paths: true
+    simplify_variable_pattern: true
+    var_with_no_type_annotation: true

@@ -8,9 +8,7 @@ import '../steps/dart_sdk_builder.dart';
 base mixin DartSdkJobConfig on SdkJobConfig {
   late final dartSdkVersion = inputContext(WorkflowInputs.dartSdkVersion);
   late final flutterSdkChannel = inputContext(WorkflowInputs.flutterSdkChannel);
-  late final ExpressionOrValue needsFlutterSdk = const ExpressionOrValue.value(
-    false,
-  );
+  late final needsFlutterSdk = const ExpressionOrValue.value(false);
 
   @override
   String get baseTool => 'dart';

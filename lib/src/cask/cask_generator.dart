@@ -97,7 +97,7 @@ class CaskGenerator {
           caskSink.writeln();
         }
 
-        for (final MapEntry(key: key, value: value) in section.entries) {
+        for (final MapEntry(:key, :value) in section.entries) {
           caskSink
             ..write('  ')
             ..write(key)

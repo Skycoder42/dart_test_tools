@@ -108,6 +108,8 @@ linter:
     - null_check_on_nullable_type_parameter
     - null_closures
     - omit_local_variable_types
+    - omit_obvious_local_variable_types
+    - omit_obvious_property_types
     - one_member_abstracts
     - only_throw_errors
     - overridden_fields
@@ -159,6 +161,8 @@ linter:
     - remove_deprecations_in_breaking_versions
     - require_trailing_commas
     - secure_pubspec_urls
+    - simple_directive_paths
+    - simplify_variable_pattern
     - sized_box_for_whitespace
     - sized_box_shrink_expand
     - slash_for_doc_comments
@@ -166,6 +170,8 @@ linter:
     - sort_constructors_first
     - sort_pub_dependencies
     - sort_unnamed_constructors_first
+    - specify_nonobvious_local_variable_types
+    - specify_nonobvious_property_types
     - strict_top_level_inference
     - switch_on_type
     - test_types_in_equals
@@ -229,4 +235,5 @@ linter:
     - use_to_and_as_if_applicable
     - use_truncating_division
     - valid_regexps
+    - var_with_no_type_annotation
     - void_checks

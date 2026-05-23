@@ -3,7 +3,7 @@ import 'dart:io';
 import 'github.dart';
 
 abstract base class Minisign {
-  static bool _forceDocker = false;
+  static var _forceDocker = false;
 
   Minisign._();
 
