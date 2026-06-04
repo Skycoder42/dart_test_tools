@@ -442,7 +442,7 @@ Example:
     input: Input(
       type: Type.string,
       required: false,
-      defaultValue: '24.08',
+      defaultValue: '25.08',
       description: 'The version of the freedesktop sdk and runtime being used.',
     ),
   );

@@ -14,7 +14,7 @@ on:
       flatpakSdkVersion:
         type: string
         required: false
-        default: "24.08"
+        default: "25.08"
         description: The version of the freedesktop sdk and runtime being used.
       buildNumberArgs:
         type: string
