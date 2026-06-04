@@ -26,6 +26,8 @@ abstract base class Github {
   static const repository = Expression('github.repository');
 
   static const repositoryOwner = Expression('github.repository_owner');
+
+  static const token = Expression('github.token');
 }
 
 abstract base class Functions {

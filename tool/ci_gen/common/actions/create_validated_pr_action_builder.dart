@@ -73,6 +73,13 @@ class CreateValidatedPrActionBuilder implements ActionBuilder {
           'The timeout (in seconds) to wait for the validation to complete.',
     ),
   );
+  static const _tokenInput = WorkflowInput(
+    name: 'token',
+    input: Input.action(
+      required: false,
+      description: 'A custom token for creating the PR',
+    ),
+  );
 
   static const createPrStepId = StepId('create-pull-request');
   static final pullRequestNumber = createPrStepId.output('pull-request-number');
@@ -92,6 +99,7 @@ class CreateValidatedPrActionBuilder implements ActionBuilder {
     bool? prBodyIsPath,
     required ExpressionOrValue validationWorkflow,
     int? validationTimeout,
+    Expression? token,
   }) => Step.uses(
     id: id,
     name: name ?? _displayName,
@@ -101,13 +109,12 @@ class CreateValidatedPrActionBuilder implements ActionBuilder {
     withArgs: {
       _prBranchNameInput.name: prBranchName.toString(),
       _prCommitMessageInput.name: prCommitMessage.toString(),
-      if (prTitle != null) _prTitleInput.name: prTitle.toString(),
+      _prTitleInput.name: ?prTitle?.toString(),
       _prBodyInput.name: prBody.toString(),
-      if (prBodyIsPath != null)
-        _prBodyIsPathInput.name: prBodyIsPath.toString(),
+      _prBodyIsPathInput.name: ?prBodyIsPath?.toString(),
       _validationWorkflowInput.name: validationWorkflow.toString(),
-      if (validationTimeout != null)
-        _validationTimeoutInput.name: validationTimeout.toString(),
+      _validationTimeoutInput.name: ?validationTimeout?.toString(),
+      _tokenInput.name: ?token?.toString(),
     },
   );
 
@@ -124,6 +131,7 @@ class CreateValidatedPrActionBuilder implements ActionBuilder {
     final prBodyIsPath = inputContext(_prBodyIsPathInput);
     final validationWorkflow = inputContext(_validationWorkflowInput);
     final validationTimeout = inputContext(_validationTimeoutInput);
+    final token = inputContext(_tokenInput);
 
     return Action(
       name: _displayName,
@@ -142,18 +150,15 @@ class CreateValidatedPrActionBuilder implements ActionBuilder {
               (prTitle.ne(.empty), .expression(prTitle)),
             ], .expression(prCommitMessage)).toString(),
             'body': Functions.case$([
-              (
-                prBodyIsPath.eq(const Expression.literal('false')),
-                ExpressionOrValue.expression(prBody),
-              ),
+              (prBodyIsPath.eq(const .literal('false')), .expression(prBody)),
             ]).toString(),
             'body-path': Functions.case$([
-              (
-                prBodyIsPath.eq(const Expression.literal('true')),
-                ExpressionOrValue.expression(prBody),
-              ),
+              (prBodyIsPath.eq(const .literal('true')), .expression(prBody)),
             ]).toString(),
             'assignees': Github.repositoryOwner.toString(),
+            'token': Functions.case$([
+              (token.ne(.empty), .expression(token)),
+            ], const .expression(Github.token)).toString(),
           },
         ),
         Step.uses(

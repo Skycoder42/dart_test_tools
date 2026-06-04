@@ -28,6 +28,10 @@ on:
         type: string
         required: true
         description: The name or id of the workflow that must be run and succeed for the pull request to be able to merge.
+    secrets:
+      targetRepoToken:
+        required: false
+        description: A GitHub PAT that has the permission to push commits to the targetRepo.
 jobs:
   update-actions:
     name: Update GitHub Action versions
@@ -42,9 +46,9 @@ jobs:
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
         with:
-          persist-credentials: true
+          persist-credentials: false
           fetch-depth: 0
       - name: Restore dart packages
         run: dart pub get
@@ -85,3 +89,4 @@ jobs:
           prCommitMessage: Update GitHub Action versions
           prBody: Automated update of GitHub Action version pins and regenerated CI YAML.
           validationWorkflow: ${{ inputs.validationWorkflow }}
+          token: ${{ secrets.targetRepoToken }}

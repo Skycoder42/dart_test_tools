@@ -24,6 +24,9 @@ inputs:
     required: false
     default: "3600"
     description: The timeout (in seconds) to wait for the validation to complete.
+  token:
+    required: false
+    description: A custom token for creating the PR
 runs:
   steps:
     - id: create-pull-request
@@ -37,6 +40,7 @@ runs:
         body: ${{ case(inputs.prBodyIsPath == 'false', inputs.prBody, null) }}
         body-path: ${{ case(inputs.prBodyIsPath == 'true', inputs.prBody, null) }}
         assignees: ${{ github.repository_owner }}
+        token: ${{ case(inputs.token != '', inputs.token, github.token) }}
     - name: Manually validate pull request
       uses: benc-uk/workflow-dispatch@31e2b3319479a63f0ab15bf800eff9e913504e26
       with:

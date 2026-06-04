@@ -16,3 +16,5 @@ jobs:
     with:
       buildRunner: true
       validationWorkflow: dart_test_tools_ci.yml
+    secrets:
+      targetRepoToken: ${{ secrets.ACTIONS_UPDATE_PAT }}

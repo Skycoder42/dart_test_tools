@@ -3,6 +3,7 @@ import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/inputs.dart';
 import '../../common/jobs/sdk_job_builder.dart';
+import '../../common/secrets.dart';
 import '../../common/steps/checkout_builder.dart';
 import '../../common/steps/project_prepare_builder.dart';
 import '../../types/id.dart';
@@ -13,6 +14,7 @@ base mixin UpdateActionsConfig
   late final validationWorkflow = inputContext(
     WorkflowInputs.validationWorkflow,
   );
+  late final targetRepoToken = secretContext(WorkflowSecrets.targetRepoToken);
 }
 
 class UpdateActionsBuilder implements StepBuilder {
@@ -25,10 +27,7 @@ class UpdateActionsBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() sync* {
-    yield* const CheckoutBuilder(
-      fetchDepth: 0,
-      persistCredentials: .value(true),
-    ).build();
+    yield* const CheckoutBuilder(fetchDepth: 0).build();
     yield* ProjectPrepareBuilder(config: config).build();
     yield Step.run(
       name: 'Update action version pins',
@@ -54,6 +53,7 @@ class UpdateActionsBuilder implements StepBuilder {
         ' and regenerated CI YAML.',
       ),
       validationWorkflow: .expression(config.validationWorkflow),
+      token: config.targetRepoToken,
       ifExpression: _hasChangesOutput.expression.eq(const .literal('true')),
     );
   }
