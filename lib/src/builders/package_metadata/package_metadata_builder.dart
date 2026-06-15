@@ -4,9 +4,10 @@ import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
+import '../../code_gen/dart_generator_mixin.dart';
 import '../../code_gen/references.dart';
 
-class PackageMetadataBuilder extends Builder {
+class PackageMetadataBuilder extends Builder with DartGeneratorMixin {
   final BuilderOptions options;
 
   PackageMetadataBuilder(this.options);
@@ -30,13 +31,7 @@ class PackageMetadataBuilder extends Builder {
 
     final library = _buildLibrary(pubspec);
 
-    final emitter = DartEmitter.scoped(
-      orderDirectives: true,
-      useNullSafetySyntax: true,
-    );
-    final buffer = StringBuffer();
-    library.accept(emitter, buffer);
-    await buildStep.writeAsString(outAsset, buffer.toString());
+    await writeDartCode(buildStep, outAsset, library);
   }
 
   Library _buildLibrary(Pubspec pubspec) => Library(
