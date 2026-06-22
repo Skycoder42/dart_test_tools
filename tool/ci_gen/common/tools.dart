@@ -77,7 +77,7 @@ abstract class Tools {
 
   // Keys are the action spec strings read by tool/ci_update_actions.dart.
   static final toolSpecs = <String, void Function(String)>{
-    'actions/checkout@v6': (t) => actionsCheckout = t,
+    'actions/checkout@v7': (t) => actionsCheckout = t,
     'actions/upload-artifact@v7': (t) => actionsUploadArtifact = t,
     'actions/download-artifact@v8': (t) => actionsDownloadArtifact = t,
     'actions/cache@v5': (t) => actionsCache = t,

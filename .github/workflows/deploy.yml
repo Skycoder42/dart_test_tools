@@ -111,7 +111,7 @@ jobs:
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Checkout repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           persist-credentials: ${{ inputs.persistCredentials }}
       - id: version
@@ -164,7 +164,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create Release
         if: steps.version.outputs.update == 'true'
-        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda
+        uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b
         with:
           tag_name: ${{ steps.release_content.outputs.tag_name }}
           name: ${{ steps.release_content.outputs.release_name }}
@@ -188,7 +188,7 @@ jobs:
           fi
         shell: bash
       - name: Checkout repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -238,7 +238,7 @@ jobs:
           fi
         shell: bash
       - name: Checkout repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           persist-credentials: true
           path: repo
@@ -304,12 +304,12 @@ jobs:
         with:
           withDartTestTools: "true"
       - name: Checkout repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           persist-credentials: false
           path: src
       - name: Checkout ${{ inputs.targetRepo }}
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           persist-credentials: true
           path: tap
@@ -379,7 +379,7 @@ jobs:
       - name: Install msstore cli
         uses: microsoft/setup-msstore-cli@3b2ec9136230357ce9abc02b9d056626fb248d3f
       - name: Checkout repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           persist-credentials: false
       - name: Download windows app artifact
