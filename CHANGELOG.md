@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.2.5] - 2026-06-29
+### Changed
+- Updated min sdk version to ^3.12.0
+- Updated dependencies
+
 ## [7.2.4] - 2026-06-14
 ### Fixed
 - Fix lockup of analysis server plugin
@@ -509,6 +514,7 @@ have been added:
 ### Added
 - Initial release
 
+[7.2.5]: https://github.com/Skycoder42/dart_test_tools/compare/v7.2.4...v7.2.5
 [7.2.4]: https://github.com/Skycoder42/dart_test_tools/compare/v7.2.3...v7.2.4
 [7.2.3]: https://github.com/Skycoder42/dart_test_tools/compare/v7.2.2...v7.2.3
 [7.2.2]: https://github.com/Skycoder42/dart_test_tools/compare/v7.2.1...v7.2.2
