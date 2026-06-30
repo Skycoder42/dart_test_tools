@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__dart__rip_grep_packages",
+      "mcp__dart__read_package_uris",
+      "mcp__dart__roots"
+    ]
+  }
+}

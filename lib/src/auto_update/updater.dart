@@ -4,6 +4,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
 import '../tools/github.dart';
+import '../tools/io.dart';
 import 'pub_wrapper.dart';
 import 'sdk_iterator.dart';
 
@@ -77,7 +78,7 @@ class Updater {
 
     final minVersion = Version(version.major, version.minor, 0);
     final constraint = useGreaterEquals
-        ? VersionRange(min: minVersion)
+        ? VersionRange(min: minVersion, includeMin: true)
         : VersionConstraint.compatibleWith(minVersion);
     await pub.pubspecEdit(
       (editor) => editor.update(['environment', sdk], constraint.toString()),
@@ -135,8 +136,12 @@ class Updater {
     await sdkIterator.iterate((name, pub, _, _) async {
       final pubspec = await pub.pubspec();
       if (pubspec.workspace case List(isEmpty: false)) {
-        // Do not run for workspace packages
-        Github.logDebug('Skipping workspace package $name');
+        Github.logDebug('Skipping workspace package: $name');
+        return;
+      }
+
+      if (!pub.workingDirectory.subDir('CHANGELOG.md').existsSync()) {
+        Github.logDebug('Skipping package without changelog: $name');
         return;
       }
 
