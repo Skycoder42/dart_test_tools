@@ -4,7 +4,6 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
 import '../tools/github.dart';
-import '../tools/io.dart';
 import 'pub_wrapper.dart';
 import 'sdk_iterator.dart';
 
@@ -87,7 +86,8 @@ class Updater {
     _reportSink?.writeln('- $message');
     Github.logInfo(message);
 
-    if (pubspec.workspace case null || [] when bumpVersion) {
+    if (pubspec.workspace case null || []
+        when bumpVersion && pub.hasChangelog) {
       await pub.cider([
         'log',
         'changed',
@@ -139,9 +139,8 @@ class Updater {
         Github.logDebug('Skipping workspace package: $name');
         return;
       }
-
-      if (!pub.workingDirectory.subDir('CHANGELOG.md').existsSync()) {
-        Github.logDebug('Skipping package without changelog: $name');
+      if (pubspec.version == null) {
+        Github.logDebug('Skipping package without version: $name');
         return;
       }
 
@@ -156,14 +155,23 @@ class Updater {
     await sdkIterator.iterate((name, pub, _, _) async {
       final pubspec = await pub.pubspec();
       if (pubspec.workspace case List(isEmpty: false)) {
-        // Do not run for workspace packages
-        Github.logDebug('Skipping workspace package $name');
+        Github.logDebug('Skipping workspace package: $name');
+        return;
+      }
+      final canBumpVersion = pubspec.version != null;
+      final canLogChangelog = pub.hasChangelog;
+      if (!canBumpVersion && !canLogChangelog) {
+        Github.logDebug('Skipping package $name - nothing to release');
         return;
       }
 
       Github.logInfo('Creating update for $name');
-      await pub.cider(const ['log', 'changed', 'Updated dependencies']);
-      await pub.cider(const ['release']);
+      if (canLogChangelog) {
+        await pub.cider(const ['log', 'changed', 'Updated dependencies']);
+      }
+      if (canBumpVersion && canLogChangelog) {
+        await pub.cider(const ['release']);
+      }
     });
   }
 }

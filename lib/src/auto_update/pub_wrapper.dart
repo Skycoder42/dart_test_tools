@@ -33,6 +33,9 @@ class PubWrapper {
     return Pubspec.parse(yaml, sourceUrl: file.uri);
   }
 
+  bool get hasChangelog =>
+      workingDirectory.subFile('CHANGELOG.md').existsSync();
+
   Future<void> pubspecEdit(void Function(YamlEditor editor) edit) async {
     final file = workingDirectory.subFile('pubspec.yaml');
     final yaml = await file.readAsString();
