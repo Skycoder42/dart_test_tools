@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
+import 'package:yaml/yaml.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
 import '../tools/github.dart';
@@ -38,6 +39,45 @@ class PubWrapper {
 
   Future<void> pubspecEdit(void Function(YamlEditor editor) edit) async {
     final file = workingDirectory.subFile('pubspec.yaml');
+    final yaml = await file.readAsString();
+    final editor = YamlEditor(yaml);
+    edit(editor);
+    if (editor.edits.isNotEmpty) {
+      await file.writeAsString(editor.toString(), flush: true);
+    }
+  }
+
+  /// Returns the analyzer plugins declared in `analysis_options.yaml` that use
+  /// a plain version constraint string, keyed by plugin name.
+  ///
+  /// Declarations that are not simple version constraints (e.g. `path:` maps or
+  /// `false` to disable a plugin) are omitted.
+  Future<Map<String, String>> analysisOptionsPlugins() async {
+    final file = workingDirectory.subFile('analysis_options.yaml');
+    if (!file.existsSync()) {
+      return const {};
+    }
+
+    final yaml = loadYaml(await file.readAsString());
+    if (yaml is! YamlMap) {
+      return const {};
+    }
+
+    final plugins = yaml['plugins'];
+    if (plugins is! YamlMap) {
+      return const {};
+    }
+
+    return {
+      for (final MapEntry(:key, :value) in plugins.entries)
+        if (value is String) key as String: value,
+    };
+  }
+
+  Future<void> analysisOptionsEdit(
+    void Function(YamlEditor editor) edit,
+  ) async {
+    final file = workingDirectory.subFile('analysis_options.yaml');
     final yaml = await file.readAsString();
     final editor = YamlEditor(yaml);
     edit(editor);

@@ -35,6 +35,7 @@ class Updater {
       await _bumpVersion(pub);
     }
     await _updateDependencies(pub);
+    await _updateAnalyzerPlugins(pub);
 
     if (bumpVersion) {
       await _releaseVersion(pub);
@@ -120,6 +121,43 @@ class Updater {
       await pub.remove(_flutterTestPackageName);
       await pub.upgrade();
     }
+  }
+
+  Future<void> _updateAnalyzerPlugins(PubWrapper pub) async {
+    _reportSink?.writeln('### Analyzer Plugin Updates');
+    final sdkIterator = SdkIterator(pub);
+    await sdkIterator.iterate((name, pub, _, _) async {
+      final plugins = await pub.analysisOptionsPlugins();
+      if (plugins.isEmpty) {
+        return;
+      }
+
+      final pubspec = await pub.pubspec();
+      await pub.analysisOptionsEdit((editor) {
+        for (final MapEntry(key: plugin, value: currentConstraint)
+            in plugins.entries) {
+          final dependency =
+              pubspec.dependencies[plugin] ?? pubspec.devDependencies[plugin];
+          if (dependency is! HostedDependency) {
+            throw Exception(
+              'Analyzer plugin $plugin is declared in the '
+              'analysis_options.yaml of $name but is not a hosted '
+              'dependency in its pubspec.yaml',
+            );
+          }
+
+          final constraint = dependency.version.toString();
+          if (constraint == currentConstraint) {
+            continue;
+          }
+
+          editor.update(['plugins', plugin], constraint);
+          final message = 'Updated plugin $plugin in $name to $constraint';
+          _reportSink?.writeln('- $message');
+          Github.logInfo(message);
+        }
+      });
+    });
   }
 
   Future<bool> _needsFlutterTest(PubWrapper pub) async {
