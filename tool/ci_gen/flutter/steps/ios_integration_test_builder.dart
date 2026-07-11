@@ -1,5 +1,6 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/contexts.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
@@ -30,6 +31,21 @@ class IosIntegrationTestBuilder implements StepBuilder {
       platform: ExpressionOrValue.value(FlutterPlatform.ios.platform),
     ).build(),
     ...InstallXcodeSigningBuilder(config: config).build(),
+    ...SetupGCloudBuilder(config: config).build(),
+    const Step.run(
+      name: 'Select FTL-supported Xcode',
+      shell: 'bash',
+      run: r'''
+set -eo pipefail
+xcode_version="$(gcloud firebase test ios versions list --format=json | jq -r '.[] | select(.tags | index("default")) | .supportedXcodeVersionIds | max_by(split(".") | map(tonumber))')"
+sudo xcode-select -s "/Applications/Xcode_${xcode_version}.app"
+''',
+    ),
+    const Step.run(
+      name: 'Log supported FTL Xcode versions',
+      ifExpression: Functions.failure,
+      run: 'gcloud firebase test ios versions list',
+    ),
     Step.run(
       name: 'Build integration test app',
       run:
@@ -56,7 +72,6 @@ class IosIntegrationTestBuilder implements StepBuilder {
       workingDirectory:
           '${config.integrationTestWorkingDirectory}/build/ios_integration/Build/Products',
     ),
-    ...SetupGCloudBuilder(config: config).build(),
     Step.run(
       name: 'Run integration tests',
       run:
