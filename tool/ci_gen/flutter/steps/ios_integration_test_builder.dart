@@ -38,6 +38,7 @@ class IosIntegrationTestBuilder implements StepBuilder {
       run: r'''
 set -eo pipefail
 xcode_version="$(gcloud firebase test ios versions list --format=json | jq -r '.[] | select(.tags | index("default")) | .supportedXcodeVersionIds | max_by(split(".") | map(tonumber))')"
+echo "Activating xcode version: $xcode_version"
 sudo xcode-select -s "/Applications/Xcode_${xcode_version}.app"
 ''',
     ),
