@@ -2,6 +2,7 @@ import '../../common/api/job_config.dart';
 import '../../common/api/matrix_job_builder_mixin.dart';
 import '../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../common/api/working_directory_config.dart';
+import '../../common/inputs.dart';
 import '../../common/jobs/sdk_job_builder.dart';
 import '../../common/steps/project_prepare_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
@@ -20,6 +21,12 @@ final class CompileJobConfig extends JobConfig
         ProjectSetupConfig,
         CompileConfig,
         DartSdkJobConfig {
+  @override
+  // ignore: overridden_fields to replace default value
+  late final needsFlutterSdk = ExpressionOrValue.expression(
+    inputContext(WorkflowInputs.needsFlutterSdk),
+  );
+
   CompileJobConfig(super.inputContext, super.secretContext);
 }
 

@@ -103,7 +103,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Create Release
         if: steps.version.outputs.update == 'true'
-        uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b
+        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228
         with:
           tag_name: ${{ steps.release_content.outputs.tag_name }}
           name: ${{ steps.release_content.outputs.release_name }}
