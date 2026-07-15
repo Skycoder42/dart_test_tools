@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/flatpak/flatpak-builder/main/data/flatpak-manifest.schema.json
+# assumed location: <root>/linux/flatpak
+---
+id: com.example.myApp
+runtime: org.gnome.Platform
+runtime-version: "50"
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.llvm<version>
+  - org.freedesktop.Sdk.Extension.flutter
+  - org.freedesktop.Sdk.Extension.openjdk
+command: my_app
+separate-locales: false
+finish-args:
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+  - --share=network
+writable-sdk: true
+modules:
+  - name: my_app
+    buildsystem: simple
+    only-arches:
+      - x86_64
+      - aarch64
+    build-options:
+      append-path: >-
+        /usr/lib/sdk/flutter/bin:
+        /usr/lib/sdk/flutter/install/bin:
+        /usr/lib/sdk/flutter/pub-cache/bin:
+        /usr/lib/sdk/llvm<version>/bin
+      prepend-ld-library-path: /usr/lib/sdk/llvm<version>/lib
+      build-args:
+        - --share=network
+      env:
+        FLUTTER_ROOT: /usr/lib/sdk/flutter
+        PUB_CACHE: /usr/lib/sdk/flutter/pub-cache
+        DART_DATA_HOME: /usr/lib/sdk/flutter
+    sources:
+      - type: dir
+        path: ../..
+        dest: .
+      - type: patch
+        paths:
+          - patch/compiler_warnings.patch
+        use-git: false
+      - type: script
+        commands:
+          - cp -a build/linux/x64/release/bundle/* /app/
+        dest: client
+        dest-filename: install.sh
+        only-arches:
+          - x86_64
+      - type: script
+        commands:
+          - cp -a build/linux/arm64/release/bundle/* /app/
+        dest: client
+        dest-filename: install.sh
+        only-arches:
+          - aarch64
+    build-commands:
+      # Preparation steps needed otherwise pub.dev wont resolve
+      - rm -f /etc/resolv.conf
+      - echo 'nameserver 1.1.1.1' > /etc/resolv.conf
+      # Actual build process
+      - flutter pub get --enforce-lockfile
+      - >-
+        . /usr/lib/sdk/openjdk/enable.sh &&
+        flutter build linux --release
+      - ./install.sh

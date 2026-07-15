@@ -1,5 +1,4 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/flatpak/flatpak-builder/main/data/flatpak-manifest.schema.json
-
 ---
 app-id: org.freedesktop.Sdk.Extension.flutter
 branch: FLATPAK_VERSION
@@ -15,12 +14,16 @@ modules:
       - x86_64
       - aarch64
     build-options:
-      prepend-path: /usr/lib/sdk/flutter/bin:/usr/lib/sdk/flutter/.pub-cache/bin
+      prepend-path: >-
+        /usr/lib/sdk/flutter/bin:
+        /usr/lib/sdk/flutter/install/bin:
+        /usr/lib/sdk/flutter/pub-cache/bin
       build-args:
         - --share=network
       env:
         FLUTTER_ROOT: /usr/lib/sdk/flutter
-        PUB_CACHE: /usr/lib/sdk/flutter/.pub-cache
+        PUB_CACHE: /usr/lib/sdk/flutter/pub-cache
+        DART_DATA_HOME: /usr/lib/sdk/flutter
     sources:
       - type: git
         url: https://github.com/flutter/flutter.git
