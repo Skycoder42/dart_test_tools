@@ -48,6 +48,9 @@ class NfpmGenerator {
     if (!templateFile.existsSync()) {
       throw Exception('$templateFile not found!');
     }
+    if (!bundleRoot.existsSync()) {
+      throw Exception('$bundleRoot not found!');
+    }
 
     final pubspecYaml = await pubspecFile.readAsString();
     final pubspec = Pubspec.parse(pubspecYaml, sourceUrl: pubspecFile.uri);
@@ -61,9 +64,11 @@ class NfpmGenerator {
 
     _ensureContents(editor);
     _resolveContentSources(editor, inputDirectory, pubspec);
-    _addBundleTree(editor, pubspec, bundleRoot);
-    _addSymlinks(editor, pubspec, executables);
-    _addLicense(editor, pubspec, inputDirectory);
+    _prependContents(editor, [
+      _bundleTreeEntry(pubspec, bundleRoot),
+      ..._symlinkEntries(pubspec, executables),
+      ?_licenseEntry(pubspec, inputDirectory),
+    ]);
     final changelogWritten = await _addChangelog(
       editor,
       inputDirectory,
@@ -243,52 +248,48 @@ class NfpmGenerator {
     }
   }
 
-  void _addBundleTree(
-    YamlEditor editor,
-    Pubspec pubspec,
-    Directory bundleRoot,
-  ) => editor.appendToList(
-    ['contents'],
-    {
-      'src': _absolute(bundleRoot.path),
-      'dst': '/opt/${pubspec.name}',
-      'type': 'tree',
-    },
-  );
-
-  void _addSymlinks(
-    YamlEditor editor,
-    Pubspec pubspec,
-    Map<String, String> executables,
-  ) {
-    for (final MapEntry(key: command, value: source) in executables.entries) {
-      editor.appendToList(
-        ['contents'],
-        {
-          'src': '/opt/${pubspec.name}/bin/$source',
-          'dst': '/usr/bin/$command',
-          'type': 'symlink',
-        },
-      );
+  /// Inserts the generated [entries] ahead of any existing `contents` entries,
+  /// preserving their given order (bundle tree, symlinks, license).
+  void _prependContents(YamlEditor editor, List<Object> entries) {
+    for (var i = 0; i < entries.length; i++) {
+      editor.insertIntoList(['contents'], i, entries[i]);
     }
   }
 
-  void _addLicense(YamlEditor editor, Pubspec pubspec, Directory inputDir) {
+  Map<String, Object?> _bundleTreeEntry(
+    Pubspec pubspec,
+    Directory bundleRoot,
+  ) => {
+    'src': _absolute(bundleRoot.path),
+    'dst': '/opt/${pubspec.name}',
+    'type': 'tree',
+  };
+
+  List<Map<String, Object?>> _symlinkEntries(
+    Pubspec pubspec,
+    Map<String, String> executables,
+  ) => [
+    for (final MapEntry(key: command, value: source) in executables.entries)
+      {
+        'src': '/opt/${pubspec.name}/bin/$source',
+        'dst': '/usr/bin/$command',
+        'type': 'symlink',
+      },
+  ];
+
+  Map<String, Object?>? _licenseEntry(Pubspec pubspec, Directory inputDir) {
     final licenseFile = _findByPattern(inputDir, _licenseRegExp);
     if (licenseFile == null) {
-      return;
+      return null;
     }
 
     // A regular file (no `type`), because nfpm's `type: license` only emits the
     // file for rpm packages and omits it entirely from deb and apk packages.
     final licenseName = p.basename(licenseFile.path);
-    editor.appendToList(
-      ['contents'],
-      {
-        'src': _absolute(licenseFile.path),
-        'dst': '/usr/share/licenses/${pubspec.name}/$licenseName',
-      },
-    );
+    return {
+      'src': File(_absolute(licenseFile.path)).resolveSymbolicLinksSync(),
+      'dst': '/usr/share/licenses/${pubspec.name}/$licenseName',
+    };
   }
 
   Future<bool> _addChangelog(
