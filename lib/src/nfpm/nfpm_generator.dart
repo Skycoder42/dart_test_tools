@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -59,6 +60,7 @@ class NfpmGenerator {
     _applyVersion(editor, pubspec);
 
     _ensureContents(editor);
+    _resolveContentSources(editor, inputDirectory, pubspec);
     _addBundleTree(editor, pubspec, bundleRoot);
     _addSymlinks(editor, pubspec, executables);
     _addLicense(editor, pubspec, inputDirectory);
@@ -88,21 +90,18 @@ class NfpmGenerator {
       throw Exception('pubspec.yaml must define at least one executable!');
     }
 
-    final result = <String, String>{};
-    for (final entry in executables.entries) {
-      final command = entry.key as String;
-      final source = entry.value as String?;
-      result[command] = source ?? command;
-    }
-    return result;
+    return executables.cast<String, String?>().map(
+      (command, source) =>
+          MapEntry(command, source?.isEmpty ?? true ? command : source!),
+    );
   }
 
   void _applyMetadata(YamlEditor editor, Pubspec pubspec) {
     if (!_isSet(editor, 'name')) {
       editor.update(['name'], pubspec.name);
     }
-    if (!_isSet(editor, 'description')) {
-      editor.update(['description'], pubspec.description ?? '');
+    if (!_isSet(editor, 'description') && pubspec.description != null) {
+      editor.update(['description'], pubspec.description);
     }
     if (!_isSet(editor, 'homepage')) {
       final homepage = pubspec.homepage ?? pubspec.repository?.toString();
@@ -110,13 +109,45 @@ class NfpmGenerator {
         editor.update(['homepage'], homepage);
       }
     }
+
+    final needsPlatform = !_isSet(editor, 'platform');
+    final needsArch = !_isSet(editor, 'arch');
+    if (needsPlatform || needsArch) {
+      final (:platform, :arch) = _currentTarget();
+      if (needsPlatform) {
+        editor.update(['platform'], platform);
+      }
+      if (needsArch) {
+        editor.update(['arch'], arch);
+      }
+    }
   }
+
+  /// The nfpm (`platform`, `arch`) target — the GOOS/GOARCH pair — for the
+  /// current ABI.
+  ///
+  /// Only host ABIs that nfpm can build for (Linux, macOS, Windows) are
+  /// supported; any other host throws an [UnsupportedError].
+  ({String platform, String arch}) _currentTarget() => switch (Abi.current()) {
+    Abi.linuxArm => (platform: 'linux', arch: 'arm'),
+    Abi.linuxArm64 => (platform: 'linux', arch: 'arm64'),
+    Abi.linuxIA32 => (platform: 'linux', arch: '386'),
+    Abi.linuxX64 => (platform: 'linux', arch: 'amd64'),
+    Abi.linuxRiscv32 => (platform: 'linux', arch: 'riscv'),
+    Abi.linuxRiscv64 => (platform: 'linux', arch: 'riscv64'),
+    Abi.macosArm64 => (platform: 'darwin', arch: 'arm64'),
+    Abi.macosX64 => (platform: 'darwin', arch: 'amd64'),
+    Abi.windowsArm64 => (platform: 'windows', arch: 'arm64'),
+    Abi.windowsIA32 => (platform: 'windows', arch: '386'),
+    Abi.windowsX64 => (platform: 'windows', arch: 'amd64'),
+    final abi => throw UnsupportedError('Unsupported ABI: $abi'),
+  };
 
   bool _isSet(YamlEditor editor, String key) {
     final value = editor.parseAt([
       key,
     ], orElse: () => wrapAsYamlNode(null)).value;
-    return value is String && value.trim().isNotEmpty && !value.contains(r'${');
+    return value is String && value.trim().isNotEmpty;
   }
 
   void _applyVersion(YamlEditor editor, Pubspec pubspec) {
@@ -141,6 +172,74 @@ class NfpmGenerator {
     ], orElse: () => wrapAsYamlNode(null));
     if (contents is! YamlList) {
       editor.update(['contents'], <Object?>[]);
+    }
+  }
+
+  /// Normalizes existing template `contents` entries.
+  ///
+  /// For every entry this rewrites a relative `src` to an absolute path
+  /// anchored at [inputDir] and expands `%{name}` / `%{version}` placeholders
+  /// in `dst` using [pubspec].
+  void _resolveContentSources(
+    YamlEditor editor,
+    Directory inputDir,
+    Pubspec pubspec,
+  ) {
+    final contents = editor.parseAt([
+      'contents',
+    ], orElse: () => wrapAsYamlNode(null));
+    if (contents is! YamlList) {
+      return;
+    }
+
+    for (var i = 0; i < contents.length; i++) {
+      _resolveContentSrc(editor, inputDir, i);
+      _expandContentDst(editor, pubspec, i);
+    }
+  }
+
+  /// Rewrites the `src` of the `contents` entry at [index] to an absolute path
+  /// anchored at [inputDir].
+  ///
+  /// Sources that are already absolute or that start with an environment
+  /// variable reference (`$...`, resolved later by the downstream nfpm job) are
+  /// left untouched.
+  void _resolveContentSrc(YamlEditor editor, Directory inputDir, int index) {
+    final src = editor.parseAt([
+      'contents',
+      index,
+      'src',
+    ], orElse: () => wrapAsYamlNode(null)).value;
+    if (src is! String || src.isEmpty) {
+      return;
+    }
+    if (src.startsWith(r'$') || p.isAbsolute(src)) {
+      return;
+    }
+    editor.update([
+      'contents',
+      index,
+      'src',
+    ], _absolute(p.join(inputDir.path, src)));
+  }
+
+  /// Expands `%{name}` and `%{version}` placeholders in the `dst` of the
+  /// `contents` entry at [index] using [pubspec].
+  void _expandContentDst(YamlEditor editor, Pubspec pubspec, int index) {
+    final dst = editor.parseAt([
+      'contents',
+      index,
+      'dst',
+    ], orElse: () => wrapAsYamlNode(null)).value;
+    if (dst is! String) {
+      return;
+    }
+
+    final expanded = dst
+        .replaceAll('%{name}', pubspec.name)
+        .replaceAll('%{version}', pubspec.version?.toString() ?? '');
+    if (expanded != dst) {
+      editor.update(['contents', index, 'dst'], expanded);
     }
   }
 
@@ -218,7 +317,10 @@ class NfpmGenerator {
     final maintainer = editor.parseAt([
       'maintainer',
     ], orElse: () => wrapAsYamlNode(null)).value;
-    return maintainer is String ? maintainer : '';
+    if (maintainer is! String) {
+      throw Exception('nfpm.yaml must define a maintainer for the changelog!');
+    }
+    return maintainer;
   }
 
   File? _findByPattern(Directory directory, Pattern pattern) {

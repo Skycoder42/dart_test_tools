@@ -55,19 +55,23 @@ Future<void> main(List<String> rawArgs) async {
     }
 
     final inputDir = Directory(args['input'] as String);
-    final templatePath =
-        (args['nfpm'] as String?) ??
-        inputDir.uri.resolve('nfpm.yaml').toFilePath();
-    final outputPath =
-        (args['output'] as String?) ??
-        inputDir.uri.resolve('build/nfpm').toFilePath();
+
+    // Resolve relative paths against the input directory (absolute paths are
+    // returned unchanged), so all inputs share the same anchor.
+    String resolveInput(String path) =>
+        inputDir.uri.resolveUri(Uri.file(path)).toFilePath();
+
+    final templatePath = resolveInput((args['nfpm'] as String?) ?? 'nfpm.yaml');
+    final outputPath = resolveInput(
+      (args['output'] as String?) ?? 'build/nfpm',
+    );
 
     const generator = NfpmGenerator();
     await generator.generate(
       inputDirectory: inputDir,
       templateFile: File(templatePath),
       outputDirectory: Directory(outputPath),
-      bundleRoot: Directory(bundleRoot),
+      bundleRoot: Directory(resolveInput(bundleRoot)),
     );
   } on FormatException catch (e) {
     stderr
