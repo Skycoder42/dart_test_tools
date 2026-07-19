@@ -418,6 +418,51 @@ Example:
     ),
   );
 
+  static const bundleArtifact = WorkflowInput(
+    name: 'bundleArtifact',
+    input: Input(
+      type: Type.string,
+      required: true,
+      description:
+          'The name of the compiled bundle artifact to download and extract. '
+          'The extracted bundle is passed to generate-nfpm as "--bundle-root".',
+    ),
+  );
+
+  static const additionalArtifacts = WorkflowInput(
+    name: 'additionalArtifacts',
+    input: Input(
+      type: Type.string,
+      required: false,
+      description:
+          'An optional artifact name pattern (minimatch, e.g. "assets-*" or '
+          '"{icons,man-pages}") of additional artifacts to download and merge '
+          'into "additionalArtifactsPath" before packaging.',
+    ),
+  );
+
+  static const additionalArtifactsPath = WorkflowInput(
+    name: 'additionalArtifactsPath',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: 'artifacts',
+      description:
+          'The destination directory (relative to the checkout root) that the '
+          'artifacts matched by "additionalArtifacts" are merged into.',
+    ),
+  );
+
+  static const packageType = WorkflowInput(
+    name: 'packageType',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: 'deb',
+      description: 'The nfpm package type to build (deb, rpm, apk, archlinux).',
+    ),
+  );
+
   static const packagecloudRepository = WorkflowInput(
     name: 'packagecloudRepository',
     input: Input(

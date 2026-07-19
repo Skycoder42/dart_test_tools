@@ -1,0 +1,88 @@
+on:
+  workflow_call:
+    inputs:
+      dartSdkVersion:
+        type: string
+        required: false
+        default: stable
+        description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
+      bundleArtifact:
+        type: string
+        required: true
+        description: The name of the compiled bundle artifact to download and extract. The extracted bundle is passed to generate-nfpm as "--bundle-root".
+      additionalArtifacts:
+        type: string
+        required: false
+        description: An optional artifact name pattern (minimatch, e.g. "assets-*" or "{icons,man-pages}") of additional artifacts to download and merge into "additionalArtifactsPath" before packaging.
+      additionalArtifactsPath:
+        type: string
+        required: false
+        default: artifacts
+        description: The destination directory (relative to the checkout root) that the artifacts matched by "additionalArtifacts" are merged into.
+      workingDirectory:
+        type: string
+        required: false
+        default: .
+        description: The root directory of the dart package to build and test.
+      packageType:
+        type: string
+        required: false
+        default: deb
+        description: The nfpm package type to build (deb, rpm, apk, archlinux).
+jobs:
+  build_nfpm:
+    name: Build nfpm package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
+        with:
+          sdk: ${{ inputs.dartSdkVersion }}
+      - name: Install nfpm
+        run: |
+          set -eo pipefail
+          echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
+          sudo apt-get update
+          sudo apt-get install -y nfpm
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
+        with:
+          withDartTestTools: "true"
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          persist-credentials: false
+      - name: Download bundle artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ inputs.bundleArtifact }}
+          path: ${{ runner.temp }}/bundle-archive
+      - name: Extract bundle
+        run: |
+          set -eo pipefail
+          mkdir -p "$RUNNER_TEMP/bundle"
+          tar -xavf "$RUNNER_TEMP"/bundle-archive/*.tar.xz -C "$RUNNER_TEMP/bundle" --strip-components=1
+        shell: bash
+      - name: Download additional artifacts
+        if: inputs.additionalArtifacts != ''
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: ${{ inputs.additionalArtifacts }}
+          path: ${{ inputs.additionalArtifactsPath }}
+          merge-multiple: true
+      - name: Generate nfpm configuration from dart package
+        run: generate-nfpm --input ${{ inputs.workingDirectory }} --bundle-root "$RUNNER_TEMP/bundle" --output "$RUNNER_TEMP/nfpm"
+        shell: bash
+      - name: Build package with nfpm
+        run: |
+          set -eo pipefail
+          mkdir -p "$RUNNER_TEMP/out"
+          nfpm package -f "$RUNNER_TEMP/nfpm/nfpm.yaml" -p '${{ inputs.packageType }}' -t "$RUNNER_TEMP/out"
+        shell: bash
+      - name: Upload package to artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: nfpm-package
+          path: ${{ runner.temp }}/out/*
+          retention-days: 3
+          if-no-files-found: error
