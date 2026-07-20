@@ -96,7 +96,7 @@ abstract class Tools {
         flatpakFlatpakGithubActionsFlatpakBuilder = t,
     'stefanzweifel/git-auto-commit-action@v7': (t) =>
         stefanzweifelGitAutoCommitAction = t,
-    'actions/setup-node@v6': (t) => actionsSetupNode = t,
+    'actions/setup-node@v7': (t) => actionsSetupNode = t,
     'microsoft/setup-msstore-cli@v1': (t) => microsoftSetupMsstoreCli = t,
     'apple-actions/import-codesign-certs@v7': (t) =>
         appleActionsImportCodesignCerts = t,
