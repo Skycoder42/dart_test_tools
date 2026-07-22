@@ -23,6 +23,12 @@ class UpdateChecker {
       throw Exception('Can only run auto_update on workspace root!');
     }
 
+    // Downgrade all dependencies
+    await pub.downgrade();
+
+    // check for security issues
+    final hasSecurityUpdates = await _processOutdated(pub, _isSecurityUpdate);
+
     // Temporarily add flutter_test to keep resolution compatible with the
     // current flutter sdk, matching what the updater does before upgrading.
     final needsFlutterTest = flutterCompat && !await pub.dependsOnFlutterTest();
@@ -39,12 +45,6 @@ class UpdateChecker {
 
       // check for outdated sdk versions
       final hasOutdatedSdk = await _checkSdksOutdated(pub);
-
-      // Downgrade all dependencies
-      await pub.downgrade();
-
-      // check for security issues
-      final hasSecurityUpdates = await _processOutdated(pub, _isSecurityUpdate);
 
       await Github.env.setOutput('has_outdated', hasOutdated);
       await Github.env.setOutput('has_security_issues', hasSecurityUpdates);
