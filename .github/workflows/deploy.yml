@@ -111,7 +111,7 @@ jobs:
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: ${{ inputs.persistCredentials }}
       - id: version
@@ -188,7 +188,7 @@ jobs:
           fi
         shell: bash
       - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -238,7 +238,7 @@ jobs:
           fi
         shell: bash
       - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: true
           path: repo
@@ -304,12 +304,12 @@ jobs:
         with:
           withDartTestTools: "true"
       - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
           path: src
       - name: Checkout ${{ inputs.targetRepo }}
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: true
           path: tap
@@ -379,7 +379,7 @@ jobs:
       - name: Install msstore cli
         uses: microsoft/setup-msstore-cli@3b2ec9136230357ce9abc02b9d056626fb248d3f
       - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
       - name: Download windows app artifact
