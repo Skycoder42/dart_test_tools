@@ -4,6 +4,7 @@ library;
 import 'dart:io';
 
 import 'package:dart_test_tools/nfpm.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 import 'package:yaml_writer/yaml_writer.dart';
@@ -265,7 +266,7 @@ contents: []
     expect(licenses, hasLength(1));
     expect(
       licenses.single['src'],
-      File.fromUri(srcDir.uri.resolve('LICENSE')).absolute.path,
+      File.fromUri(srcDir.uri.resolve('LICENSE')).resolveSymbolicLinksSync(),
     );
     // A regular file, so nfpm packages it for deb/rpm/apk alike.
     expect(licenses.single.containsKey('type'), isFalse);
@@ -350,7 +351,7 @@ contents: []
     );
 
     expect(entry['src'], startsWith(srcDir.path));
-    expect(entry['src'], endsWith('assets/app.conf'));
+    expect(entry['src'], endsWith(p.join('assets', 'app.conf')));
   });
 
   test('leaves an absolute content src untouched', () async {
