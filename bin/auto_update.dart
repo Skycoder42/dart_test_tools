@@ -62,13 +62,14 @@ void main(List<String> args) => Github.runZoned(() async {
     final target = targetPath is String
         ? Directory(targetPath)
         : Github.env.githubWorkspace;
+    final flutterCompat = options['flutter-compat'] as bool;
 
     switch (mode) {
       case .check:
-        await const UpdateChecker()(target);
+        await UpdateChecker(flutterCompat: flutterCompat)(target);
       case .update:
         await Updater(
-          flutterCompat: options['flutter-compat'] as bool,
+          flutterCompat: flutterCompat,
           bumpVersion: options['bump-version'] as bool,
           reportPath: options['report'] as String?,
         )(target);

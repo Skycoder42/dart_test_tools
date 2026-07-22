@@ -15,6 +15,8 @@ import 'models/pub/workspace/workspaces.dart';
 
 @internal
 class PubWrapper {
+  static const flutterTestPackageName = 'flutter_test';
+
   final Directory workingDirectory;
   final bool isFlutter;
 
@@ -22,11 +24,13 @@ class PubWrapper {
 
   PubWrapper(this.workingDirectory, {required this.isFlutter});
 
-  static Future<PubWrapper> create(Directory workingDirectory) async =>
-      PubWrapper(
-        workingDirectory,
-        isFlutter: await _isFlutterProject(workingDirectory),
-      );
+  static Future<PubWrapper> create(
+    Directory workingDirectory, {
+    bool forceFlutter = false,
+  }) async => PubWrapper(
+    workingDirectory,
+    isFlutter: forceFlutter || await _isFlutterProject(workingDirectory),
+  );
 
   Future<Pubspec> pubspec() async {
     final file = workingDirectory.subFile('pubspec.yaml');
@@ -114,6 +118,16 @@ class PubWrapper {
 
   Future<void> remove(String name) async {
     await _exec('remove', [name]);
+  }
+
+  Future<void> addFlutterTest() =>
+      add(flutterTestPackageName, dev: true, config: const {'sdk': 'flutter'});
+
+  Future<void> removeFlutterTest() => remove(flutterTestPackageName);
+
+  Future<bool> dependsOnFlutterTest() async {
+    final deps = await this.deps();
+    return deps.packages.any((p) => p.name == flutterTestPackageName);
   }
 
   Future<Dependencies> deps() async =>

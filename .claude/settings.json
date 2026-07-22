@@ -7,5 +7,8 @@
       "mcp__dart__analyze_files",
       "WebFetch(domain:github.com)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "dart"
+  ]
 }

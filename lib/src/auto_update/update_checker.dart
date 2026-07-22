@@ -9,37 +9,56 @@ import 'pub_wrapper.dart';
 import 'sdk_iterator.dart';
 
 class UpdateChecker {
-  const UpdateChecker();
+  final bool flutterCompat;
+
+  const UpdateChecker({required this.flutterCompat});
 
   Future<void> call(Directory targetDirectory) async {
-    final pub = await PubWrapper.create(targetDirectory);
+    final pub = await PubWrapper.create(
+      targetDirectory,
+      forceFlutter: flutterCompat,
+    );
     final pubspec = await pub.pubspec();
     if (pubspec.resolution == 'workspace') {
       throw Exception('Can only run auto_update on workspace root!');
     }
 
-    // Run upgrade first to ensure dependencies are as up to date as possible
-    await pub.upgrade();
+    // Temporarily add flutter_test to keep resolution compatible with the
+    // current flutter sdk, matching what the updater does before upgrading.
+    final needsFlutterTest = flutterCompat && !await pub.dependsOnFlutterTest();
+    if (needsFlutterTest) {
+      await pub.addFlutterTest();
+    }
 
-    // check for outdated dependencies
-    final hasOutdated = await _processOutdated(pub, _isRelevantUpdate);
+    try {
+      // Run upgrade first to ensure dependencies are as up to date as possible
+      await pub.upgrade();
 
-    // check for outdated sdk versions
-    final hasOutdatedSdk = await _checkSdksOutdated(pub);
+      // check for outdated dependencies
+      final hasOutdated = await _processOutdated(pub, _isRelevantUpdate);
 
-    // Downgrade all dependencies
-    await pub.downgrade();
+      // check for outdated sdk versions
+      final hasOutdatedSdk = await _checkSdksOutdated(pub);
 
-    // check for security issues
-    final hasSecurityUpdates = await _processOutdated(pub, _isSecurityUpdate);
+      // Downgrade all dependencies
+      await pub.downgrade();
 
-    await Github.env.setOutput('has_outdated', hasOutdated);
-    await Github.env.setOutput('has_security_issues', hasSecurityUpdates);
-    await Github.env.setOutput('has_outdated_sdk', hasOutdatedSdk);
-    await Github.env.setOutput(
-      'needs_update',
-      hasOutdated || hasSecurityUpdates || hasOutdatedSdk,
-    );
+      // check for security issues
+      final hasSecurityUpdates = await _processOutdated(pub, _isSecurityUpdate);
+
+      await Github.env.setOutput('has_outdated', hasOutdated);
+      await Github.env.setOutput('has_security_issues', hasSecurityUpdates);
+      await Github.env.setOutput('has_outdated_sdk', hasOutdatedSdk);
+      await Github.env.setOutput(
+        'needs_update',
+        hasOutdated || hasSecurityUpdates || hasOutdatedSdk,
+      );
+    } finally {
+      if (needsFlutterTest) {
+        await pub.removeFlutterTest();
+        await pub.upgrade();
+      }
+    }
   }
 
   Future<bool> _processOutdated(

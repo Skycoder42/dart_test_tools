@@ -8,8 +8,6 @@ import 'pub_wrapper.dart';
 import 'sdk_iterator.dart';
 
 class Updater {
-  static const _flutterTestPackageName = 'flutter_test';
-
   final bool flutterCompat;
   final bool bumpVersion;
   final String? reportPath;
@@ -27,7 +25,10 @@ class Updater {
       _reportSink = File(path).openWrite();
     }
 
-    final pub = PubWrapper(targetDirectory, isFlutter: true);
+    final pub = await PubWrapper.create(
+      targetDirectory,
+      forceFlutter: flutterCompat,
+    );
 
     await _updateSdks(pub);
 
@@ -98,13 +99,9 @@ class Updater {
   }
 
   Future<void> _updateDependencies(PubWrapper pub) async {
-    final needsFlutterTest = await _needsFlutterTest(pub);
+    final needsFlutterTest = flutterCompat && !await pub.dependsOnFlutterTest();
     if (needsFlutterTest) {
-      await pub.add(
-        _flutterTestPackageName,
-        dev: true,
-        config: {'sdk': 'flutter'},
-      );
+      await pub.addFlutterTest();
     }
 
     final changes = pub.upgradeMajor();
@@ -118,7 +115,7 @@ class Updater {
     _reportSink?.writeln('```');
 
     if (needsFlutterTest) {
-      await pub.remove(_flutterTestPackageName);
+      await pub.removeFlutterTest();
       await pub.upgrade();
     }
   }
@@ -158,15 +155,6 @@ class Updater {
         }
       });
     });
-  }
-
-  Future<bool> _needsFlutterTest(PubWrapper pub) async {
-    if (!flutterCompat) {
-      return false;
-    }
-
-    final deps = await pub.deps();
-    return !deps.packages.any((p) => p.name == _flutterTestPackageName);
   }
 
   Future<void> _bumpVersion(PubWrapper pub) async {

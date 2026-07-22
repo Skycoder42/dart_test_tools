@@ -48,9 +48,9 @@ class AutoUpdateBuilder implements StepBuilder {
   }
 
   Iterable<Step> _updateDependencies() sync* {
-    final flutterCompatOption =
-        config.flutterCompat & const Expression.literal('--flutter-compat') |
-        const Expression.literal('--no-flutter-compat');
+    final flutterCompatOption = Functions.case$([
+      (config.flutterCompat, const ExpressionOrValue.value('--flutter-compat')),
+    ], const ExpressionOrValue.value('--no-flutter-compat'));
     yield Step.run(
       name: 'Update dependencies',
       run:
