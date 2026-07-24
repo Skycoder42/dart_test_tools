@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.2.9] - 2026-07-24
+### Fixed
+- `generate-cask`: Fix deprecated depends\_on format
+
 ## [7.2.8] - 2026-07-22
 ### Fixed
 - `auto-update`: Ensure dependencies do not remain downgraded
@@ -526,6 +530,7 @@ have been added:
 ### Added
 - Initial release
 
+[7.2.9]: https://github.com/Skycoder42/dart_test_tools/compare/v7.2.8...v7.2.9
 [7.2.8]: https://github.com/Skycoder42/dart_test_tools/compare/v7.2.7...v7.2.8
 [7.2.7]: https://github.com/Skycoder42/dart_test_tools/compare/v7.2.6...v7.2.7
 [7.2.6]: https://github.com/Skycoder42/dart_test_tools/compare/v7.2.5...v7.2.6

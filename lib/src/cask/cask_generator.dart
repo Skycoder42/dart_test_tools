@@ -7,6 +7,14 @@ import '../tools/io.dart';
 import 'cask_options.dart';
 import 'cask_options_loader.dart';
 
+/// A raw Ruby literal that is written to the cask script verbatim, without
+/// being wrapped in quotes (e.g. a symbol like `:catalina`).
+class _CaskLiteral {
+  final String value;
+
+  const _CaskLiteral(this.value);
+}
+
 class CaskGenerator {
   final CaskOptionsLoader _caskOptionsLoader;
 
@@ -38,7 +46,7 @@ class CaskGenerator {
       'desc': options.pubspec.description,
       'homepage': options.pubspec.homepage,
     },
-    {'depends_on macos:': '>= ${options.options.minMacosVersion}'},
+    {'depends_on macos:': _CaskLiteral(options.options.minMacosVersion)},
     {'app': '${options.appInfo.productName}.app'},
     if (options.options.zap case final List<dynamic> zap when zap.isNotEmpty)
       {'zap trash:': zap}
@@ -105,6 +113,8 @@ class CaskGenerator {
           switch (value) {
             case null:
               throw Exception('Missing cask configuration value: $key');
+            case _CaskLiteral(:final value):
+              caskSink.writeln(value);
             case List<dynamic>():
               caskSink.writeln('[');
               for (final line in value) {
