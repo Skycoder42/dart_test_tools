@@ -176,7 +176,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p ../artifacts
-          tar -cavf '../artifacts/${{ inputs.archivePrefix || steps.detect-archive-name.outputs.archive-name }}-${{ matrix.platform }}.tar.xz' .
+          artifact_dir='${{ inputs.archivePrefix || steps.detect-archive-name.outputs.archive-name }}'
+          tar -cavf "../artifacts/$artifact_dir-${{ matrix.platform }}.tar.xz" "$artifact_dir"
         working-directory: ${{ inputs.workingDirectory }}/build/cli
         shell: bash
       - name: Create release archive (zip)
@@ -184,7 +185,8 @@ jobs:
         run: |
           set -eo pipefail
           mkdir -p ../artifacts
-          7z a -y '../artifacts/${{ inputs.archivePrefix || steps.detect-archive-name.outputs.archive-name }}-${{ matrix.platform }}.zip' .
+          artifact_dir='${{ inputs.archivePrefix || steps.detect-archive-name.outputs.archive-name }}'
+          7z a -y "../artifacts/$artifact_dir-${{ matrix.platform }}.zip" "$artifact_dir"
         working-directory: ${{ inputs.workingDirectory }}/build/cli
         shell: bash
       - id: resolve-artifact-prefix

@@ -19,6 +19,7 @@ base mixin NfpmConfig
   late final additionalArtifactsPath = inputContext(
     WorkflowInputs.additionalArtifactsPath,
   );
+  late final prepareArtifacts = inputContext(WorkflowInputs.prepareArtifacts);
   late final packageType = inputContext(WorkflowInputs.packageType);
 }
 
@@ -62,6 +63,12 @@ tar -xavf "$RUNNER_TEMP"/bundle-archive/*.tar.xz -C "$RUNNER_TEMP/bundle" --stri
         'path': config.additionalArtifactsPath.toString(),
         'merge-multiple': true,
       },
+    ),
+    Step.run(
+      name: 'Prepare additional artifacts',
+      ifExpression: config.prepareArtifacts.ne(Expression.empty),
+      run: config.prepareArtifacts.toString(),
+      shell: 'bash',
     ),
     Step.run(
       name: 'Generate nfpm configuration from dart package',

@@ -122,7 +122,8 @@ mv build/cli/bundle 'build/cli/${config.archivePrefix | archiveNameOutput.expres
           '''
 set -euo pipefail
 mkdir -p ../artifacts
-tar -cavf '../artifacts/${config.archivePrefix | archiveNameOutput.expression}-${platform.expression}.tar.xz' .
+artifact_dir='${config.archivePrefix | archiveNameOutput.expression}'
+tar -cavf "../artifacts/\$artifact_dir-${platform.expression}.tar.xz" "\$artifact_dir"
 ''',
       workingDirectory: '${config.workingDirectory}/build/cli',
       shell: 'bash',
@@ -134,7 +135,8 @@ tar -cavf '../artifacts/${config.archivePrefix | archiveNameOutput.expression}-$
           '''
 set -eo pipefail
 mkdir -p ../artifacts
-7z a -y '../artifacts/${config.archivePrefix | archiveNameOutput.expression}-${platform.expression}.zip' .
+artifact_dir='${config.archivePrefix | archiveNameOutput.expression}'
+7z a -y "../artifacts/\$artifact_dir-${platform.expression}.zip" "\$artifact_dir"
 ''',
       workingDirectory: '${config.workingDirectory}/build/cli',
       shell: 'bash',

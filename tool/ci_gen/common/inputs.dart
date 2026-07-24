@@ -471,6 +471,22 @@ Example:
     ),
   );
 
+  static const prepareArtifacts = WorkflowInput(
+    name: 'prepareArtifacts',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: '',
+      description:
+          'An optional bash script that runs after the additional artifacts '
+          'have been downloaded into "additionalArtifactsPath" and before the '
+          'nfpm package is generated. Use it to post-process the downloaded '
+          'artifacts, e.g. to extract archives they contain. Runs from the '
+          'checkout root; the artifacts are available under '
+          '"additionalArtifactsPath".',
+    ),
+  );
+
   static const packageType = WorkflowInput(
     name: 'packageType',
     input: Input(
