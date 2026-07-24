@@ -433,17 +433,18 @@ Example:
     ),
   );
 
-  static const binaryArtifactsPattern = WorkflowInput(
-    name: 'binaryArtifactsPattern',
+  static const releaseFiles = WorkflowInput(
+    name: 'releaseFiles',
     input: Input(
       type: Type.string,
       required: false,
-      defaultValue: '',
+      defaultValue: '''
+artifacts/*.dmg
+artifacts/*Web.tar.*
+''',
       description:
-          'A minimatch pattern of the build artifacts that should be attached '
-          'to the created release (e.g. binaries without a dedicated '
-          'deployment target). If left empty, defaults to all bundle artifacts '
-          'of the current package ("<artifactPrefix>-*").',
+          'A newline-separated list of file globs of the downloaded build '
+          'artifacts that should be attached to the created release.',
     ),
   );
 
@@ -466,8 +467,8 @@ Example:
       required: false,
       defaultValue: 'artifacts',
       description:
-          'The destination directory (relative to the checkout root) that the '
-          'artifacts matched by "additionalArtifacts" are merged into.',
+          'The destination directory (relative to the working directory) that '
+          'the artifacts matched by "additionalArtifacts" are merged into.',
     ),
   );
 
@@ -482,7 +483,7 @@ Example:
           'have been downloaded into "additionalArtifactsPath" and before the '
           'nfpm package is generated. Use it to post-process the downloaded '
           'artifacts, e.g. to extract archives they contain. Runs from the '
-          'checkout root; the artifacts are available under '
+          'working directory; the artifacts are available under '
           '"additionalArtifactsPath".',
     ),
   );

@@ -11,8 +11,7 @@ import '../types/workflow_call.dart';
 
 /// Stage 3 (Release-Check): checks whether the current package version has
 /// already been released as a git tag and, if not, creates a GitHub release and
-/// attaches all "orphan" build artifacts (those without a dedicated deployment
-/// target) matched by [WorkflowInputs.binaryArtifactsPattern].
+/// attaches the build artifacts matched by [WorkflowInputs.releaseFiles].
 ///
 /// Meant to be called after the stage-2 build/bundle workflows (via `needs`),
 /// so the artifacts they uploaded are available for download in the same run.

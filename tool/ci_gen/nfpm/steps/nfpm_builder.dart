@@ -60,7 +60,7 @@ tar -xavf "$RUNNER_TEMP"/bundle-archive/*.tar.xz -C "$RUNNER_TEMP/bundle" --stri
       uses: Tools.actionsDownloadArtifact,
       withArgs: <String, dynamic>{
         'pattern': config.additionalArtifacts.toString(),
-        'path': config.additionalArtifactsPath.toString(),
+        'path': '${config.workingDirectory}/${config.additionalArtifactsPath}',
         'merge-multiple': true,
       },
     ),
@@ -68,6 +68,7 @@ tar -xavf "$RUNNER_TEMP"/bundle-archive/*.tar.xz -C "$RUNNER_TEMP/bundle" --stri
       name: 'Prepare additional artifacts',
       ifExpression: config.prepareArtifacts.ne(Expression.empty),
       run: config.prepareArtifacts.toString(),
+      workingDirectory: config.workingDirectory.toString(),
       shell: 'bash',
     ),
     Step.run(

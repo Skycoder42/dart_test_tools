@@ -92,7 +92,7 @@ jobs:
           persist-credentials: false
       - id: flatpak-bundle-name
         name: Calculate flatpak bundle name
-        run: echo "bundle-name=$(yq -r .id '${{ inputs.workingDirectory }}/${{ inputs.manifestPath }}').${{ matrix.arch }}.flatpak" >> $GITHUB_OUTPUT
+        run: echo "bundle-name=$(yq -r .id '${{ inputs.workingDirectory }}/${{ inputs.manifestPath }}')_${{ matrix.arch }}.flatpak" >> $GITHUB_OUTPUT
         shell: bash
       - id: generateBuildNumber
         name: Generate build number

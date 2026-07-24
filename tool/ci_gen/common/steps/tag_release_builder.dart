@@ -17,9 +17,7 @@ base mixin TagReleaseConfig
   late final persistCredentials = inputContext(
     WorkflowInputs.persistCredentials,
   );
-  late final binaryArtifactsPattern = inputContext(
-    WorkflowInputs.binaryArtifactsPattern,
-  );
+  late final releaseFiles = inputContext(WorkflowInputs.releaseFiles);
 }
 
 class TagReleaseBuilder implements StepBuilder {
@@ -69,22 +67,16 @@ fi
       uses: Tools.actionsDownloadArtifact,
       withArgs: <String, dynamic>{
         'path': 'artifacts',
-        'pattern': _binaryArtifactsPattern,
+        'pattern': Functions.format('{0}-*', [
+          config.resolvedPrefix,
+        ]).toString(),
         'merge-multiple': true,
       },
     ),
     ...ReleaseEntryBuilder(
       config: config,
       versionUpdate: updateOutput.expression,
-      files: 'artifacts/*',
+      files: config.releaseFiles.toString(),
     ).build(),
   ];
-
-  /// The orphan-artifact pattern to attach to the release: the explicit
-  /// `binaryArtifactsPattern` input if set, otherwise all bundle artifacts of
-  /// the current package (`<artifactPrefix>-*`).
-  String get _binaryArtifactsPattern =>
-      (config.binaryArtifactsPattern |
-              Functions.format('{0}-*', [config.resolvedPrefix]))
-          .toString();
 }

@@ -24,12 +24,12 @@ on:
         type: string
         required: false
         default: artifacts
-        description: The destination directory (relative to the checkout root) that the artifacts matched by "additionalArtifacts" are merged into.
+        description: The destination directory (relative to the working directory) that the artifacts matched by "additionalArtifacts" are merged into.
       prepareArtifacts:
         type: string
         required: false
         default: ""
-        description: An optional bash script that runs after the additional artifacts have been downloaded into "additionalArtifactsPath" and before the nfpm package is generated. Use it to post-process the downloaded artifacts, e.g. to extract archives they contain. Runs from the checkout root; the artifacts are available under "additionalArtifactsPath".
+        description: An optional bash script that runs after the additional artifacts have been downloaded into "additionalArtifactsPath" and before the nfpm package is generated. Use it to post-process the downloaded artifacts, e.g. to extract archives they contain. Runs from the working directory; the artifacts are available under "additionalArtifactsPath".
       packageType:
         type: string
         required: false
@@ -86,11 +86,12 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           pattern: ${{ inputs.additionalArtifacts }}
-          path: ${{ inputs.additionalArtifactsPath }}
+          path: ${{ inputs.workingDirectory }}/${{ inputs.additionalArtifactsPath }}
           merge-multiple: true
       - name: Prepare additional artifacts
         if: inputs.prepareArtifacts != ''
         run: ${{ inputs.prepareArtifacts }}
+        working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Generate nfpm configuration from dart package
         run: generate-nfpm --input ${{ inputs.workingDirectory }} --bundle-root "$RUNNER_TEMP/bundle" --output "$RUNNER_TEMP/nfpm"

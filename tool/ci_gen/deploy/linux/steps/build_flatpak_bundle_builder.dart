@@ -96,9 +96,8 @@ chmod +x /usr/bin/yq
     Step.run(
       id: bundleNameStepId,
       name: 'Calculate flatpak bundle name',
-      run:
-          '''
-echo "${bundleNameOutput.name}=\$(yq -r .id '${config.workingDirectory}/${config.manifestPath}').${arch.expression}.flatpak" >> \$GITHUB_OUTPUT''',
+      run: '''
+echo "${bundleNameOutput.name}=\$(yq -r .id '${config.workingDirectory}/${config.manifestPath}')_${arch.expression}.flatpak" >> \$GITHUB_OUTPUT''',
       shell: 'bash',
     ),
     ...GenerateBuildNumberBuilder(config: config, asEnv: true).build(),
