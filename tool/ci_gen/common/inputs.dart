@@ -551,7 +551,7 @@ Example:
     name: 'targetRepo',
     input: Input(
       type: Type.string,
-      required: false,
+      required: true,
       description:
           'The repository identifier (<owner>/<repo>) '
           'to which the cask should be published.',

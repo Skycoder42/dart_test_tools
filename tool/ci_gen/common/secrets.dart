@@ -95,7 +95,7 @@ VARIABLE2=value2
   static const googlePlayKey = WorkflowSecret(
     name: 'googlePlayKey',
     secret: Secret(
-      required: false,
+      required: true,
       description:
           'The google play api upload JSON key. '
           'Needed by fastlane to actually publish the app.',
@@ -126,10 +126,11 @@ VARIABLE2=value2
     secret: Secret(required: required, description: 'The id of the gpgKey'),
   );
 
-  static const targetRepoToken = WorkflowSecret(
+  // ignore: avoid_positional_boolean_parameters single arguments
+  static WorkflowSecret targetRepoToken(bool required) => WorkflowSecret(
     name: 'targetRepoToken',
     secret: Secret(
-      required: false,
+      required: required,
       description:
           'A GitHub PAT that has the permission '
           'to push commits to the targetRepo.',
@@ -147,7 +148,7 @@ VARIABLE2=value2
   static const tenantId = WorkflowSecret(
     name: 'tenantId',
     secret: Secret(
-      required: false,
+      required: true,
       description:
           'The tenantId of the EntraID Tenant used by the msstore cli.',
     ),
@@ -156,7 +157,7 @@ VARIABLE2=value2
   static const sellerId = WorkflowSecret(
     name: 'sellerId',
     secret: Secret(
-      required: false,
+      required: true,
       description:
           'The sellerId of the Microsoft Store used by the msstore cli.',
     ),
@@ -165,7 +166,7 @@ VARIABLE2=value2
   static const clientId = WorkflowSecret(
     name: 'clientId',
     secret: Secret(
-      required: false,
+      required: true,
       description:
           'The clientId of the EntraID Tenant used by the msstore cli.',
     ),
@@ -174,7 +175,7 @@ VARIABLE2=value2
   static const clientSecret = WorkflowSecret(
     name: 'clientSecret',
     secret: Secret(
-      required: false,
+      required: true,
       description:
           'The clientSecret of the EntraID Tenant used by the msstore cli.',
     ),

@@ -13,10 +13,10 @@ on:
         description: The prefix for build/bundle artifact names, combined into the normalized "<prefix>-<type>-<platform>" name. If left empty, it falls back at runtime to the package name from the pubspec.yaml in "workingDirectory". Set this to keep artifact names unique when multiple packages are built within the same pipeline.
     secrets:
       gpgKeyId:
-        required: false
+        required: true
         description: The id of the gpgKey
       gpgKey:
-        required: false
+        required: true
         description: The GPG key to sign the flatpak bundle and repository with.
 jobs:
   deploy_linux:
@@ -29,20 +29,6 @@ jobs:
       image: ${{ inputs.flatpakPlatformImage }}
       options: --privileged
     steps:
-      - name: '[Validate Inputs] Ensure gpgKeyId is set'
-        run: |
-          if [[ '${{ secrets.gpgKeyId }}' == '' ]]; then
-            echo '::error::Platform is enabled, but required input gpgKeyId is not set'
-            exit 1
-          fi
-        shell: bash
-      - name: '[Validate Inputs] Ensure gpgKey is set'
-        run: |
-          if [[ '${{ secrets.gpgKey }}' == '' ]]; then
-            echo '::error::Platform is enabled, but required input gpgKey is not set'
-            exit 1
-          fi
-        shell: bash
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:

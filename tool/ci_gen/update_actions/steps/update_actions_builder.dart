@@ -14,7 +14,9 @@ base mixin UpdateActionsConfig
   late final validationWorkflow = inputContext(
     WorkflowInputs.validationWorkflow,
   );
-  late final targetRepoToken = secretContext(WorkflowSecrets.targetRepoToken);
+  late final targetRepoToken = secretContext(
+    WorkflowSecrets.targetRepoToken(false),
+  );
 }
 
 class UpdateActionsBuilder implements StepBuilder {

@@ -2,8 +2,6 @@ import '../../../common/api/job_builder.dart';
 import '../../../common/api/job_config.dart';
 import '../../../common/environments.dart';
 import '../../../common/inputs.dart';
-import '../../../common/secrets.dart';
-import '../../../common/steps/validate_inputs_builder.dart';
 import '../../../types/container.dart';
 import '../../../types/id.dart';
 import '../../../types/job.dart';
@@ -38,12 +36,6 @@ final class DeployLinuxJobBuilder implements JobBuilder {
     ),
     environment: Environments.flatpak,
     permissions: const {'contents': 'write'},
-    steps: [
-      ...ValidateInputsBuilder({
-        WorkflowSecrets.gpgKeyId(false).name: config.gpgKeyId,
-        WorkflowSecrets.gpgKey(false).name: config.gpgKey,
-      }).build(),
-      ...DeployToPagesBuilder(config: config).build(),
-    ],
+    steps: [...DeployToPagesBuilder(config: config).build()],
   );
 }

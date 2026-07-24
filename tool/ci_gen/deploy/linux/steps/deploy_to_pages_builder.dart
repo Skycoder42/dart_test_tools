@@ -13,7 +13,7 @@ base mixin DeployToPagesConfig on JobConfig, WithGpgKeyConfig {
   late final artifactPrefix = inputContext(WorkflowInputs.artifactPrefix);
 
   @override
-  bool get requireGpgKey => false;
+  bool get requireGpgKey => true;
 
   /// The minimatch pattern of flatpak bundles to download and deploy.
   ///

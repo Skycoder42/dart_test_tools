@@ -23,7 +23,7 @@ on:
         description: The google play release status after publishing the app (completed, draft, halted, inProgress).
     secrets:
       googlePlayKey:
-        required: false
+        required: true
         description: The google play api upload JSON key. Needed by fastlane to actually publish the app.
 jobs:
   deploy_android:
@@ -31,13 +31,6 @@ jobs:
     environment: google-play
     runs-on: macos-latest
     steps:
-      - name: '[Validate Inputs] Ensure googlePlayKey is set'
-        run: |
-          if [[ '${{ secrets.googlePlayKey }}' == '' ]]; then
-            echo '::error::Platform is enabled, but required input googlePlayKey is not set'
-            exit 1
-          fi
-        shell: bash
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:

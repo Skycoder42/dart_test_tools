@@ -3,8 +3,6 @@ import '../../../common/api/working_directory_config.dart';
 import '../../../common/environments.dart';
 import '../../../common/inputs.dart';
 import '../../../common/jobs/sdk_job_builder.dart';
-import '../../../common/secrets.dart';
-import '../../../common/steps/validate_inputs_builder.dart';
 import '../../../dart/jobs/dart_sdk_job_builder_mixin.dart';
 import '../../../types/id.dart';
 import '../../../types/job.dart';
@@ -35,10 +33,6 @@ final class DeployMacosJobBuilder extends SdkJobBuilder<DeployMacosJobConfig>
     runsOn: RunsOn.macosLatest.id,
     environment: Environments.homebrew,
     steps: [
-      ...ValidateInputsBuilder({
-        WorkflowInputs.targetRepo.name: config.targetRepo,
-        WorkflowSecrets.targetRepoToken.name: config.targetRepoToken,
-      }).build(),
       ...buildSetupSdkSteps(),
       ...DeployToTapBuilder(
         config: config,

@@ -16,24 +16,20 @@ on:
         required: false
         default: "25.08"
         description: The version of the freedesktop sdk and runtime being used.
-      buildNumberArgs:
-        type: string
-        required: false
-        default: ""
-        description: Additional args for the build number generator.
       workingDirectory:
         type: string
         required: false
         default: .
         description: The root directory of the dart package to build and test.
-      bundleName:
-        type: string
-        required: true
-        description: The output flatpak bundle name.
       manifestPath:
         type: string
         required: true
         description: The path to the flatpak manifest to be built.
+      buildNumberArgs:
+        type: string
+        required: false
+        default: ""
+        description: Additional args for the build number generator.
       artifactPrefix:
         type: string
         required: false
@@ -94,6 +90,10 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+      - id: flatpak-bundle-name
+        name: Calculate flatpak bundle name
+        run: echo "bundle-name=$(yq -r .id '${{ inputs.workingDirectory }}/${{ inputs.manifestPath }}').${{ matrix.arch }}.flatpak" >> $GITHUB_OUTPUT
+        shell: bash
       - id: generateBuildNumber
         name: Generate build number
         run: generate-build-number ${{ inputs.buildNumberArgs }} --env
@@ -108,7 +108,7 @@ jobs:
       - name: Build flatpak bundle
         uses: flatpak/flatpak-github-actions/flatpak-builder@401fe28a8384095fc1531b9d320b292f0ee45adb
         with:
-          bundle: ${{ inputs.bundleName }}
+          bundle: ${{ steps.flatpak-bundle-name.outputs.bundle-name }}
           manifest-path: ${{ inputs.workingDirectory }}/${{ inputs.manifestPath }}
           branch: ${{ github.ref_name }}
           arch: ${{ matrix.arch }}
@@ -129,7 +129,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: ${{ inputs.artifactPrefix || steps.resolve-artifact-prefix.outputs.prefix }}-flatpak-linux-${{ matrix.arch }}
-          path: ${{ inputs.bundleName }}
+          path: ${{ steps.flatpak-bundle-name.outputs.bundle-name }}
           retention-days: 1
           compression-level: 0
           if-no-files-found: error

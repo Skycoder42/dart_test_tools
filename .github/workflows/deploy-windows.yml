@@ -27,16 +27,16 @@ on:
         description: An optional FlightId to publish the MSIX installer to.
     secrets:
       tenantId:
-        required: false
+        required: true
         description: The tenantId of the EntraID Tenant used by the msstore cli.
       sellerId:
-        required: false
+        required: true
         description: The sellerId of the Microsoft Store used by the msstore cli.
       clientId:
-        required: false
+        required: true
         description: The clientId of the EntraID Tenant used by the msstore cli.
       clientSecret:
-        required: false
+        required: true
         description: The clientSecret of the EntraID Tenant used by the msstore cli.
 jobs:
   deploy_windows:
@@ -44,34 +44,6 @@ jobs:
     environment: msstore
     runs-on: windows-latest
     steps:
-      - name: '[Validate Inputs] Ensure tenantId is set'
-        run: |
-          if [[ '${{ secrets.tenantId }}' == '' ]]; then
-            echo '::error::Platform is enabled, but required input tenantId is not set'
-            exit 1
-          fi
-        shell: bash
-      - name: '[Validate Inputs] Ensure sellerId is set'
-        run: |
-          if [[ '${{ secrets.sellerId }}' == '' ]]; then
-            echo '::error::Platform is enabled, but required input sellerId is not set'
-            exit 1
-          fi
-        shell: bash
-      - name: '[Validate Inputs] Ensure clientId is set'
-        run: |
-          if [[ '${{ secrets.clientId }}' == '' ]]; then
-            echo '::error::Platform is enabled, but required input clientId is not set'
-            exit 1
-          fi
-        shell: bash
-      - name: '[Validate Inputs] Ensure clientSecret is set'
-        run: |
-          if [[ '${{ secrets.clientSecret }}' == '' ]]; then
-            echo '::error::Platform is enabled, but required input clientSecret is not set'
-            exit 1
-          fi
-        shell: bash
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:

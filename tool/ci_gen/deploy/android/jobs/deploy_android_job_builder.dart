@@ -2,9 +2,7 @@ import '../../../common/api/job_builder.dart';
 import '../../../common/api/job_config.dart';
 import '../../../common/api/working_directory_config.dart';
 import '../../../common/environments.dart';
-import '../../../common/secrets.dart';
 import '../../../common/steps/resolve_artifact_prefix_builder.dart';
-import '../../../common/steps/validate_inputs_builder.dart';
 import '../../../types/id.dart';
 import '../../../types/job.dart';
 import '../../../types/runs_on.dart';
@@ -31,11 +29,6 @@ final class DeployAndroidJobBuilder implements JobBuilder {
     name: 'Deploy android app to Google Play',
     runsOn: RunsOn.macosLatest.id,
     environment: Environments.googlePlay,
-    steps: [
-      ...ValidateInputsBuilder({
-        WorkflowSecrets.googlePlayKey.name: config.googlePlayKey,
-      }).build(),
-      ...DeployAndroidAppBuilder(config: config).build(),
-    ],
+    steps: [...DeployAndroidAppBuilder(config: config).build()],
   );
 }

@@ -15,7 +15,9 @@ import '../../../types/step.dart';
 base mixin DeployToTapConfig
     on JobConfig, SdkJobConfig, WorkingDirectoryConfig {
   late final targetRepo = inputContext(WorkflowInputs.targetRepo);
-  late final targetRepoToken = secretContext(WorkflowSecrets.targetRepoToken);
+  late final targetRepoToken = secretContext(
+    WorkflowSecrets.targetRepoToken(true),
+  );
 }
 
 class DeployToTapBuilder implements StepBuilder {

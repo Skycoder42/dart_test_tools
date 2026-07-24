@@ -9,6 +9,7 @@ import '../../../common/steps/deploy_artifact_builder.dart';
 import '../../../common/steps/resolve_artifact_prefix_builder.dart';
 import '../../../common/tools.dart';
 import '../../../flutter/flutter_platform.dart';
+import '../../../types/id.dart';
 import '../../../types/step.dart';
 import '../../steps/generate_build_number_builder.dart';
 import 'with_gpg_key.dart';
@@ -20,7 +21,6 @@ base mixin BuildFlatpakBundleConfig
         WithGpgKeyConfig,
         ResolveArtifactPrefixConfig {
   late final sdkVersion = inputContext(WorkflowInputs.flatpakSdkVersion);
-  late final bundleName = inputContext(WorkflowInputs.bundleName);
   late final manifestPath = inputContext(WorkflowInputs.manifestPath);
 
   @override
@@ -56,6 +56,8 @@ final class YqArchMatrixProperty
 
 class BuildFlatpakBundleBuilder implements StepBuilder {
   static final artifactNameOutput = DeployArtifactBuilder.artifactNameOutput;
+  static const bundleNameStepId = StepId('flatpak-bundle-name');
+  static final bundleNameOutput = bundleNameStepId.output('bundle-name');
 
   final BuildFlatpakBundleConfig config;
   final ArchMatrixProperty arch;
@@ -91,6 +93,14 @@ chmod +x /usr/bin/yq
           '/tmp/flutter.flatpak',
     ),
     ...const CheckoutBuilder().build(),
+    Step.run(
+      id: bundleNameStepId,
+      name: 'Calculate flatpak bundle name',
+      run:
+          '''
+echo "${bundleNameOutput.name}=\$(yq -r .id '${config.workingDirectory}/${config.manifestPath}').${arch.expression}.flatpak" >> \$GITHUB_OUTPUT''',
+      shell: 'bash',
+    ),
     ...GenerateBuildNumberBuilder(config: config, asEnv: true).build(),
     const Step.run(
       name: 'Prepare flatpak repo',
@@ -107,7 +117,7 @@ ostree --repo=repo config set core.min-free-space-size "1MB"
           name: 'Build flatpak bundle',
           uses: Tools.flatpakFlatpakGithubActionsFlatpakBuilder,
           withArgs: {
-            'bundle': config.bundleName.toString(),
+            'bundle': bundleNameOutput.expression.toString(),
             'manifest-path':
                 '${config.workingDirectory}/${config.manifestPath}',
             'branch': Github.refName.toString(),
@@ -124,7 +134,7 @@ ostree --repo=repo config set core.min-free-space-size "1MB"
       type: ArtifactType.flatpak,
       platform: FlutterPlatform.linux,
       arch: arch.expression,
-      path: config.bundleName.toString(),
+      path: bundleNameOutput.expression.toString(),
       compressionLevel: 0,
       exportAsPattern: true,
     ).build(),

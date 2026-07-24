@@ -1,10 +1,6 @@
 on:
   workflow_call:
     inputs:
-      targetRepo:
-        type: string
-        required: false
-        description: The repository identifier (<owner>/<repo>) to which the cask should be published.
       dartSdkVersion:
         type: string
         required: false
@@ -14,6 +10,10 @@ on:
         type: string
         required: true
         description: The previously released version to deploy.
+      targetRepo:
+        type: string
+        required: true
+        description: The repository identifier (<owner>/<repo>) to which the cask should be published.
       workingDirectory:
         type: string
         required: false
@@ -21,7 +21,7 @@ on:
         description: The root directory of the dart package to build and test.
     secrets:
       targetRepoToken:
-        required: false
+        required: true
         description: A GitHub PAT that has the permission to push commits to the targetRepo.
 jobs:
   deploy_macos:
@@ -29,20 +29,6 @@ jobs:
     environment: homebrew
     runs-on: macos-latest
     steps:
-      - name: '[Validate Inputs] Ensure targetRepo is set'
-        run: |
-          if [[ '${{ inputs.targetRepo }}' == '' ]]; then
-            echo '::error::Platform is enabled, but required input targetRepo is not set'
-            exit 1
-          fi
-        shell: bash
-      - name: '[Validate Inputs] Ensure targetRepoToken is set'
-        run: |
-          if [[ '${{ secrets.targetRepoToken }}' == '' ]]; then
-            echo '::error::Platform is enabled, but required input targetRepoToken is not set'
-            exit 1
-          fi
-        shell: bash
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
         with:
