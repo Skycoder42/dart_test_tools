@@ -6,20 +6,18 @@ import '../api/working_directory_config.dart';
 import '../contexts.dart';
 import '../inputs.dart';
 import '../steps/release_entry_builder.dart';
+import '../steps/resolve_artifact_prefix_builder.dart';
 import '../steps/tag_release_builder.dart';
 
 final class TagReleaseJobConfig extends JobConfig
-    with WorkingDirectoryConfig, ReleaseEntryConfig, TagReleaseConfig {
+    with
+        WorkingDirectoryConfig,
+        ResolveArtifactPrefixConfig,
+        ReleaseEntryConfig,
+        TagReleaseConfig {
   late final releaseRef = inputContext(WorkflowInputs.releaseRef);
 
-  @override
-  final String? binaryArtifactsPattern;
-
-  TagReleaseJobConfig(
-    super.inputContext,
-    super.secretContext, {
-    required this.binaryArtifactsPattern,
-  });
+  TagReleaseJobConfig(super.inputContext, super.secretContext);
 }
 
 class TagReleaseJobBuilder implements JobBuilder {

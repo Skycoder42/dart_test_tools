@@ -1,0 +1,128 @@
+on:
+  workflow_call:
+    inputs:
+      releaseRef:
+        type: string
+        required: false
+        default: refs/heads/main
+        description: The git ref that is allowed to publish releases.
+      dartSdkVersion:
+        type: string
+        required: false
+        default: stable
+        description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
+      persistCredentials:
+        type: boolean
+        required: false
+        default: false
+        description: Specifies, whether git credentials should be persisted for the run. Might be needed in case the repository is a private repository to figure out whether a new release is required or not.
+      tagPrefix:
+        type: string
+        required: false
+        default: v
+        description: The prefix of git tags. The tag is the prefix, followed by the package version.
+      workingDirectory:
+        type: string
+        required: false
+        default: .
+        description: The root directory of the dart package to build and test.
+      artifactPrefix:
+        type: string
+        required: false
+        default: ""
+        description: The prefix for build/bundle artifact names, combined into the normalized "<prefix>-<type>-<platform>" name. If left empty, it falls back at runtime to the package name from the pubspec.yaml in "workingDirectory". Set this to keep artifact names unique when multiple packages are built within the same pipeline.
+      binaryArtifactsPattern:
+        type: string
+        required: false
+        default: ""
+        description: A minimatch pattern of the build artifacts that should be attached to the created release (e.g. binaries without a dedicated deployment target). If left empty, defaults to all bundle artifacts of the current package ("<artifactPrefix>-*").
+    outputs:
+      releaseCreated:
+        value: ${{ jobs.release.outputs.update }}
+        description: Holds a boolean value string ("true" or "false"), indicating whether a release was created or not.
+      releaseVersion:
+        value: ${{ jobs.release.outputs.version }}
+        description: Holds the version number of the created release, if the releaseCreated output is true. Otherwise, it is not set.
+jobs:
+  release:
+    name: Create release if needed
+    if: github.ref == inputs.releaseRef
+    permissions:
+      contents: write
+    outputs:
+      update: ${{ steps.version.outputs.update }}
+      version: ${{ steps.version.outputs.version }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
+        with:
+          sdk: ${{ inputs.dartSdkVersion }}
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: ${{ inputs.persistCredentials }}
+      - id: version
+        name: Check if a release should be created
+        run: |
+          set -eo pipefail
+          package_version=$(cat pubspec.yaml | yq e ".version" -)
+          git fetch --tags > /dev/null
+          tag_exists=$(git tag -l "${{ inputs.tagPrefix }}$package_version")
+
+          if [[ -z "$tag_exists" ]]; then
+            echo Release does not exist yet - creating release
+            echo "update=true" >> $GITHUB_OUTPUT
+            echo "version=$package_version" >> $GITHUB_OUTPUT
+          else
+            echo Release already exists - skipping creation
+            echo "update=false" >> $GITHUB_OUTPUT
+          fi
+        working-directory: ${{ inputs.workingDirectory }}
+      - id: resolve-artifact-prefix
+        name: Resolve artifact prefix
+        if: inputs.artifactPrefix == ''
+        run: echo "prefix=$(yq -r .name pubspec.yaml)" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Download all binary artifacts
+        if: steps.version.outputs.update == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          path: artifacts
+          pattern: ${{ inputs.binaryArtifactsPattern || format('{0}-*', inputs.artifactPrefix || steps.resolve-artifact-prefix.outputs.prefix) }}
+          merge-multiple: true
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
+        with:
+          withDartTestTools: "true"
+      - id: release_content
+        name: Generate release content
+        if: steps.version.outputs.update == 'true'
+        run: |
+          set -e
+          package_name=$(cat pubspec.yaml | yq e ".name" -)
+          package_version=$(cat pubspec.yaml | yq e ".version" -)
+
+          tag_name="${{ inputs.tagPrefix }}$package_version"
+          echo "tag_name=$tag_name" >> $GITHUB_OUTPUT
+
+          release_name="Release of package $package_name - Version $package_version"
+          echo "release_name=$release_name" >> $GITHUB_OUTPUT
+
+          version_changelog_file=$(mktemp)
+          echo "# Changelog" > $version_changelog_file
+          cider describe "$package_version" >> $version_changelog_file
+          echo "" >> $version_changelog_file
+          echo "body_path=$version_changelog_file" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+      - name: Create Release
+        if: steps.version.outputs.update == 'true'
+        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228
+        with:
+          tag_name: ${{ steps.release_content.outputs.tag_name }}
+          name: ${{ steps.release_content.outputs.release_name }}
+          body_path: ${{ steps.release_content.outputs.body_path }}
+          target_commitish: ${{ github.sha }}
+          files: artifacts/*
+          fail_on_unmatched_files: true

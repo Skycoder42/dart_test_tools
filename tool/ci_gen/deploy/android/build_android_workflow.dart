@@ -1,6 +1,8 @@
 import '../../common/api/workflow_builder.dart';
 import '../../common/api/workflow_input.dart';
+import '../../common/api/workflow_output.dart';
 import '../../common/api/workflow_secret.dart';
+import '../../common/outputs.dart';
 import '../../types/on.dart';
 import '../../types/workflow.dart';
 import '../../types/workflow_call.dart';
@@ -16,9 +18,14 @@ class BuildAndroidWorkflow implements WorkflowBuilder {
   Workflow build() {
     final inputContext = WorkflowInputContext();
     final secretContext = WorkflowSecretContext();
+    final outputContext = WorkflowOutputContext();
 
     final buildAndroidJobBuilder = BuildAndroidJobBuilder(
       config: BuildAndroidJobConfig(inputContext, secretContext),
+    );
+    outputContext.add(
+      WorkflowOutputs.artifactName,
+      buildAndroidJobBuilder.artifactNameOutput,
     );
 
     return Workflow(
@@ -27,6 +34,7 @@ class BuildAndroidWorkflow implements WorkflowBuilder {
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
           secrets: secretContext.createSecrets(),
+          outputs: outputContext.createOutputs(),
         ),
       ),
     );

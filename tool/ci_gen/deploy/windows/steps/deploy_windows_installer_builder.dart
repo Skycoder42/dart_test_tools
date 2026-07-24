@@ -1,15 +1,19 @@
 import '../../../common/api/job_config.dart';
 import '../../../common/api/step_builder.dart';
 import '../../../common/api/working_directory_config.dart';
+import '../../../common/artifacts.dart';
 import '../../../common/contexts.dart';
 import '../../../common/inputs.dart';
 import '../../../common/secrets.dart';
 import '../../../common/steps/checkout_builder.dart';
+import '../../../common/steps/resolve_artifact_prefix_builder.dart';
 import '../../../common/tools.dart';
+import '../../../flutter/flutter_platform.dart';
 import '../../../types/expression.dart';
 import '../../../types/step.dart';
 
-base mixin DeployWindowsInstallerConfig on JobConfig, WorkingDirectoryConfig {
+base mixin DeployWindowsInstallerConfig
+    on JobConfig, WorkingDirectoryConfig, ResolveArtifactPrefixConfig {
   late final isDraft = inputContext(WorkflowInputs.isDraft);
   late final flightId = inputContext(WorkflowInputs.flightId);
   late final tenantId = secretContext(WorkflowSecrets.tenantId);
@@ -30,11 +34,16 @@ class DeployWindowsInstallerBuilder implements StepBuilder {
       uses: Tools.microsoftSetupMsstoreCli,
     ),
     ...const CheckoutBuilder().build(),
+    ...ResolveArtifactPrefixBuilder(config: config).build(),
     Step.uses(
       name: 'Download windows app artifact',
       uses: Tools.actionsDownloadArtifact,
       withArgs: {
-        'name': 'app-deployment-windows',
+        'name': Artifacts.name(
+          prefix: config.resolvedPrefix,
+          type: ArtifactType.msix,
+          platform: FlutterPlatform.windows,
+        ),
         'path': '${config.workingDirectory}/build/windows/msix',
       },
     ),

@@ -2,9 +2,11 @@ import '../../common/api/job_config.dart';
 import '../../common/api/matrix_job_builder_mixin.dart';
 import '../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/artifacts.dart';
 import '../../common/inputs.dart';
+import '../../common/steps/deploy_artifact_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
-import '../../common/tools.dart';
+import '../../common/steps/resolve_artifact_prefix_builder.dart';
 import '../../dart/dart_platform.dart';
 import '../../types/expression.dart';
 import '../../types/id.dart';
@@ -19,7 +21,8 @@ enum ArchiveType {
   String toJson() => name;
 }
 
-base mixin CompileConfig on JobConfig, ProjectSetupConfig {
+base mixin CompileConfig
+    on JobConfig, ProjectSetupConfig, ResolveArtifactPrefixConfig {
   late final archivePrefix = inputContext(WorkflowInputs.archivePrefix);
 
   @override
@@ -58,6 +61,7 @@ final class ArchiveTypeMatrixProperty extends IMatrixProperty<DartPlatform> {
 class CompileBuilder implements StepBuilder {
   static const detectArchiveNameId = StepId('detect-archive-name');
   static final archiveNameOutput = detectArchiveNameId.output('archive-name');
+  static final artifactNameOutput = DeployArtifactBuilder.artifactNameOutput;
 
   final CompileConfig config;
   final PlatformMatrixProperty platform;
@@ -135,15 +139,12 @@ mkdir -p ../artifacts
       workingDirectory: '${config.workingDirectory}/build/cli',
       shell: 'bash',
     ),
-    Step.uses(
-      name: 'Upload compiled binaries artifact',
-      uses: Tools.actionsUploadArtifact,
-      withArgs: <String, dynamic>{
-        'name': '${config.archivePrefix}-${platform.expression}',
-        'path': '${config.workingDirectory}/build/artifacts/*',
-        'retention-days': 3,
-        'if-no-files-found': 'error',
-      },
-    ),
+    ...DeployArtifactBuilder(
+      config: config,
+      type: ArtifactType.cli,
+      platform: platform.expression,
+      path: '${config.workingDirectory}/build/artifacts/*',
+      exportAsPattern: true,
+    ).build(),
   ];
 }

@@ -418,14 +418,32 @@ Example:
     ),
   );
 
-  static const bundleArtifact = WorkflowInput(
-    name: 'bundleArtifact',
+  static const artifactPrefix = WorkflowInput(
+    name: 'artifactPrefix',
     input: Input(
       type: Type.string,
-      required: true,
+      required: false,
+      defaultValue: '',
       description:
-          'The name of the compiled bundle artifact to download and extract. '
-          'The extracted bundle is passed to generate-nfpm as "--bundle-root".',
+          'The prefix for build/bundle artifact names, combined into the '
+          'normalized "<prefix>-<type>-<platform>" name. If left empty, it '
+          'falls back at runtime to the package name from the pubspec.yaml in '
+          '"workingDirectory". Set this to keep artifact names unique when '
+          'multiple packages are built within the same pipeline.',
+    ),
+  );
+
+  static const binaryArtifactsPattern = WorkflowInput(
+    name: 'binaryArtifactsPattern',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: '',
+      description:
+          'A minimatch pattern of the build artifacts that should be attached '
+          'to the created release (e.g. binaries without a dedicated '
+          'deployment target). If left empty, defaults to all bundle artifacts '
+          'of the current package ("<artifactPrefix>-*").',
     ),
   );
 

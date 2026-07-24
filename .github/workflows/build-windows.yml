@@ -29,6 +29,15 @@ on:
         required: false
         default: ""
         description: Additional args for the build number generator.
+      artifactPrefix:
+        type: string
+        required: false
+        default: ""
+        description: The prefix for build/bundle artifact names, combined into the normalized "<prefix>-<type>-<platform>" name. If left empty, it falls back at runtime to the package name from the pubspec.yaml in "workingDirectory". Set this to keep artifact names unique when multiple packages are built within the same pipeline.
+    outputs:
+      artifactName:
+        value: ${{ jobs.build_windows.outputs.artifact-name }}
+        description: The name (or, for matrix builds, the minimatch pattern) of the artifact(s) produced by this build/bundle workflow. Can be passed to a deployment workflow to link it to this build explicitly.
     secrets:
       dartDefines:
         required: false
@@ -40,6 +49,8 @@ on:
 jobs:
   build_windows:
     name: Build windows msix installer
+    outputs:
+      artifact-name: ${{ steps.export-artifact-name.outputs.artifact-name }}
     runs-on: windows-latest
     steps:
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
@@ -115,10 +126,20 @@ jobs:
       - name: Create msix package
         run: dart run msix:create --release --store --build-windows false --output-path build\windows\msix
         working-directory: ${{ inputs.workingDirectory }}
-      - name: Upload app and debug info
+      - id: resolve-artifact-prefix
+        name: Resolve artifact prefix
+        if: inputs.artifactPrefix == ''
+        run: echo "prefix=$(yq -r .name pubspec.yaml)" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Upload artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: app-deployment-windows
+          name: ${{ inputs.artifactPrefix || steps.resolve-artifact-prefix.outputs.prefix }}-msix-windows
           path: ${{ inputs.workingDirectory }}/build/windows/msix
           retention-days: 1
           if-no-files-found: error
+      - id: export-artifact-name
+        name: Export artifact name
+        run: echo "artifact-name=${{ inputs.artifactPrefix || steps.resolve-artifact-prefix.outputs.prefix }}-msix-windows" >> $GITHUB_OUTPUT
+        shell: bash

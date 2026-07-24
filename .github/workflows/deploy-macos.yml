@@ -1,0 +1,83 @@
+on:
+  workflow_call:
+    inputs:
+      targetRepo:
+        type: string
+        required: false
+        description: The repository identifier (<owner>/<repo>) to which the cask should be published.
+      dartSdkVersion:
+        type: string
+        required: false
+        default: stable
+        description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
+      version:
+        type: string
+        required: true
+        description: The previously released version to deploy.
+      workingDirectory:
+        type: string
+        required: false
+        default: .
+        description: The root directory of the dart package to build and test.
+    secrets:
+      targetRepoToken:
+        required: false
+        description: A GitHub PAT that has the permission to push commits to the targetRepo.
+jobs:
+  deploy_macos:
+    name: Deploy DMG image to homebrew tap
+    environment: homebrew
+    runs-on: macos-latest
+    steps:
+      - name: '[Validate Inputs] Ensure targetRepo is set'
+        run: |
+          if [[ '${{ inputs.targetRepo }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input targetRepo is not set'
+            exit 1
+          fi
+        shell: bash
+      - name: '[Validate Inputs] Ensure targetRepoToken is set'
+        run: |
+          if [[ '${{ secrets.targetRepoToken }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input targetRepoToken is not set'
+            exit 1
+          fi
+        shell: bash
+      - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
+        with:
+          sdk: ${{ inputs.dartSdkVersion }}
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
+        with:
+          withDartTestTools: "true"
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          path: src
+      - name: Checkout ${{ inputs.targetRepo }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: true
+          path: tap
+          repository: ${{ inputs.targetRepo }}
+          token: ${{ secrets.targetRepoToken }}
+      - id: generate-cask
+        name: Generate cask formula
+        run: generate-cask --input 'src/${{ inputs.workingDirectory }}' --output tap
+      - name: Stage cask update
+        run: git add Casks/${{ steps.generate-cask.outputs.caskName }}.rb
+        working-directory: tap
+      - name: Commit tap update
+        run: git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Updated cask ${{ steps.generate-cask.outputs.caskName }} to v${{ inputs.version }}' --author '${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>'
+        working-directory: tap
+      - name: Tap local repository
+        run: brew tap ${{ inputs.targetRepo }} tap
+      - name: Audit generated cask
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.targetRepoToken }}
+        run: brew audit --arch all --strict --git --online --no-signing --token-conflicts --cask '${{ inputs.targetRepo }}/${{ steps.generate-cask.outputs.caskName }}'
+      - name: Push tap update to remote
+        run: git push origin
+        working-directory: tap

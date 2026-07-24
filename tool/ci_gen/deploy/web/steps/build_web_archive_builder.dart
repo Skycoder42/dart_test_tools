@@ -1,6 +1,9 @@
 import '../../../common/api/job_config.dart';
+import '../../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../../common/api/step_builder.dart';
+import '../../../common/artifacts.dart';
 import '../../../common/inputs.dart';
+import '../../../flutter/flutter_platform.dart';
 import '../../../types/step.dart';
 import '../../steps/build_app_builder.dart';
 
@@ -20,6 +23,12 @@ base mixin BuildWebArchiveConfig on JobConfig, BuildAppConfig {
 
   @override
   String get artifactDir => 'build/web-archive';
+
+  @override
+  ArtifactType get artifactType => ArtifactType.archive;
+
+  @override
+  IPlatformMatrixSelector get buildPlatform => FlutterPlatform.web;
 }
 
 class BuildWebArchiveBuilder implements StepBuilder {

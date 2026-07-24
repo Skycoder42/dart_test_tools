@@ -1,16 +1,24 @@
 import '../../../common/api/job_config.dart';
 import '../../../common/api/matrix_job_builder_mixin.dart';
 import '../../../common/api/step_builder.dart';
+import '../../../common/artifacts.dart';
 import '../../../common/contexts.dart';
 import '../../../common/inputs.dart';
 import '../../../common/steps/checkout_builder.dart';
+import '../../../common/steps/deploy_artifact_builder.dart';
+import '../../../common/steps/resolve_artifact_prefix_builder.dart';
 import '../../../common/tools.dart';
+import '../../../flutter/flutter_platform.dart';
 import '../../../types/step.dart';
 import '../../steps/generate_build_number_builder.dart';
 import 'with_gpg_key.dart';
 
 base mixin BuildFlatpakBundleConfig
-    on JobConfig, GenerateBuildNumberConfig, WithGpgKeyConfig {
+    on
+        JobConfig,
+        GenerateBuildNumberConfig,
+        WithGpgKeyConfig,
+        ResolveArtifactPrefixConfig {
   late final sdkVersion = inputContext(WorkflowInputs.flatpakSdkVersion);
   late final bundleName = inputContext(WorkflowInputs.bundleName);
   late final manifestPath = inputContext(WorkflowInputs.manifestPath);
@@ -47,6 +55,8 @@ final class YqArchMatrixProperty
 }
 
 class BuildFlatpakBundleBuilder implements StepBuilder {
+  static final artifactNameOutput = DeployArtifactBuilder.artifactNameOutput;
+
   final BuildFlatpakBundleConfig config;
   final ArchMatrixProperty arch;
   final YqArchMatrixProperty yqArch;
@@ -109,16 +119,14 @@ ostree --repo=repo config set core.min-free-space-size "1MB"
         ),
       ],
     ).build(),
-    Step.uses(
-      name: 'Upload bundle artifact',
-      uses: Tools.actionsUploadArtifact,
-      withArgs: {
-        'name': 'flatpak-bundle-${arch.expression}',
-        'path': config.bundleName.toString(),
-        'compression-level': 0,
-        'if-no-files-found': 'error',
-        'retention-days': 1,
-      },
-    ),
+    ...DeployArtifactBuilder(
+      config: config,
+      type: ArtifactType.flatpak,
+      platform: FlutterPlatform.linux,
+      arch: arch.expression,
+      path: config.bundleName.toString(),
+      compressionLevel: 0,
+      exportAsPattern: true,
+    ).build(),
   ];
 }

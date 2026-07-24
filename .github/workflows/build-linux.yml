@@ -34,6 +34,15 @@ on:
         type: string
         required: true
         description: The path to the flatpak manifest to be built.
+      artifactPrefix:
+        type: string
+        required: false
+        default: ""
+        description: The prefix for build/bundle artifact names, combined into the normalized "<prefix>-<type>-<platform>" name. If left empty, it falls back at runtime to the package name from the pubspec.yaml in "workingDirectory". Set this to keep artifact names unique when multiple packages are built within the same pipeline.
+    outputs:
+      artifactName:
+        value: ${{ jobs.build_linux.outputs.artifact-name }}
+        description: The name (or, for matrix builds, the minimatch pattern) of the artifact(s) produced by this build/bundle workflow. Can be passed to a deployment workflow to link it to this build explicitly.
     secrets:
       gpgKeyId:
         required: true
@@ -57,6 +66,8 @@ jobs:
           - arch: aarch64
             runs-on: ubuntu-24.04-arm
             yqArch: arm64
+    outputs:
+      artifact-name: ${{ steps.export-artifact-name.outputs.artifact-name }}
     runs-on: ${{ matrix.runs-on }}
     container:
       image: ${{ inputs.flatpakPlatformImage }}
@@ -108,11 +119,21 @@ jobs:
         if: always()
         continue-on-error: true
         run: gpg --batch --yes --delete-secret-keys '${{ secrets.gpgKeyId }}'
-      - name: Upload bundle artifact
+      - id: resolve-artifact-prefix
+        name: Resolve artifact prefix
+        if: inputs.artifactPrefix == ''
+        run: echo "prefix=$(yq -r .name pubspec.yaml)" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Upload artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: flatpak-bundle-${{ matrix.arch }}
+          name: ${{ inputs.artifactPrefix || steps.resolve-artifact-prefix.outputs.prefix }}-flatpak-linux-${{ matrix.arch }}
           path: ${{ inputs.bundleName }}
+          retention-days: 1
           compression-level: 0
           if-no-files-found: error
-          retention-days: 1
+      - id: export-artifact-name
+        name: Export artifact name
+        run: echo "artifact-name=${{ inputs.artifactPrefix || steps.resolve-artifact-prefix.outputs.prefix }}-flatpak-linux-*" >> $GITHUB_OUTPUT
+        shell: bash

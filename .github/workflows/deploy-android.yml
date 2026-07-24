@@ -1,0 +1,69 @@
+on:
+  workflow_call:
+    inputs:
+      artifactPrefix:
+        type: string
+        required: false
+        default: ""
+        description: The prefix for build/bundle artifact names, combined into the normalized "<prefix>-<type>-<platform>" name. If left empty, it falls back at runtime to the package name from the pubspec.yaml in "workingDirectory". Set this to keep artifact names unique when multiple packages are built within the same pipeline.
+      workingDirectory:
+        type: string
+        required: false
+        default: .
+        description: The root directory of the dart package to build and test.
+      googlePlayTrack:
+        type: string
+        required: false
+        default: production
+        description: 'The google play release track to publish the app to (Standard tracks are: production, beta, alpha, internal).'
+      googlePlayReleaseStatus:
+        type: string
+        required: false
+        default: completed
+        description: The google play release status after publishing the app (completed, draft, halted, inProgress).
+    secrets:
+      googlePlayKey:
+        required: false
+        description: The google play api upload JSON key. Needed by fastlane to actually publish the app.
+jobs:
+  deploy_android:
+    name: Deploy android app to Google Play
+    environment: google-play
+    runs-on: macos-latest
+    steps:
+      - name: '[Validate Inputs] Ensure googlePlayKey is set'
+        run: |
+          if [[ '${{ secrets.googlePlayKey }}' == '' ]]; then
+            echo '::error::Platform is enabled, but required input googlePlayKey is not set'
+            exit 1
+          fi
+        shell: bash
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - id: resolve-artifact-prefix
+        name: Resolve artifact prefix
+        if: inputs.artifactPrefix == ''
+        run: echo "prefix=$(yq -r .name pubspec.yaml)" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Download android app artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ inputs.artifactPrefix || steps.resolve-artifact-prefix.outputs.prefix }}-appbundle-android
+          path: build
+      - id: detectPackageName
+        name: Detect android package name
+        run: echo "packageName=$(cat android/app/build.gradle | grep 'applicationId = "' | cut -d '"' -f2)" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Prepare Google Play key
+        run: echo '${{ secrets.googlePlayKey }}' > '${{ runner.temp }}/fastlane-key-file.json'
+      - name: Deploy to Google Play
+        run: fastlane upload_to_play_store --json_key '${{ runner.temp }}/fastlane-key-file.json' --package_name '${{ steps.detectPackageName.outputs.packageName }}' --track '${{ inputs.googlePlayTrack }}' --release_status '${{ inputs.googlePlayReleaseStatus }}' --aab build/bundle/release/app-release.aab --mapping build/mapping/release/mapping.txt --metadata_path build/metadata
+      - name: Cleanup Google Play key
+        if: always()
+        continue-on-error: true
+        run: rm -f "${{ runner.temp }}/fastlane-key-file.json"

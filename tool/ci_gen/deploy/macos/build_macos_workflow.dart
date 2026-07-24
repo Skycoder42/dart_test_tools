@@ -1,6 +1,8 @@
 import '../../common/api/workflow_builder.dart';
 import '../../common/api/workflow_input.dart';
+import '../../common/api/workflow_output.dart';
 import '../../common/api/workflow_secret.dart';
+import '../../common/outputs.dart';
 import '../../types/on.dart';
 import '../../types/workflow.dart';
 import '../../types/workflow_call.dart';
@@ -16,9 +18,14 @@ class BuildMacosWorkflow implements WorkflowBuilder {
   Workflow build() {
     final inputContext = WorkflowInputContext();
     final secretContext = WorkflowSecretContext();
+    final outputContext = WorkflowOutputContext();
 
     final buildMacosJobBuilder = BuildMacosJobBuilder(
       config: BuildMacosJobConfig(inputContext, secretContext),
+    );
+    outputContext.add(
+      WorkflowOutputs.artifactName,
+      buildMacosJobBuilder.artifactNameOutput,
     );
 
     return Workflow(
@@ -27,6 +34,7 @@ class BuildMacosWorkflow implements WorkflowBuilder {
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),
           secrets: secretContext.createSecrets(),
+          outputs: outputContext.createOutputs(),
         ),
       ),
     );

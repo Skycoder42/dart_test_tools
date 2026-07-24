@@ -11,14 +11,18 @@ import 'ci_gen/common/api/action_builder.dart';
 import 'ci_gen/common/api/workflow_builder.dart';
 import 'ci_gen/common/tools.dart';
 import 'ci_gen/compile/compile_workflow.dart';
+import 'ci_gen/create_release/create_release_workflow.dart';
 import 'ci_gen/dart/dart_workflow.dart';
 import 'ci_gen/deb/deb_workflow.dart';
 import 'ci_gen/deploy/android/build_android_workflow.dart';
-import 'ci_gen/deploy/deploy_workflow.dart';
+import 'ci_gen/deploy/android/deploy_android_workflow.dart';
 import 'ci_gen/deploy/linux/build_linux_workflow.dart';
+import 'ci_gen/deploy/linux/deploy_linux_workflow.dart';
 import 'ci_gen/deploy/macos/build_macos_workflow.dart';
+import 'ci_gen/deploy/macos/deploy_macos_workflow.dart';
 import 'ci_gen/deploy/web/build_web_workflow.dart';
 import 'ci_gen/deploy/windows/build_windows_workflow.dart';
+import 'ci_gen/deploy/windows/deploy_windows_workflow.dart';
 import 'ci_gen/docker/docker_workflow.dart';
 import 'ci_gen/flutter/flutter_integration_workflow.dart';
 import 'ci_gen/flutter/flutter_workflow.dart';
@@ -47,12 +51,16 @@ Future<void> main() async {
     DebWorkflow(),
     NfpmWorkflow(),
     DockerWorkflow(),
-    DeployWorkflow(),
+    CreateReleaseWorkflow(),
     BuildAndroidWorkflow(),
     BuildLinuxWorkflow(),
     BuildMacosWorkflow(),
     BuildWindowsWorkflow(),
     BuildWebWorkflow(),
+    DeployAndroidWorkflow(),
+    DeployLinuxWorkflow(),
+    DeployMacosWorkflow(),
+    DeployWindowsWorkflow(),
     AutoUpdateWorkflow(),
     UpdateActionsWorkflow(),
   ];

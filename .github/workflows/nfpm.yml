@@ -6,10 +6,16 @@ on:
         required: false
         default: stable
         description: The Dart-SDK version. Passed as "sdk" to "dart-lang/setup-dart".
-      bundleArtifact:
+      artifactPrefix:
         type: string
-        required: true
-        description: The name of the compiled bundle artifact to download and extract. The extracted bundle is passed to generate-nfpm as "--bundle-root".
+        required: false
+        default: ""
+        description: The prefix for build/bundle artifact names, combined into the normalized "<prefix>-<type>-<platform>" name. If left empty, it falls back at runtime to the package name from the pubspec.yaml in "workingDirectory". Set this to keep artifact names unique when multiple packages are built within the same pipeline.
+      workingDirectory:
+        type: string
+        required: false
+        default: .
+        description: The root directory of the dart package to build and test.
       additionalArtifacts:
         type: string
         required: false
@@ -19,19 +25,20 @@ on:
         required: false
         default: artifacts
         description: The destination directory (relative to the checkout root) that the artifacts matched by "additionalArtifacts" are merged into.
-      workingDirectory:
-        type: string
-        required: false
-        default: .
-        description: The root directory of the dart package to build and test.
       packageType:
         type: string
         required: false
         default: deb
         description: The nfpm package type to build (deb, rpm, apk, archlinux).
+    outputs:
+      artifactName:
+        value: ${{ jobs.build_nfpm.outputs.artifact-name }}
+        description: The name (or, for matrix builds, the minimatch pattern) of the artifact(s) produced by this build/bundle workflow. Can be passed to a deployment workflow to link it to this build explicitly.
 jobs:
   build_nfpm:
     name: Build nfpm package
+    outputs:
+      artifact-name: ${{ steps.export-artifact-name.outputs.artifact-name }}
     runs-on: ubuntu-latest
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
@@ -52,10 +59,16 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+      - id: resolve-artifact-prefix
+        name: Resolve artifact prefix
+        if: inputs.artifactPrefix == ''
+        run: echo "prefix=$(yq -r .name pubspec.yaml)" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Download bundle artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: ${{ inputs.bundleArtifact }}
+          name: ${{ inputs.artifactPrefix || steps.resolve-artifact-prefix.outputs.prefix }}-cli-linux
           path: ${{ runner.temp }}/bundle-archive
       - name: Extract bundle
         run: |
@@ -79,10 +92,14 @@ jobs:
           mkdir -p "$RUNNER_TEMP/out"
           nfpm package -f "$RUNNER_TEMP/nfpm/nfpm.yaml" -p '${{ inputs.packageType }}' -t "$RUNNER_TEMP/out"
         shell: bash
-      - name: Upload package to artifacts
+      - name: Upload artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: nfpm-package
+          name: ${{ inputs.artifactPrefix || steps.resolve-artifact-prefix.outputs.prefix }}-${{ inputs.packageType }}-linux
           path: ${{ runner.temp }}/out/*
-          retention-days: 3
+          retention-days: 1
           if-no-files-found: error
+      - id: export-artifact-name
+        name: Export artifact name
+        run: echo "artifact-name=${{ inputs.artifactPrefix || steps.resolve-artifact-prefix.outputs.prefix }}-${{ inputs.packageType }}-linux" >> $GITHUB_OUTPUT
+        shell: bash

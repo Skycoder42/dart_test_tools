@@ -3,7 +3,6 @@ import '../common/api/workflow_input.dart';
 import '../common/api/workflow_output.dart';
 import '../common/api/workflow_secret.dart';
 import '../common/inputs.dart';
-import '../common/jobs/tag_release_job_builder.dart';
 import '../common/outputs.dart';
 import '../types/env.dart';
 import '../types/expression.dart';
@@ -28,27 +27,15 @@ class CompileWorkflow implements WorkflowBuilder {
       enabledPlatforms: inputContext(WorkflowInputs.enabledPlatforms),
       config: CompileJobConfig(inputContext, secretContext),
     );
-
-    final releaseJobBuilder = TagReleaseJobBuilder(
-      compileJobIds: {compileJobBuilder.id},
-      config: TagReleaseJobConfig(
-        inputContext,
-        secretContext,
-        binaryArtifactsPattern:
-            '${inputContext(WorkflowInputs.archivePrefix)}-*',
-      ),
+    outputContext.add(
+      WorkflowOutputs.artifactName,
+      compileJobBuilder.artifactNameOutput,
     );
-    outputContext
-      ..add(WorkflowOutputs.releaseCreated, releaseJobBuilder.updateOutput)
-      ..add(WorkflowOutputs.releaseVersion, releaseJobBuilder.versionOutput);
 
     final env = inputContext(WorkflowInputs.env);
 
     return Workflow(
-      jobs: {
-        compileJobBuilder.id: compileJobBuilder.build(),
-        releaseJobBuilder.id: releaseJobBuilder.build(),
-      },
+      jobs: {compileJobBuilder.id: compileJobBuilder.build()},
       on: On(
         workflowCall: WorkflowCall(
           inputs: inputContext.createInputs(),

@@ -23,4 +23,12 @@ abstract base class WorkflowOutputs {
         'A JSON-encoded list of all platforms that this project can '
         'build/run for.',
   );
+
+  static const artifactName = WorkflowOutput(
+    name: 'artifactName',
+    description:
+        'The name (or, for matrix builds, the minimatch pattern) of the '
+        'artifact(s) produced by this build/bundle workflow. Can be passed to '
+        'a deployment workflow to link it to this build explicitly.',
+  );
 }

@@ -1,13 +1,10 @@
 import '../../../common/api/job_builder.dart';
 import '../../../common/api/job_config.dart';
-import '../../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../../common/environments.dart';
 import '../../../common/inputs.dart';
 import '../../../common/secrets.dart';
 import '../../../common/steps/validate_inputs_builder.dart';
-import '../../../flutter/flutter_platform.dart';
 import '../../../types/container.dart';
-import '../../../types/expression.dart';
 import '../../../types/id.dart';
 import '../../../types/job.dart';
 import '../../../types/runs_on.dart';
@@ -16,7 +13,6 @@ import '../steps/with_gpg_key.dart';
 
 final class DeployLinuxJobConfig extends JobConfig
     with WithGpgKeyConfig, DeployToPagesConfig {
-  late final enabledPlatforms = inputContext(WorkflowInputs.enabledPlatforms);
   late final flatpakPlatformImage = inputContext(
     WorkflowInputs.flatpakPlatformImage,
   );
@@ -24,11 +20,10 @@ final class DeployLinuxJobConfig extends JobConfig
   DeployLinuxJobConfig(super.inputContext, super.secretContext);
 }
 
-class DeployLinuxJobBuilder implements JobBuilder {
-  final JobIdOutput releaseCreated;
+final class DeployLinuxJobBuilder implements JobBuilder {
   final DeployLinuxJobConfig config;
 
-  DeployLinuxJobBuilder({required this.releaseCreated, required this.config});
+  DeployLinuxJobBuilder({required this.config});
 
   @override
   JobId get id => const JobId('deploy_linux');
@@ -36,18 +31,11 @@ class DeployLinuxJobBuilder implements JobBuilder {
   @override
   Job build() => Job(
     name: 'Deploy flatpak bundles to GitHub Pages',
-    needs: {releaseCreated.jobId},
     runsOn: RunsOn.ubuntuLatest.id,
     container: Container(
       image: config.flatpakPlatformImage.toString(),
       options: '--privileged',
     ),
-    ifExpression:
-        releaseCreated.expression.eq(const Expression.literal('true')) &
-        EnabledPlatforms.check(
-          config.enabledPlatforms,
-          Expression.literal(FlutterPlatform.linux.platform),
-        ),
     environment: Environments.flatpak,
     permissions: const {'contents': 'write'},
     steps: [

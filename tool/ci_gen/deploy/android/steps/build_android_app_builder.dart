@@ -1,8 +1,11 @@
 import '../../../common/api/job_config.dart';
+import '../../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../../common/api/step_builder.dart';
+import '../../../common/artifacts.dart';
 import '../../../common/contexts.dart';
 import '../../../common/inputs.dart';
 import '../../../common/secrets.dart';
+import '../../../flutter/flutter_platform.dart';
 import '../../../types/step.dart';
 import '../../steps/build_app_builder.dart';
 import '../../steps/generate_build_number_builder.dart';
@@ -17,6 +20,12 @@ base mixin BuildAndroidAppConfig on JobConfig, BuildAppConfig {
 
   @override
   String get artifactDir => 'build/app/outputs';
+
+  @override
+  ArtifactType get artifactType => ArtifactType.appbundle;
+
+  @override
+  IPlatformMatrixSelector get buildPlatform => FlutterPlatform.android;
 }
 
 class BuildAndroidAppBuilder implements StepBuilder {

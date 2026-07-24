@@ -1,7 +1,10 @@
 import '../../../common/api/job_config.dart';
+import '../../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../../common/api/step_builder.dart';
+import '../../../common/artifacts.dart';
 import '../../../common/inputs.dart';
 import '../../../common/tools.dart';
+import '../../../flutter/flutter_platform.dart';
 import '../../../types/step.dart';
 import '../../steps/build_app_builder.dart';
 
@@ -13,6 +16,12 @@ base mixin BuildMacosDmgConfig on JobConfig, BuildAppConfig {
 
   @override
   String get artifactDir => 'build/macos/dmg';
+
+  @override
+  ArtifactType get artifactType => ArtifactType.dmg;
+
+  @override
+  IPlatformMatrixSelector get buildPlatform => FlutterPlatform.macos;
 }
 
 class BuildMacosDmgBuilder implements StepBuilder {

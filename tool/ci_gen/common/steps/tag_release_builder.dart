@@ -4,17 +4,22 @@ import '../../types/id.dart';
 import '../../types/step.dart';
 import '../api/job_config.dart';
 import '../api/step_builder.dart';
+import '../contexts.dart';
 import '../inputs.dart';
 import '../tools.dart';
 import 'checkout_builder.dart';
 import 'release_entry_builder.dart';
+import 'resolve_artifact_prefix_builder.dart';
 
-base mixin TagReleaseConfig on JobConfig, ReleaseEntryConfig {
+base mixin TagReleaseConfig
+    on JobConfig, ReleaseEntryConfig, ResolveArtifactPrefixConfig {
   late final dartSdkVersion = inputContext(WorkflowInputs.dartSdkVersion);
   late final persistCredentials = inputContext(
     WorkflowInputs.persistCredentials,
   );
-  String? get binaryArtifactsPattern;
+  late final binaryArtifactsPattern = inputContext(
+    WorkflowInputs.binaryArtifactsPattern,
+  );
 }
 
 class TagReleaseBuilder implements StepBuilder {
@@ -55,23 +60,31 @@ fi
 ''',
       workingDirectory: config.workingDirectory.toString(),
     ),
-    if (config.binaryArtifactsPattern case final String binaryArtifactsPattern)
-      Step.uses(
-        name: 'Download all binary artifacts',
-        ifExpression: updateOutput.expression.eq(
-          const Expression.literal('true'),
-        ),
-        uses: Tools.actionsDownloadArtifact,
-        withArgs: <String, dynamic>{
-          'path': 'artifacts',
-          'pattern': binaryArtifactsPattern,
-          'merge-multiple': true,
-        },
+    ...ResolveArtifactPrefixBuilder(config: config).build(),
+    Step.uses(
+      name: 'Download all binary artifacts',
+      ifExpression: updateOutput.expression.eq(
+        const Expression.literal('true'),
       ),
+      uses: Tools.actionsDownloadArtifact,
+      withArgs: <String, dynamic>{
+        'path': 'artifacts',
+        'pattern': _binaryArtifactsPattern,
+        'merge-multiple': true,
+      },
+    ),
     ...ReleaseEntryBuilder(
       config: config,
       versionUpdate: updateOutput.expression,
-      files: config.binaryArtifactsPattern != null ? 'artifacts/*' : null,
+      files: 'artifacts/*',
     ).build(),
   ];
+
+  /// The orphan-artifact pattern to attach to the release: the explicit
+  /// `binaryArtifactsPattern` input if set, otherwise all bundle artifacts of
+  /// the current package (`<artifactPrefix>-*`).
+  String get _binaryArtifactsPattern =>
+      (config.binaryArtifactsPattern |
+              Functions.format('{0}-*', [config.resolvedPrefix]))
+          .toString();
 }

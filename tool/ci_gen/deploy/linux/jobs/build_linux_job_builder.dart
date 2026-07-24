@@ -4,6 +4,7 @@ import '../../../common/api/matrix_job_builder_mixin.dart';
 import '../../../common/api/working_directory_config.dart';
 import '../../../common/inputs.dart';
 import '../../../common/jobs/sdk_job_builder.dart';
+import '../../../common/steps/resolve_artifact_prefix_builder.dart';
 import '../../../dart/jobs/dart_sdk_job_builder_mixin.dart';
 import '../../../types/container.dart';
 import '../../../types/expression.dart';
@@ -19,6 +20,7 @@ final class BuildLinuxJobConfig extends JobConfig
         WorkingDirectoryConfig,
         GenerateBuildNumberConfig,
         WithGpgKeyConfig,
+        ResolveArtifactPrefixConfig,
         BuildFlatpakBundleConfig,
         DartSdkJobConfig {
   late final flatpakPlatformImage = inputContext(
@@ -72,6 +74,8 @@ final class BuildLinuxJobBuilder extends SdkJobBuilder<BuildLinuxJobConfig>
   @override
   JobId get id => const JobId('build_linux');
 
+  JobIdOutput get artifactNameOutput => id.output('artifact-name');
+
   @override
   final FlatpakMatrix matrix;
 
@@ -86,6 +90,7 @@ final class BuildLinuxJobBuilder extends SdkJobBuilder<BuildLinuxJobConfig>
       image: config.flatpakPlatformImage.toString(),
       options: '--privileged',
     ),
+    outputs: {artifactNameOutput: BuildFlatpakBundleBuilder.artifactNameOutput},
     steps: [
       ...buildSetupSdkSteps(),
       InstallToolsActionBuilder.step(withDartTestTools: true),

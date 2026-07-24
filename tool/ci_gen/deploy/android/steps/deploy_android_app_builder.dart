@@ -1,15 +1,19 @@
 import '../../../common/api/job_config.dart';
 import '../../../common/api/step_builder.dart';
 import '../../../common/api/working_directory_config.dart';
+import '../../../common/artifacts.dart';
 import '../../../common/contexts.dart';
 import '../../../common/inputs.dart';
 import '../../../common/secrets.dart';
 import '../../../common/steps/checkout_builder.dart';
+import '../../../common/steps/resolve_artifact_prefix_builder.dart';
 import '../../../common/tools.dart';
+import '../../../flutter/flutter_platform.dart';
 import '../../../types/id.dart';
 import '../../../types/step.dart';
 
-base mixin DeployAndroidConfig on JobConfig, WorkingDirectoryConfig {
+base mixin DeployAndroidConfig
+    on JobConfig, WorkingDirectoryConfig, ResolveArtifactPrefixConfig {
   late final googlePlayTrack = inputContext(WorkflowInputs.googlePlayTrack);
   late final googlePlayReleaseStatus = inputContext(
     WorkflowInputs.googlePlayReleaseStatus,
@@ -30,10 +34,18 @@ class DeployAndroidAppBuilder implements StepBuilder {
   @override
   Iterable<Step> build() => [
     ...const CheckoutBuilder(fetchDepth: 0).build(),
+    ...ResolveArtifactPrefixBuilder(config: config).build(),
     Step.uses(
       name: 'Download android app artifact',
       uses: Tools.actionsDownloadArtifact,
-      withArgs: {'name': 'app-deployment-appbundle', 'path': 'build'},
+      withArgs: {
+        'name': Artifacts.name(
+          prefix: config.resolvedPrefix,
+          type: ArtifactType.appbundle,
+          platform: FlutterPlatform.android,
+        ),
+        'path': 'build',
+      },
     ),
     Step.run(
       id: detectPackageNameStepId,

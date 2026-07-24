@@ -1,14 +1,18 @@
 import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/api/working_directory_config.dart';
+import '../../common/artifacts.dart';
 import '../../common/contexts.dart';
 import '../../common/inputs.dart';
+import '../../common/steps/deploy_artifact_builder.dart';
+import '../../common/steps/resolve_artifact_prefix_builder.dart';
 import '../../common/tools.dart';
+import '../../dart/dart_platform.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
-base mixin NfpmConfig on JobConfig, WorkingDirectoryConfig {
-  late final bundleArtifact = inputContext(WorkflowInputs.bundleArtifact);
+base mixin NfpmConfig
+    on JobConfig, WorkingDirectoryConfig, ResolveArtifactPrefixConfig {
   late final additionalArtifacts = inputContext(
     WorkflowInputs.additionalArtifacts,
   );
@@ -19,17 +23,24 @@ base mixin NfpmConfig on JobConfig, WorkingDirectoryConfig {
 }
 
 class NfpmBuilder implements StepBuilder {
+  static final artifactNameOutput = DeployArtifactBuilder.artifactNameOutput;
+
   final NfpmConfig config;
 
   const NfpmBuilder({required this.config});
 
   @override
   Iterable<Step> build() => [
+    ...ResolveArtifactPrefixBuilder(config: config).build(),
     Step.uses(
       name: 'Download bundle artifact',
       uses: Tools.actionsDownloadArtifact,
       withArgs: <String, dynamic>{
-        'name': config.bundleArtifact.toString(),
+        'name': Artifacts.name(
+          prefix: config.resolvedPrefix,
+          type: ArtifactType.cli,
+          platform: DartPlatform.linux,
+        ),
         'path': '${Runner.temp}/bundle-archive',
       },
     ),
@@ -71,15 +82,12 @@ nfpm package -f "\$RUNNER_TEMP/nfpm/nfpm.yaml" -p '${config.packageType}' -t "\$
 ''',
       shell: 'bash',
     ),
-    Step.uses(
-      name: 'Upload package to artifacts',
-      uses: Tools.actionsUploadArtifact,
-      withArgs: <String, dynamic>{
-        'name': 'nfpm-package',
-        'path': '${Runner.temp}/out/*',
-        'retention-days': 3,
-        'if-no-files-found': 'error',
-      },
-    ),
+    ...DeployArtifactBuilder(
+      config: config,
+      type: config.packageType,
+      platform: DartPlatform.linux,
+      path: '${Runner.temp}/out/*',
+      resolvePrefix: false,
+    ).build(),
   ];
 }

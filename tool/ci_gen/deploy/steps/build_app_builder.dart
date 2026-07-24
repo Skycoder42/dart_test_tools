@@ -1,7 +1,10 @@
 import '../../common/api/job_config.dart';
+import '../../common/api/platform_matrix_job_builder_mixin.dart';
 import '../../common/api/step_builder.dart';
+import '../../common/artifacts.dart';
+import '../../common/steps/deploy_artifact_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
-import '../../common/tools.dart';
+import '../../common/steps/resolve_artifact_prefix_builder.dart';
 import '../../types/step.dart';
 import 'flutter_build_builder.dart';
 import 'generate_build_number_builder.dart';
@@ -11,8 +14,13 @@ base mixin BuildAppConfig
         JobConfig,
         ProjectSetupConfig,
         GenerateBuildNumberConfig,
-        FlutterBuildConfig {
+        FlutterBuildConfig,
+        ResolveArtifactPrefixConfig {
   String get artifactDir;
+
+  ArtifactType get artifactType;
+
+  IPlatformMatrixSelector get buildPlatform;
 
   @override
   bool get withDartTestTools => true;
@@ -22,6 +30,8 @@ base mixin BuildAppConfig
 }
 
 class BuildAppBuilder implements StepBuilder {
+  static final artifactNameOutput = DeployArtifactBuilder.artifactNameOutput;
+
   final BuildAppConfig config;
   final List<Step> preBuildSteps;
   final List<String> cleanupPaths;
@@ -45,15 +55,11 @@ class BuildAppBuilder implements StepBuilder {
       cleanupPaths: cleanupPaths,
     ).build(),
     ...packageSteps,
-    Step.uses(
-      name: 'Upload app and debug info',
-      uses: Tools.actionsUploadArtifact,
-      withArgs: {
-        'name': 'app-deployment-${config.buildTarget}',
-        'path': '${config.workingDirectory}/${config.artifactDir}',
-        'retention-days': 1,
-        'if-no-files-found': 'error',
-      },
-    ),
+    ...DeployArtifactBuilder(
+      config: config,
+      type: config.artifactType,
+      platform: config.buildPlatform,
+      path: '${config.workingDirectory}/${config.artifactDir}',
+    ).build(),
   ];
 }

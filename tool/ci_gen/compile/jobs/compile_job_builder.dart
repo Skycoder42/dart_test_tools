@@ -6,6 +6,7 @@ import '../../common/inputs.dart';
 import '../../common/jobs/sdk_job_builder.dart';
 import '../../common/steps/project_prepare_builder.dart';
 import '../../common/steps/project_setup_builder.dart';
+import '../../common/steps/resolve_artifact_prefix_builder.dart';
 import '../../dart/dart_platform.dart';
 import '../../dart/jobs/dart_sdk_job_builder_mixin.dart';
 import '../../types/expression.dart';
@@ -19,6 +20,7 @@ final class CompileJobConfig extends JobConfig
         WorkingDirectoryConfig,
         ProjectPrepareConfig,
         ProjectSetupConfig,
+        ResolveArtifactPrefixConfig,
         CompileConfig,
         DartSdkJobConfig {
   @override
@@ -55,6 +57,8 @@ final class CompileJobBuilder extends SdkJobBuilder<CompileJobConfig>
   @override
   JobId get id => const JobId('compile');
 
+  JobIdOutput get artifactNameOutput => id.output('artifact-name');
+
   @override
   final Expression enabledPlatforms;
 
@@ -69,6 +73,7 @@ final class CompileJobBuilder extends SdkJobBuilder<CompileJobConfig>
     name: 'Create compiled artifacts',
     permissions: const {'contents': 'read'},
     runsOn: runsOn,
+    outputs: {artifactNameOutput: CompileBuilder.artifactNameOutput},
     steps: [
       ...buildSetupSdkSteps(),
       ...CompileBuilder(

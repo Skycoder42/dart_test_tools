@@ -4,6 +4,7 @@ import '../../../common/inputs.dart';
 import '../../../common/jobs/sdk_job_builder.dart';
 import '../../../common/steps/project_prepare_builder.dart';
 import '../../../common/steps/project_setup_builder.dart';
+import '../../../common/steps/resolve_artifact_prefix_builder.dart';
 import '../../../flutter/flutter_platform.dart';
 import '../../../flutter/jobs/flutter_sdk_job_builder_mixin.dart';
 import '../../../types/expression.dart';
@@ -23,6 +24,7 @@ final class BuildAndroidJobConfig extends JobConfig
         ProjectSetupConfig,
         GenerateBuildNumberConfig,
         FlutterBuildConfig,
+        ResolveArtifactPrefixConfig,
         BuildAppConfig,
         BuildAndroidAppConfig,
         FlutterSdkJobConfig {
@@ -39,10 +41,13 @@ final class BuildAndroidJobBuilder extends SdkJobBuilder<BuildAndroidJobConfig>
   @override
   JobId get id => const JobId('build_android');
 
+  JobIdOutput get artifactNameOutput => id.output('artifact-name');
+
   @override
   Job build() => Job(
     name: 'Build android app bundle',
     runsOn: RunsOn.ubuntuLatest.id,
+    outputs: {artifactNameOutput: BuildAppBuilder.artifactNameOutput},
     steps: [
       ...buildSetupSdkSteps(
         buildPlatform: ExpressionOrValue.value(
