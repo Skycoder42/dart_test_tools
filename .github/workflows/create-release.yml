@@ -35,8 +35,8 @@ on:
         type: string
         required: false
         default: |
+          artifacts/*.tar.*
           artifacts/*.dmg
-          artifacts/*Web.tar.*
         description: A newline-separated list of file globs of the downloaded build artifacts that should be attached to the created release.
     outputs:
       releaseCreated:

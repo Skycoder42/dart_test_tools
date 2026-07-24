@@ -439,8 +439,8 @@ Example:
       type: Type.string,
       required: false,
       defaultValue: '''
+artifacts/*.tar.*
 artifacts/*.dmg
-artifacts/*Web.tar.*
 ''',
       description:
           'A newline-separated list of file globs of the downloaded build '
