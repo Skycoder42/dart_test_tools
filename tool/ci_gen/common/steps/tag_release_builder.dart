@@ -26,8 +26,12 @@ class TagReleaseBuilder implements StepBuilder {
   static final versionOutput = versionStepId.output('version');
 
   final TagReleaseConfig config;
+  final bool failOnUnmatchedFiles;
 
-  const TagReleaseBuilder({required this.config});
+  const TagReleaseBuilder({
+    required this.config,
+    this.failOnUnmatchedFiles = true,
+  });
 
   @override
   Iterable<Step> build() => [
@@ -77,6 +81,7 @@ fi
       config: config,
       versionUpdate: updateOutput.expression,
       files: config.releaseFiles.toString(),
+      failOnUnmatchedFiles: failOnUnmatchedFiles,
     ).build(),
   ];
 }

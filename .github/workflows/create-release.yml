@@ -127,4 +127,3 @@ jobs:
           body_path: ${{ steps.release_content.outputs.body_path }}
           target_commitish: ${{ github.sha }}
           files: ${{ inputs.releaseFiles }}
-          fail_on_unmatched_files: true

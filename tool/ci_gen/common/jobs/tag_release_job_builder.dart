@@ -23,8 +23,13 @@ final class TagReleaseJobConfig extends JobConfig
 class TagReleaseJobBuilder implements JobBuilder {
   final Set<JobId>? compileJobIds;
   final TagReleaseJobConfig config;
+  final bool failOnUnmatchedFiles;
 
-  const TagReleaseJobBuilder({this.compileJobIds, required this.config});
+  const TagReleaseJobBuilder({
+    this.compileJobIds,
+    required this.config,
+    this.failOnUnmatchedFiles = true,
+  });
 
   @override
   JobId get id => const JobId('release');
@@ -44,6 +49,11 @@ class TagReleaseJobBuilder implements JobBuilder {
       versionOutput: TagReleaseBuilder.versionOutput,
     },
     runsOn: 'ubuntu-latest',
-    steps: [...TagReleaseBuilder(config: config).build()],
+    steps: [
+      ...TagReleaseBuilder(
+        config: config,
+        failOnUnmatchedFiles: failOnUnmatchedFiles,
+      ).build(),
+    ],
   );
 }

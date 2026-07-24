@@ -29,6 +29,7 @@ class CreateReleaseWorkflow implements WorkflowBuilder {
 
     final releaseJobBuilder = TagReleaseJobBuilder(
       config: TagReleaseJobConfig(inputContext, secretContext),
+      failOnUnmatchedFiles: false,
     );
     outputContext
       ..add(WorkflowOutputs.releaseCreated, releaseJobBuilder.updateOutput)

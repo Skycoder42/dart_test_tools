@@ -27,12 +27,14 @@ class ReleaseEntryBuilder implements StepBuilder {
   final Expression versionUpdate;
   final String? changelogExtra;
   final String? files;
+  final bool failOnUnmatchedFiles;
 
   const ReleaseEntryBuilder({
     required this.config,
     required this.versionUpdate,
     this.changelogExtra,
     this.files,
+    this.failOnUnmatchedFiles = true,
   });
 
   @override
@@ -72,7 +74,8 @@ ${releaseContentBodyPath.bashSetter(r'$version_changelog_file')}
         'body_path': releaseContentBodyPath.expression.toString(),
         'target_commitish': Github.sha.toString(),
         'files': ?files,
-        if (files != null) 'fail_on_unmatched_files': true,
+        if (failOnUnmatchedFiles && files != null)
+          'fail_on_unmatched_files': true,
       },
     ),
   ];
