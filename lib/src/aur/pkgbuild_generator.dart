@@ -8,7 +8,6 @@ import 'pkgbuild.dart';
 
 class PkgBuildGenerator {
   static const _supportedArchs = ['x86_64'];
-  static const _supportedDebArchs = ['amd64'];
 
   final AurOptionsLoader aurOptionsLoader;
 
@@ -17,7 +16,6 @@ class PkgBuildGenerator {
   Future<void> generatePkgbuild({
     required Directory sourceDirectory,
     required Directory aurDirectory,
-    bool makedebMode = false,
   }) async {
     final aurOptions = await aurOptionsLoader.loadAurOptions(sourceDirectory);
     final changelogFile = await aurOptionsLoader.findChangelog(sourceDirectory);
@@ -36,7 +34,6 @@ class PkgBuildGenerator {
         licenseFileName: _fileName(licenseFile),
         installFileName: _fileName(installFile),
         changelogFileName: _fileName(changelogFile),
-        makedebMode: makedebMode,
       ),
     );
     _printFileName(pkgBuildFile);
@@ -66,7 +63,6 @@ class PkgBuildGenerator {
     required String? licenseFileName,
     required String? installFileName,
     required String? changelogFileName,
-    required bool makedebMode,
   }) {
     final version = options.pubspec.version;
     if (version == null) {
@@ -75,12 +71,6 @@ class PkgBuildGenerator {
 
     final url =
         options.pubspec.homepage ?? options.pubspec.repository?.toString();
-    final depends =
-        (makedebMode ? options.aurOptions.makedeb?.depends : null) ??
-        options.aurOptions.depends;
-    final backup =
-        (makedebMode ? options.aurOptions.makedeb?.backup : null) ??
-        options.aurOptions.backup;
     final pkgName = options.aurOptions.pkgname ?? options.pubspec.name;
     final tagPrefix = options.aurOptions.tagPrefix;
     final pkgDirTagPrefix = tagPrefix == AurOptions.defaultTagPrefix
@@ -99,13 +89,13 @@ class PkgBuildGenerator {
         'pkgver': PkgProperty(version.toString().replaceAll('-', '_')),
         'pkgrel': PkgProperty(options.aurOptions.pkgrel),
         'epoch': PkgProperty(options.aurOptions.epoch),
-        if (makedebMode)
-          'arch': PkgProperty.literalList(_supportedDebArchs)
-        else
-          'arch': PkgProperty.literalList(_supportedArchs),
+        'arch': PkgProperty.literalList(_supportedArchs),
         'url': PkgProperty(url),
         'license': PkgProperty.literalList([options.aurOptions.license]),
-        'depends': PkgProperty.literalList(depends, skipEmpty: false),
+        'depends': PkgProperty.literalList(
+          options.aurOptions.depends,
+          skipEmpty: false,
+        ),
         'source': _getSourceUrls(options),
         'b2sums': PkgProperty.literalList(
           List.filled(
@@ -116,12 +106,8 @@ class PkgBuildGenerator {
         ),
         'install': PkgProperty(installFileName),
         'changelog': PkgProperty(changelogFileName),
-        'backup': PkgProperty.literalList(backup),
+        'backup': PkgProperty.literalList(options.aurOptions.backup),
         'options': PkgProperty.literalList(const ['!strip']),
-        if (makedebMode)
-          // Workaround for https://github.com/makedeb/makedeb/issues/214
-          // See https://github.com/makedeb/makedeb/blob/alpha/src/main.sh#L130
-          'extensions': PkgProperty.literalList(const ['zipman']),
         if (options.aurOptions.sourcesDir case final String dir)
           '_pkgdir': PkgProperty('$pkgDir/$dir')
         else
@@ -129,7 +115,7 @@ class PkgBuildGenerator {
       },
       functions: {
         'package_$pkgName': PkgFunction(
-          _getInstallSteps(options, licenseFileName, makedebMode).toList(),
+          _getInstallSteps(options, licenseFileName).toList(),
         ),
       },
     );
@@ -171,7 +157,6 @@ class PkgBuildGenerator {
   Iterable<String> _getInstallSteps(
     PubspecWithAur options,
     String? licenseFileName,
-    bool makedebMode,
   ) sync* {
     if (options.executables.isEmpty) {
       throw Exception('Must define at least one executable!');
@@ -189,11 +174,7 @@ class PkgBuildGenerator {
 
     yield r'cd "$_pkgdir"';
 
-    final installFiles =
-        (makedebMode ? options.aurOptions.makedeb?.files : null) ??
-        options.aurOptions.files;
-
-    for (final install in installFiles) {
+    for (final install in options.aurOptions.files) {
       if (install.recursive) {
         yield "pushd '${install.source}'";
         yield 'find . -type f -exec install -D -m${install.permissions} "{}" '

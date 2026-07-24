@@ -1,4 +1,4 @@
-import '../deb/steps/packagecloud_upload_builder.dart';
+import '../deploy/packagecloud/steps/packagecloud_upload_builder.dart';
 import '../types/input.dart';
 import 'api/workflow_input.dart';
 import 'tools.dart';

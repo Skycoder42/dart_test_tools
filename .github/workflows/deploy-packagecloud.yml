@@ -1,0 +1,59 @@
+on:
+  workflow_call:
+    inputs:
+      ubuntuVersions:
+        type: string
+        required: false
+        default: '["resolute","noble","jammy"]'
+        description: A JSON list list of ubuntu version code names to publish for.
+      artifactPrefix:
+        type: string
+        required: false
+        default: ""
+        description: The prefix for build/bundle artifact names, combined into the normalized "<prefix>-<type>-<platform>" name. If left empty, it falls back at runtime to the package name from the pubspec.yaml in "workingDirectory". Set this to keep artifact names unique when multiple packages are built within the same pipeline.
+      workingDirectory:
+        type: string
+        required: false
+        default: .
+        description: The root directory of the dart package to build and test.
+      packagecloudRepository:
+        type: string
+        required: true
+        description: The packagecloud repository to publish to.
+    secrets:
+      packagecloudToken:
+        required: true
+        description: The access token for the packagecloud upload.
+jobs:
+  deploy_packagecloud:
+    name: Deploy deb package to packagecloud
+    environment: packagecloud
+    strategy:
+      fail-fast: false
+      matrix:
+        code-name: ${{ fromJson(inputs.ubuntuVersions) }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - id: resolve-artifact-prefix
+        name: Resolve artifact prefix
+        if: inputs.artifactPrefix == ''
+        run: echo "prefix=$(yq -r .name pubspec.yaml)" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
+      - name: Download debian package
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ inputs.artifactPrefix || steps.resolve-artifact-prefix.outputs.prefix }}-deb-linux
+          path: deb
+      - name: Upload debian package to packagecloud
+        env:
+          PACKAGECLOUD_TOKEN: ${{ secrets.packagecloudToken }}
+        uses: lpenz/ghaction-packagecloud@06503e2345ef4716a75a7f6557cc5caed158d947
+        with:
+          repository: ${{ inputs.packagecloudRepository }}/${{ matrix.code-name }}
+          directory: deb

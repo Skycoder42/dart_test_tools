@@ -13,13 +13,13 @@ import 'ci_gen/common/tools.dart';
 import 'ci_gen/compile/compile_workflow.dart';
 import 'ci_gen/create_release/create_release_workflow.dart';
 import 'ci_gen/dart/dart_workflow.dart';
-import 'ci_gen/deb/deb_workflow.dart';
 import 'ci_gen/deploy/android/build_android_workflow.dart';
 import 'ci_gen/deploy/android/deploy_android_workflow.dart';
 import 'ci_gen/deploy/linux/build_linux_workflow.dart';
 import 'ci_gen/deploy/linux/deploy_linux_workflow.dart';
 import 'ci_gen/deploy/macos/build_macos_workflow.dart';
 import 'ci_gen/deploy/macos/deploy_macos_workflow.dart';
+import 'ci_gen/deploy/packagecloud/deploy_packagecloud_workflow.dart';
 import 'ci_gen/deploy/web/build_web_workflow.dart';
 import 'ci_gen/deploy/windows/build_windows_workflow.dart';
 import 'ci_gen/deploy/windows/deploy_windows_workflow.dart';
@@ -48,7 +48,6 @@ Future<void> main() async {
     CompileWorkflow(),
     PackageWorkflow(),
     AurWorkflow(),
-    DebWorkflow(),
     NfpmWorkflow(),
     DockerWorkflow(),
     CreateReleaseWorkflow(),
@@ -60,6 +59,7 @@ Future<void> main() async {
     DeployAndroidWorkflow(),
     DeployLinuxWorkflow(),
     DeployMacosWorkflow(),
+    DeployPackagecloudWorkflow(),
     DeployWindowsWorkflow(),
     AutoUpdateWorkflow(),
     UpdateActionsWorkflow(),
