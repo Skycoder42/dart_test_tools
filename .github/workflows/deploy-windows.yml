@@ -51,6 +51,10 @@ jobs:
           cache: true
       - name: Download flutter binary artifacts
         run: flutter precache --universal --windows
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
+        with:
+          withDartTestTools: "false"
       - name: Install msstore cli
         uses: microsoft/setup-msstore-cli@3b2ec9136230357ce9abc02b9d056626fb248d3f
       - name: Checkout repository

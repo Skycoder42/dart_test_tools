@@ -1,3 +1,4 @@
+import '../../../common/actions/install_tools_action_builder.dart';
 import '../../../common/api/job_config.dart';
 import '../../../common/api/step_builder.dart';
 import '../../../common/api/working_directory_config.dart';
@@ -29,6 +30,7 @@ class DeployWindowsInstallerBuilder implements StepBuilder {
 
   @override
   Iterable<Step> build() => [
+    InstallToolsActionBuilder.step(withDartTestTools: false),
     Step.uses(
       name: 'Install msstore cli',
       uses: Tools.microsoftSetupMsstoreCli,

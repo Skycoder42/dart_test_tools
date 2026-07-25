@@ -49,7 +49,7 @@ jobs:
           path: build
       - id: detectPackageName
         name: Detect android package name
-        run: echo "packageName=$(cat android/app/build.gradle | grep 'applicationId = "' | cut -d '"' -f2)" >> $GITHUB_OUTPUT
+        run: echo "packageName=$(cat android/app/build.gradle* | grep 'applicationId = "' | cut -d '"' -f2)" >> $GITHUB_OUTPUT
         working-directory: ${{ inputs.workingDirectory }}
         shell: bash
       - name: Prepare Google Play key

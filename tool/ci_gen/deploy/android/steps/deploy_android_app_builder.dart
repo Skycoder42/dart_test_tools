@@ -51,7 +51,7 @@ class DeployAndroidAppBuilder implements StepBuilder {
       id: detectPackageNameStepId,
       name: 'Detect android package name',
       run: packageNameOutput.bashSetter(
-        'cat android/app/build.gradle | grep \'applicationId = "\' | cut -d \'"\' -f2',
+        'cat android/app/build.gradle* | grep \'applicationId = "\' | cut -d \'"\' -f2',
         isCommand: true,
       ),
       workingDirectory: config.workingDirectory.toString(),

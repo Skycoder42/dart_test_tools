@@ -75,8 +75,8 @@ class DeployToTapBuilder implements StepBuilder {
     Step.run(
       name: 'Audit generated cask',
       run:
-          'brew audit --arch all --strict --git --online --no-signing '
-          "--token-conflicts --cask '${config.targetRepo}/${caskNameOutput.expression}'",
+          'brew audit --arch all --strict --git --online '
+          "--cask '${config.targetRepo}/${caskNameOutput.expression}'",
       env: Env({
         'HOMEBREW_GITHUB_API_TOKEN': config.targetRepoToken.toString(),
       }),
