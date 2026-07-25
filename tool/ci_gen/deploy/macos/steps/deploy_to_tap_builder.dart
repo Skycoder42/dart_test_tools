@@ -73,6 +73,10 @@ class DeployToTapBuilder implements StepBuilder {
       run: 'brew tap ${config.targetRepo} tap',
     ),
     Step.run(
+      name: 'Trust local repository',
+      run: 'brew trust ${config.targetRepo}',
+    ),
+    Step.run(
       name: 'Audit generated cask',
       run:
           'brew audit --arch all --strict --git --online '

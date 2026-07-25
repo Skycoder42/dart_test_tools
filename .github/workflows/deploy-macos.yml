@@ -60,6 +60,8 @@ jobs:
         working-directory: tap
       - name: Tap local repository
         run: brew tap ${{ inputs.targetRepo }} tap
+      - name: Trust local repository
+        run: brew trust ${{ inputs.targetRepo }}
       - name: Audit generated cask
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.targetRepoToken }}
