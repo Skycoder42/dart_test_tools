@@ -8,13 +8,13 @@ final class FlutterAnalyzeJobConfig extends AnalyzeJobConfig
   @override
   late final javaJdkVersion = inputContext(WorkflowInputs.javaJdkVersion);
 
-  FlutterAnalyzeJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class FlutterAnalyzeJobBuilder
     extends AnalyzeJobBuilder<FlutterAnalyzeJobConfig>
     with FlutterSdkJobBuilderMixin<FlutterAnalyzeJobConfig> {
-  const FlutterAnalyzeJobBuilder({required super.config});
+  const new({required super.config});
 
   @override
   Iterable<Step> buildAnalyzeSteps() => [

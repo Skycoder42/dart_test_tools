@@ -11,13 +11,13 @@ part 'aur_options.g.dart';
 @internal
 @freezed
 sealed class PubspecWithAur with _$PubspecWithAur {
-  const factory PubspecWithAur({
+  const factory({
     required Pubspec pubspec,
     required AurOptions aurOptions,
     required Map<String, String?> executables,
   }) = _PubspecWithAur;
 
-  const PubspecWithAur._();
+  const new _();
 
   String get archivePrefix =>
       aurOptions.binariesArchivePrefix ?? '${pubspec.name}-${pubspec.version}';
@@ -27,15 +27,15 @@ sealed class PubspecWithAur with _$PubspecWithAur {
 @freezed
 sealed class AurOptionsPubspecView with _$AurOptionsPubspecView {
   @JsonSerializable(anyMap: true, checked: true)
-  const factory AurOptionsPubspecView({
+  const factory({
     @JsonKey(required: true) required Map<String, String?> executables,
     @JsonKey(required: true) required AurOptions aur,
   }) = _AurOptionsPubspecView;
 
-  factory AurOptionsPubspecView.fromJson(Map<String, dynamic> json) =>
+  factory fromJson(Map<String, dynamic> json) =>
       _$AurOptionsPubspecViewFromJson(json);
 
-  factory AurOptionsPubspecView.fromYaml(Map<dynamic, dynamic>? map) =>
+  factory fromYaml(Map<dynamic, dynamic>? map) =>
       AurOptionsPubspecView.fromJson(Map<String, dynamic>.from(map!));
 }
 
@@ -45,7 +45,7 @@ sealed class AurOptions with _$AurOptions {
   static const defaultTagPrefix = 'v';
 
   @JsonSerializable(anyMap: true, checked: true, disallowUnrecognizedKeys: true)
-  const factory AurOptions({
+  const factory({
     @JsonKey(required: true) required String maintainer,
     String? pkgname,
     int? epoch,
@@ -61,33 +61,31 @@ sealed class AurOptions with _$AurOptions {
     @Default([]) List<String> backup,
   }) = _AurOptions;
 
-  factory AurOptions.fromJson(Map<String, dynamic> json) =>
-      _$AurOptionsFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$AurOptionsFromJson(json);
 }
 
 @internal
 @freezed
 sealed class Source with _$Source {
   @JsonSerializable(anyMap: true, checked: true, disallowUnrecognizedKeys: true)
-  const factory Source({
+  const factory({
     @JsonKey(required: true) required String name,
     @JsonKey(required: true) required Uri url,
   }) = _Source;
 
-  factory Source.fromJson(Map<String, dynamic> json) => _$SourceFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$SourceFromJson(json);
 }
 
 @internal
 @freezed
 sealed class InstallTarget with _$InstallTarget {
   @JsonSerializable(anyMap: true, checked: true, disallowUnrecognizedKeys: true)
-  const factory InstallTarget({
+  const factory({
     @JsonKey(required: true) required String source,
     @JsonKey(required: true) required String target,
     @Default(644) int permissions,
     @Default(false) bool recursive,
   }) = _InstallTarget;
 
-  factory InstallTarget.fromJson(Map<String, dynamic> json) =>
-      _$InstallTargetFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$InstallTargetFromJson(json);
 }

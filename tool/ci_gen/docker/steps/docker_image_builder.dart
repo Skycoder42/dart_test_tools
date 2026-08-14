@@ -28,7 +28,7 @@ class DockerImageBuilder implements StepBuilder {
 
   final DockerImageConfig config;
 
-  DockerImageBuilder({required this.config});
+  new({required this.config});
 
   @override
   Iterable<Step> build() => [

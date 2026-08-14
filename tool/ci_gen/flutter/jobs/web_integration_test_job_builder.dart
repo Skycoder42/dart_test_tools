@@ -10,7 +10,7 @@ import 'flutter_sdk_job_builder_mixin.dart';
 
 final class WebIntegrationTestJobConfig extends CommonIntegrationTestJobConfig
     with WebIntegrationTestConfig {
-  WebIntegrationTestJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class WebIntegrationTestJobBuilder
@@ -19,16 +19,12 @@ final class WebIntegrationTestJobBuilder
   final Expression enabledPlatforms;
   final Set<JobId>? needs;
 
-  WebIntegrationTestJobBuilder({
-    required JobIdOutput enabledPlatformsOutput,
-    required super.config,
-  }) : enabledPlatforms = enabledPlatformsOutput.expression,
-       needs = {enabledPlatformsOutput.jobId};
+  new({required JobIdOutput enabledPlatformsOutput, required super.config})
+    : enabledPlatforms = enabledPlatformsOutput.expression,
+      needs = {enabledPlatformsOutput.jobId};
 
-  WebIntegrationTestJobBuilder.direct({
-    required this.enabledPlatforms,
-    required super.config,
-  }) : needs = null;
+  new direct({required this.enabledPlatforms, required super.config})
+    : needs = null;
 
   @override
   JobId get id => const JobId('integration_tests_web');

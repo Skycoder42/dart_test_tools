@@ -17,13 +17,13 @@ final class ReleaseJobConfig extends JobConfig
         ReleaseConfig {
   late final releaseRef = inputContext(WorkflowInputs.releaseRef);
 
-  ReleaseJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 class ReleaseJobBuilder implements JobBuilder {
   final ReleaseJobConfig config;
 
-  ReleaseJobBuilder({required this.config});
+  new({required this.config});
 
   @override
   JobId get id => const JobId('release');

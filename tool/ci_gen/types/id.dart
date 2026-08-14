@@ -7,11 +7,11 @@ part 'id.freezed.dart';
 sealed class Id {
   final String id;
 
-  const Id(this.id);
+  const new(this.id);
 
-  const factory Id.step(String id) = StepId;
+  const factory step(String id) = StepId;
 
-  const factory Id.job(String id) = JobId;
+  const factory job(String id) = JobId;
 
   IdOutput output(String name);
 
@@ -22,18 +22,18 @@ sealed class Id {
 }
 
 class StepId extends Id {
-  const StepId(super.id);
+  const new(super.id);
 
-  const StepId.fromJson(super.id);
+  const new fromJson(super.id);
 
   @override
   StepIdOutput output(String name) => StepIdOutput(this, name);
 }
 
 class JobId extends Id {
-  const JobId(super.id);
+  const new(super.id);
 
-  const JobId.fromJson(super.id);
+  const new fromJson(super.id);
 
   @override
   JobIdOutput output(String name) => JobIdOutput(this, name);
@@ -41,10 +41,10 @@ class JobId extends Id {
 
 @freezed
 sealed class IdOutput with _$IdOutput {
-  const IdOutput._();
+  const new _();
 
-  const factory IdOutput.step(StepId stepId, String name) = StepIdOutput;
-  const factory IdOutput.job(JobId jobId, String name) = JobIdOutput;
+  const factory step(StepId stepId, String name) = StepIdOutput;
+  const factory job(JobId jobId, String name) = JobIdOutput;
 
   Expression get expression => switch (this) {
     StepIdOutput(:final stepId, :final name) => Expression(
@@ -106,7 +106,7 @@ extension JobIdOutputX on JobIdOutput {
 }
 
 class IdOutputConverter implements JsonConverter<IdOutput, String> {
-  const IdOutputConverter();
+  const new();
 
   @override
   IdOutput fromJson(String json) {

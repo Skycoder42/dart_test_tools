@@ -21,11 +21,11 @@ abstract base class UnitTestJobConfig extends JobConfig
         CoverageBuilderConfig,
         CoverageCollectorConfig,
         UnitTestConfig {
-  UnitTestJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 class UnitTestMatrix extends PlatformMatrix {
-  const UnitTestMatrix(super._selectors);
+  const new(super._selectors);
 
   DartTestArgsMatrixProperty get dartTestArgs =>
       const DartTestArgsMatrixProperty();
@@ -50,7 +50,7 @@ abstract base class UnitTestJobBuilder<TConfig extends UnitTestJobConfig>
   @override
   final UnitTestMatrix matrix;
 
-  UnitTestJobBuilder({
+  new({
     required List<IPlatformMatrixSelector> platformSelectors,
     required this.enabledPlatformsOutput,
     required super.config,

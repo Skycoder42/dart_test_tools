@@ -9,10 +9,9 @@ typedef InputBuilderFn<TParam> = Input Function(TParam param);
 
 @freezed
 sealed class WorkflowInput with _$WorkflowInput {
-  const factory WorkflowInput({required String name, required Input input}) =
-      _WorkflowInput;
+  const factory({required String name, required Input input}) = _WorkflowInput;
 
-  const WorkflowInput._();
+  const new _();
 }
 
 class WorkflowInputContext {

@@ -34,7 +34,7 @@ class DeployToPagesBuilder implements StepBuilder {
 
   final DeployToPagesConfig config;
 
-  DeployToPagesBuilder({required this.config});
+  new({required this.config});
 
   @override
   Iterable<Step> build() => [

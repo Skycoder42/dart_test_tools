@@ -37,7 +37,7 @@ class BuildAppBuilder implements StepBuilder {
   final List<String> cleanupPaths;
   final List<Step> packageSteps;
 
-  const BuildAppBuilder({
+  const new({
     required this.config,
     this.preBuildSteps = const [],
     this.cleanupPaths = const [],

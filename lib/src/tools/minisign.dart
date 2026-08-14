@@ -5,7 +5,7 @@ import 'github.dart';
 abstract base class Minisign {
   static var _forceDocker = false;
 
-  Minisign._();
+  new _();
 
   static bool get _useDocker =>
       _forceDocker || Platform.environment['MINISIGN_DOCKER'] == 'true';

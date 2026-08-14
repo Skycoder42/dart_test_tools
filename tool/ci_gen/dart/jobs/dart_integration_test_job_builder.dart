@@ -27,11 +27,11 @@ final class DartIntegrationTestJobConfig extends JobConfig
     inputContext(WorkflowInputs.needsFlutterSdk),
   );
 
-  DartIntegrationTestJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class DartIntegrationTestMatrix extends PlatformMatrix {
-  const DartIntegrationTestMatrix() : super(DartPlatform.values);
+  const new() : super(DartPlatform.values);
 
   DartTestArgsMatrixProperty get dartTestArgs =>
       const DartTestArgsMatrixProperty();
@@ -57,10 +57,8 @@ final class DartIntegrationTestJobBuilder
   @override
   final DartIntegrationTestMatrix matrix;
 
-  DartIntegrationTestJobBuilder({
-    required this.enabledPlatformsOutput,
-    required super.config,
-  }) : matrix = const DartIntegrationTestMatrix();
+  new({required this.enabledPlatformsOutput, required super.config})
+    : matrix = const DartIntegrationTestMatrix();
 
   @override
   JobId get id => const JobId('integration_tests');

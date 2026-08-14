@@ -16,7 +16,7 @@ base mixin CoverageCollectorConfig
 
 final class LcovCleanCommandMatrixProperty
     extends IMatrixProperty<IPlatformMatrixSelector> {
-  const LcovCleanCommandMatrixProperty();
+  const new();
 
   @override
   String get name => 'lcovCleanCommand';
@@ -44,7 +44,7 @@ class CoverageCollectorBuilder implements StepBuilder {
   final PlatformMatrixProperty platform;
   final LcovCleanCommandMatrixProperty lcovCleanCommand;
 
-  const CoverageCollectorBuilder({
+  const new({
     required this.config,
     required this.lcovCleanCommand,
     required this.platform,

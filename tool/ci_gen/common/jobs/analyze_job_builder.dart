@@ -22,12 +22,12 @@ abstract base class AnalyzeJobConfig extends JobConfig
         AnalyzeConfig {
   late final analyzeImage = inputContext(WorkflowInputs.analyzeImage);
 
-  AnalyzeJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 abstract base class AnalyzeJobBuilder<TConfig extends AnalyzeJobConfig>
     extends SdkJobBuilder<TConfig> {
-  const AnalyzeJobBuilder({required super.config});
+  const new({required super.config});
 
   @override
   JobId get id => const JobId('analyze');

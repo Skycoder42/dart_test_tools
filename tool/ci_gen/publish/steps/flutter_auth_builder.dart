@@ -5,7 +5,7 @@ import '../../types/step.dart';
 class FlutterAuthBuilder implements StepBuilder {
   final Expression ifExpression;
 
-  FlutterAuthBuilder({required this.ifExpression});
+  new({required this.ifExpression});
 
   @override
   Iterable<Step> build() => [

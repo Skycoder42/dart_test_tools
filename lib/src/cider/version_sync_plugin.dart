@@ -11,7 +11,7 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
 class VersionSyncCommand extends CiderCommand {
-  VersionSyncCommand(super.console);
+  new(super.console);
 
   @override
   String get name => 'version-sync';

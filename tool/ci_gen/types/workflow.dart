@@ -9,12 +9,11 @@ part 'workflow.g.dart';
 
 @freezed
 sealed class Workflow with _$Workflow {
-  const factory Workflow({
+  const factory({
     required On on,
     @JsonKey(includeIfNull: false) Env? env,
     @JobsConverter() required Jobs jobs,
   }) = _Workflow;
 
-  factory Workflow.fromJson(Map<String, dynamic> json) =>
-      _$WorkflowFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$WorkflowFromJson(json);
 }

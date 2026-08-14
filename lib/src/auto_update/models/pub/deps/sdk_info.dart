@@ -9,9 +9,7 @@ part 'sdk_info.g.dart';
 @freezed
 sealed class SdkInfo with _$SdkInfo {
   @VersionConverter()
-  const factory SdkInfo({required String name, required Version version}) =
-      _SdkInfo;
+  const factory({required String name, required Version version}) = _SdkInfo;
 
-  factory SdkInfo.fromJson(Map<String, dynamic> json) =>
-      _$SdkInfoFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$SdkInfoFromJson(json);
 }

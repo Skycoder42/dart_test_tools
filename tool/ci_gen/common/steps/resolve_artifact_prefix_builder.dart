@@ -32,7 +32,7 @@ class ResolveArtifactPrefixBuilder implements StepBuilder {
 
   final ResolveArtifactPrefixConfig config;
 
-  const ResolveArtifactPrefixBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

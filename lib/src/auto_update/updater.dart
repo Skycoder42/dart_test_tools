@@ -14,7 +14,7 @@ class Updater {
 
   IOSink? _reportSink;
 
-  Updater({
+  new({
     required this.flutterCompat,
     required this.bumpVersion,
     required this.reportPath,

@@ -9,7 +9,7 @@ import '../../types/workflow_call.dart';
 import 'jobs/build_windows_job_builder.dart';
 
 class BuildWindowsWorkflow implements WorkflowBuilder {
-  const BuildWindowsWorkflow();
+  const new();
 
   @override
   String get name => 'build-windows';

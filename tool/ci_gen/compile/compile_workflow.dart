@@ -12,7 +12,7 @@ import '../types/workflow_call.dart';
 import 'jobs/compile_job_builder.dart';
 
 class CompileWorkflow implements WorkflowBuilder {
-  const CompileWorkflow();
+  const new();
 
   @override
   String get name => 'compile';

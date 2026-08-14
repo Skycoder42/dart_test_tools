@@ -7,7 +7,7 @@ class NfpmVersion {
   final String? prerelease;
   final String? release;
 
-  const NfpmVersion({required this.version, this.prerelease, this.release});
+  const new({required this.version, this.prerelease, this.release});
 }
 
 @internal

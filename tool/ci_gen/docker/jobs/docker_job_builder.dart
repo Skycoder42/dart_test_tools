@@ -6,7 +6,7 @@ import '../../types/job.dart';
 import '../steps/docker_image_builder.dart';
 
 final class DockerJobConfig extends JobConfig with DockerImageConfig {
-  DockerJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 class DockerJobBuilder implements JobBuilder {
@@ -14,7 +14,7 @@ class DockerJobBuilder implements JobBuilder {
 
   final DockerJobConfig config;
 
-  DockerJobBuilder({required this.config});
+  new({required this.config});
 
   @override
   JobId get id => jobId;

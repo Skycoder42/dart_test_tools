@@ -14,43 +14,42 @@ enum DiagnosticLevel { error, warning, info, ignore }
 @freezed
 sealed class AnalysisOptions with _$AnalysisOptions {
   @JsonSerializable(anyMap: true, checked: true)
-  const factory AnalysisOptions({
+  const factory({
     @JsonKey(includeIfNull: false) ListOrValue<AnalysisOptionsRef>? include,
     @JsonKey(includeIfNull: false) Map<String, dynamic>? plugins,
     @JsonKey(includeIfNull: false) AnalysisOptionsAnalyzer? analyzer,
     @JsonKey(includeIfNull: false) AnalysisOptionsLinter? linter,
   }) = _AnalysisOptions;
 
-  factory AnalysisOptions.fromJson(Map<String, dynamic> json) =>
+  factory fromJson(Map<String, dynamic> json) =>
       _$AnalysisOptionsFromJson(json);
 
-  factory AnalysisOptions.fromYaml(Map<dynamic, dynamic>? map) =>
+  factory fromYaml(Map<dynamic, dynamic>? map) =>
       AnalysisOptions.fromJson(Map<String, dynamic>.from(map!));
 }
 
 @freezed
 sealed class AnalysisOptionsAnalyzer with _$AnalysisOptionsAnalyzer {
   @JsonSerializable(anyMap: true, checked: true)
-  const factory AnalysisOptionsAnalyzer({
+  const factory({
     @JsonKey(includeIfNull: false) Map<String, dynamic>? language,
     @JsonKey(includeIfNull: false) List<String>? exclude,
     @JsonKey(includeIfNull: false) Map<String, DiagnosticLevel>? errors,
   }) = _AnalysisOptionsAnalyzer;
 
-  factory AnalysisOptionsAnalyzer.fromJson(Map<String, dynamic> json) =>
+  factory fromJson(Map<String, dynamic> json) =>
       _$AnalysisOptionsAnalyzerFromJson(json);
 }
 
 @freezed
 sealed class AnalysisOptionsLinter with _$AnalysisOptionsLinter {
   @JsonSerializable(anyMap: true, checked: true, disallowUnrecognizedKeys: true)
-  const factory AnalysisOptionsLinter({required dynamic rules}) =
-      _AnalysisOptionsLinter;
+  const factory({required dynamic rules}) = _AnalysisOptionsLinter;
 
-  factory AnalysisOptionsLinter.fromJson(Map<String, dynamic> json) =>
+  factory fromJson(Map<String, dynamic> json) =>
       _$AnalysisOptionsLinterFromJson(json);
 
-  const AnalysisOptionsLinter._();
+  const new _();
 
   Map<String, bool> get ruleMap {
     final dynamic rulesValue = rules;
@@ -73,13 +72,10 @@ sealed class AnalysisOptionsLinter with _$AnalysisOptionsLinter {
 @Freezed(fromJson: false, toJson: false)
 sealed class ListOrValue<T>
     with _$ListOrValue<T>, ListMixin<T>, _UnmodifiableListMixin<T> {
-  const factory ListOrValue.list(List<T> list) = _List;
-  const factory ListOrValue.value(T value) = _ListValue;
+  const factory list(List<T> list) = _List;
+  const factory value(T value) = _ListValue;
 
-  factory ListOrValue.fromJson(
-    dynamic json,
-    T Function(dynamic json) fromJsonT,
-  ) {
+  factory fromJson(dynamic json, T Function(dynamic json) fromJsonT) {
     if (_implements<T, List<dynamic>>() && json is List) {
       final allChildrenAreLists = json.every((e) => e is List);
       return allChildrenAreLists
@@ -92,7 +88,7 @@ sealed class ListOrValue<T>
     }
   }
 
-  const ListOrValue._();
+  const new _();
 
   bool get isList => switch (this) {
     _List() => true,

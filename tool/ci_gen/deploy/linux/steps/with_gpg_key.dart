@@ -15,7 +15,7 @@ class WithGpgKey implements StepBuilder {
   final WithGpgKeyConfig config;
   final Steps steps;
 
-  const WithGpgKey({required this.config, required this.steps});
+  const new({required this.config, required this.steps});
 
   @override
   Iterable<Step> build() => [

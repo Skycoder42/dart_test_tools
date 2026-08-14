@@ -5,7 +5,7 @@ import '../api/step_builder.dart';
 class ValidateInputsBuilder implements StepBuilder {
   final Map<String, Expression> inputs;
 
-  const ValidateInputsBuilder(this.inputs);
+  const new(this.inputs);
 
   @override
   Iterable<Step> build() => [

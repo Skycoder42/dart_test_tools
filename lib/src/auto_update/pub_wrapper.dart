@@ -22,7 +22,7 @@ class PubWrapper {
 
   String get _executable => isFlutter ? 'flutter' : 'dart';
 
-  PubWrapper(this.workingDirectory, {required this.isFlutter});
+  new(this.workingDirectory, {required this.isFlutter});
 
   static Future<PubWrapper> create(
     Directory workingDirectory, {

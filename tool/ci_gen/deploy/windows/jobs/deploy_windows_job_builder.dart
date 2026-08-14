@@ -18,13 +18,13 @@ final class DeployWindowsJobConfig extends JobConfig
         ResolveArtifactPrefixConfig,
         DeployWindowsInstallerConfig,
         FlutterSdkJobConfig {
-  DeployWindowsJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class DeployWindowsJobBuilder
     extends SdkJobBuilder<DeployWindowsJobConfig>
     with FlutterSdkJobBuilderMixin<DeployWindowsJobConfig> {
-  const DeployWindowsJobBuilder({required super.config});
+  const new({required super.config});
 
   @override
   JobId get id => const JobId('deploy_windows');

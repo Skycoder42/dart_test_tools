@@ -11,10 +11,7 @@ class RulesGenerator {
   @internal
   final RulesCollector rulesCollector;
 
-  RulesGenerator({
-    required this.knownRulesLoader,
-    required this.rulesCollector,
-  });
+  new({required this.knownRulesLoader, required this.rulesCollector});
 
   Future<AnalysisOptions> generateRules({
     required List<AnalysisOptionsRef> baseOptions,

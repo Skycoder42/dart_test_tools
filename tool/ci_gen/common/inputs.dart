@@ -4,7 +4,7 @@ import 'api/workflow_input.dart';
 import 'tools.dart';
 
 abstract base class WorkflowInputs {
-  WorkflowInputs._();
+  new _();
 
   static const workingDirectory = WorkflowInput(
     name: 'workingDirectory',

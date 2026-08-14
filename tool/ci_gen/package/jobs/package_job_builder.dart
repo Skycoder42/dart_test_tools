@@ -16,7 +16,7 @@ final class PackageJobConfig extends JobConfig
         ProjectSetupConfig,
         PackageConfig,
         DartSdkJobConfig {
-  PackageJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class PackageJobBuilder extends SdkJobBuilder<PackageJobConfig>
@@ -24,7 +24,7 @@ final class PackageJobBuilder extends SdkJobBuilder<PackageJobConfig>
   @override
   JobId get id => const JobId('package');
 
-  PackageJobBuilder({required super.config});
+  new({required super.config});
 
   @override
   Job build() => Job(

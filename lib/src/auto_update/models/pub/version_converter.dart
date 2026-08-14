@@ -4,7 +4,7 @@ import 'package:pub_semver/pub_semver.dart';
 
 @Target({TargetKind.classType, TargetKind.constructor})
 class VersionConverter implements JsonConverter<Version, String> {
-  const VersionConverter();
+  const new();
 
   @override
   Version fromJson(String json) => Version.parse(json);

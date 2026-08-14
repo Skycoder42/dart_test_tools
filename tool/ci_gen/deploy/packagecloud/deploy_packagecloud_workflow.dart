@@ -13,7 +13,7 @@ import 'jobs/deploy_packagecloud_job_builder.dart';
 /// of the `artifactPrefix` input. Gate the invocation on a created release with
 /// a job-level `if:` in the calling workflow.
 class DeployPackagecloudWorkflow implements WorkflowBuilder {
-  const DeployPackagecloudWorkflow();
+  const new();
 
   @override
   String get name => 'deploy-packagecloud';

@@ -13,13 +13,13 @@ final class DeployAndroidJobConfig extends JobConfig
         WorkingDirectoryConfig,
         ResolveArtifactPrefixConfig,
         DeployAndroidConfig {
-  DeployAndroidJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class DeployAndroidJobBuilder implements JobBuilder {
   final DeployAndroidJobConfig config;
 
-  const DeployAndroidJobBuilder({required this.config});
+  const new({required this.config});
 
   @override
   JobId get id => const JobId('deploy_android');

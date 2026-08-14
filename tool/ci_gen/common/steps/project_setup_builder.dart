@@ -15,7 +15,7 @@ base mixin ProjectSetupConfig on JobConfig, ProjectPrepareConfig {
 class ProjectSetupBuilder implements StepBuilder {
   final ProjectSetupConfig config;
 
-  const ProjectSetupBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

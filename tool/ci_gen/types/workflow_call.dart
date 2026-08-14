@@ -9,12 +9,11 @@ part 'workflow_call.g.dart';
 
 @freezed
 sealed class WorkflowCall with _$WorkflowCall {
-  const factory WorkflowCall({
+  const factory({
     @JsonKey(includeIfNull: false) Inputs? inputs,
     @JsonKey(includeIfNull: false) Outputs? outputs,
     @JsonKey(includeIfNull: false) Secrets? secrets,
   }) = _WorkflowCall;
 
-  factory WorkflowCall.fromJson(Map<String, dynamic> json) =>
-      _$WorkflowCallFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$WorkflowCallFromJson(json);
 }

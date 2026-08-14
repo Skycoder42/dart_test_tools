@@ -19,11 +19,11 @@ final class DeployPackagecloudJobConfig extends JobConfig
         PackagecloudUploadConfig {
   late final ubuntuVersions = inputContext(WorkflowInputs.ubuntuVersions);
 
-  DeployPackagecloudJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class DeployPackagecloudMatrix extends ExpressionMatrix<UbuntuCodeName> {
-  DeployPackagecloudMatrix(super.expression);
+  new(super.expression);
 
   CodeNameMatrixProperty get codeName => const CodeNameMatrixProperty();
 
@@ -36,7 +36,7 @@ final class DeployPackagecloudJobBuilder
     implements JobBuilder {
   final DeployPackagecloudJobConfig config;
 
-  DeployPackagecloudJobBuilder({required this.config})
+  new({required this.config})
     : matrix = DeployPackagecloudMatrix(
         Functions.fromJson(config.ubuntuVersions),
       );

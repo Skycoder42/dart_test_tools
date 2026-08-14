@@ -5,8 +5,7 @@ import '../api/step_builder.dart';
 import '../api/working_directory_config.dart';
 import '../jobs/sdk_job_builder.dart';
 
-base mixin RunPublishConfig
-    on JobConfig, SdkJobConfig, WorkingDirectoryConfig {}
+base mixin RunPublishConfig on JobConfig, SdkJobConfig, WorkingDirectoryConfig;
 
 class RunPublishBuilder implements StepBuilder {
   final RunPublishConfig config;
@@ -14,7 +13,7 @@ class RunPublishBuilder implements StepBuilder {
   late String publishArgs;
   Expression? ifExpression;
 
-  RunPublishBuilder({
+  new({
     required this.config,
     required this.publishStepName,
     required this.publishArgs,

@@ -27,12 +27,12 @@ final class BuildWindowsJobConfig extends JobConfig
         BuildAppConfig,
         BuildWindowsInstallerConfig,
         FlutterSdkJobConfig {
-  BuildWindowsJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class BuildWindowsJobBuilder extends SdkJobBuilder<BuildWindowsJobConfig>
     with FlutterSdkJobBuilderMixin<BuildWindowsJobConfig> {
-  const BuildWindowsJobBuilder({required super.config});
+  const new({required super.config});
 
   @override
   JobId get id => const JobId('build_windows');

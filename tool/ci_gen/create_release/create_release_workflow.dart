@@ -16,7 +16,7 @@ import '../types/workflow_call.dart';
 /// Meant to be called after the stage-2 build/bundle workflows (via `needs`),
 /// so the artifacts they uploaded are available for download in the same run.
 class CreateReleaseWorkflow implements WorkflowBuilder {
-  const CreateReleaseWorkflow();
+  const new();
 
   @override
   String get name => 'create-release';

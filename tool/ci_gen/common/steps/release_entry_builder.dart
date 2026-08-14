@@ -29,7 +29,7 @@ class ReleaseEntryBuilder implements StepBuilder {
   final String? files;
   final bool failOnUnmatchedFiles;
 
-  const ReleaseEntryBuilder({
+  const new({
     required this.config,
     required this.versionUpdate,
     this.changelogExtra,

@@ -9,7 +9,7 @@ abstract base class ActionConfig {
   @mustCallSuper
   void configure() {}
 
-  ActionConfig(this.inputContext) {
+  new(this.inputContext) {
     configure();
   }
 }

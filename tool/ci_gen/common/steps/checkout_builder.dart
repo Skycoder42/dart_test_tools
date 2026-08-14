@@ -12,7 +12,7 @@ class CheckoutBuilder implements StepBuilder {
   final Expression? withSubmodules;
   final Expression? token;
 
-  const CheckoutBuilder({
+  const new({
     this.path,
     this.repository,
     this.gitRef,

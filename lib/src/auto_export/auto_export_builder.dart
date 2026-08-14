@@ -19,7 +19,7 @@ class AutoExportBuilder {
   final ExportResolver resolver;
   final ExportFileWriter writer;
 
-  const AutoExportBuilder({
+  const new({
     this.resolver = const ExportResolver(),
     this.writer = const ExportFileWriter(),
   });

@@ -13,10 +13,9 @@ part 'auto_export_config.g.dart';
 @Freezed(fromJson: false, toJson: true)
 sealed class AutoExportConfig with _$AutoExportConfig {
   @yamlSerializable
-  const factory AutoExportConfig(ListOrValue<ExportTarget> exports) =
-      _AutoExportConfig;
+  const factory(ListOrValue<ExportTarget> exports) = _AutoExportConfig;
 
-  factory AutoExportConfig.fromJson(Map<dynamic, dynamic>? json) {
+  factory fromJson(Map<dynamic, dynamic>? json) {
     final anyNameOrExports = ListOrValue.fromJson(json!['exports'], (v) => v)
         .whereType<Map<dynamic, dynamic>>()
         .any((m) => m.containsKey('name') || m.containsKey('exports'));
@@ -28,7 +27,7 @@ sealed class AutoExportConfig with _$AutoExportConfig {
     return AutoExportConfig(ListOrValue.value(target));
   }
 
-  const AutoExportConfig._();
+  const new _();
 
   void validate() {
     final keySet = <String>{};
@@ -43,31 +42,29 @@ sealed class AutoExportConfig with _$AutoExportConfig {
 @freezed
 sealed class ExportTarget with _$ExportTarget {
   @yamlSerializable
-  const factory ExportTarget({
+  const factory({
     required String name,
     required ListOrValue<ExportDefinition> exports,
   }) = _ExportTarget;
 
-  factory ExportTarget.fromJson(Map<dynamic, dynamic> json) =>
-      _$ExportTargetFromJson(json);
+  factory fromJson(Map<dynamic, dynamic> json) => _$ExportTargetFromJson(json);
 
-  const ExportTarget._();
+  const new _();
 }
 
 @Freezed(fromJson: false, toJson: false)
 sealed class ExportDefinition with _$ExportDefinition {
-  const factory ExportDefinition.glob(ExportPattern pattern) =
-      GlobExportDefinition;
+  const factory glob(ExportPattern pattern) = GlobExportDefinition;
 
   @yamlSerializable
-  const factory ExportDefinition.single({
+  const factory single({
     required Uri uri,
     ListOrValue<String>? show,
     ListOrValue<String>? hide,
     @JsonKey(name: 'if') ExportConfigurations? configurations,
   }) = SingleExportDefinition;
 
-  factory ExportDefinition.fromJson(dynamic json) => switch (json) {
+  factory fromJson(dynamic json) => switch (json) {
     String() => ExportDefinition.glob(ExportPattern.fromJson(json)),
     Map() => _$SingleExportDefinitionFromJson(json),
     _ => throw const FormatException(
@@ -75,7 +72,7 @@ sealed class ExportDefinition with _$ExportDefinition {
     ),
   };
 
-  const ExportDefinition._();
+  const new _();
 
   dynamic toJson() => switch (this) {
     GlobExportDefinition(:final pattern) => pattern.toJson(),
@@ -85,10 +82,9 @@ sealed class ExportDefinition with _$ExportDefinition {
 
 @Freezed(fromJson: false, toJson: false)
 sealed class ExportPattern with _$ExportPattern {
-  const factory ExportPattern(Glob pattern, {@Default(false) bool negated}) =
-      _ExportPattern;
+  const factory(Glob pattern, {@Default(false) bool negated}) = _ExportPattern;
 
-  factory ExportPattern.fromJson(String json) {
+  factory fromJson(String json) {
     if (json.startsWith('!')) {
       return ExportPattern(
         Glob(json.substring(1), caseSensitive: true),
@@ -99,17 +95,17 @@ sealed class ExportPattern with _$ExportPattern {
     }
   }
 
-  const ExportPattern._();
+  const new _();
 
   String toJson() => negated ? '!${pattern.pattern}' : pattern.pattern;
 }
 
 @Freezed(fromJson: false, toJson: false)
 sealed class ExportConfigurations with _$ExportConfigurations {
-  const factory ExportConfigurations(List<ExportConfiguration> configurations) =
+  const factory(List<ExportConfiguration> configurations) =
       _ExportConfigurations;
 
-  factory ExportConfigurations.fromJson(dynamic json) => switch (json) {
+  factory fromJson(dynamic json) => switch (json) {
     Map() => ExportConfigurations([
       for (final MapEntry(:key, :value) in json.cast<String, String>().entries)
         ExportConfiguration(define: key, uri: Uri.parse(value)),
@@ -123,7 +119,7 @@ sealed class ExportConfigurations with _$ExportConfigurations {
     ),
   };
 
-  const ExportConfigurations._();
+  const new _();
 
   dynamic toJson() => configurations.every((e) => e.equals == null)
       ? {for (final config in configurations) config.define: config.uri}
@@ -133,14 +129,11 @@ sealed class ExportConfigurations with _$ExportConfigurations {
 @freezed
 sealed class ExportConfiguration with _$ExportConfiguration {
   @yamlSerializable
-  const factory ExportConfiguration({
-    required String define,
-    String? equals,
-    required Uri uri,
-  }) = _ExportConfiguration;
+  const factory({required String define, String? equals, required Uri uri}) =
+      _ExportConfiguration;
 
-  factory ExportConfiguration.fromJson(Map<dynamic, dynamic> json) =>
+  factory fromJson(Map<dynamic, dynamic> json) =>
       _$ExportConfigurationFromJson(json);
 
-  const ExportConfiguration._();
+  const new _();
 }

@@ -15,7 +15,7 @@ import 'jobs/dart_integration_test_job_builder.dart';
 import 'jobs/dart_unit_test_job_builder.dart';
 
 class DartWorkflow implements WorkflowBuilder {
-  const DartWorkflow();
+  const new();
 
   @override
   String get name => 'dart';

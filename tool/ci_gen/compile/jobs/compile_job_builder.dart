@@ -29,11 +29,11 @@ final class CompileJobConfig extends JobConfig
     inputContext(WorkflowInputs.needsFlutterSdk),
   );
 
-  CompileJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class CompileMatrix extends PlatformMatrix {
-  CompileMatrix() : super(DartPlatform.values.where((p) => !p.isWeb).toList());
+  new() : super(DartPlatform.values.where((p) => !p.isWeb).toList());
 
   ExecutableSuffixProperty get executableSuffix =>
       const ExecutableSuffixProperty();
@@ -62,7 +62,7 @@ final class CompileJobBuilder extends SdkJobBuilder<CompileJobConfig>
   @override
   final Expression enabledPlatforms;
 
-  CompileJobBuilder({required this.enabledPlatforms, required super.config})
+  new({required this.enabledPlatforms, required super.config})
     : matrix = CompileMatrix();
 
   @override

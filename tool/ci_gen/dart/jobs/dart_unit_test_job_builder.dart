@@ -18,14 +18,12 @@ final class DartUnitTestJobConfig extends UnitTestJobConfig
     inputContext(WorkflowInputs.needsFlutterSdk),
   );
 
-  DartUnitTestJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class DartUnitTestJobBuilder
     extends UnitTestJobBuilder<DartUnitTestJobConfig>
     with DartSdkJobBuilderMixin<DartUnitTestJobConfig> {
-  DartUnitTestJobBuilder({
-    required super.enabledPlatformsOutput,
-    required super.config,
-  }) : super(platformSelectors: DartPlatform.values);
+  new({required super.enabledPlatformsOutput, required super.config})
+    : super(platformSelectors: DartPlatform.values);
 }

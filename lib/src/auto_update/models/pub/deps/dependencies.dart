@@ -9,13 +9,12 @@ part 'dependencies.g.dart';
 
 @freezed
 sealed class Dependencies with _$Dependencies {
-  const factory Dependencies({
+  const factory({
     required String root,
     required List<DepInfo> packages,
     required List<SdkInfo> sdks,
     @Default([]) List<ExecutableName> executables,
   }) = _Dependencies;
 
-  factory Dependencies.fromJson(Map<String, dynamic> json) =>
-      _$DependenciesFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$DependenciesFromJson(json);
 }

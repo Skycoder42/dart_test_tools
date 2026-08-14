@@ -10,7 +10,7 @@ import 'cask_options.dart';
 
 @internal
 class CaskOptionsLoader {
-  const CaskOptionsLoader();
+  const new();
 
   Future<CaskOptions> load(Directory sourceDir) async {
     final pubspecFile = sourceDir.subFile('pubspec.yaml');

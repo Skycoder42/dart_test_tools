@@ -7,13 +7,13 @@ part 'output.g.dart';
 
 @freezed
 sealed class Output with _$Output {
-  const factory Output({
+  const factory({
     @JsonKey(fromJson: Output._fromJson, toJson: Output._toJson)
     required JobIdOutput value,
     @JsonKey(includeIfNull: false) String? description,
   }) = _Output;
 
-  factory Output.fromJson(Map<String, dynamic> json) => _$OutputFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$OutputFromJson(json);
 
   static String _toJson(JobIdOutput value) =>
       value.workflowExpression.toString();

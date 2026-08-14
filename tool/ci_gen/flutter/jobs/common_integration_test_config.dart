@@ -26,5 +26,5 @@ base class CommonIntegrationTestJobConfig extends JobConfig
         PrepareIntegrationTestConfig,
         CommonIntegrationTestConfig,
         FlutterSdkJobConfig {
-  CommonIntegrationTestJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }

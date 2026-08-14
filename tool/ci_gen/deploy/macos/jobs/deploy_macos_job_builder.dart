@@ -17,12 +17,12 @@ final class DeployMacosJobConfig extends JobConfig
         DartSdkJobConfig {
   late final version = inputContext(WorkflowInputs.version);
 
-  DeployMacosJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class DeployMacosJobBuilder extends SdkJobBuilder<DeployMacosJobConfig>
     with DartSdkJobBuilderMixin<DeployMacosJobConfig> {
-  const DeployMacosJobBuilder({required super.config});
+  const new({required super.config});
 
   @override
   JobId get id => const JobId('deploy_macos');

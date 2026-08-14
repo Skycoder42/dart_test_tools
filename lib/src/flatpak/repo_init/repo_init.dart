@@ -9,7 +9,7 @@ class RepoInit {
   final RepoGenerator _repoGenerator;
   final RepoFileGenerator _repoFileGenerator;
 
-  const RepoInit([
+  const new([
     this._metadataCollector = const MetadataCollector(),
     this._repoGenerator = const RepoGenerator(),
     this._repoFileGenerator = const RepoFileGenerator(),

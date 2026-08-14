@@ -5,12 +5,12 @@ part 'secret.g.dart';
 
 @freezed
 sealed class Secret with _$Secret {
-  const factory Secret({
+  const factory({
     required bool required,
     @JsonKey(includeIfNull: false) String? description,
   }) = _Secret;
 
-  factory Secret.fromJson(Map<String, dynamic> json) => _$SecretFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$SecretFromJson(json);
 }
 
 typedef Secrets = Map<String, Secret>;

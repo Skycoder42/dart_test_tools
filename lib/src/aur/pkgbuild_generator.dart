@@ -11,7 +11,7 @@ class PkgBuildGenerator {
 
   final AurOptionsLoader aurOptionsLoader;
 
-  const PkgBuildGenerator({this.aurOptionsLoader = const AurOptionsLoader()});
+  const new({this.aurOptionsLoader = const AurOptionsLoader()});
 
   Future<void> generatePkgbuild({
     required Directory sourceDirectory,

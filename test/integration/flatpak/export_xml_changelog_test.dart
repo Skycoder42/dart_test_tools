@@ -10,7 +10,7 @@ import 'package:test/test.dart';
 final class _TestOverrides extends IOOverrides {
   final Directory testDir;
 
-  _TestOverrides(this.testDir);
+  new(this.testDir);
 
   @override
   File createFile(String path) => super.createFile(join(testDir.path, path));

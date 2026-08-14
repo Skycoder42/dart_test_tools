@@ -15,13 +15,13 @@ final class DeployLinuxJobConfig extends JobConfig
     WorkflowInputs.flatpakPlatformImage,
   );
 
-  DeployLinuxJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class DeployLinuxJobBuilder implements JobBuilder {
   final DeployLinuxJobConfig config;
 
-  DeployLinuxJobBuilder({required this.config});
+  new({required this.config});
 
   @override
   JobId get id => const JobId('deploy_linux');

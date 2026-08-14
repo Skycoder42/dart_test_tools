@@ -8,7 +8,7 @@ part 'cask_options.g.dart';
 
 @freezed
 sealed class CaskOptions with _$CaskOptions {
-  const factory CaskOptions({
+  const factory({
     required Pubspec pubspec,
     required CaskPubspecOptions options,
     required AppInfoOptions appInfo,
@@ -17,27 +17,25 @@ sealed class CaskOptions with _$CaskOptions {
 
 @freezed
 sealed class AppInfoOptions with _$AppInfoOptions {
-  const factory AppInfoOptions({
+  const factory({
     @JsonKey(name: 'PRODUCT_BUNDLE_IDENTIFIER')
     required String productBundleIdentifier,
     @JsonKey(name: 'PRODUCT_NAME') required String productName,
   }) = _AppInfoOptions;
 
-  factory AppInfoOptions.fromJson(Map<String, dynamic> json) =>
-      _$AppInfoOptionsFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$AppInfoOptionsFromJson(json);
 }
 
 @internal
 @freezed
 sealed class CaskOptionsPubspecView with _$CaskOptionsPubspecView {
   @JsonSerializable(anyMap: true, checked: true)
-  const factory CaskOptionsPubspecView({required CaskPubspecOptions cask}) =
-      _CaskOptionsPubspecView;
+  const factory({required CaskPubspecOptions cask}) = _CaskOptionsPubspecView;
 
-  factory CaskOptionsPubspecView.fromJson(Map<String, dynamic> json) =>
+  factory fromJson(Map<String, dynamic> json) =>
       _$CaskOptionsPubspecViewFromJson(json);
 
-  factory CaskOptionsPubspecView.fromYaml(Map<dynamic, dynamic>? map) =>
+  factory fromYaml(Map<dynamic, dynamic>? map) =>
       _$CaskOptionsPubspecViewFromJson(map!);
 }
 
@@ -45,13 +43,13 @@ sealed class CaskOptionsPubspecView with _$CaskOptionsPubspecView {
 @freezed
 sealed class CaskPubspecOptions with _$CaskPubspecOptions {
   @JsonSerializable(anyMap: true, checked: true, disallowUnrecognizedKeys: true)
-  const factory CaskPubspecOptions({
+  const factory({
     String? caskName,
     required String downloadUrl,
     @Default(':catalina') String minMacosVersion,
     List<String>? zap,
   }) = _CaskPubspecOptions;
 
-  factory CaskPubspecOptions.fromJson(Map<String, dynamic> json) =>
+  factory fromJson(Map<String, dynamic> json) =>
       _$CaskPubspecOptionsFromJson(json);
 }

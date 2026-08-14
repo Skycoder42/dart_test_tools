@@ -31,7 +31,7 @@ base mixin DartIntegrationTestConfig on JobConfig, ProjectSetupConfig {
 
 final class DartTestArgsMatrixProperty
     extends IMatrixProperty<IPlatformMatrixSelector> {
-  const DartTestArgsMatrixProperty();
+  const new();
 
   @override
   String get name => 'dartTestArgs';
@@ -50,7 +50,7 @@ class DartIntegrationTestBuilder implements StepBuilder {
   final PlatformMatrixProperty platform;
   final DartTestArgsMatrixProperty dartTestArgs;
 
-  const DartIntegrationTestBuilder({
+  const new({
     required this.config,
     required this.platform,
     required this.dartTestArgs,

@@ -1,7 +1,7 @@
 import 'api/workflow_output.dart';
 
 abstract base class WorkflowOutputs {
-  const WorkflowOutputs._();
+  const new _();
 
   static const releaseCreated = WorkflowOutput(
     name: 'releaseCreated',

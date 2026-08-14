@@ -31,7 +31,7 @@ enum FlatpakArchMatrixSelector implements IMatrixSelector { x86_64, aarch64 }
 
 final class ArchMatrixProperty
     extends IMatrixProperty<FlatpakArchMatrixSelector> {
-  const ArchMatrixProperty();
+  const new();
 
   @override
   String get name => 'arch';
@@ -42,7 +42,7 @@ final class ArchMatrixProperty
 
 final class YqArchMatrixProperty
     extends IMatrixProperty<FlatpakArchMatrixSelector> {
-  const YqArchMatrixProperty();
+  const new();
 
   @override
   String get name => 'yqArch';
@@ -63,11 +63,7 @@ class BuildFlatpakBundleBuilder implements StepBuilder {
   final ArchMatrixProperty arch;
   final YqArchMatrixProperty yqArch;
 
-  const BuildFlatpakBundleBuilder({
-    required this.config,
-    required this.arch,
-    required this.yqArch,
-  });
+  const new({required this.config, required this.arch, required this.yqArch});
 
   @override
   Iterable<Step> build() => [

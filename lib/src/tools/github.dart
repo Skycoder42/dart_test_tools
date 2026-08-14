@@ -5,7 +5,7 @@ import 'dart:io';
 import 'io.dart';
 
 class _GithubEnv {
-  const _GithubEnv();
+  const new();
 
   Directory get runnerTemp {
     final runnerTemp = Platform.environment['RUNNER_TEMP'];
@@ -64,7 +64,7 @@ class _GithubEnv {
 }
 
 abstract base class Github {
-  Github._();
+  new _();
 
   static const env = _GithubEnv();
 

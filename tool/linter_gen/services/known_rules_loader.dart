@@ -17,7 +17,7 @@ class KnownRulesLoader {
 
   Set<String>? _cachedNewRules;
 
-  KnownRulesLoader({
+  new({
     required this.analysisOptionsLoader,
     required this.analysisOptionsWriter,
   });
@@ -61,7 +61,7 @@ class KnownRulesLoader {
       sourceUrl: _rulesPageUri.toString(),
     );
     final sourceCode = rulesDom.querySelectorAll('pre.opal').single.text;
-    return checkedYamlDecode(
+    return checkedYamlDecode<AnalysisOptions>(
       sourceCode,
       AnalysisOptions.fromYaml,
       sourceUrl: _rulesPageUri,

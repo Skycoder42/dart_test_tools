@@ -17,7 +17,7 @@ class TriggerDeployBuilder implements StepBuilder {
   final Expression versionUpdate;
   final Expression versionOutput;
 
-  TriggerDeployBuilder({
+  new({
     required this.config,
     required this.versionUpdate,
     required this.versionOutput,

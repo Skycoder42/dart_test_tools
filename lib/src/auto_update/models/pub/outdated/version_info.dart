@@ -10,13 +10,11 @@ part 'version_info.g.dart';
 @internal
 sealed class VersionInfo with _$VersionInfo {
   @VersionConverter()
-  const factory VersionInfo({required Version version, bool? nullSafety}) =
-      _VersionInfo;
+  const factory({required Version version, bool? nullSafety}) = _VersionInfo;
 
-  factory VersionInfo.fromJson(Map<String, dynamic> json) =>
-      _$VersionInfoFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$VersionInfoFromJson(json);
 
-  const VersionInfo._();
+  const new _();
 
   @override
   String toString() => switch (nullSafety) {

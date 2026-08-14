@@ -12,13 +12,13 @@ import '../steps/push_aur_builder.dart';
 
 final class AurDeployJobConfig extends JobConfig
     with CloneAurConfig, PrepareArchConfig {
-  AurDeployJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 class AurDeployJobBuilder implements JobBuilder {
   final AurDeployJobConfig config;
 
-  const AurDeployJobBuilder({required this.config});
+  const new({required this.config});
 
   @override
   JobId get id => const JobId('aur_deploy');

@@ -18,7 +18,7 @@ class CloneAurBuilder implements StepBuilder {
 
   final CloneAurConfig config;
 
-  const CloneAurBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

@@ -12,7 +12,7 @@ part 'job.g.dart';
 class _StepOutputMapConverter
     implements
         JsonConverter<Map<JobIdOutput, StepIdOutput>?, Map<String, String>?> {
-  const _StepOutputMapConverter();
+  const new();
 
   @override
   Map<JobIdOutput, StepIdOutput>? fromJson(Map<String, String>? json) {
@@ -37,7 +37,7 @@ class _StepOutputMapConverter
 }
 
 class _NeedsConverter implements JsonConverter<Set<JobId>?, List<String>?> {
-  const _NeedsConverter();
+  const new();
 
   @override
   Set<JobId>? fromJson(List<String>? json) =>
@@ -50,7 +50,7 @@ class _NeedsConverter implements JsonConverter<Set<JobId>?, List<String>?> {
 
 @freezed
 sealed class Job with _$Job {
-  const factory Job({
+  const factory({
     required String name,
     @JsonKey(includeIfNull: false) @_NeedsConverter() Set<JobId>? needs,
     @JsonKey(name: 'if', includeIfNull: false)
@@ -67,13 +67,13 @@ sealed class Job with _$Job {
     required Steps steps,
   }) = _Job;
 
-  factory Job.fromJson(Map<String, dynamic> json) => _$JobFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$JobFromJson(json);
 }
 
 typedef Jobs = Map<JobId, Job>;
 
 class JobsConverter implements JsonConverter<Jobs, Map<String, dynamic>> {
-  const JobsConverter();
+  const new();
 
   @override
   Jobs fromJson(Map<String, dynamic> json) => json.map(

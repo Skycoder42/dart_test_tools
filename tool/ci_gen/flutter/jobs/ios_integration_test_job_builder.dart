@@ -17,7 +17,7 @@ final class IosIntegrationTestJobConfig extends CommonIntegrationTestJobConfig
         InstallXcodeSigningConfig,
         SetupGCloudConfig,
         IosIntegrationTestConfig {
-  IosIntegrationTestJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class IosIntegrationTestJobBuilder
@@ -26,16 +26,12 @@ final class IosIntegrationTestJobBuilder
   final Expression enabledPlatforms;
   final Set<JobId>? needs;
 
-  IosIntegrationTestJobBuilder({
-    required JobIdOutput enabledPlatformsOutput,
-    required super.config,
-  }) : enabledPlatforms = enabledPlatformsOutput.expression,
-       needs = {enabledPlatformsOutput.jobId};
+  new({required JobIdOutput enabledPlatformsOutput, required super.config})
+    : enabledPlatforms = enabledPlatformsOutput.expression,
+      needs = {enabledPlatformsOutput.jobId};
 
-  IosIntegrationTestJobBuilder.direct({
-    required this.enabledPlatforms,
-    required super.config,
-  }) : needs = null;
+  new direct({required this.enabledPlatforms, required super.config})
+    : needs = null;
 
   @override
   JobId get id => const JobId('integration_tests_ios');

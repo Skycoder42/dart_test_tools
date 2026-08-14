@@ -10,7 +10,7 @@ import '../types/workflow_call.dart';
 import 'jobs/publish_job_builder.dart';
 
 class PublishWorkflow implements WorkflowBuilder {
-  const PublishWorkflow();
+  const new();
 
   @override
   String get name => 'publish';

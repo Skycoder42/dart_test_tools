@@ -8,7 +8,7 @@ import '../models/analysis_options_ref.dart';
 class AnalysisOptionsWriter {
   final YamlWriter yamlWriter;
 
-  AnalysisOptionsWriter({required this.yamlWriter});
+  new({required this.yamlWriter});
 
   Future<void> saveAnalysisOptions(
     AnalysisOptionsRef target,
@@ -71,6 +71,7 @@ class AnalysisOptionsWriter {
           _writeRecursive(sink, level + 1, element);
         }
       }
+      // ignore: no_dynamic_casts false positive
     } else if (encodedData case String() when encodedData.startsWith('*')) {
       sink
         ..write('"')

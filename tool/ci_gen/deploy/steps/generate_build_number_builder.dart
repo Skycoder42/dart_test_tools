@@ -16,7 +16,7 @@ class GenerateBuildNumberBuilder implements StepBuilder {
   final GenerateBuildNumberConfig config;
   final bool asEnv;
 
-  const GenerateBuildNumberBuilder({required this.config, this.asEnv = false});
+  const new({required this.config, this.asEnv = false});
 
   @override
   Iterable<Step> build() => [

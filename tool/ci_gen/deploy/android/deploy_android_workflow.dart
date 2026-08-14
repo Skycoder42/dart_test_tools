@@ -13,7 +13,7 @@ import 'jobs/deploy_android_job_builder.dart';
 /// default of the `artifactName` input. Gate the invocation on a created
 /// release with a job-level `if:` in the calling workflow.
 class DeployAndroidWorkflow implements WorkflowBuilder {
-  const DeployAndroidWorkflow();
+  const new();
 
   @override
   String get name => 'deploy-android';

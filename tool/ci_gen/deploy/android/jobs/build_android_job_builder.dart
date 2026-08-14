@@ -31,12 +31,12 @@ final class BuildAndroidJobConfig extends JobConfig
   @override
   late final javaJdkVersion = inputContext(WorkflowInputs.javaJdkVersion);
 
-  BuildAndroidJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class BuildAndroidJobBuilder extends SdkJobBuilder<BuildAndroidJobConfig>
     with FlutterSdkJobBuilderMixin<BuildAndroidJobConfig> {
-  const BuildAndroidJobBuilder({required super.config});
+  const new({required super.config});
 
   @override
   JobId get id => const JobId('build_android');

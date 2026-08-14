@@ -13,7 +13,7 @@ import 'jobs/deploy_linux_job_builder.dart';
 /// default of the `artifactPattern` input. Gate the invocation on a created
 /// release with a job-level `if:` in the calling workflow.
 class DeployLinuxWorkflow implements WorkflowBuilder {
-  const DeployLinuxWorkflow();
+  const new();
 
   @override
   String get name => 'deploy-linux';

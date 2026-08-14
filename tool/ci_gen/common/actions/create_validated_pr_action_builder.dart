@@ -85,7 +85,7 @@ class CreateValidatedPrActionBuilder implements ActionBuilder {
   static final pullRequestNumber = createPrStepId.output('pull-request-number');
   static final pullRequestBranch = createPrStepId.output('pull-request-branch');
 
-  const CreateValidatedPrActionBuilder();
+  const new();
 
   static Step step({
     StepId? id,

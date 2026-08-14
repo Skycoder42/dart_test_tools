@@ -6,7 +6,7 @@ part 'linter_config.freezed.dart';
 
 @freezed
 sealed class LinterConfig with _$LinterConfig {
-  const factory LinterConfig({
+  const factory({
     required AnalysisOptionsRef baseRules,
     @Default(<AnalysisOptionsRef>[]) List<AnalysisOptionsRef> mergeRules,
     AnalysisOptionsRef? customRules,

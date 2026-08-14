@@ -10,10 +10,10 @@ typedef InputBuilderFn<TParam> = Input Function(TParam param);
 
 @freezed
 sealed class WorkflowSecret with _$WorkflowSecret {
-  const factory WorkflowSecret({required String name, required Secret secret}) =
+  const factory({required String name, required Secret secret}) =
       _WorkflowSecret;
 
-  const WorkflowSecret._();
+  const new _();
 }
 
 class WorkflowSecretContext {

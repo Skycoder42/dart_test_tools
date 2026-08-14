@@ -17,7 +17,7 @@ Future<void> hybridMain(StreamChannel channel, Object? message) async {
 }
 ''';
 
-  TestEnv._();
+  new _();
 
   static Future<Map<String, String>> load([String path = defaultPath]) async {
     final channel = spawnHybridCode(_vmCode, message: path);

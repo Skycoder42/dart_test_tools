@@ -11,7 +11,7 @@ abstract base class JobConfig {
   @mustCallSuper
   void configure() {}
 
-  JobConfig(this.inputContext, this.secretContext) {
+  new(this.inputContext, this.secretContext) {
     configure();
   }
 }

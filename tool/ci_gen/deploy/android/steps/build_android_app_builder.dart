@@ -31,7 +31,7 @@ base mixin BuildAndroidAppConfig on JobConfig, BuildAppConfig {
 class BuildAndroidAppBuilder implements StepBuilder {
   final BuildAndroidAppConfig config;
 
-  const BuildAndroidAppBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

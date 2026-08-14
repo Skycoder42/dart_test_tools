@@ -6,5 +6,5 @@ enum RunsOn {
 
   final String id;
 
-  const RunsOn(this.id);
+  new(this.id);
 }

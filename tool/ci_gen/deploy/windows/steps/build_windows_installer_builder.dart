@@ -23,7 +23,7 @@ base mixin BuildWindowsInstallerConfig on JobConfig, BuildAppConfig {
 class BuildWindowsInstallerBuilder implements StepBuilder {
   final BuildWindowsInstallerConfig config;
 
-  const BuildWindowsInstallerBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

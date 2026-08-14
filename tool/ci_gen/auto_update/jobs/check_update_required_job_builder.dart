@@ -13,13 +13,13 @@ final class CheckUpdateRequiredJobConfig extends JobConfig
         FlutterSdkJobConfig,
         WorkingDirectoryConfig,
         CheckUpdateRequiredConfig {
-  CheckUpdateRequiredJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class CheckUpdateRequiredJobBuilder
     extends SdkJobBuilder<CheckUpdateRequiredJobConfig>
     with FlutterSdkJobBuilderMixin {
-  CheckUpdateRequiredJobBuilder({required super.config});
+  new({required super.config});
 
   @override
   JobId get id => const JobId('check-update-required');

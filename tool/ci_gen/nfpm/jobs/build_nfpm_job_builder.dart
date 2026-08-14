@@ -16,7 +16,7 @@ final class BuildNfpmJobConfig extends JobConfig
         DartSdkJobConfig,
         ResolveArtifactPrefixConfig,
         NfpmConfig {
-  BuildNfpmJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class BuildNfpmJobBuilder extends SdkJobBuilder<BuildNfpmJobConfig>
@@ -26,7 +26,7 @@ final class BuildNfpmJobBuilder extends SdkJobBuilder<BuildNfpmJobConfig>
 
   JobIdOutput get artifactNameOutput => id.output('artifact-name');
 
-  BuildNfpmJobBuilder({required super.config});
+  new({required super.config});
 
   @override
   Job build() => Job(

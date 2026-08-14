@@ -9,7 +9,7 @@ part 'action.g.dart';
 
 @freezed
 sealed class Action with _$Action {
-  const factory Action({
+  const factory({
     required String name,
     required String description,
     @JsonKey(includeIfNull: false) Inputs? inputs,
@@ -17,5 +17,5 @@ sealed class Action with _$Action {
     required ActionsRuns runs,
   }) = _Action;
 
-  factory Action.fromJson(Map<String, dynamic> json) => _$ActionFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$ActionFromJson(json);
 }

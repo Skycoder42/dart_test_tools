@@ -27,12 +27,12 @@ final class BuildLinuxJobConfig extends JobConfig
     WorkflowInputs.flatpakPlatformImage,
   );
 
-  BuildLinuxJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class RunsOnMatrixProperty
     extends IMatrixProperty<FlatpakArchMatrixSelector> {
-  const RunsOnMatrixProperty();
+  const new();
 
   @override
   String get name => 'runs-on';
@@ -45,7 +45,7 @@ final class RunsOnMatrixProperty
 }
 
 final class FlatpakMatrix extends Matrix<FlatpakArchMatrixSelector> {
-  const FlatpakMatrix() : super(FlatpakArchMatrixSelector.values);
+  const new() : super(FlatpakArchMatrixSelector.values);
 
   ArchMatrixProperty get arch => const ArchMatrixProperty();
 
@@ -68,8 +68,7 @@ final class BuildLinuxJobBuilder extends SdkJobBuilder<BuildLinuxJobConfig>
     with
         DartSdkJobBuilderMixin<BuildLinuxJobConfig>,
         MatrixJobBuilderMixin<FlatpakMatrix, FlatpakArchMatrixSelector> {
-  BuildLinuxJobBuilder({required super.config})
-    : matrix = const FlatpakMatrix();
+  new({required super.config}) : matrix = const FlatpakMatrix();
 
   @override
   JobId get id => const JobId('build_linux');

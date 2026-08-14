@@ -19,7 +19,7 @@ base mixin InstallXcodeSigningConfig on JobConfig {
 class InstallXcodeSigningBuilder implements StepBuilder {
   final InstallXcodeSigningConfig config;
 
-  const InstallXcodeSigningBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

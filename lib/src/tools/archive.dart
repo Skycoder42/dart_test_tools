@@ -5,7 +5,7 @@ import 'github.dart';
 abstract base class Archive {
   static final _tarFileRegexp = RegExp(r'.*\.tar(?:\.\w+)?$');
 
-  Archive._();
+  new _();
 
   static Future<void> extract({
     required File archive,

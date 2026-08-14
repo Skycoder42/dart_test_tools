@@ -9,7 +9,7 @@ import '../../types/workflow_call.dart';
 import 'jobs/build_web_job_builder.dart';
 
 class BuildWebWorkflow implements WorkflowBuilder {
-  const BuildWebWorkflow();
+  const new();
 
   @override
   String get name => 'build-web';

@@ -28,7 +28,7 @@ class NfpmBuilder implements StepBuilder {
 
   final NfpmConfig config;
 
-  const NfpmBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

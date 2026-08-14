@@ -30,13 +30,13 @@ final class PublishJobConfig extends JobConfig
         PublishConfig {
   late final tagPrefix = inputContext(WorkflowInputs.tagPrefix);
 
-  PublishJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 class PublishJobBuilder implements JobBuilder {
   final PublishJobConfig config;
 
-  PublishJobBuilder({required this.config});
+  new({required this.config});
 
   @override
   JobId get id => const JobId('publish');

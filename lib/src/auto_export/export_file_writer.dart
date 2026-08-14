@@ -10,7 +10,7 @@ import 'package:meta/meta.dart';
 import 'auto_export_config.dart';
 
 class ExportFileWriter {
-  const ExportFileWriter();
+  const new();
 
   Future<void> writeExport(
     File file,

@@ -26,7 +26,7 @@ base mixin DeployWindowsInstallerConfig
 class DeployWindowsInstallerBuilder implements StepBuilder {
   final DeployWindowsInstallerConfig config;
 
-  const DeployWindowsInstallerBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

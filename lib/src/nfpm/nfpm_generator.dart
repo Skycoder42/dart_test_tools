@@ -26,7 +26,7 @@ class NfpmGenerator {
   final ChangelogConverter _changelogConverter;
 
   /// Default constructor.
-  const NfpmGenerator([this._changelogConverter = const ChangelogConverter()]);
+  const new([this._changelogConverter = const ChangelogConverter()]);
 
   /// Generates the nfpm configuration and changelog.
   ///

@@ -11,7 +11,7 @@ class CacheBuilder implements StepBuilder {
   final Expression cacheConfig;
   final Expression? ifExpression;
 
-  const CacheBuilder({
+  const new({
     required this.cacheStepId,
     required this.platform,
     required this.cacheConfig,

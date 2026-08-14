@@ -25,7 +25,7 @@ class UpdateActionsBuilder implements StepBuilder {
 
   final UpdateActionsConfig config;
 
-  const UpdateActionsBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() sync* {

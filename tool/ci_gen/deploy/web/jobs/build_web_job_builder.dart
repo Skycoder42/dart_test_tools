@@ -27,12 +27,12 @@ final class BuildWebJobConfig extends JobConfig
         BuildAppConfig,
         BuildWebArchiveConfig,
         FlutterSdkJobConfig {
-  BuildWebJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class BuildWebJobBuilder extends SdkJobBuilder<BuildWebJobConfig>
     with FlutterSdkJobBuilderMixin<BuildWebJobConfig> {
-  const BuildWebJobBuilder({required super.config});
+  const new({required super.config});
 
   @override
   JobId get id => const JobId('build_web');

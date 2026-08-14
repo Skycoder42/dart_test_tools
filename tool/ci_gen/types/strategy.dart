@@ -7,12 +7,11 @@ part 'strategy.g.dart';
 
 @freezed
 sealed class Strategy with _$Strategy {
-  const factory Strategy({
+  const factory({
     @JsonKey(name: 'fail-fast', includeIfNull: false) bool? failFast,
     @JsonKey(name: 'max-parallel', includeIfNull: false) int? maxParallel,
     required Matrix matrix,
   }) = _Strategy;
 
-  factory Strategy.fromJson(Map<String, dynamic> json) =>
-      _$StrategyFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$StrategyFromJson(json);
 }

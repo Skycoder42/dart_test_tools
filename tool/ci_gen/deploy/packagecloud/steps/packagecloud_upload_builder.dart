@@ -23,7 +23,7 @@ base mixin PackagecloudUploadConfig
 enum UbuntuCodeName implements IMatrixSelector { resolute, noble, jammy }
 
 final class CodeNameMatrixProperty extends IMatrixProperty<UbuntuCodeName> {
-  const CodeNameMatrixProperty();
+  const new();
 
   @override
   String get name => 'code-name';
@@ -36,10 +36,7 @@ class PackagecloudUploadBuilder implements StepBuilder {
   final PackagecloudUploadConfig config;
   final CodeNameMatrixProperty codeName;
 
-  const PackagecloudUploadBuilder({
-    required this.config,
-    required this.codeName,
-  });
+  const new({required this.config, required this.codeName});
 
   @override
   Iterable<Step> build() => [

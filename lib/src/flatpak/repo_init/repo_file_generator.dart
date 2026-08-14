@@ -9,7 +9,7 @@ import 'repo_metadata.dart';
 class RepoFileGenerator {
   static final _whitespaceRegex = RegExp(r'\s+');
 
-  const RepoFileGenerator();
+  const new();
 
   Future<void> call({
     required Directory repo,

@@ -27,12 +27,12 @@ final class BuildMacosJobConfig extends JobConfig
         BuildAppConfig,
         BuildMacosDmgConfig,
         FlutterSdkJobConfig {
-  BuildMacosJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class BuildMacosJobBuilder extends SdkJobBuilder<BuildMacosJobConfig>
     with FlutterSdkJobBuilderMixin<BuildMacosJobConfig> {
-  const BuildMacosJobBuilder({required super.config});
+  const new({required super.config});
 
   @override
   JobId get id => const JobId('build_macos');

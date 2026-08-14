@@ -27,7 +27,7 @@ base mixin BuildMacosDmgConfig on JobConfig, BuildAppConfig {
 class BuildMacosDmgBuilder implements StepBuilder {
   final BuildMacosDmgConfig config;
 
-  const BuildMacosDmgBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

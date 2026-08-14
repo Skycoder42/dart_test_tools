@@ -11,7 +11,7 @@ import '../../tools/io.dart';
 import 'repo_metadata.dart';
 
 class MetadataCollector {
-  const MetadataCollector();
+  const new();
 
   Future<RepoMetadata> call({
     required Directory repo,

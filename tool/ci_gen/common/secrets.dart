@@ -2,7 +2,7 @@ import '../types/secret.dart';
 import 'api/workflow_secret.dart';
 
 abstract class WorkflowSecrets {
-  WorkflowSecrets._();
+  new _();
 
   static const integrationTestEnvVars = WorkflowSecret(
     name: 'integrationTestEnvVars',

@@ -5,9 +5,7 @@ part 'workspace_info.g.dart';
 
 @freezed
 sealed class WorkspaceInfo with _$WorkspaceInfo {
-  const factory WorkspaceInfo({required String name, required String path}) =
-      _WorkspaceInfo;
+  const factory({required String name, required String path}) = _WorkspaceInfo;
 
-  factory WorkspaceInfo.fromJson(Map<String, dynamic> json) =>
-      _$WorkspaceInfoFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$WorkspaceInfoFromJson(json);
 }

@@ -45,7 +45,7 @@ class PublishBuilder implements StepBuilder {
 
   final PublishConfig config;
 
-  PublishBuilder({required this.config});
+  new({required this.config});
 
   @override
   Iterable<Step> build() => [

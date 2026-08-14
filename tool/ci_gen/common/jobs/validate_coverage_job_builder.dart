@@ -12,17 +12,14 @@ final class ValidateCoverageJobConfig extends JobConfig
     with WorkingDirectoryConfig, CoverageBuilderConfig, ValidateCoverageConfig {
   late final unitTestPaths = inputContext(WorkflowInputs.unitTestPaths);
 
-  ValidateCoverageJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 class ValidateCoverageJobBuilder implements JobBuilder {
   final JobId unitTestJobId;
   final ValidateCoverageJobConfig config;
 
-  ValidateCoverageJobBuilder({
-    required this.unitTestJobId,
-    required this.config,
-  });
+  new({required this.unitTestJobId, required this.config});
 
   @override
   JobId get id => const JobId('coverage');

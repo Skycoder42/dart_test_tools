@@ -3,7 +3,7 @@ import '../../common/contexts.dart';
 import '../../types/step.dart';
 
 class PushAurBuilder implements StepBuilder {
-  const PushAurBuilder();
+  const new();
 
   @override
   Iterable<Step> build() => [

@@ -8,21 +8,19 @@ part 'pub_deps.g.dart';
 
 @freezed
 sealed class PubDeps with _$PubDeps {
-  const factory PubDeps({required List<PubDepsPackage> packages}) = _PubDeps;
+  const factory({required List<PubDepsPackage> packages}) = _PubDeps;
 
-  factory PubDeps.fromJson(Map<String, dynamic> json) =>
-      _$PubDepsFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$PubDepsFromJson(json);
 }
 
 @freezed
 sealed class PubDepsPackage with _$PubDepsPackage {
   @VersionConverter()
-  const factory PubDepsPackage({
+  const factory({
     required String name,
     required Version version,
     required String source,
   }) = _PubDepsPackage;
 
-  factory PubDepsPackage.fromJson(Map<String, dynamic> json) =>
-      _$PubDepsPackageFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$PubDepsPackageFromJson(json);
 }

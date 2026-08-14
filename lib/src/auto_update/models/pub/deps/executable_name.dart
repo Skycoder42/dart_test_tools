@@ -4,11 +4,10 @@ part 'executable_name.freezed.dart';
 
 @Freezed(fromJson: false, toJson: false)
 sealed class ExecutableName with _$ExecutableName {
-  const factory ExecutableName.root(String name) = RootExecutableName;
-  const factory ExecutableName.package(String package, String name) =
-      PackageExecutableName;
+  const factory root(String name) = RootExecutableName;
+  const factory package(String package, String name) = PackageExecutableName;
 
-  factory ExecutableName.fromJson(String json) {
+  factory fromJson(String json) {
     if (json.startsWith(':')) {
       return ExecutableName.root(json.substring(1));
     } else if (json.indexOf(':') case final int index when index >= 0) {
@@ -21,7 +20,7 @@ sealed class ExecutableName with _$ExecutableName {
     }
   }
 
-  const ExecutableName._();
+  const new _();
 
   String toJson() => switch (this) {
     RootExecutableName(:final name) => ':$name',

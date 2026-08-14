@@ -7,14 +7,14 @@ import '../flutter_platform.dart';
 import '../jobs/common_integration_test_config.dart';
 import 'prepare_integration_test_builder.dart';
 
-base mixin WebIntegrationTestConfig on JobConfig, CommonIntegrationTestConfig {}
+base mixin WebIntegrationTestConfig on JobConfig, CommonIntegrationTestConfig;
 
 class WebIntegrationTestBuilder implements StepBuilder {
   static const testSetupCacheStepId = StepId('test-setup-cache');
 
   final WebIntegrationTestConfig config;
 
-  const WebIntegrationTestBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

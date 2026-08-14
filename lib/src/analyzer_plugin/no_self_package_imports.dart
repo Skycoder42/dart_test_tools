@@ -22,8 +22,7 @@ class NoSelfPackageImports extends AnalysisRule {
 
   final _logger = Logger('$NoSelfPackageImports');
 
-  NoSelfPackageImports()
-    : super(name: code.lowerCaseName, description: code.problemMessage);
+  new() : super(name: code.lowerCaseName, description: code.problemMessage);
 
   @override
   LintCode get diagnosticCode => code;
@@ -66,7 +65,7 @@ class _Visitor extends SimpleAstVisitor<void> {
   final NoSelfPackageImports _rule;
   final RuleContext _context;
 
-  const _Visitor(this._rule, this._context);
+  const new(this._rule, this._context);
 
   @override
   void visitImportDirective(ImportDirective node) =>

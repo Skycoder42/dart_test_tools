@@ -16,7 +16,7 @@ base mixin UploadSentrySymbolsConfig
 class UploadSentrySymbolsBuilder implements StepBuilder {
   final UploadSentrySymbolsConfig config;
 
-  const UploadSentrySymbolsBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

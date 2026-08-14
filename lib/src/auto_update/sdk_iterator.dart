@@ -15,7 +15,7 @@ typedef SdkCallback = Future<void> Function(
 class SdkIterator {
   final PubWrapper pub;
 
-  SdkIterator(this.pub);
+  new(this.pub);
 
   Future<void> iterate(SdkCallback callback) async {
     final deps = await pub.deps();

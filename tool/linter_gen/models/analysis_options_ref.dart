@@ -5,16 +5,14 @@ part 'analysis_options_ref.freezed.dart';
 
 @freezed
 sealed class AnalysisOptionsRef with _$AnalysisOptionsRef {
-  const AnalysisOptionsRef._();
+  const new _();
 
-  const factory AnalysisOptionsRef.package({
-    required String packageName,
-    required String path,
-  }) = AnalysisOptionsPackageRef;
+  const factory package({required String packageName, required String path}) =
+      AnalysisOptionsPackageRef;
 
-  const factory AnalysisOptionsRef.local(String path) = AnalysisOptionsLocalRef;
+  const factory local(String path) = AnalysisOptionsLocalRef;
 
-  factory AnalysisOptionsRef.fromJson(String json) {
+  factory fromJson(String json) {
     final uri = Uri.parse(json);
     if (uri.isScheme('package')) {
       return AnalysisOptionsRef.package(

@@ -16,7 +16,7 @@ sealed class Input with _$Input {
         '(identical(type, Type.string) && defaultValue is String)',
     r'default must be a of type $type',
   )
-  const factory Input({
+  const factory({
     required Type type,
     required bool required,
     @JsonKey(name: 'default', includeIfNull: false) dynamic defaultValue,
@@ -24,14 +24,14 @@ sealed class Input with _$Input {
     @JsonKey(includeIfNull: false) String? deprecationMessage,
   }) = _NormalInput;
 
-  const factory Input.action({
+  const factory action({
     required bool required,
     @JsonKey(name: 'default', includeIfNull: false) String? defaultValue,
     required String? description,
     @JsonKey(includeIfNull: false) String? deprecationMessage,
   }) = _ActionInput;
 
-  factory Input.json({
+  factory json({
     required bool required,
     required dynamic defaultValue,
     String? description,
@@ -44,7 +44,7 @@ sealed class Input with _$Input {
     deprecationMessage: deprecationMessage,
   );
 
-  factory Input.fromJson(Map<String, dynamic> json) => _$InputFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$InputFromJson(json);
 }
 
 typedef Inputs = Map<String, Input?>;

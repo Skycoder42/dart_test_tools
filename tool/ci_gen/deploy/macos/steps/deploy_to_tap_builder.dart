@@ -27,10 +27,7 @@ class DeployToTapBuilder implements StepBuilder {
   final DeployToTapConfig config;
   final Expression releaseVersion;
 
-  const DeployToTapBuilder({
-    required this.config,
-    required this.releaseVersion,
-  });
+  const new({required this.config, required this.releaseVersion});
 
   @override
   Iterable<Step> build() => [

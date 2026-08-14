@@ -9,7 +9,7 @@ import '../../types/workflow_call.dart';
 import 'jobs/build_macos_job_builder.dart';
 
 class BuildMacosWorkflow implements WorkflowBuilder {
-  const BuildMacosWorkflow();
+  const new();
 
   @override
   String get name => 'build-macos';

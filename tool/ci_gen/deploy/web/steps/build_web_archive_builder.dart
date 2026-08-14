@@ -34,7 +34,7 @@ base mixin BuildWebArchiveConfig on JobConfig, BuildAppConfig {
 class BuildWebArchiveBuilder implements StepBuilder {
   final BuildWebArchiveConfig config;
 
-  const BuildWebArchiveBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

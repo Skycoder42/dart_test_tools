@@ -6,17 +6,17 @@ part 'matrix.freezed.dart';
 
 @freezed
 sealed class Matrix with _$Matrix {
-  const factory Matrix(
+  const factory(
     Map<String, dynamic> matrix, {
     List<Map<String, dynamic>>? include,
     List<Map<String, dynamic>>? exclude,
   }) = _Matrix;
 
-  const factory Matrix.expression(Expression expression) = _MatrixExpression;
+  const factory expression(Expression expression) = _MatrixExpression;
 
-  const Matrix._();
+  const new _();
 
-  factory Matrix.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     final include = _extractFilter(json, 'include');
     final exclude = _extractFilter(json, 'exclude');
     return Matrix(

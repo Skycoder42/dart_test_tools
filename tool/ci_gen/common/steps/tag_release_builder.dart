@@ -28,10 +28,7 @@ class TagReleaseBuilder implements StepBuilder {
   final TagReleaseConfig config;
   final bool failOnUnmatchedFiles;
 
-  const TagReleaseBuilder({
-    required this.config,
-    this.failOnUnmatchedFiles = true,
-  });
+  const new({required this.config, this.failOnUnmatchedFiles = true});
 
   @override
   Iterable<Step> build() => [

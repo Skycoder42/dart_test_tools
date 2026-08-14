@@ -10,10 +10,10 @@ import '../jobs/common_integration_test_config.dart';
 import 'prepare_integration_test_builder.dart';
 
 base mixin DesktopIntegrationTestConfig
-    on JobConfig, CommonIntegrationTestConfig {}
+    on JobConfig, CommonIntegrationTestConfig;
 
 final class TestArgsMatrixProperty extends IMatrixProperty<FlutterPlatform> {
-  const TestArgsMatrixProperty();
+  const new();
 
   @override
   String get name => 'testArgs';
@@ -28,7 +28,7 @@ final class TestArgsMatrixProperty extends IMatrixProperty<FlutterPlatform> {
 }
 
 final class RunPrefixMatrixProperty extends IMatrixProperty<FlutterPlatform> {
-  const RunPrefixMatrixProperty();
+  const new();
 
   @override
   String get name => 'runPrefix';
@@ -48,7 +48,7 @@ class DesktopIntegrationTestBuilder implements StepBuilder {
   final TestArgsMatrixProperty testArgs;
   final RunPrefixMatrixProperty runPrefix;
 
-  const DesktopIntegrationTestBuilder({
+  const new({
     required this.config,
     required this.platform,
     required this.testArgs,

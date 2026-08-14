@@ -12,13 +12,13 @@ final class DartAnalyzeJobConfig extends AnalyzeJobConfig
     inputContext(WorkflowInputs.needsFlutterSdk),
   );
 
-  DartAnalyzeJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class DartAnalyzeJobBuilder
     extends AnalyzeJobBuilder<DartAnalyzeJobConfig>
     with DartSdkJobBuilderMixin<DartAnalyzeJobConfig> {
-  const DartAnalyzeJobBuilder({required super.config});
+  const new({required super.config});
 
   @override
   Iterable<Step> buildAnalyzeSteps() => [

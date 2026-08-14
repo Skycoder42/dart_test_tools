@@ -49,7 +49,7 @@ class DeployArtifactBuilder implements StepBuilder {
   /// artifact by the resolved prefix before uploading).
   final bool resolvePrefix;
 
-  const DeployArtifactBuilder({
+  const new({
     required this.config,
     required this.type,
     required this.platform,

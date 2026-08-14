@@ -12,7 +12,7 @@ base mixin PrepareArchConfig on JobConfig {
 class PrepareArchBuilder implements StepBuilder {
   final PrepareArchConfig config;
 
-  const PrepareArchBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

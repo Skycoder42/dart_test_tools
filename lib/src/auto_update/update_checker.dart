@@ -11,7 +11,7 @@ import 'sdk_iterator.dart';
 class UpdateChecker {
   final bool flutterCompat;
 
-  const UpdateChecker({required this.flutterCompat});
+  const new({required this.flutterCompat});
 
   Future<void> call(Directory targetDirectory) async {
     final pub = await PubWrapper.create(

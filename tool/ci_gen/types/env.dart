@@ -6,14 +6,14 @@ part 'env.freezed.dart';
 
 @freezed
 sealed class Env with _$Env {
-  const factory Env(Map<String, String> env) = _Env;
+  const factory(Map<String, String> env) = _Env;
 
-  const factory Env.expression(Expression expression) = _EnvExpression;
+  const factory expression(Expression expression) = _EnvExpression;
 
-  const Env._();
+  const new _();
 
   // ignore: prefer_expression_function_bodies for freezed
-  factory Env.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return Env(json as Map<String, String>);
   }
 

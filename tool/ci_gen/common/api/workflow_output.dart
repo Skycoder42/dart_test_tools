@@ -9,10 +9,8 @@ part 'workflow_output.freezed.dart';
 
 @freezed
 sealed class WorkflowOutput with _$WorkflowOutput {
-  const factory WorkflowOutput({
-    required String name,
-    required String description,
-  }) = _WorkflowOutput;
+  const factory({required String name, required String description}) =
+      _WorkflowOutput;
 }
 
 class WorkflowOutputContext {

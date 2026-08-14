@@ -29,7 +29,7 @@ class DeployAndroidAppBuilder implements StepBuilder {
 
   final DeployAndroidConfig config;
 
-  const DeployAndroidAppBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

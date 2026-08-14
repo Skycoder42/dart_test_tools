@@ -55,7 +55,7 @@ final class _TestProjectConfig extends JobConfig
     Expression.empty,
   );
 
-  _TestProjectConfig(this.baseConfig)
+  new(this.baseConfig)
     : super(baseConfig.inputContext, baseConfig.secretContext);
 }
 
@@ -65,10 +65,7 @@ class PrepareIntegrationTestBuilder implements StepBuilder {
   final ExpressionOrValue platform;
   final PrepareIntegrationTestConfig config;
 
-  const PrepareIntegrationTestBuilder({
-    required this.platform,
-    required this.config,
-  });
+  const new({required this.platform, required this.config});
 
   @override
   Iterable<Step> build() => [

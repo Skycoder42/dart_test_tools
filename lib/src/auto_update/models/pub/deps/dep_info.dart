@@ -12,7 +12,7 @@ part 'dep_info.g.dart';
 @freezed
 sealed class DepInfo with _$DepInfo {
   @VersionConverter()
-  const factory DepInfo({
+  const factory({
     required String name,
     required Version version,
     required DependencyKind kind,
@@ -22,6 +22,5 @@ sealed class DepInfo with _$DepInfo {
     @Default([]) List<String> devDependencies,
   }) = _DepInfo;
 
-  factory DepInfo.fromJson(Map<String, dynamic> json) =>
-      _$DepInfoFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$DepInfoFromJson(json);
 }

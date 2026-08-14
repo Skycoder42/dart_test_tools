@@ -14,7 +14,7 @@ abstract interface class IPlatformMatrixSelector implements IMatrixSelector {
 
 final class PlatformMatrixProperty
     extends IMatrixProperty<IPlatformMatrixSelector> {
-  const PlatformMatrixProperty();
+  const new();
 
   @override
   String get name => 'platform';
@@ -24,7 +24,7 @@ final class PlatformMatrixProperty
 }
 
 final class OsMatrixProperty extends IMatrixProperty<IPlatformMatrixSelector> {
-  const OsMatrixProperty();
+  const new();
 
   @override
   String get name => 'os';
@@ -34,7 +34,7 @@ final class OsMatrixProperty extends IMatrixProperty<IPlatformMatrixSelector> {
 }
 
 abstract class PlatformMatrix extends Matrix<IPlatformMatrixSelector> {
-  const PlatformMatrix(super._selectors);
+  const new(super._selectors);
 
   @nonVirtual
   PlatformMatrixProperty get platform => const PlatformMatrixProperty();
@@ -70,7 +70,7 @@ base mixin PlatformJobBuilderMixin<TMatrix extends PlatformMatrix>
 }
 
 abstract base class EnabledPlatforms {
-  EnabledPlatforms._();
+  new _();
 
   static Expression check(Expression enabledPlatforms, Expression platform) =>
       (enabledPlatforms.eq(const Expression.literal('[]')) |

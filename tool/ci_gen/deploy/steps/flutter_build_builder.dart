@@ -20,7 +20,7 @@ class FlutterBuildBuilder implements StepBuilder {
   final List<Step> preBuildSteps;
   final List<String> cleanupPaths;
 
-  const FlutterBuildBuilder({
+  const new({
     required this.buildNumber,
     required this.config,
     this.preBuildSteps = const [],

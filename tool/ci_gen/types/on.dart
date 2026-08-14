@@ -7,9 +7,9 @@ part 'on.g.dart';
 
 @freezed
 sealed class On with _$On {
-  const factory On({
+  const factory({
     @JsonKey(name: 'workflow_call') required WorkflowCall workflowCall,
   }) = _On;
 
-  factory On.fromJson(Map<String, dynamic> json) => _$OnFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$OnFromJson(json);
 }

@@ -7,7 +7,7 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 import '../tools/github.dart';
 
 class BuildNumberGenerator {
-  const BuildNumberGenerator();
+  const new();
 
   Future<void> call({
     int minorWidth = 2,

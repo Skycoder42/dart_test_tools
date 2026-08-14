@@ -19,7 +19,7 @@ enum FlutterPlatform implements IPlatformMatrixSelector {
   final bool isWeb;
 
   // ignore: avoid_positional_boolean_parameters private constructor
-  const FlutterPlatform(this.platform, this.os, this.isWeb);
+  new(this.platform, this.os, this.isWeb);
 
   static const mobile = [FlutterPlatform.android, FlutterPlatform.ios];
 

@@ -3,7 +3,7 @@ import 'package:code_builder/code_builder.dart';
 class LiteralString extends Expression {
   late final List<Code> _code;
 
-  LiteralString(void Function(LiteralStringBuilder) updates) {
+  new(void Function(LiteralStringBuilder) updates) {
     final builder = LiteralStringBuilder();
     updates.call(builder);
     _code = builder.build();
@@ -46,7 +46,7 @@ class _StringPart extends _Part {
 
   final String _string;
 
-  _StringPart(this._string);
+  new(this._string);
 
   @override
   Iterable<Code> get code sync* {
@@ -57,7 +57,7 @@ class _StringPart extends _Part {
 class _ParameterPart extends _Part {
   final Expression _expression;
 
-  _ParameterPart(this._expression);
+  new(this._expression);
 
   @override
   Iterable<Code> get code sync* {

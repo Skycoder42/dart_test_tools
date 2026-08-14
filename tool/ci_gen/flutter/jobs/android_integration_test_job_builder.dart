@@ -18,7 +18,7 @@ final class AndroidIntegrationTestJobConfig
   @override
   late final javaJdkVersion = inputContext(WorkflowInputs.javaJdkVersion);
 
-  AndroidIntegrationTestJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class AndroidIntegrationTestJobBuilder
@@ -27,16 +27,12 @@ final class AndroidIntegrationTestJobBuilder
   final Expression enabledPlatforms;
   final Set<JobId>? needs;
 
-  AndroidIntegrationTestJobBuilder({
-    required JobIdOutput enabledPlatformsOutput,
-    required super.config,
-  }) : enabledPlatforms = enabledPlatformsOutput.expression,
-       needs = {enabledPlatformsOutput.jobId};
+  new({required JobIdOutput enabledPlatformsOutput, required super.config})
+    : enabledPlatforms = enabledPlatformsOutput.expression,
+      needs = {enabledPlatformsOutput.jobId};
 
-  AndroidIntegrationTestJobBuilder.direct({
-    required this.enabledPlatforms,
-    required super.config,
-  }) : needs = null;
+  new direct({required this.enabledPlatforms, required super.config})
+    : needs = null;
 
   @override
   JobId get id => const JobId('integration_tests_android');

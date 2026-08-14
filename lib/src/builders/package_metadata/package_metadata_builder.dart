@@ -10,7 +10,7 @@ import '../../code_gen/references.dart';
 class PackageMetadataBuilder extends Builder with DartGeneratorMixin {
   final BuilderOptions options;
 
-  PackageMetadataBuilder(this.options);
+  new(this.options);
 
   @override
   Map<String, List<String>> get buildExtensions => const {

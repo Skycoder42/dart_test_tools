@@ -9,23 +9,23 @@ sealed class Expression with _$Expression {
   static const empty = Expression.literal('');
   static const null$ = Expression('null');
 
-  const factory Expression(String value) = _Expression;
+  const factory(String value) = _Expression;
 
   @Assert(
     'rawValue is String || rawValue is num || rawValue is bool || '
         'rawValue is Null',
     'Only YAML primitives (string, number, bool, null) are allowed',
   )
-  const factory Expression.literal(dynamic rawValue) = _LiteralExpression;
+  const factory literal(dynamic rawValue) = _LiteralExpression;
 
-  const factory Expression.json(Object? jsonValue) = _JsonExpression;
+  const factory json(Object? jsonValue) = _JsonExpression;
 
-  const factory Expression.fake(String fakeValue) = _FakeExpression;
+  const factory fake(String fakeValue) = _FakeExpression;
 
-  factory Expression.invoke(String name, [Iterable<Expression>? params]) =>
+  factory invoke(String name, [Iterable<Expression>? params]) =>
       Expression('$name(${params?.map((p) => p.value).join(', ') ?? ''})');
 
-  const Expression._();
+  const new _();
 
   dynamic get value => switch (this) {
     _Expression(:final value) => value,
@@ -78,12 +78,11 @@ sealed class Expression with _$Expression {
 sealed class ExpressionOrValue with _$ExpressionOrValue {
   static const empty = ExpressionOrValue.value('');
 
-  const factory ExpressionOrValue.expression(Expression expression) =
-      ExpressionOrValueExpression;
+  const factory expression(Expression expression) = ExpressionOrValueExpression;
 
-  const factory ExpressionOrValue.value(dynamic value) = ExpressionOrValueValue;
+  const factory value(dynamic value) = ExpressionOrValueValue;
 
-  const ExpressionOrValue._();
+  const new _();
 
   bool get isExpression => this is ExpressionOrValueExpression;
 
@@ -109,7 +108,7 @@ sealed class ExpressionOrValue with _$ExpressionOrValue {
 }
 
 class ExpressionConverter implements JsonConverter<Expression?, dynamic> {
-  const ExpressionConverter();
+  const new();
 
   @override
   Expression? fromJson(dynamic json) =>

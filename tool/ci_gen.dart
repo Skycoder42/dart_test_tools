@@ -102,7 +102,7 @@ Future<int> _writeToFile(File file, dynamic content) async {
 
   await Future.wait([outFuture, errFuture]);
 
-  return yqProc.exitCode;
+  return await yqProc.exitCode;
 }
 
 YamlWriter _createYamlWriter() => YamlWriter(

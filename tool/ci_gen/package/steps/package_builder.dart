@@ -20,7 +20,7 @@ class PackageBuilder implements StepBuilder {
 
   final PackageConfig config;
 
-  PackageBuilder({required this.config});
+  new({required this.config});
 
   @override
   Iterable<Step> build() => [

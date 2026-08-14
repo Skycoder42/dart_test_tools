@@ -8,9 +8,7 @@ part 'outdated_info.g.dart';
 @freezed
 @internal
 sealed class OutdatedInfo with _$OutdatedInfo {
-  const factory OutdatedInfo({required List<PackageInfo> packages}) =
-      _OutdatedInfo;
+  const factory({required List<PackageInfo> packages}) = _OutdatedInfo;
 
-  factory OutdatedInfo.fromJson(Map<String, dynamic> json) =>
-      _$OutdatedInfoFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$OutdatedInfoFromJson(json);
 }

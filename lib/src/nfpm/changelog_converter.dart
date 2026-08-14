@@ -10,7 +10,7 @@ import 'package:yaml_writer/yaml_writer.dart';
 @internal
 class ChangelogConverter {
   /// Default constructor.
-  const ChangelogConverter();
+  const new();
 
   /// Parses [changelogFile] and returns the chglog YAML representation.
   ///

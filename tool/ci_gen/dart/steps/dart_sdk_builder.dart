@@ -7,7 +7,7 @@ class DartSdkBuilder implements StepBuilder {
   final Expression dartSdkVersion;
   final Expression? ifExpression;
 
-  DartSdkBuilder({required this.dartSdkVersion, this.ifExpression});
+  new({required this.dartSdkVersion, this.ifExpression});
 
   @override
   Iterable<Step> build() => [

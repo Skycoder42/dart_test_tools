@@ -12,13 +12,13 @@ import 'cask_options_loader.dart';
 class _CaskLiteral {
   final String value;
 
-  const _CaskLiteral(this.value);
+  const new(this.value);
 }
 
 class CaskGenerator {
   final CaskOptionsLoader _caskOptionsLoader;
 
-  const CaskGenerator([this._caskOptionsLoader = const CaskOptionsLoader()]);
+  const new([this._caskOptionsLoader = const CaskOptionsLoader()]);
 
   Future<void> call({
     required Directory inDir,

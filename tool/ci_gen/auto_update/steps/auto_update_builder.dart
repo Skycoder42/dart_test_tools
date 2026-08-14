@@ -25,7 +25,7 @@ class AutoUpdateBuilder implements StepBuilder {
 
   final AutoUpdateConfig config;
 
-  const AutoUpdateBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() sync* {

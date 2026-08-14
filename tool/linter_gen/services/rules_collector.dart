@@ -10,7 +10,7 @@ class RulesCollector {
   @internal
   final AnalysisOptionsLoader analysisOptionsLoader;
 
-  RulesCollector({required this.analysisOptionsLoader});
+  new({required this.analysisOptionsLoader});
 
   Future<Map<String, bool>> collectRules(
     List<AnalysisOptionsRef> analysisOptionsRefs, {

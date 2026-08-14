@@ -12,7 +12,7 @@ class AurOptionsLoader {
   static final _changelogRegex = RegExp('change.*log', caseSensitive: false);
   static final _licenseRegexp = RegExp('license', caseSensitive: false);
 
-  const AurOptionsLoader();
+  const new();
 
   Future<PubspecWithAur> loadAurOptions(Directory projectDirectory) async {
     final pubspecFile = File.fromUri(

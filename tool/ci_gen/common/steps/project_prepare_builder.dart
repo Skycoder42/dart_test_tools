@@ -34,7 +34,7 @@ class ProjectPrepareBuilder implements StepBuilder {
   final String? titleSuffix;
   final ProjectPrepareConfig config;
 
-  const ProjectPrepareBuilder({this.titleSuffix, required this.config});
+  const new({this.titleSuffix, required this.config});
 
   @override
   Iterable<Step> build() => [

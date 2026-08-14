@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 class _Marker {
   static const value = _Marker();
 
-  const _Marker();
+  const new();
 }
 
 Matcher isRecord(

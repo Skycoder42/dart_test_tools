@@ -15,7 +15,7 @@ base mixin ValidateCoverageConfig
 class ValidateCoverageBuilder implements StepBuilder {
   final ValidateCoverageConfig config;
 
-  const ValidateCoverageBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

@@ -20,7 +20,7 @@ class InstallToolsActionBuilder implements ActionBuilder {
     ),
   );
 
-  const InstallToolsActionBuilder();
+  const new();
 
   static Step step({
     StepId? id,

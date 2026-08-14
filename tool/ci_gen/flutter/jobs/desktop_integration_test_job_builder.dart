@@ -12,11 +12,11 @@ import 'flutter_sdk_job_builder_mixin.dart';
 final class DesktopIntegrationTestJobConfig
     extends CommonIntegrationTestJobConfig
     with DesktopIntegrationTestConfig {
-  DesktopIntegrationTestJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class FlutterIntegrationTestMatrix extends PlatformMatrix {
-  const FlutterIntegrationTestMatrix() : super(FlutterPlatform.desktop);
+  const new() : super(FlutterPlatform.desktop);
 
   TestArgsMatrixProperty get testArgs => const TestArgsMatrixProperty();
 
@@ -43,18 +43,14 @@ final class DesktopIntegrationTestJobBuilder
   final Expression enabledPlatforms;
   final Set<JobId>? needs;
 
-  DesktopIntegrationTestJobBuilder({
-    required JobIdOutput enabledPlatformsOutput,
-    required super.config,
-  }) : enabledPlatforms = enabledPlatformsOutput.expression,
-       needs = {enabledPlatformsOutput.jobId},
-       matrix = const FlutterIntegrationTestMatrix();
+  new({required JobIdOutput enabledPlatformsOutput, required super.config})
+    : enabledPlatforms = enabledPlatformsOutput.expression,
+      needs = {enabledPlatformsOutput.jobId},
+      matrix = const FlutterIntegrationTestMatrix();
 
-  DesktopIntegrationTestJobBuilder.direct({
-    required this.enabledPlatforms,
-    required super.config,
-  }) : needs = null,
-       matrix = const FlutterIntegrationTestMatrix();
+  new direct({required this.enabledPlatforms, required super.config})
+    : needs = null,
+      matrix = const FlutterIntegrationTestMatrix();
 
   @override
   JobId get id => const JobId('integration_tests_desktop');

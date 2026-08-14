@@ -10,7 +10,7 @@ class FlutterSdkBuilder implements StepBuilder {
   final Expression? javaJdkVersion;
   final Expression? ifExpression;
 
-  const FlutterSdkBuilder({
+  const new({
     required this.flutterSdkChannel,
     this.buildPlatform,
     this.javaJdkVersion,

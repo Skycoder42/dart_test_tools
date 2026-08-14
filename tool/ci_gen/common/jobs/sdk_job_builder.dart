@@ -17,7 +17,7 @@ abstract base class SdkJobBuilder<TConfig extends SdkJobConfig>
   @protected
   final TConfig config;
 
-  const SdkJobBuilder({required this.config});
+  const new({required this.config});
 
   @protected
   Iterable<Step> buildSetupSdkSteps();

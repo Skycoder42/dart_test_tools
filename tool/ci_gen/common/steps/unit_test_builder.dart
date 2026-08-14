@@ -18,7 +18,7 @@ base mixin UnitTestConfig
 
 final class DartTestArgsMatrixProperty
     extends IMatrixProperty<IPlatformMatrixSelector> {
-  const DartTestArgsMatrixProperty();
+  const new();
 
   @override
   String get name => 'dartTestArgs';
@@ -36,7 +36,7 @@ class UnitTestBuilder implements StepBuilder {
   final DartTestArgsMatrixProperty dartTestArgs;
   final LcovCleanCommandMatrixProperty lcovCleanCommand;
 
-  const UnitTestBuilder({
+  const new({
     required this.config,
     required this.platform,
     required this.dartTestArgs,

@@ -18,7 +18,7 @@ class ReleaseBuilder implements StepBuilder {
 
   final ReleaseConfig config;
 
-  ReleaseBuilder({required this.config});
+  new({required this.config});
 
   @override
   Iterable<Step> build() => [

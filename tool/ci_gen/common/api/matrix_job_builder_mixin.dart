@@ -7,10 +7,10 @@ import '../../types/matrix.dart' as m;
 import '../../types/strategy.dart';
 import 'job_builder.dart';
 
-abstract interface class IMatrixSelector {}
+abstract interface class IMatrixSelector;
 
 abstract base class IMatrixProperty<TMatrixSelector extends IMatrixSelector> {
-  const IMatrixProperty();
+  const new();
 
   String get name;
 
@@ -28,7 +28,7 @@ abstract class Matrix<TMatrixSelector extends IMatrixSelector>
     implements IMatrix<TMatrixSelector> {
   final List<TMatrixSelector> _selectors;
 
-  const Matrix(this._selectors);
+  const new(this._selectors);
 
   IMatrixProperty<TMatrixSelector> get selectorProperty;
 
@@ -69,7 +69,7 @@ abstract base class ExpressionMatrix<TMatrixSelector extends IMatrixSelector>
     implements IMatrix<TMatrixSelector> {
   final Expression expression;
 
-  ExpressionMatrix(this.expression);
+  new(this.expression);
 
   IMatrixProperty<TMatrixSelector> get selectorProperty;
 

@@ -10,7 +10,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
-class MockChannel extends Mock implements Channel {}
+class MockChannel extends Mock implements Channel;
 
 void main() {
   const testVersion = '1.2.3';

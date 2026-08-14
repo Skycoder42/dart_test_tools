@@ -15,13 +15,13 @@ final class UpdateActionsJobConfig extends JobConfig
         WorkingDirectoryConfig,
         ProjectPrepareConfig,
         UpdateActionsConfig {
-  UpdateActionsJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 final class UpdateActionsJobBuilder
     extends SdkJobBuilder<UpdateActionsJobConfig>
     with DartSdkJobBuilderMixin<UpdateActionsJobConfig> {
-  const UpdateActionsJobBuilder({required super.config});
+  const new({required super.config});
 
   @override
   JobId get id => const JobId('update-actions');

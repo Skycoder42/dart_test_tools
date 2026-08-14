@@ -18,13 +18,10 @@ const yamlSerializable = JsonSerializable(
 @Freezed(fromJson: false, toJson: false)
 sealed class ListOrValue<T>
     with _$ListOrValue<T>, ListMixin<T>, _UnmodifiableListMixin<T> {
-  const factory ListOrValue.list(List<T> list) = _List;
-  const factory ListOrValue.value(T value) = _ListValue;
+  const factory list(List<T> list) = _List;
+  const factory value(T value) = _ListValue;
 
-  factory ListOrValue.fromJson(
-    dynamic json,
-    T Function(dynamic json) fromJsonT,
-  ) {
+  factory fromJson(dynamic json, T Function(dynamic json) fromJsonT) {
     if (_implements<T, List<dynamic>>() && json is List) {
       final allChildrenAreLists = json.every((e) => e is List);
       return allChildrenAreLists
@@ -37,7 +34,7 @@ sealed class ListOrValue<T>
     }
   }
 
-  const ListOrValue._();
+  const new _();
 
   bool get isList => switch (this) {
     _List() => true,

@@ -17,7 +17,7 @@ final class TagReleaseJobConfig extends JobConfig
         TagReleaseConfig {
   late final releaseRef = inputContext(WorkflowInputs.releaseRef);
 
-  TagReleaseJobConfig(super.inputContext, super.secretContext);
+  new(super.inputContext, super.secretContext);
 }
 
 class TagReleaseJobBuilder implements JobBuilder {
@@ -25,7 +25,7 @@ class TagReleaseJobBuilder implements JobBuilder {
   final TagReleaseJobConfig config;
   final bool failOnUnmatchedFiles;
 
-  const TagReleaseJobBuilder({
+  const new({
     this.compileJobIds,
     required this.config,
     this.failOnUnmatchedFiles = true,

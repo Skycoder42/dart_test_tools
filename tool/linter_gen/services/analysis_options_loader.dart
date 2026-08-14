@@ -45,12 +45,12 @@ class AnalysisOptionsLoader {
 
   Future<AnalysisOptions> _loadPackage(String packageName, String path) async {
     final file = await _resolvePackageFile(packageName, path);
-    return _parse(file);
+    return await _parse(file);
   }
 
   Future<AnalysisOptions> _parse(File analysisOptionsFile) async {
     final analysisOptionsYaml = await analysisOptionsFile.readAsString();
-    return checkedYamlDecode(
+    return checkedYamlDecode<AnalysisOptions>(
       analysisOptionsYaml,
       AnalysisOptions.fromYaml,
       sourceUrl: analysisOptionsFile.uri,

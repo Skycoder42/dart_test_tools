@@ -1,7 +1,7 @@
 import '../types/expression.dart';
 
 abstract base class Runner {
-  const Runner._();
+  const new _();
 
   static const temp = Expression('runner.temp');
 
@@ -11,7 +11,7 @@ abstract base class Runner {
 }
 
 abstract base class Github {
-  const Github._();
+  const new _();
 
   static const ref = Expression('github.ref');
 
@@ -31,7 +31,7 @@ abstract base class Github {
 }
 
 abstract base class Functions {
-  const Functions._();
+  const new _();
 
   static const always = Expression('always()');
 

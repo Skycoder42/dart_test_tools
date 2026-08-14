@@ -5,7 +5,7 @@ import '../../tools/io.dart';
 import 'repo_metadata.dart';
 
 class RepoGenerator {
-  const RepoGenerator();
+  const new();
 
   Future<void> call({
     required Directory repo,

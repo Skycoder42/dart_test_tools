@@ -3,7 +3,7 @@ import '../../common/api/step_builder.dart';
 import '../../types/step.dart';
 
 class PrepareNfpmBuilder implements StepBuilder {
-  const PrepareNfpmBuilder();
+  const new();
 
   @override
   Iterable<Step> build() => [

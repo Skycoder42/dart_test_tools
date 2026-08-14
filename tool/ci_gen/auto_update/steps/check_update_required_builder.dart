@@ -21,7 +21,7 @@ class CheckUpdateRequiredBuilder implements StepBuilder {
 
   final CheckUpdateRequiredConfig config;
 
-  const CheckUpdateRequiredBuilder({required this.config});
+  const new({required this.config});
 
   @override
   Iterable<Step> build() sync* {

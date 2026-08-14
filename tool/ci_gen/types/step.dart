@@ -9,9 +9,9 @@ part 'step.g.dart';
 
 @freezed
 sealed class Step with _$Step {
-  const Step._();
+  const new _();
 
-  const factory Step.run({
+  const factory run({
     @JsonKey(includeIfNull: false) StepId? id,
     required String name,
     @JsonKey(name: 'if', includeIfNull: false)
@@ -26,7 +26,7 @@ sealed class Step with _$Step {
     @JsonKey(includeIfNull: false) String? shell,
   }) = RunStep;
 
-  const factory Step.uses({
+  const factory uses({
     @JsonKey(includeIfNull: false) StepId? id,
     required String name,
     @JsonKey(name: 'if', includeIfNull: false)
@@ -39,7 +39,7 @@ sealed class Step with _$Step {
     @JsonKey(name: 'with', includeIfNull: false) Map<String, dynamic>? withArgs,
   }) = UsesStep;
 
-  factory Step.fromJson(Map<String, dynamic> json) => _$StepFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$StepFromJson(json);
 }
 
 typedef Steps = List<Step>;

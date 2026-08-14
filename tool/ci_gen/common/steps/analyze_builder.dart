@@ -26,7 +26,7 @@ class AnalyzeBuilder implements StepBuilder {
   final AnalyzeConfig config;
   final StepBuilderFn buildAnalyzeStep;
 
-  const AnalyzeBuilder({required this.config, required this.buildAnalyzeStep});
+  const new({required this.config, required this.buildAnalyzeStep});
 
   @override
   Iterable<Step> build() => [

@@ -33,7 +33,7 @@ base mixin CompileConfig
 }
 
 final class ExecutableSuffixProperty extends IMatrixProperty<DartPlatform> {
-  const ExecutableSuffixProperty();
+  const new();
 
   @override
   String get name => 'executableSuffix';
@@ -46,7 +46,7 @@ final class ExecutableSuffixProperty extends IMatrixProperty<DartPlatform> {
 }
 
 final class ArchiveTypeMatrixProperty extends IMatrixProperty<DartPlatform> {
-  const ArchiveTypeMatrixProperty();
+  const new();
 
   @override
   String get name => 'archiveType';
@@ -68,7 +68,7 @@ class CompileBuilder implements StepBuilder {
   final ExecutableSuffixProperty executableSuffix;
   final ArchiveTypeMatrixProperty archiveType;
 
-  CompileBuilder({
+  new({
     required this.config,
     required this.platform,
     required this.executableSuffix,

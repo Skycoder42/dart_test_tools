@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated min sdk version to ^3.13.0
 - Updated dependencies
+- Updated linter rules
 
 ## [7.2.9] - 2026-07-24
 ### Fixed
