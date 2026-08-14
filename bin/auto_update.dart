@@ -41,6 +41,13 @@ void main(List<String> args) => Github.runZoned(() async {
           abbr: 'b',
           help: 'Use cider to create a changelog message and bump the version',
         )
+        ..addFlag(
+          'auto-fix',
+          abbr: 'a',
+          help:
+              'Automatically format code and fix issues with automatic fixes.',
+          defaultsTo: true,
+        )
         ..addOption(
           'report',
           abbr: 'r',
@@ -71,6 +78,7 @@ void main(List<String> args) => Github.runZoned(() async {
         await Updater(
           flutterCompat: flutterCompat,
           bumpVersion: options['bump-version'] as bool,
+          autoFix: options['auto-fix'] as bool,
           reportPath: options['report'] as String?,
         )(target);
     }

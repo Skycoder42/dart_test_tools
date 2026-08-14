@@ -90,12 +90,12 @@ class PubWrapper {
     }
   }
 
-  Future<void> upgrade() async => await _exec('upgrade');
+  Future<void> upgrade() async => await _execPub('upgrade');
 
   Stream<String> upgradeMajor() =>
-      _execLines('upgrade', ['--major-versions', '--tighten']);
+      _execPubLines('upgrade', ['--major-versions', '--tighten']);
 
-  Future<void> downgrade() async => await _exec('downgrade');
+  Future<void> downgrade() async => await _execPub('downgrade');
 
   Future<void> add(
     String name, {
@@ -113,11 +113,11 @@ class PubWrapper {
         ..write(json.encode(config));
     }
 
-    await _exec('add', [refBuilder.toString()]);
+    await _execPub('add', [refBuilder.toString()]);
   }
 
   Future<void> remove(String name) async {
-    await _exec('remove', [name]);
+    await _execPub('remove', [name]);
   }
 
   Future<void> addFlutterTest() =>
@@ -141,6 +141,11 @@ class PubWrapper {
   Future<Workspaces> workspaceList() async =>
       await _execJson('workspace', ['list']).map(Workspaces.fromJson).single;
 
+  Future<void> format() async =>
+      await _exec(executable: 'dart', 'format', ['.']);
+
+  Stream<String> fix() => _execLines(executable: 'dart', 'fix', ['--apply']);
+
   Future<void> cider(List<String> commands) => Github.exec(
     'cider',
     commands,
@@ -148,26 +153,37 @@ class PubWrapper {
     runInShell: Platform.isWindows,
   );
 
-  Future<void> _exec(String command, [List<String> args = const []]) =>
+  Future<void> _exec(String command, List<String> args, {String? executable}) =>
       Github.exec(
-        _executable,
-        ['pub', command, ...args],
+        executable ?? _executable,
+        [command, ...args],
         workingDirectory: workingDirectory,
         runInShell: Platform.isWindows,
       );
 
-  Stream<String> _execLines(String command, [List<String> args = const []]) =>
-      Github.execLines(
-        _executable,
-        ['pub', command, ...args],
-        workingDirectory: workingDirectory,
-        runInShell: Platform.isWindows,
-      );
+  Future<void> _execPub(String command, [List<String> args = const []]) =>
+      _exec('pub', [command, ...args]);
+
+  Stream<String> _execLines(
+    String command,
+    List<String> args, {
+    String? executable,
+  }) => Github.execLines(
+    executable ?? _executable,
+    [command, ...args],
+    workingDirectory: workingDirectory,
+    runInShell: Platform.isWindows,
+  );
+
+  Stream<String> _execPubLines(
+    String command, [
+    List<String> args = const [],
+  ]) => _execLines('pub', [command, ...args]);
 
   Stream<Map<String, dynamic>> _execJson(
     String command, [
     List<String> args = const [],
-  ]) => _execLines(command, [
+  ]) => _execPubLines(command, [
     ...args,
     '--json',
   ]).transform(json.decoder).cast<Map<String, dynamic>>();

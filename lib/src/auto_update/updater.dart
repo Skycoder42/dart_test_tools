@@ -10,6 +10,7 @@ import 'sdk_iterator.dart';
 class Updater {
   final bool flutterCompat;
   final bool bumpVersion;
+  final bool autoFix;
   final String? reportPath;
 
   IOSink? _reportSink;
@@ -17,6 +18,7 @@ class Updater {
   new({
     required this.flutterCompat,
     required this.bumpVersion,
+    required this.autoFix,
     required this.reportPath,
   });
 
@@ -37,6 +39,10 @@ class Updater {
     }
     await _updateDependencies(pub);
     await _updateAnalyzerPlugins(pub);
+
+    if (autoFix) {
+      await _autoFix(pub);
+    }
 
     if (bumpVersion) {
       await _releaseVersion(pub);
@@ -155,6 +161,33 @@ class Updater {
         }
       });
     });
+  }
+
+  Future<void> _autoFix(PubWrapper pub) async {
+    await pub.format();
+    final appliedFixes = await pub
+        .fix()
+        .map((l) {
+          stdout.writeln(l);
+          return l;
+        })
+        .where((l) => !l.startsWith('Computing fixes'))
+        .where((l) => !l.startsWith('Applying fixes'))
+        .where((l) => !l.startsWith('Nothing to fix'))
+        .toList();
+    await pub.format();
+
+    if (appliedFixes.isEmpty) {
+      return;
+    }
+
+    _reportSink?.writeln('### Automatically applied Fixes');
+    _reportSink?.writeln('```');
+    // ignore: prefer_foreach because receiver is nullable
+    for (final line in appliedFixes) {
+      _reportSink?.writeln(line);
+    }
+    _reportSink?.writeln('```');
   }
 
   Future<void> _bumpVersion(PubWrapper pub) async {
