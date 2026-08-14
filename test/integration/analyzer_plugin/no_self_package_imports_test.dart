@@ -27,23 +27,17 @@ void main() {
       onPlatform: const {'windows': Skip('broken for no apparent reason')},
       code: NoSelfPackageImports.code,
       files: const {
-        'lib/src/src.dart':
-            'import "package:dart_test_tools_integration_test/dart_test_tools_integration_test.dart";',
+        'lib/src/src.dart': 'import "package:dart_test_tools_integration_test/dart_test_tools_integration_test.dart";',
         'lib/src/part.dart': '''
 import "package:dart_test_tools_integration_test/dart_test_tools_integration_test.dart";
 part "part.g.dart";
 ''',
         'lib/src/part.g.dart': 'part of "part.dart";',
-        'lib/lib.dart':
-            'export "package:dart_test_tools_integration_test/dart_test_tools_integration_test.dart";',
-        'bin/bin.dart':
-            'import "package:dart_test_tools_integration_test/dart_test_tools_integration_test.dart";',
-        'test/test.dart':
-            'import "package:dart_test_tools_integration_test/dart_test_tools_integration_test.dart";',
-        'tool/tool.dart':
-            'import "package:dart_test_tools_integration_test/dart_test_tools_integration_test.dart";',
-        'example/example.dart':
-            'import "package:dart_test_tools_integration_test/dart_test_tools_integration_test.dart";',
+        'lib/lib.dart': 'export "package:dart_test_tools_integration_test/dart_test_tools_integration_test.dart";',
+        'bin/bin.dart': 'import "package:dart_test_tools_integration_test/dart_test_tools_integration_test.dart";',
+        'test/test.dart': 'import "package:dart_test_tools_integration_test/dart_test_tools_integration_test.dart";',
+        'tool/tool.dart': 'import "package:dart_test_tools_integration_test/dart_test_tools_integration_test.dart";',
+        'example/example.dart': 'import "package:dart_test_tools_integration_test/dart_test_tools_integration_test.dart";',
       },
       expectedOutput: emitsLints(const [
         ('lib/src/src.dart', 1, 1),
@@ -123,8 +117,7 @@ part "part.g.dart";
       'Ignores non dart files',
       code: NoSelfPackageImports.code,
       files: const {
-        'test/test.txt':
-            'import "package:dart_test_tools_integration_test/dart_test_tools_integration_test.dart";',
+        'test/test.txt': 'import "package:dart_test_tools_integration_test/dart_test_tools_integration_test.dart";',
       },
       expectedOutput: emitsNoIssues(),
     );

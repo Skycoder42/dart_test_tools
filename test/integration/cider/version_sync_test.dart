@@ -212,19 +212,16 @@ Future<void> _createTestProject(Directory pwd, String version) async {
   ], workingDirectory: pwd.path);
 
   await Directory.fromUri(pwd.uri.resolve('lib/src')).create();
-  await File.fromUri(pwd.uri.resolve('lib/src/version.dart')).writeAsString(
-    flush: true,
-    '''
+  await File.fromUri(pwd.uri.resolve('lib/src/version.dart'))
+      .writeAsString(flush: true, '''
 // this is the library version
 const version = '1.5.8';
 const name = 'version_sync_test';
-''',
-  );
+''');
 
   await Directory.fromUri(pwd.uri.resolve('darwin')).create();
-  await File.fromUri(
-    pwd.uri.resolve('ios/version_sync_test.podspec'),
-  ).copy(pwd.uri.resolve('darwin/version_sync_test.podspec').toFilePath());
+  await File.fromUri(pwd.uri.resolve('ios/version_sync_test.podspec'))
+      .copy(pwd.uri.resolve('darwin/version_sync_test.podspec').toFilePath());
 
   final pubspecFile = File.fromUri(pwd.uri.resolve('pubspec.yaml'));
   final pubspecEditor = YamlEditor(await pubspecFile.readAsString())

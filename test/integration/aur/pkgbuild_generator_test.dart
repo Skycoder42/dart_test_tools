@@ -79,20 +79,16 @@ void main() {
       },
     });
 
-    await File.fromUri(
-      srcDir.uri.resolve('pubspec.yaml'),
-    ).writeAsString(pubspecYaml);
+    await File.fromUri(srcDir.uri.resolve('pubspec.yaml'))
+        .writeAsString(pubspecYaml);
 
     if (!minimal) {
-      await File.fromUri(
-        srcDir.uri.resolve('CHANGELOG.md'),
-      ).writeAsString('# The Changelog');
-      await File.fromUri(
-        srcDir.uri.resolve('LICENSE.txt'),
-      ).writeAsString('THE LICENSE');
-      await File.fromUri(
-        srcDir.uri.resolve('custom_package.install'),
-      ).writeAsString('install');
+      await File.fromUri(srcDir.uri.resolve('CHANGELOG.md'))
+          .writeAsString('# The Changelog');
+      await File.fromUri(srcDir.uri.resolve('LICENSE.txt'))
+          .writeAsString('THE LICENSE');
+      await File.fromUri(srcDir.uri.resolve('custom_package.install'))
+          .writeAsString('install');
     }
   }
 
@@ -110,9 +106,8 @@ void main() {
       expect(aurFiles, hasLength(1));
       expect(aurFiles, contains(hasBaseName('PKGBUILD')));
 
-      final pkgBuildContent = await File.fromUri(
-        aurDir.uri.resolve('PKGBUILD'),
-      ).readAsString();
+      final pkgBuildContent = await File.fromUri(aurDir.uri.resolve('PKGBUILD'))
+          .readAsString();
 
       expect(pkgBuildContent, _minimalPkgbuild);
     });
@@ -132,9 +127,8 @@ void main() {
       expect(aurFiles, contains(hasBaseName('CHANGELOG.md')));
       expect(aurFiles, contains(hasBaseName('custom_package.install')));
 
-      final pkgBuildContent = await File.fromUri(
-        aurDir.uri.resolve('PKGBUILD'),
-      ).readAsString();
+      final pkgBuildContent = await File.fromUri(aurDir.uri.resolve('PKGBUILD'))
+          .readAsString();
 
       expect(pkgBuildContent, _fullPkgbuild);
 

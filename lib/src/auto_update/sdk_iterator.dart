@@ -5,13 +5,12 @@ import 'package:pub_semver/pub_semver.dart';
 
 import 'pub_wrapper.dart';
 
-typedef SdkCallback =
-    Future<void> Function(
-      String name,
-      PubWrapper pub,
-      Version? dartVersion,
-      Version? flutterVersion,
-    );
+typedef SdkCallback = Future<void> Function(
+  String name,
+  PubWrapper pub,
+  Version? dartVersion,
+  Version? flutterVersion,
+);
 
 class SdkIterator {
   final PubWrapper pub;

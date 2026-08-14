@@ -29,9 +29,8 @@ void main() {
 
           await Github.env.setOutput(testName, testValue);
 
-          final lines = await File(
-            Platform.environment['GITHUB_OUTPUT']!,
-          ).readAsLines();
+          final lines = await File(Platform.environment['GITHUB_OUTPUT']!)
+              .readAsLines();
           expect(lines.last, '$testName=$testValue');
         });
 
@@ -41,9 +40,8 @@ void main() {
 
           await Github.env.setOutput(testName, testValue, multiline: true);
 
-          final lines = await File(
-            Platform.environment['GITHUB_OUTPUT']!,
-          ).readAsLines();
+          final lines = await File(Platform.environment['GITHUB_OUTPUT']!)
+              .readAsLines();
           expect(lines.skip(lines.length - 4), [
             '$testName<<EOF',
             ...testValue.split('\n'),
@@ -57,9 +55,8 @@ void main() {
 
           await Github.env.setOutput(testName, testValue, asEnv: true);
 
-          final lines = await File(
-            Platform.environment['GITHUB_ENV']!,
-          ).readAsLines();
+          final lines = await File(Platform.environment['GITHUB_ENV']!)
+              .readAsLines();
           expect(lines.last, '$testName=$testValue');
         });
       });
@@ -70,9 +67,8 @@ void main() {
 
         await Github.env.addPath(testDir);
 
-        final lines = await File(
-          Platform.environment['GITHUB_PATH']!,
-        ).readAsLines();
+        final lines = await File(Platform.environment['GITHUB_PATH']!)
+            .readAsLines();
         expect(lines.last, await testDir.resolveSymbolicLinks());
       });
     });

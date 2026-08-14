@@ -355,8 +355,7 @@ Example:
     input: Input(
       type: Type.string,
       required: true,
-      description:
-          'A JSON-encoded list of all platforms that this project can build/run for.',
+      description: 'A JSON-encoded list of all platforms that this project can build/run for.',
     ),
   );
 

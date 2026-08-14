@@ -64,9 +64,8 @@ class PublishJobBuilder implements JobBuilder {
         javaJdkVersion: config.javaJdkVersion,
         ifExpression: config.isFlutter.asExpression,
       ).build(),
-      ...FlutterAuthBuilder(
-        ifExpression: config.isFlutter.asExpression,
-      ).build(),
+      ...FlutterAuthBuilder(ifExpression: config.isFlutter.asExpression)
+          .build(),
       ...PublishBuilder(config: config).build(),
     ],
   );

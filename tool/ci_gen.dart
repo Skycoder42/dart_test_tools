@@ -96,9 +96,9 @@ Future<int> _writeToFile(File file, dynamic content) async {
   final errFuture = yqProc.stderr.listen(stderr.add).asFuture<void>();
   final outFuture = yqProc.stdout.pipe(sink);
 
-  await Stream.value(
-    writer.write(content),
-  ).transform(utf8.encoder).pipe(yqProc.stdin);
+  await Stream.value(writer.write(content))
+      .transform(utf8.encoder)
+      .pipe(yqProc.stdin);
 
   await Future.wait([outFuture, errFuture]);
 

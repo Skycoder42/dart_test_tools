@@ -3,7 +3,7 @@ include:
   - package:flutter_lints/flutter.yaml
   - package:lint/strict.yaml
 plugins:
-  dart_test_tools: ^7.2.2
+  dart_test_tools: ^7.2.10
 analyzer:
   language:
     strict-casts: true

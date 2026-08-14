@@ -24,9 +24,8 @@ base mixin DartSdkJobBuilderMixin<TConfig extends DartSdkJobConfig>
     ...switch (config.needsFlutterSdk) {
       ExpressionOrValueValue(:final bool value) =>
         value
-            ? FlutterSdkBuilder(
-                flutterSdkChannel: config.flutterSdkChannel,
-              ).build()
+            ? FlutterSdkBuilder(flutterSdkChannel: config.flutterSdkChannel)
+                  .build()
             : DartSdkBuilder(dartSdkVersion: config.dartSdkVersion).build(),
       ExpressionOrValueExpression(:final expression) => [
         ...DartSdkBuilder(

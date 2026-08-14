@@ -17,9 +17,8 @@ mixin DartGeneratorMixin {
     spec.accept(emitter, buffer);
 
     if (format) {
-      return DartFormatter(
-        languageVersion: DartFormatter.latestLanguageVersion,
-      ).format(buffer.toString(), uri: uri);
+      return DartFormatter(languageVersion: DartFormatter.latestLanguageVersion)
+          .format(buffer.toString(), uri: uri);
     } else {
       return buffer.toString();
     }

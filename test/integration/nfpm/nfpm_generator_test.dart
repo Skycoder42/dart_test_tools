@@ -41,9 +41,8 @@ void main() {
       'executables': {'srv': null, 'my-cli': 'cli_main'},
       ...overrides,
     };
-    await File.fromUri(
-      srcDir.uri.resolve('pubspec.yaml'),
-    ).writeAsString(YamlWriter().write(pubspec));
+    await File.fromUri(srcDir.uri.resolve('pubspec.yaml'))
+        .writeAsString(YamlWriter().write(pubspec));
   }
 
   // Omits name/description/homepage so the tool fills them from the pubspec; a
@@ -85,9 +84,8 @@ All notable changes to this project will be documented in this file.
       outputDirectory: outDir,
       bundleRoot: bundleDir,
     );
-    final content = await File.fromUri(
-      outDir.uri.resolve('nfpm.yaml'),
-    ).readAsString();
+    final content = await File.fromUri(outDir.uri.resolve('nfpm.yaml'))
+        .readAsString();
     return loadYaml(content) as YamlMap;
   }
 
@@ -197,9 +195,8 @@ contents: []
   test('inserts generated entries ahead of existing contents', () async {
     await writePubspec({});
     await writeTemplate();
-    await File.fromUri(
-      srcDir.uri.resolve('LICENSE'),
-    ).writeAsString('THE LICENSE');
+    await File.fromUri(srcDir.uri.resolve('LICENSE'))
+        .writeAsString('THE LICENSE');
 
     final nfpm = await generateAndLoad();
     final contents = (nfpm['contents'] as YamlList).cast<YamlMap>();
@@ -256,9 +253,8 @@ contents: []
   test('adds a plain-file license entry when a license file exists', () async {
     await writePubspec({});
     await writeTemplate();
-    await File.fromUri(
-      srcDir.uri.resolve('LICENSE'),
-    ).writeAsString('THE LICENSE');
+    await File.fromUri(srcDir.uri.resolve('LICENSE'))
+        .writeAsString('THE LICENSE');
 
     final nfpm = await generateAndLoad();
     final licenses = licenseEntries(nfpm);

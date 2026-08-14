@@ -13,13 +13,13 @@ class _WorkspacePackageExtra {
 extension WorkspacePackageX on WorkspacePackage {
   static final _expando = Expando<_WorkspacePackageExtra>();
 
-  Folder get lib => _extra.lib ??= root.getChildAssumingFolder('lib');
+  Folder get lib => _extra.lib ??= root.getFolder('lib');
 
-  Folder get libSrc => _extra.libSrc ??= lib.getChildAssumingFolder('src');
+  Folder get libSrc => _extra.libSrc ??= lib.getFolder('src');
 
-  Folder get libGen => _extra.libGen ??= lib.getChildAssumingFolder('gen');
+  Folder get libGen => _extra.libGen ??= lib.getFolder('gen');
 
-  Folder get tool => _extra.tool ??= root.getChildAssumingFolder('tool');
+  Folder get tool => _extra.tool ??= root.getFolder('tool');
 
   Pubspec? get pubspec => _extra.pubspec ??= _loadPubspec();
 
@@ -27,7 +27,7 @@ extension WorkspacePackageX on WorkspacePackage {
       _expando[this] ??= _WorkspacePackageExtra();
 
   Pubspec? _loadPubspec() {
-    final pubspecFile = root.getChildAssumingFile('pubspec.yaml');
+    final pubspecFile = root.getFile('pubspec.yaml');
     if (!pubspecFile.exists) {
       return null;
     }

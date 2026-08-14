@@ -57,9 +57,8 @@ extension DartTypeCodeGenX on DartType {
             ..url = element.library?.uri.toString()
             ..isNullable = nullable ?? isNullableType;
 
-          if (this case ParameterizedType(
-            :final typeArguments,
-          ) when !ignoreTypeArguments) {
+          if (this case ParameterizedType(:final typeArguments)
+              when !ignoreTypeArguments) {
             b.types.addAll(typeArguments.map((t) => t.toReference()));
           }
         }),
@@ -83,9 +82,8 @@ extension ElementCodeGenX on Element {
       b.bound = bound.toReference();
     }
 
-    if (this case TypeParameterizedElement(
-      :final typeParameters,
-    ) when !ignoreTypeArguments) {
+    if (this case TypeParameterizedElement(:final typeParameters)
+        when !ignoreTypeArguments) {
       b.types.addAll(typeParameters.map((t) => t.toReference()));
     }
   });
