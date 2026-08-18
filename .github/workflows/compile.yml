@@ -93,7 +93,7 @@ jobs:
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
         if: (inputs.enabledPlatforms == '[]' || contains(fromJSON(inputs.enabledPlatforms), matrix.platform)) && !inputs.needsFlutterSdk
-        uses: dart-lang/setup-dart@7654d458321ee25acccccfdb86cd48bd95768ff1
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
