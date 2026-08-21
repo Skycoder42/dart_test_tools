@@ -30,7 +30,7 @@ class WebIntegrationTestBuilder implements StepBuilder {
           '--driver test_driver/integration_test.dart '
           "--target '${config.integrationTestPaths}' "
           '--release '
-          '-d chrome --browser-name chrome '
+          '-d web-server --browser-name chrome '
           r'|| [ $? = 79 ]',
       workingDirectory: config.integrationTestWorkingDirectory,
       shell: 'bash',

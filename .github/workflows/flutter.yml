@@ -856,6 +856,6 @@ jobs:
         run: ${{ fromJSON(inputs.integrationTestSetup)['web'] }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Run integration tests
-        run: $ChromeWebDriver/chromedriver --port=4444 & flutter drive --driver test_driver/integration_test.dart --target '${{ inputs.integrationTestPaths }}' --release -d chrome --browser-name chrome || [ $? = 79 ]
+        run: $ChromeWebDriver/chromedriver --port=4444 & flutter drive --driver test_driver/integration_test.dart --target '${{ inputs.integrationTestPaths }}' --release -d web-server --browser-name chrome || [ $? = 79 ]
         working-directory: ${{ inputs.workingDirectory }}/${{ inputs.integrationTestProject }}
         shell: bash
