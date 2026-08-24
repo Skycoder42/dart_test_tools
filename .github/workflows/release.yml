@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
+        uses: dart-lang/setup-dart@7654d458321ee25acccccfdb86cd48bd95768ff1
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Checkout repository
