@@ -20,12 +20,41 @@ extension ConstantReaderX on ConstantReader {
   }
 
   Expression toExpression() {
+    if (isNull) {
+      return literalNull;
+    }
+
+    // Collection constants keep their elements wrapped as DartObjects, so they
+    // have to be converted recursively instead of being passed to literal().
+    if (objectValue.toListValue() case final listValue?) {
+      return literalList(listValue.map(_objectToExpression));
+    }
+
+    if (objectValue.toSetValue() case final setValue?) {
+      return literalSet(setValue.map(_objectToExpression));
+    }
+
+    if (objectValue.toMapValue() case final mapValue?) {
+      return literalMap({
+        for (final MapEntry(:key, :value) in mapValue.entries)
+          _objectToExpression(key): _objectToExpression(value),
+      });
+    }
+
+    // literal() has no support for symbols
+    if (objectValue.toSymbolValue() case final symbolValue?) {
+      return CodeExpression(Code('#$symbolValue'));
+    }
+
     if (isLiteral) {
       return literal(literalValue);
     }
 
-    final functionValue = objectValue.toFunctionValue();
-    if (functionValue != null) {
+    if (objectValue.toTypeValue() case final typeValue?) {
+      return typeValue.toReference();
+    }
+
+    if (objectValue.toFunctionValue() case final functionValue?) {
       return functionValue.toExpression();
     }
 
@@ -44,23 +73,24 @@ extension RevivableX on Revivable {
       );
       if (accessor.isEmpty) {
         return type.newInstance(
-          positionalArguments.map(_mapObject),
-          namedArguments.map((k, v) => MapEntry(k, _mapObject(v))),
+          positionalArguments.map(_objectToExpression),
+          namedArguments.map((k, v) => MapEntry(k, _objectToExpression(v))),
         );
       } else {
         return type.newInstanceNamed(
           accessor,
-          positionalArguments.map(_mapObject),
-          namedArguments.map((k, v) => MapEntry(k, _mapObject(v))),
+          positionalArguments.map(_objectToExpression),
+          namedArguments.map((k, v) => MapEntry(k, _objectToExpression(v))),
         );
       }
     } else {
       return Reference(accessor, source.toString());
     }
   }
-
-  Expression _mapObject(DartObject obj) => ConstantReader(obj).toExpression();
 }
+
+Expression _objectToExpression(DartObject? object) =>
+    ConstantReader(object).toExpression();
 
 extension ExecutableElementExpressionX on ExecutableElement {
   Expression toExpression() => switch (this) {
