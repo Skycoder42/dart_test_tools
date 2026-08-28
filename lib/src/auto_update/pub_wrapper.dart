@@ -16,6 +16,7 @@ import 'models/pub/workspace/workspaces.dart';
 @internal
 class PubWrapper {
   static const flutterTestPackageName = 'flutter_test';
+  static const buildRunnerPackageName = 'build_runner';
 
   final Directory workingDirectory;
   final bool isFlutter;
@@ -130,6 +131,11 @@ class PubWrapper {
     return deps.packages.any((p) => p.name == flutterTestPackageName);
   }
 
+  Future<bool> dependsOnBuildRunner() async {
+    final deps = await this.deps();
+    return deps.packages.any((p) => p.name == buildRunnerPackageName);
+  }
+
   Future<Dependencies> deps() async =>
       await _execJson('deps').map(Dependencies.fromJson).single;
 
@@ -145,6 +151,14 @@ class PubWrapper {
       await _exec(executable: 'dart', 'format', ['.']);
 
   Stream<String> fix() => _execLines(executable: 'dart', 'fix', ['--apply']);
+
+  Future<void> runBuildRunner() async {
+    await _exec(executable: 'dart', 'run', [
+      buildRunnerPackageName,
+      'build',
+      '--workspace',
+    ]);
+  }
 
   Future<void> cider(List<String> commands) => Github.exec(
     'cider',

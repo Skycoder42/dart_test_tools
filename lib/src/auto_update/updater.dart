@@ -164,6 +164,10 @@ class Updater {
   }
 
   Future<void> _autoFix(PubWrapper pub) async {
+    if (await pub.dependsOnBuildRunner()) {
+      await pub.runBuildRunner();
+    }
+
     await pub.format();
     final appliedFixes = await pub
         .fix()
