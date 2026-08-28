@@ -18,7 +18,7 @@ on:
         description: Whether the update needs to ensure the package stays compatible to the latest flutter or not.
       validationWorkflow:
         type: string
-        required: true
+        required: false
         description: The name or id of the workflow that must be run and succeed for the pull request to be able to merge.
 jobs:
   check-update-required:

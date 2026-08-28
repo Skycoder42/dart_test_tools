@@ -42,6 +42,7 @@ runs:
         assignees: ${{ github.repository_owner }}
         token: ${{ case(inputs.token != '', inputs.token, github.token) }}
     - name: Manually validate pull request
+      if: inputs.validationWorkflow != ''
       uses: benc-uk/workflow-dispatch@31e2b3319479a63f0ab15bf800eff9e913504e26
       with:
         workflow: ${{ inputs.validationWorkflow }}

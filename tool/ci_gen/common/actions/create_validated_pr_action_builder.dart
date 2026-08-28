@@ -164,6 +164,7 @@ class CreateValidatedPrActionBuilder implements ActionBuilder {
         Step.uses(
           name: 'Manually validate pull request',
           uses: Tools.bencUkWorkflowDispatch,
+          ifExpression: validationWorkflow.ne(.empty),
           withArgs: {
             'workflow': validationWorkflow.toString(),
             'ref': 'refs/heads/${pullRequestBranch.expression}',
