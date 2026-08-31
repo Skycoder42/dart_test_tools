@@ -70,7 +70,7 @@ jobs:
       options: --privileged
     steps:
       - name: Install Dart-SDK (${{ inputs.dartSdkVersion }})
-        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
+        uses: dart-lang/setup-dart@6afc89df92d6eb3834022f73cd65adc8cdfcb92d
         with:
           sdk: ${{ inputs.dartSdkVersion }}
       - name: Install tools
@@ -106,7 +106,7 @@ jobs:
       - name: Import GPG key
         run: echo '${{ secrets.gpgKey }}' | gpg --import
       - name: Build flatpak bundle
-        uses: flatpak/flatpak-github-actions/flatpak-builder@401fe28a8384095fc1531b9d320b292f0ee45adb
+        uses: flatpak/flatpak-github-actions/flatpak-builder@79327416609af08178ad73b352877e51450790b3
         with:
           bundle: ${{ steps.flatpak-bundle-name.outputs.bundle-name }}
           manifest-path: ${{ inputs.workingDirectory }}/${{ inputs.manifestPath }}

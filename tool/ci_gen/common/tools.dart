@@ -81,7 +81,7 @@ abstract class Tools {
     'actions/upload-artifact@v7': (t) => actionsUploadArtifact = t,
     'actions/download-artifact@v8': (t) => actionsDownloadArtifact = t,
     'actions/cache@v6': (t) => actionsCache = t,
-    'actions/setup-java@v5': (t) => actionsSetupJava = t,
+    'actions/setup-java@v6': (t) => actionsSetupJava = t,
     'dart-lang/setup-dart@v1': (t) => dartLangSetupDart = t,
     'docker/setup-qemu-action@v4': (t) => dockerSetupQemuAction = t,
     'docker/setup-buildx-action@v4': (t) => dockerSetupBuildxAction = t,
