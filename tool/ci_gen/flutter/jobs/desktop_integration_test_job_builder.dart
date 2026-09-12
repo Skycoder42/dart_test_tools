@@ -9,14 +9,13 @@ import '../steps/desktop_integration_test_builder.dart';
 import 'common_integration_test_config.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-final class DesktopIntegrationTestJobConfig
-    extends CommonIntegrationTestJobConfig
-    with DesktopIntegrationTestConfig {
-  new(super.inputContext, super.secretContext);
-}
+final class DesktopIntegrationTestJobConfig(
+  super.inputContext,
+  super.secretContext,
+) extends CommonIntegrationTestJobConfig with DesktopIntegrationTestConfig;
 
-final class FlutterIntegrationTestMatrix extends PlatformMatrix {
-  const new() : super(FlutterPlatform.desktop);
+final class const FlutterIntegrationTestMatrix() extends PlatformMatrix {
+  this : super(FlutterPlatform.desktop);
 
   TestArgsMatrixProperty get testArgs => const TestArgsMatrixProperty();
 

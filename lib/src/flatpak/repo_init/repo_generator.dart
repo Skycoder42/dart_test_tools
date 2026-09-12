@@ -4,9 +4,7 @@ import '../../tools/github.dart';
 import '../../tools/io.dart';
 import 'repo_metadata.dart';
 
-class RepoGenerator {
-  const new();
-
+class const RepoGenerator() {
   Future<void> call({
     required Directory repo,
     required RepoMetadata metadata,

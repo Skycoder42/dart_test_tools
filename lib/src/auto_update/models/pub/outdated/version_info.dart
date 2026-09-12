@@ -8,13 +8,11 @@ part 'version_info.g.dart';
 
 @Freezed(toStringOverride: false)
 @internal
-sealed class VersionInfo with _$VersionInfo {
+sealed class const VersionInfo._() with _$VersionInfo {
   @VersionConverter()
   const factory({required Version version, bool? nullSafety}) = _VersionInfo;
 
   factory fromJson(Map<String, dynamic> json) => _$VersionInfoFromJson(json);
-
-  const new _();
 
   @override
   String toString() => switch (nullSafety) {

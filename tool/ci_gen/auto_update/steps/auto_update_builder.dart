@@ -18,14 +18,11 @@ base mixin AutoUpdateConfig on JobConfig, SdkJobConfig, WorkingDirectoryConfig {
   );
 }
 
-class AutoUpdateBuilder implements StepBuilder {
+class const AutoUpdateBuilder({required final AutoUpdateConfig config})
+    implements StepBuilder {
   static const createPrStepId = StepId('create-pull-request');
   static final pullRequestNumber = createPrStepId.output('pull-request-number');
   static final pullRequestBranch = createPrStepId.output('pull-request-branch');
-
-  final AutoUpdateConfig config;
-
-  const new({required this.config});
 
   @override
   Iterable<Step> build() sync* {

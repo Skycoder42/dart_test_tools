@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 
-abstract class TestEnv {
+abstract class TestEnv._() {
   static const defaultPath = '.env';
 
   static const _vmCode = '''
@@ -16,8 +16,6 @@ Future<void> hybridMain(StreamChannel channel, Object? message) async {
   channel.sink.add(env);
 }
 ''';
-
-  new _();
 
   static Future<Map<String, String>> load([String path = defaultPath]) async {
     final channel = spawnHybridCode(_vmCode, message: path);

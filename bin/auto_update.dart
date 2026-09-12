@@ -5,7 +5,10 @@ import 'package:dart_test_tools/src/auto_update/update_checker.dart';
 import 'package:dart_test_tools/src/auto_update/updater.dart';
 import 'package:dart_test_tools/src/tools/github.dart';
 
-enum UpdateMode { check, update }
+enum UpdateMode() {
+  check,
+  update,
+}
 
 void main(List<String> args) => Github.runZoned(() async {
   final parser =

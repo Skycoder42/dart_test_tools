@@ -12,11 +12,8 @@ base mixin SetupGCloudConfig on JobConfig {
   );
 }
 
-class SetupGCloudBuilder implements StepBuilder {
-  final SetupGCloudConfig config;
-
-  const new({required this.config});
-
+class const SetupGCloudBuilder({required final SetupGCloudConfig config})
+    implements StepBuilder {
   @override
   Iterable<Step> build() => [
     Step.uses(

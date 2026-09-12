@@ -26,13 +26,11 @@ base mixin ResolveArtifactPrefixConfig on JobConfig, WorkingDirectoryConfig {
 /// stage-2 uploads and stage-4 downloads compose the artifact name from
 /// [ResolveArtifactPrefixConfig.resolvedPrefix] over the same checked-out
 /// `pubspec.yaml`, so the names line up without any explicit wiring.
-class ResolveArtifactPrefixBuilder implements StepBuilder {
+class const ResolveArtifactPrefixBuilder({
+  required final ResolveArtifactPrefixConfig config,
+}) implements StepBuilder {
   static const stepId = StepId('resolve-artifact-prefix');
   static final output = stepId.output('prefix');
-
-  final ResolveArtifactPrefixConfig config;
-
-  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

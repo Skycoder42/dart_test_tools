@@ -7,11 +7,7 @@ import 'package:dart_test_tools/src/flatpak/export_xml_changelog/export_xml_chan
 import 'package:path/path.dart';
 import 'package:test/test.dart';
 
-final class _TestOverrides extends IOOverrides {
-  final Directory testDir;
-
-  new(this.testDir);
-
+final class _TestOverrides(final Directory testDir) extends IOOverrides {
   @override
   File createFile(String path) => super.createFile(join(testDir.path, path));
 }

@@ -12,11 +12,9 @@ base mixin ValidateCoverageConfig
   late final coverageExclude = inputContext(WorkflowInputs.coverageExclude);
 }
 
-class ValidateCoverageBuilder implements StepBuilder {
-  final ValidateCoverageConfig config;
-
-  const new({required this.config});
-
+class const ValidateCoverageBuilder({
+  required final ValidateCoverageConfig config,
+}) implements StepBuilder {
   @override
   Iterable<Step> build() => [
     const Step.run(

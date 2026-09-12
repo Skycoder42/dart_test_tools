@@ -6,9 +6,7 @@ import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'jobs/package_job_builder.dart';
 
-class PackageWorkflow implements WorkflowBuilder {
-  const new();
-
+class const PackageWorkflow() implements WorkflowBuilder {
   @override
   String get name => 'package';
 

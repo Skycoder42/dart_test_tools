@@ -12,7 +12,8 @@ import '../steps/project_setup_builder.dart';
 import '../steps/run_publish_builder.dart';
 import 'sdk_job_builder.dart';
 
-abstract base class AnalyzeJobConfig extends JobConfig
+abstract base class AnalyzeJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
@@ -21,14 +22,11 @@ abstract base class AnalyzeJobConfig extends JobConfig
         RunPublishConfig,
         AnalyzeConfig {
   late final analyzeImage = inputContext(WorkflowInputs.analyzeImage);
-
-  new(super.inputContext, super.secretContext);
 }
 
-abstract base class AnalyzeJobBuilder<TConfig extends AnalyzeJobConfig>
-    extends SdkJobBuilder<TConfig> {
-  const new({required super.config});
-
+abstract base class const AnalyzeJobBuilder<TConfig extends AnalyzeJobConfig>({
+  required super.config,
+}) extends SdkJobBuilder<TConfig> {
   @override
   JobId get id => const JobId('analyze');
 

@@ -1,8 +1,6 @@
 import '../types/expression.dart';
 
-abstract base class Runner {
-  const new _();
-
+abstract base class const Runner._() {
   static const temp = Expression('runner.temp');
 
   static const os = Expression('runner.os');
@@ -10,9 +8,7 @@ abstract base class Runner {
   static const toolCache = Expression('runner.tool_cache');
 }
 
-abstract base class Github {
-  const new _();
-
+abstract base class const Github._() {
   static const ref = Expression('github.ref');
 
   static const refName = Expression('github.ref_name');
@@ -30,9 +26,7 @@ abstract base class Github {
   static const token = Expression('github.token');
 }
 
-abstract base class Functions {
-  const new _();
-
+abstract base class const Functions._() {
   static const always = Expression('always()');
 
   static const success = Expression('success()');

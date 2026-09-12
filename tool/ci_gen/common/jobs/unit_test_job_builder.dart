@@ -12,7 +12,8 @@ import '../steps/project_setup_builder.dart';
 import '../steps/unit_test_builder.dart';
 import 'sdk_job_builder.dart';
 
-abstract base class UnitTestJobConfig extends JobConfig
+abstract base class UnitTestJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
@@ -20,13 +21,9 @@ abstract base class UnitTestJobConfig extends JobConfig
         ProjectSetupConfig,
         CoverageBuilderConfig,
         CoverageCollectorConfig,
-        UnitTestConfig {
-  new(super.inputContext, super.secretContext);
-}
+        UnitTestConfig;
 
-class UnitTestMatrix extends PlatformMatrix {
-  const new(super._selectors);
-
+class const UnitTestMatrix(super._selectors) extends PlatformMatrix {
   DartTestArgsMatrixProperty get dartTestArgs =>
       const DartTestArgsMatrixProperty();
 
@@ -41,21 +38,17 @@ class UnitTestMatrix extends PlatformMatrix {
   ];
 }
 
-abstract base class UnitTestJobBuilder<TConfig extends UnitTestJobConfig>
-    extends SdkJobBuilder<TConfig>
+abstract base class UnitTestJobBuilder<TConfig extends UnitTestJobConfig>({
+  required List<IPlatformMatrixSelector> platformSelectors,
+  required final JobIdOutput enabledPlatformsOutput,
+  required super.config,
+  UnitTestMatrix? matrix,
+}) extends SdkJobBuilder<TConfig>
     with
         MatrixJobBuilderMixin<UnitTestMatrix, IPlatformMatrixSelector>,
         PlatformJobBuilderMixin<UnitTestMatrix> {
-  final JobIdOutput enabledPlatformsOutput;
   @override
-  final UnitTestMatrix matrix;
-
-  new({
-    required List<IPlatformMatrixSelector> platformSelectors,
-    required this.enabledPlatformsOutput,
-    required super.config,
-    UnitTestMatrix? matrix,
-  }) : matrix = matrix ?? UnitTestMatrix(platformSelectors);
+  final UnitTestMatrix matrix = matrix ?? UnitTestMatrix(platformSelectors);
 
   @override
   JobId get id => const JobId('unit_tests');

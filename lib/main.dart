@@ -12,7 +12,7 @@ import 'src/analyzer_plugin/no_self_package_imports.dart';
 // entrypoint for the analyzer plugin
 final plugin = DartTestToolsPlugin();
 
-class DartTestToolsPlugin extends Plugin {
+class DartTestToolsPlugin() extends Plugin {
   late final _logger = Logger('$DartTestToolsPlugin');
 
   IOSink? _loggerSink;

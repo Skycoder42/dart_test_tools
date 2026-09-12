@@ -11,12 +11,10 @@ import 'setup_gcloud_builder.dart';
 base mixin AndroidIntegrationTestConfig
     on JobConfig, CommonIntegrationTestConfig, SetupGCloudConfig;
 
-class AndroidIntegrationTestBuilder implements StepBuilder {
+class const AndroidIntegrationTestBuilder({
+  required final AndroidIntegrationTestConfig config,
+}) implements StepBuilder {
   static const testSetupCacheStepId = StepId('test-setup-cache');
-
-  final AndroidIntegrationTestConfig config;
-
-  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

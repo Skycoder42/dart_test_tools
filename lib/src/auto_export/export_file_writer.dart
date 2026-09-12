@@ -9,9 +9,7 @@ import 'package:meta/meta.dart';
 
 import 'auto_export_config.dart';
 
-class ExportFileWriter {
-  const new();
-
+class const ExportFileWriter() {
   Future<void> writeExport(
     File file,
     List<SingleExportDefinition> exports,

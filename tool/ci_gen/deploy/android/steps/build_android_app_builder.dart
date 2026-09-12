@@ -28,11 +28,9 @@ base mixin BuildAndroidAppConfig on JobConfig, BuildAppConfig {
   IPlatformMatrixSelector get buildPlatform => FlutterPlatform.android;
 }
 
-class BuildAndroidAppBuilder implements StepBuilder {
-  final BuildAndroidAppConfig config;
-
-  const new({required this.config});
-
+class const BuildAndroidAppBuilder({
+  required final BuildAndroidAppConfig config,
+}) implements StepBuilder {
   @override
   Iterable<Step> build() => [
     ...BuildAppBuilder(

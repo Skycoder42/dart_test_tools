@@ -11,7 +11,7 @@ import 'package:meta/meta.dart';
 import 'utils/workspace_package_extensions.dart';
 
 @internal
-class NoSelfPackageImports extends AnalysisRule {
+class NoSelfPackageImports() extends AnalysisRule {
   @visibleForTesting
   static const code = LintCode(
     'no_self_package_imports',
@@ -22,7 +22,7 @@ class NoSelfPackageImports extends AnalysisRule {
 
   final _logger = Logger('$NoSelfPackageImports');
 
-  new() : super(name: code.lowerCaseName, description: code.problemMessage);
+  this : super(name: code.lowerCaseName, description: code.problemMessage);
 
   @override
   LintCode get diagnosticCode => code;
@@ -61,12 +61,10 @@ class NoSelfPackageImports extends AnalysisRule {
   }
 }
 
-class _Visitor extends SimpleAstVisitor<void> {
-  final NoSelfPackageImports _rule;
-  final RuleContext _context;
-
-  const new(this._rule, this._context);
-
+class const _Visitor(
+  final NoSelfPackageImports _rule,
+  final RuleContext _context,
+) extends SimpleAstVisitor<void> {
   @override
   void visitImportDirective(ImportDirective node) =>
       _scanDirective(node, node.libraryImport?.uri);

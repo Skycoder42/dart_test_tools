@@ -6,10 +6,8 @@ import 'package:path/path.dart' as path;
 import '../../tools/io.dart';
 import 'repo_metadata.dart';
 
-class RepoFileGenerator {
+class const RepoFileGenerator() {
   static final _whitespaceRegex = RegExp(r'\s+');
-
-  const new();
 
   Future<void> call({
     required Directory repo,

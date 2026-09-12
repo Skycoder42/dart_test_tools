@@ -23,12 +23,9 @@ base mixin NfpmConfig
   late final packageType = inputContext(WorkflowInputs.packageType);
 }
 
-class NfpmBuilder implements StepBuilder {
+class const NfpmBuilder({required final NfpmConfig config})
+    implements StepBuilder {
   static final artifactNameOutput = DeployArtifactBuilder.artifactNameOutput;
-
-  final NfpmConfig config;
-
-  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

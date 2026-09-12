@@ -9,22 +9,18 @@ import '../../types/job.dart';
 import '../steps/release_builder.dart';
 import '../steps/trigger_deploy_builder.dart';
 
-final class ReleaseJobConfig extends JobConfig
+final class ReleaseJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         WorkingDirectoryConfig,
         ReleaseEntryConfig,
         TriggerDeployConfig,
         ReleaseConfig {
   late final releaseRef = inputContext(WorkflowInputs.releaseRef);
-
-  new(super.inputContext, super.secretContext);
 }
 
-class ReleaseJobBuilder implements JobBuilder {
-  final ReleaseJobConfig config;
-
-  new({required this.config});
-
+class ReleaseJobBuilder({required final ReleaseJobConfig config})
+    implements JobBuilder {
   @override
   JobId get id => const JobId('release');
 

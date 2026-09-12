@@ -3,9 +3,7 @@ import 'package:meta/meta_meta.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 @Target({TargetKind.classType, TargetKind.constructor})
-class VersionConverter implements JsonConverter<Version, String> {
-  const new();
-
+class const VersionConverter() implements JsonConverter<Version, String> {
   @override
   Version fromJson(String json) => Version.parse(json);
 

@@ -12,11 +12,8 @@ base mixin ProjectSetupConfig on JobConfig, ProjectPrepareConfig {
   bool get withDartTestTools => false;
 }
 
-class ProjectSetupBuilder implements StepBuilder {
-  final ProjectSetupConfig config;
-
-  const new({required this.config});
-
+class const ProjectSetupBuilder({required final ProjectSetupConfig config})
+    implements StepBuilder {
   @override
   Iterable<Step> build() => [
     InstallToolsActionBuilder.step(withDartTestTools: config.withDartTestTools),

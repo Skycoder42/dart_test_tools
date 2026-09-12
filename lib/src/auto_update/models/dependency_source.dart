@@ -1,1 +1,7 @@
-enum DependencySource { root, hosted, sdk, git, path }
+enum DependencySource() {
+  root,
+  hosted,
+  sdk,
+  git,
+  path,
+}

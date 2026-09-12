@@ -16,10 +16,8 @@ base mixin UnitTestConfig
   late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
 }
 
-final class DartTestArgsMatrixProperty
+final class const DartTestArgsMatrixProperty()
     extends IMatrixProperty<IPlatformMatrixSelector> {
-  const new();
-
   @override
   String get name => 'dartTestArgs';
 
@@ -30,19 +28,12 @@ final class DartTestArgsMatrixProperty
   };
 }
 
-class UnitTestBuilder implements StepBuilder {
-  final UnitTestConfig config;
-  final PlatformMatrixProperty platform;
-  final DartTestArgsMatrixProperty dartTestArgs;
-  final LcovCleanCommandMatrixProperty lcovCleanCommand;
-
-  const new({
-    required this.config,
-    required this.platform,
-    required this.dartTestArgs,
-    required this.lcovCleanCommand,
-  });
-
+class const UnitTestBuilder({
+  required final UnitTestConfig config,
+  required final PlatformMatrixProperty platform,
+  required final DartTestArgsMatrixProperty dartTestArgs,
+  required final LcovCleanCommandMatrixProperty lcovCleanCommand,
+}) implements StepBuilder {
   @override
   Iterable<Step> build() => [
     ...ProjectSetupBuilder(config: config).build(),

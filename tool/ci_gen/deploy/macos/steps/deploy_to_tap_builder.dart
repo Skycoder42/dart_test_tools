@@ -20,14 +20,12 @@ base mixin DeployToTapConfig
   );
 }
 
-class DeployToTapBuilder implements StepBuilder {
+class const DeployToTapBuilder({
+  required final DeployToTapConfig config,
+  required final Expression releaseVersion,
+}) implements StepBuilder {
   static const generateCaskStepId = StepId('generate-cask');
   static final caskNameOutput = generateCaskStepId.output('caskName');
-
-  final DeployToTapConfig config;
-  final Expression releaseVersion;
-
-  const new({required this.config, required this.releaseVersion});
 
   @override
   Iterable<Step> build() => [

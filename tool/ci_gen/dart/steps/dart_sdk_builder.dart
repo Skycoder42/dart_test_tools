@@ -3,12 +3,10 @@ import '../../common/tools.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
-class DartSdkBuilder implements StepBuilder {
-  final Expression dartSdkVersion;
-  final Expression? ifExpression;
-
-  new({required this.dartSdkVersion, this.ifExpression});
-
+class DartSdkBuilder({
+  required final Expression dartSdkVersion,
+  final Expression? ifExpression,
+}) implements StepBuilder {
   @override
   Iterable<Step> build() => [
     Step.uses(

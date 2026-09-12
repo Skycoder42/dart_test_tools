@@ -4,9 +4,7 @@ import 'dart:io';
 
 import 'io.dart';
 
-class _GithubEnv {
-  const new();
-
+class const _GithubEnv() {
   Directory get runnerTemp {
     final runnerTemp = Platform.environment['RUNNER_TEMP'];
     return runnerTemp != null ? Directory(runnerTemp) : Directory.systemTemp;
@@ -63,9 +61,7 @@ class _GithubEnv {
   }
 }
 
-abstract base class Github {
-  new _();
-
+abstract base class Github._() {
   static const env = _GithubEnv();
 
   static void logDebug(String message) => print('::debug::$message');

@@ -11,16 +11,13 @@ base mixin PackageConfig on JobConfig, ProjectSetupConfig {
   late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
 }
 
-class PackageBuilder implements StepBuilder {
+class PackageBuilder({required final PackageConfig config})
+    implements StepBuilder {
   static const _getPackageNameStepId = StepId('get-package-name');
   static const _packageNameOutput = StepIdOutput(
     _getPackageNameStepId,
     'package-name',
   );
-
-  final PackageConfig config;
-
-  new({required this.config});
 
   @override
   Iterable<Step> build() => [

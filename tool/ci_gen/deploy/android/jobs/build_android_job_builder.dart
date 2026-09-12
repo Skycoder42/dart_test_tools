@@ -16,7 +16,8 @@ import '../../steps/flutter_build_builder.dart';
 import '../../steps/generate_build_number_builder.dart';
 import '../steps/build_android_app_builder.dart';
 
-final class BuildAndroidJobConfig extends JobConfig
+final class BuildAndroidJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
@@ -30,14 +31,11 @@ final class BuildAndroidJobConfig extends JobConfig
         FlutterSdkJobConfig {
   @override
   late final javaJdkVersion = inputContext(WorkflowInputs.javaJdkVersion);
-
-  new(super.inputContext, super.secretContext);
 }
 
-final class BuildAndroidJobBuilder extends SdkJobBuilder<BuildAndroidJobConfig>
+final class const BuildAndroidJobBuilder({required super.config})
+    extends SdkJobBuilder<BuildAndroidJobConfig>
     with FlutterSdkJobBuilderMixin<BuildAndroidJobConfig> {
-  const new({required super.config});
-
   @override
   JobId get id => const JobId('build_android');
 

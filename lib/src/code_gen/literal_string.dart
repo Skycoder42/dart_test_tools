@@ -1,9 +1,10 @@
 import 'package:code_builder/code_builder.dart';
 
-class LiteralString extends Expression {
+class LiteralString(void Function(LiteralStringBuilder) updates)
+    extends Expression {
   late final List<Code> _code;
 
-  new(void Function(LiteralStringBuilder) updates) {
+  this {
     final builder = LiteralStringBuilder();
     updates.call(builder);
     _code = builder.build();
@@ -22,7 +23,7 @@ class LiteralString extends Expression {
   }
 }
 
-class LiteralStringBuilder {
+class LiteralStringBuilder() {
   final _parts = <_Part>[];
 
   void addString(String string) => _parts.add(_StringPart(string));
@@ -37,16 +38,12 @@ class LiteralStringBuilder {
   ];
 }
 
-sealed class _Part {
+sealed class _Part() {
   Iterable<Code> get code;
 }
 
-class _StringPart extends _Part {
+class _StringPart(final String _string) extends _Part {
   final _dollarQuoteRegexp = RegExp(r"""(?=[$'\\])""");
-
-  final String _string;
-
-  new(this._string);
 
   @override
   Iterable<Code> get code sync* {
@@ -54,11 +51,7 @@ class _StringPart extends _Part {
   }
 }
 
-class _ParameterPart extends _Part {
-  final Expression _expression;
-
-  new(this._expression);
-
+class _ParameterPart(final Expression _expression) extends _Part {
   @override
   Iterable<Code> get code sync* {
     yield const Code(r'${');

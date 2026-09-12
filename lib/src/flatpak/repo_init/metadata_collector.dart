@@ -10,9 +10,7 @@ import '../../tools/github.dart';
 import '../../tools/io.dart';
 import 'repo_metadata.dart';
 
-class MetadataCollector {
-  const new();
-
+class const MetadataCollector() {
   Future<RepoMetadata> call({
     required Directory repo,
     required File metaInfo,

@@ -4,9 +4,7 @@ import 'package:path/path.dart';
 part 'analysis_options_ref.freezed.dart';
 
 @freezed
-sealed class AnalysisOptionsRef with _$AnalysisOptionsRef {
-  const new _();
-
+sealed class const AnalysisOptionsRef._() with _$AnalysisOptionsRef {
   const factory package({required String packageName, required String path}) =
       AnalysisOptionsPackageRef;
 

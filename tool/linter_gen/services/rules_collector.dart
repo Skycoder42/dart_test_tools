@@ -6,12 +6,9 @@ import '../models/analysis_options.dart';
 import '../models/analysis_options_ref.dart';
 import 'analysis_options_loader.dart';
 
-class RulesCollector {
-  @internal
-  final AnalysisOptionsLoader analysisOptionsLoader;
-
-  new({required this.analysisOptionsLoader});
-
+class RulesCollector({
+  @internal required final AnalysisOptionsLoader analysisOptionsLoader,
+}) {
   Future<Map<String, bool>> collectRules(
     List<AnalysisOptionsRef> analysisOptionsRefs, {
     Directory? relativeTo,

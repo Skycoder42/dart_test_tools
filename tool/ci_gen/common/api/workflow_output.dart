@@ -13,7 +13,7 @@ sealed class WorkflowOutput with _$WorkflowOutput {
       _WorkflowOutput;
 }
 
-class WorkflowOutputContext {
+class WorkflowOutputContext() {
   final _outputs = <String, Output>{};
 
   void add(WorkflowOutput output, JobIdOutput value) => _outputs.update(

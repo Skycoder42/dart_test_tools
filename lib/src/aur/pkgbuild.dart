@@ -7,14 +7,12 @@ part 'pkgbuild.freezed.dart';
 
 @internal
 @freezed
-sealed class Pkgbuild with _$Pkgbuild {
+sealed class const Pkgbuild._() with _$Pkgbuild {
   const factory({
     required String maintainer,
     required Map<String, PkgProperty> properties,
     required Map<String, PkgFunction> functions,
   }) = _Pkgbuild;
-
-  const new _();
 
   String encode() =>
       '''
@@ -27,7 +25,7 @@ ${functions.encode()}
 
 @internal
 @freezed
-sealed class PkgProperty with _$PkgProperty {
+sealed class const PkgProperty._() with _$PkgProperty {
   const factory(Object? value) = _Single;
 
   const factory interpolate(String value) = _Interpolate;
@@ -47,8 +45,6 @@ sealed class PkgProperty with _$PkgProperty {
     skipEmpty: skipEmpty,
     multiLine: multiLine,
   );
-
-  const new _();
 
   bool get isEmpty => switch (this) {
     _Single(:final value) => value == null,
@@ -84,10 +80,8 @@ extension PkgPropertyMapX on Map<String, PkgProperty> {
 
 @internal
 @freezed
-sealed class PkgFunction with _$PkgFunction {
+sealed class const PkgFunction._() with _$PkgFunction {
   const factory(List<String> commands) = _PkgFunction;
-
-  const new _();
 
   String encode(String name) =>
       '''

@@ -2,11 +2,8 @@ import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../api/step_builder.dart';
 
-class ValidateInputsBuilder implements StepBuilder {
-  final Map<String, Expression> inputs;
-
-  const new(this.inputs);
-
+class const ValidateInputsBuilder(final Map<String, Expression> inputs)
+    implements StepBuilder {
   @override
   Iterable<Step> build() => [
     for (final MapEntry(key: name, value: input) in inputs.entries)

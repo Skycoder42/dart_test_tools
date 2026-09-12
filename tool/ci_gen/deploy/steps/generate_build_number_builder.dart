@@ -9,14 +9,12 @@ base mixin GenerateBuildNumberConfig on JobConfig, WorkingDirectoryConfig {
   late final buildNumberArgs = inputContext(WorkflowInputs.buildNumberArgs);
 }
 
-class GenerateBuildNumberBuilder implements StepBuilder {
+class const GenerateBuildNumberBuilder({
+  required final GenerateBuildNumberConfig config,
+  final bool asEnv = false,
+}) implements StepBuilder {
   static const stepId = StepId('generateBuildNumber');
   static final buildNumberOutput = stepId.output('buildNumber');
-
-  final GenerateBuildNumberConfig config;
-  final bool asEnv;
-
-  const new({required this.config, this.asEnv = false});
 
   @override
   Iterable<Step> build() => [

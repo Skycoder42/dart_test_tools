@@ -9,18 +9,13 @@ import '../models/analysis_options_ref.dart';
 import 'analysis_options_loader.dart';
 import 'analysis_options_writer.dart';
 
-class KnownRulesLoader {
+class KnownRulesLoader({
+  required final AnalysisOptionsLoader analysisOptionsLoader,
+  required final AnalysisOptionsWriter analysisOptionsWriter,
+}) {
   static final _rulesPageUri = Uri.https('dart.dev', '/tools/linter-rules/all');
 
-  final AnalysisOptionsLoader analysisOptionsLoader;
-  final AnalysisOptionsWriter analysisOptionsWriter;
-
   Set<String>? _cachedNewRules;
-
-  new({
-    required this.analysisOptionsLoader,
-    required this.analysisOptionsWriter,
-  });
 
   Future<Set<String>> loadNewRules() async {
     if (_cachedNewRules case final rules?) {

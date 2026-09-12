@@ -14,16 +14,14 @@ import 'models/pub/outdated/outdated_info.dart';
 import 'models/pub/workspace/workspaces.dart';
 
 @internal
-class PubWrapper {
+class PubWrapper(
+  final Directory workingDirectory, {
+  required final bool isFlutter,
+}) {
   static const flutterTestPackageName = 'flutter_test';
   static const buildRunnerPackageName = 'build_runner';
 
-  final Directory workingDirectory;
-  final bool isFlutter;
-
   String get _executable => isFlutter ? 'flutter' : 'dart';
-
-  new(this.workingDirectory, {required this.isFlutter});
 
   static Future<PubWrapper> create(
     Directory workingDirectory, {

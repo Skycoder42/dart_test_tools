@@ -12,9 +12,7 @@ import 'jobs/deploy_android_job_builder.dart';
 /// The bundle artifact is auto-linked to `build-android` via the convention
 /// default of the `artifactName` input. Gate the invocation on a created
 /// release with a job-level `if:` in the calling workflow.
-class DeployAndroidWorkflow implements WorkflowBuilder {
-  const new();
-
+class const DeployAndroidWorkflow() implements WorkflowBuilder {
   @override
   String get name => 'deploy-android';
 

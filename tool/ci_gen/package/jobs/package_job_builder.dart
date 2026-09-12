@@ -8,23 +8,21 @@ import '../../types/id.dart';
 import '../../types/job.dart';
 import '../steps/package_builder.dart';
 
-final class PackageJobConfig extends JobConfig
+final class PackageJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
         ProjectPrepareConfig,
         ProjectSetupConfig,
         PackageConfig,
-        DartSdkJobConfig {
-  new(super.inputContext, super.secretContext);
-}
+        DartSdkJobConfig;
 
-final class PackageJobBuilder extends SdkJobBuilder<PackageJobConfig>
+final class PackageJobBuilder({required super.config})
+    extends SdkJobBuilder<PackageJobConfig>
     with DartSdkJobBuilderMixin<PackageJobConfig> {
   @override
   JobId get id => const JobId('package');
-
-  new({required super.config});
 
   @override
   Job build() => Job(

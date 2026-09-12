@@ -13,9 +13,7 @@ import 'jobs/deploy_macos_job_builder.dart';
 /// only the `version` input (the released version) rather than a build
 /// artifact. Gate the invocation on a created release with a job-level `if:` in
 /// the calling workflow.
-class DeployMacosWorkflow implements WorkflowBuilder {
-  const new();
-
+class const DeployMacosWorkflow() implements WorkflowBuilder {
   @override
   String get name => 'deploy-macos';
 

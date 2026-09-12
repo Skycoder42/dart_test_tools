@@ -2,11 +2,8 @@ import '../../common/api/step_builder.dart';
 import '../../types/expression.dart';
 import '../../types/step.dart';
 
-class FlutterAuthBuilder implements StepBuilder {
-  final Expression ifExpression;
-
-  new({required this.ifExpression});
-
+class FlutterAuthBuilder({required final Expression ifExpression})
+    implements StepBuilder {
   @override
   Iterable<Step> build() => [
     Step.run(

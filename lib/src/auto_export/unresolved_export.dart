@@ -10,11 +10,9 @@ import 'auto_export_config.dart';
 part 'unresolved_export.freezed.dart';
 
 @freezed
-sealed class UnresolvedExport with _$UnresolvedExport {
+sealed class const UnresolvedExport._() with _$UnresolvedExport {
   const factory glob(FileSystemEntity fse) = UnresolvedGlobExport;
   const factory single(SingleExportDefinition export) = UnresolvedSimpleExport;
-
-  const new _();
 
   Uri get uri => switch (this) {
     UnresolvedGlobExport(:final fse) => fse.uri,

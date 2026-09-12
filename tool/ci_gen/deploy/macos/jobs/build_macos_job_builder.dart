@@ -15,7 +15,8 @@ import '../../steps/flutter_build_builder.dart';
 import '../../steps/generate_build_number_builder.dart';
 import '../steps/build_macos_dmg_builder.dart';
 
-final class BuildMacosJobConfig extends JobConfig
+final class BuildMacosJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
@@ -26,14 +27,11 @@ final class BuildMacosJobConfig extends JobConfig
         ResolveArtifactPrefixConfig,
         BuildAppConfig,
         BuildMacosDmgConfig,
-        FlutterSdkJobConfig {
-  new(super.inputContext, super.secretContext);
-}
+        FlutterSdkJobConfig;
 
-final class BuildMacosJobBuilder extends SdkJobBuilder<BuildMacosJobConfig>
+final class const BuildMacosJobBuilder({required super.config})
+    extends SdkJobBuilder<BuildMacosJobConfig>
     with FlutterSdkJobBuilderMixin<BuildMacosJobConfig> {
-  const new({required super.config});
-
   @override
   JobId get id => const JobId('build_macos');
 

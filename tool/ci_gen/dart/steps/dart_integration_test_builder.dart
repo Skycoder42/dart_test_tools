@@ -29,10 +29,8 @@ base mixin DartIntegrationTestConfig on JobConfig, ProjectSetupConfig {
   late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
 }
 
-final class DartTestArgsMatrixProperty
+final class const DartTestArgsMatrixProperty()
     extends IMatrixProperty<IPlatformMatrixSelector> {
-  const new();
-
   @override
   String get name => 'dartTestArgs';
 
@@ -43,18 +41,12 @@ final class DartTestArgsMatrixProperty
   };
 }
 
-class DartIntegrationTestBuilder implements StepBuilder {
+class const DartIntegrationTestBuilder({
+  required final DartIntegrationTestConfig config,
+  required final PlatformMatrixProperty platform,
+  required final DartTestArgsMatrixProperty dartTestArgs,
+}) implements StepBuilder {
   static const testSetupCacheStepId = StepId('test-setup-cache');
-
-  final DartIntegrationTestConfig config;
-  final PlatformMatrixProperty platform;
-  final DartTestArgsMatrixProperty dartTestArgs;
-
-  const new({
-    required this.config,
-    required this.platform,
-    required this.dartTestArgs,
-  });
 
   @override
   Iterable<Step> build() => [

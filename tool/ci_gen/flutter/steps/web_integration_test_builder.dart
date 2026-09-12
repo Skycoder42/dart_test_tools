@@ -9,12 +9,10 @@ import 'prepare_integration_test_builder.dart';
 
 base mixin WebIntegrationTestConfig on JobConfig, CommonIntegrationTestConfig;
 
-class WebIntegrationTestBuilder implements StepBuilder {
+class const WebIntegrationTestBuilder({
+  required final WebIntegrationTestConfig config,
+}) implements StepBuilder {
   static const testSetupCacheStepId = StepId('test-setup-cache');
-
-  final WebIntegrationTestConfig config;
-
-  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

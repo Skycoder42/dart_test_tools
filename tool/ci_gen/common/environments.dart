@@ -1,6 +1,4 @@
-abstract base class Environments {
-  new _();
-
+abstract base class Environments._() {
   static const pubDeploy = 'pub-deploy';
   static const googlePlay = 'google-play';
   static const flatpak = 'flatpak';

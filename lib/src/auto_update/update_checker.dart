@@ -8,11 +8,7 @@ import 'models/pub/outdated/package_info.dart';
 import 'pub_wrapper.dart';
 import 'sdk_iterator.dart';
 
-class UpdateChecker {
-  final bool flutterCompat;
-
-  const new({required this.flutterCompat});
-
+class const UpdateChecker({required final bool flutterCompat}) {
   Future<void> call(Directory targetDirectory) async {
     final pub = await PubWrapper.create(
       targetDirectory,

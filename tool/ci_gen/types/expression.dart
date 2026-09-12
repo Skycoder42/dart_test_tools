@@ -5,7 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'expression.freezed.dart';
 
 @freezed
-sealed class Expression with _$Expression {
+sealed class const Expression._() with _$Expression {
   static const empty = Expression.literal('');
   static const null$ = Expression('null');
 
@@ -24,8 +24,6 @@ sealed class Expression with _$Expression {
 
   factory invoke(String name, [Iterable<Expression>? params]) =>
       Expression('$name(${params?.map((p) => p.value).join(', ') ?? ''})');
-
-  const new _();
 
   dynamic get value => switch (this) {
     _Expression(:final value) => value,
@@ -75,14 +73,12 @@ sealed class Expression with _$Expression {
 }
 
 @freezed
-sealed class ExpressionOrValue with _$ExpressionOrValue {
+sealed class const ExpressionOrValue._() with _$ExpressionOrValue {
   static const empty = ExpressionOrValue.value('');
 
   const factory expression(Expression expression) = ExpressionOrValueExpression;
 
   const factory value(dynamic value) = ExpressionOrValueValue;
-
-  const new _();
 
   bool get isExpression => this is ExpressionOrValueExpression;
 
@@ -107,9 +103,8 @@ sealed class ExpressionOrValue with _$ExpressionOrValue {
   String toString() => asValue.toString();
 }
 
-class ExpressionConverter implements JsonConverter<Expression?, dynamic> {
-  const new();
-
+class const ExpressionConverter()
+    implements JsonConverter<Expression?, dynamic> {
   @override
   Expression? fromJson(dynamic json) =>
       json != null ? Expression(json as String) : null;

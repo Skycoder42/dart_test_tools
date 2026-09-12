@@ -12,17 +12,11 @@ base mixin TriggerDeployConfig on JobConfig {
   late final tagPrefix = inputContext(WorkflowInputs.tagPrefix);
 }
 
-class TriggerDeployBuilder implements StepBuilder {
-  final TriggerDeployConfig config;
-  final Expression versionUpdate;
-  final Expression versionOutput;
-
-  new({
-    required this.config,
-    required this.versionUpdate,
-    required this.versionOutput,
-  });
-
+class TriggerDeployBuilder({
+  required final TriggerDeployConfig config,
+  required final Expression versionUpdate,
+  required final Expression versionOutput,
+}) implements StepBuilder {
   @override
   Iterable<Step> build() => [
     Step.uses(

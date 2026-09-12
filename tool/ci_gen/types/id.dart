@@ -4,11 +4,7 @@ import 'expression.dart';
 
 part 'id.freezed.dart';
 
-sealed class Id {
-  final String id;
-
-  const new(this.id);
-
+sealed class const Id(final String id) {
   const factory step(String id) = StepId;
 
   const factory job(String id) = JobId;
@@ -40,9 +36,7 @@ class JobId extends Id {
 }
 
 @freezed
-sealed class IdOutput with _$IdOutput {
-  const new _();
-
+sealed class const IdOutput._() with _$IdOutput {
   const factory step(StepId stepId, String name) = StepIdOutput;
   const factory job(JobId jobId, String name) = JobIdOutput;
 
@@ -105,9 +99,7 @@ extension JobIdOutputX on JobIdOutput {
   JobId get id => jobId;
 }
 
-class IdOutputConverter implements JsonConverter<IdOutput, String> {
-  const new();
-
+class const IdOutputConverter() implements JsonConverter<IdOutput, String> {
   @override
   IdOutput fromJson(String json) {
     throw UnsupportedError('Cannot create a StepOutput from json!');

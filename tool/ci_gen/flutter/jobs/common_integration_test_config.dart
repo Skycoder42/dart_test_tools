@@ -17,7 +17,10 @@ base mixin CommonIntegrationTestConfig
   late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
 }
 
-base class CommonIntegrationTestJobConfig extends JobConfig
+base class CommonIntegrationTestJobConfig(
+  super.inputContext,
+  super.secretContext,
+) extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
@@ -25,6 +28,4 @@ base class CommonIntegrationTestJobConfig extends JobConfig
         ProjectSetupConfig,
         PrepareIntegrationTestConfig,
         CommonIntegrationTestConfig,
-        FlutterSdkJobConfig {
-  new(super.inputContext, super.secretContext);
-}
+        FlutterSdkJobConfig;

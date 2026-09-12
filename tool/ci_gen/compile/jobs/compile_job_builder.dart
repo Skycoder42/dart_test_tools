@@ -14,7 +14,8 @@ import '../../types/id.dart';
 import '../../types/job.dart';
 import '../steps/compile_builder.dart';
 
-final class CompileJobConfig extends JobConfig
+final class CompileJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
@@ -28,12 +29,10 @@ final class CompileJobConfig extends JobConfig
   late final needsFlutterSdk = ExpressionOrValue.expression(
     inputContext(WorkflowInputs.needsFlutterSdk),
   );
-
-  new(super.inputContext, super.secretContext);
 }
 
-final class CompileMatrix extends PlatformMatrix {
-  new() : super(DartPlatform.values.where((p) => !p.isWeb).toList());
+final class CompileMatrix() extends PlatformMatrix {
+  this : super(DartPlatform.values.where((p) => !p.isWeb).toList());
 
   ExecutableSuffixProperty get executableSuffix =>
       const ExecutableSuffixProperty();
@@ -49,7 +48,10 @@ final class CompileMatrix extends PlatformMatrix {
   ];
 }
 
-final class CompileJobBuilder extends SdkJobBuilder<CompileJobConfig>
+final class CompileJobBuilder({
+  @override required final Expression enabledPlatforms,
+  required super.config,
+}) extends SdkJobBuilder<CompileJobConfig>
     with
         DartSdkJobBuilderMixin<CompileJobConfig>,
         MatrixJobBuilderMixin<CompileMatrix, IPlatformMatrixSelector>,
@@ -59,11 +61,7 @@ final class CompileJobBuilder extends SdkJobBuilder<CompileJobConfig>
 
   JobIdOutput get artifactNameOutput => id.output('artifact-name');
 
-  @override
-  final Expression enabledPlatforms;
-
-  new({required this.enabledPlatforms, required super.config})
-    : matrix = CompileMatrix();
+  this : matrix = CompileMatrix();
 
   @override
   final CompileMatrix matrix;

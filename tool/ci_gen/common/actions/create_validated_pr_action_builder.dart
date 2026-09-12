@@ -9,7 +9,7 @@ import '../api/workflow_input.dart';
 import '../contexts.dart';
 import '../tools.dart';
 
-class CreateValidatedPrActionBuilder implements ActionBuilder {
+class const CreateValidatedPrActionBuilder() implements ActionBuilder {
   static const _actionName = 'create-validated-pr';
   static const _displayName = 'Create validated pull request';
   static const _prBranchNameInput = WorkflowInput(
@@ -84,8 +84,6 @@ class CreateValidatedPrActionBuilder implements ActionBuilder {
   static const createPrStepId = StepId('create-pull-request');
   static final pullRequestNumber = createPrStepId.output('pull-request-number');
   static final pullRequestBranch = createPrStepId.output('pull-request-branch');
-
-  const new();
 
   static Step step({
     StepId? id,

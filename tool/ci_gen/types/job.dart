@@ -9,11 +9,9 @@ import 'strategy.dart';
 part 'job.freezed.dart';
 part 'job.g.dart';
 
-class _StepOutputMapConverter
+class const _StepOutputMapConverter()
     implements
         JsonConverter<Map<JobIdOutput, StepIdOutput>?, Map<String, String>?> {
-  const new();
-
   @override
   Map<JobIdOutput, StepIdOutput>? fromJson(Map<String, String>? json) {
     if (json == null) {
@@ -36,9 +34,8 @@ class _StepOutputMapConverter
   }
 }
 
-class _NeedsConverter implements JsonConverter<Set<JobId>?, List<String>?> {
-  const new();
-
+class const _NeedsConverter()
+    implements JsonConverter<Set<JobId>?, List<String>?> {
   @override
   Set<JobId>? fromJson(List<String>? json) =>
       json != null ? {...json.map(JobId.fromJson)} : null;
@@ -72,9 +69,8 @@ sealed class Job with _$Job {
 
 typedef Jobs = Map<JobId, Job>;
 
-class JobsConverter implements JsonConverter<Jobs, Map<String, dynamic>> {
-  const new();
-
+class const JobsConverter()
+    implements JsonConverter<Jobs, Map<String, dynamic>> {
   @override
   Jobs fromJson(Map<String, dynamic> json) => json.map(
     (key, dynamic value) => MapEntry(JobId(key), Job.fromJson(json)),

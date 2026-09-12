@@ -1,6 +1,6 @@
 import '../../types/workflow.dart';
 
-abstract interface class WorkflowBuilder {
+abstract interface class WorkflowBuilder() {
   String get name;
 
   Workflow build();

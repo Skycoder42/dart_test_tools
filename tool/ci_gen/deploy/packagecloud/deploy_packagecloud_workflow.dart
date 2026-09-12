@@ -12,9 +12,7 @@ import 'jobs/deploy_packagecloud_job_builder.dart';
 /// The deb artifact is auto-linked to its producer via the convention default
 /// of the `artifactPrefix` input. Gate the invocation on a created release with
 /// a job-level `if:` in the calling workflow.
-class DeployPackagecloudWorkflow implements WorkflowBuilder {
-  const new();
-
+class const DeployPackagecloudWorkflow() implements WorkflowBuilder {
   @override
   String get name => 'deploy-packagecloud';
 

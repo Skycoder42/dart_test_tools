@@ -21,15 +21,12 @@ base mixin DeployAndroidConfig
   late final googlePlayKey = secretContext(WorkflowSecrets.googlePlayKey);
 }
 
-class DeployAndroidAppBuilder implements StepBuilder {
+class const DeployAndroidAppBuilder({required final DeployAndroidConfig config})
+    implements StepBuilder {
   static const detectPackageNameStepId = StepId('detectPackageName');
   static final packageNameOutput = detectPackageNameStepId.output(
     'packageName',
   );
-
-  final DeployAndroidConfig config;
-
-  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

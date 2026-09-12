@@ -8,7 +8,7 @@ part 'package_info.g.dart';
 
 @Freezed(toStringOverride: false)
 @internal
-sealed class PackageInfo with _$PackageInfo {
+sealed class const PackageInfo._() with _$PackageInfo {
   const factory({
     required String package,
     required DependencyKind kind,
@@ -22,8 +22,6 @@ sealed class PackageInfo with _$PackageInfo {
   }) = _PackageInfo;
 
   factory fromJson(Map<String, dynamic> json) => _$PackageInfoFromJson(json);
-
-  const new _();
 
   @override
   String toString() {

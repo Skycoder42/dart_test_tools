@@ -19,13 +19,10 @@ base mixin UpdateActionsConfig
   );
 }
 
-class UpdateActionsBuilder implements StepBuilder {
+class const UpdateActionsBuilder({required final UpdateActionsConfig config})
+    implements StepBuilder {
   static const _detectChangesId = StepId('detect_changes');
   static final _hasChangesOutput = _detectChangesId.output('has_changes');
-
-  final UpdateActionsConfig config;
-
-  const new({required this.config});
 
   @override
   Iterable<Step> build() sync* {

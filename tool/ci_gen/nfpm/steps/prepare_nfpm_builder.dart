@@ -2,9 +2,7 @@ import '../../common/actions/install_tools_action_builder.dart';
 import '../../common/api/step_builder.dart';
 import '../../types/step.dart';
 
-class PrepareNfpmBuilder implements StepBuilder {
-  const new();
-
+class const PrepareNfpmBuilder() implements StepBuilder {
   @override
   Iterable<Step> build() => [
     const Step.run(

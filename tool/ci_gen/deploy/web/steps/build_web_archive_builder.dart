@@ -31,11 +31,9 @@ base mixin BuildWebArchiveConfig on JobConfig, BuildAppConfig {
   IPlatformMatrixSelector get buildPlatform => FlutterPlatform.web;
 }
 
-class BuildWebArchiveBuilder implements StepBuilder {
-  final BuildWebArchiveConfig config;
-
-  const new({required this.config});
-
+class const BuildWebArchiveBuilder({
+  required final BuildWebArchiveConfig config,
+}) implements StepBuilder {
   @override
   Iterable<Step> build() => [
     ...BuildAppBuilder(

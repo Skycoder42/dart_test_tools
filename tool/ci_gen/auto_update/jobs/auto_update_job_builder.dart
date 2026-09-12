@@ -8,21 +8,18 @@ import '../../types/job.dart';
 import '../../types/runs_on.dart';
 import '../steps/auto_update_builder.dart';
 
-final class AutoUpdateJobConfig extends JobConfig
+final class AutoUpdateJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         SdkJobConfig,
         FlutterSdkJobConfig,
         WorkingDirectoryConfig,
-        AutoUpdateConfig {
-  new(super.inputContext, super.secretContext);
-}
+        AutoUpdateConfig;
 
-final class AutoUpdateJobBuilder extends SdkJobBuilder<AutoUpdateJobConfig>
-    with FlutterSdkJobBuilderMixin {
-  final JobIdOutput needsUpdate;
-
-  new({required this.needsUpdate, required super.config});
-
+final class AutoUpdateJobBuilder({
+  required final JobIdOutput needsUpdate,
+  required super.config,
+}) extends SdkJobBuilder<AutoUpdateJobConfig> with FlutterSdkJobBuilderMixin {
   @override
   JobId get id => const JobId('auto-update');
 

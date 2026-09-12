@@ -23,11 +23,9 @@ base mixin DeployWindowsInstallerConfig
   late final clientSecret = secretContext(WorkflowSecrets.clientSecret);
 }
 
-class DeployWindowsInstallerBuilder implements StepBuilder {
-  final DeployWindowsInstallerConfig config;
-
-  const new({required this.config});
-
+class const DeployWindowsInstallerBuilder({
+  required final DeployWindowsInstallerConfig config,
+}) implements StepBuilder {
   @override
   Iterable<Step> build() => [
     InstallToolsActionBuilder.step(withDartTestTools: false),

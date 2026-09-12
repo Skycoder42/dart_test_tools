@@ -12,9 +12,7 @@ import 'jobs/deploy_linux_job_builder.dart';
 /// The bundle artifacts are auto-linked to `build-linux` via the convention
 /// default of the `artifactPattern` input. Gate the invocation on a created
 /// release with a job-level `if:` in the calling workflow.
-class DeployLinuxWorkflow implements WorkflowBuilder {
-  const new();
-
+class const DeployLinuxWorkflow() implements WorkflowBuilder {
   @override
   String get name => 'deploy-linux';
 

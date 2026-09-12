@@ -19,14 +19,14 @@ import 'version_converter.dart';
 /// It does not build or run nfpm — a downstream pipeline job does that, which
 /// also resolves the remaining project-specific `${...}` placeholders left in
 /// the template from its own environment.
-class NfpmGenerator {
+class const NfpmGenerator([
+  final ChangelogConverter _changelogConverter = const ChangelogConverter(),
+]) {
   static final _licenseRegExp = RegExp('license', caseSensitive: false);
   static final _changelogRegExp = RegExp('change.*log', caseSensitive: false);
 
-  final ChangelogConverter _changelogConverter;
-
   /// Default constructor.
-  const new([this._changelogConverter = const ChangelogConverter()]);
+  this;
 
   /// Generates the nfpm configuration and changelog.
   ///

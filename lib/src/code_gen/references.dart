@@ -112,7 +112,7 @@ extension ReferenceX on Reference {
   };
 }
 
-sealed class CoreTypes {
+sealed class CoreTypes() {
   // core
   static final $dynamic = TypeReference(
     (b) => b
@@ -521,12 +521,12 @@ sealed class CoreTypes {
   }
 }
 
-sealed class CoreConstants {
+sealed class CoreConstants() {
   static const override = Reference('override', 'dart:core');
   static const deprecated = Reference('deprecated', 'dart:core');
 }
 
-sealed class CoreFunctions {
+sealed class CoreFunctions() {
   static const pragma = Reference('pragma', 'dart:core');
   static const identical = Reference('identical', 'dart:core');
   static const identityHashCode = Reference('identityHashCode', 'dart:core');

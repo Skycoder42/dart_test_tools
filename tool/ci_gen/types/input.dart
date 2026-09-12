@@ -5,7 +5,11 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'input.freezed.dart';
 part 'input.g.dart';
 
-enum Type { boolean, number, string }
+enum Type() {
+  boolean,
+  number,
+  string,
+}
 
 @freezed
 sealed class Input with _$Input {

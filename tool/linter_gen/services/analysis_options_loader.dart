@@ -9,7 +9,7 @@ import '../models/analysis_options.dart';
 import '../models/analysis_options_ref.dart';
 import '../models/pub_deps.dart';
 
-class AnalysisOptionsLoader {
+class AnalysisOptionsLoader() {
   final _pubCacheDir = Directory(
     join(
       Platform.environment['PUB_CACHE'] ??

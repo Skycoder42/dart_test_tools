@@ -9,24 +9,22 @@ import '../../types/job.dart';
 import '../steps/nfpm_builder.dart';
 import '../steps/prepare_nfpm_builder.dart';
 
-final class BuildNfpmJobConfig extends JobConfig
+final class BuildNfpmJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
         DartSdkJobConfig,
         ResolveArtifactPrefixConfig,
-        NfpmConfig {
-  new(super.inputContext, super.secretContext);
-}
+        NfpmConfig;
 
-final class BuildNfpmJobBuilder extends SdkJobBuilder<BuildNfpmJobConfig>
+final class BuildNfpmJobBuilder({required super.config})
+    extends SdkJobBuilder<BuildNfpmJobConfig>
     with DartSdkJobBuilderMixin<BuildNfpmJobConfig> {
   @override
   JobId get id => const JobId('build_nfpm');
 
   JobIdOutput get artifactNameOutput => id.output('artifact-name');
-
-  new({required super.config});
 
   @override
   Job build() => Job(

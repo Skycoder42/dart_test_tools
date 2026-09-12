@@ -3,19 +3,16 @@ import '../../common/jobs/analyze_job_builder.dart';
 import '../../types/step.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-final class FlutterAnalyzeJobConfig extends AnalyzeJobConfig
+final class FlutterAnalyzeJobConfig(super.inputContext, super.secretContext)
+    extends AnalyzeJobConfig
     with FlutterSdkJobConfig {
   @override
   late final javaJdkVersion = inputContext(WorkflowInputs.javaJdkVersion);
-
-  new(super.inputContext, super.secretContext);
 }
 
-final class FlutterAnalyzeJobBuilder
+final class const FlutterAnalyzeJobBuilder({required super.config})
     extends AnalyzeJobBuilder<FlutterAnalyzeJobConfig>
     with FlutterSdkJobBuilderMixin<FlutterAnalyzeJobConfig> {
-  const new({required super.config});
-
   @override
   Iterable<Step> buildAnalyzeSteps() => [
     Step.run(

@@ -6,12 +6,10 @@ import 'aur_options.dart';
 import 'aur_options_loader.dart';
 import 'pkgbuild.dart';
 
-class PkgBuildGenerator {
+class const PkgBuildGenerator({
+  final AurOptionsLoader aurOptionsLoader = const AurOptionsLoader(),
+}) {
   static const _supportedArchs = ['x86_64'];
-
-  final AurOptionsLoader aurOptionsLoader;
-
-  const new({this.aurOptionsLoader = const AurOptionsLoader()});
 
   Future<void> generatePkgbuild({
     required Directory sourceDirectory,

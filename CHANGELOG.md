@@ -4,10 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [7.3.3] - 2026-09-12
 ### Added
 - AI agent skills bundled under `skills/`, installable with `dart run skills@ get`
 - `dart-test-tools-auto-update` skill to run or resume an automatic dependency update locally
+
+### Changed
+- Updated min sdk version to ^3.13.0
+- Updated dependencies
 
 ## [7.3.2] - 2026-08-28
 ### Fixed
@@ -553,7 +557,7 @@ have been added:
 ### Added
 - Initial release
 
-[Unreleased]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.2...vHEAD
+[7.3.3]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.2...v7.3.3
 [7.3.2]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.1...v7.3.2
 [7.3.1]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.0...v7.3.1
 [7.3.0]: https://github.com/Skycoder42/dart_test_tools/compare/v7.2.10...v7.3.0

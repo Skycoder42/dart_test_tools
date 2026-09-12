@@ -9,20 +9,16 @@ import '../../../types/runs_on.dart';
 import '../steps/deploy_to_pages_builder.dart';
 import '../steps/with_gpg_key.dart';
 
-final class DeployLinuxJobConfig extends JobConfig
+final class DeployLinuxJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with WithGpgKeyConfig, DeployToPagesConfig {
   late final flatpakPlatformImage = inputContext(
     WorkflowInputs.flatpakPlatformImage,
   );
-
-  new(super.inputContext, super.secretContext);
 }
 
-final class DeployLinuxJobBuilder implements JobBuilder {
-  final DeployLinuxJobConfig config;
-
-  new({required this.config});
-
+final class DeployLinuxJobBuilder({required final DeployLinuxJobConfig config})
+    implements JobBuilder {
   @override
   JobId get id => const JobId('deploy_linux');
 

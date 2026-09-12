@@ -29,20 +29,13 @@ base mixin BuildAppConfig
   bool get releaseMode => true;
 }
 
-class BuildAppBuilder implements StepBuilder {
+class const BuildAppBuilder({
+  required final BuildAppConfig config,
+  final List<Step> preBuildSteps = const [],
+  final List<String> cleanupPaths = const [],
+  final List<Step> packageSteps = const [],
+}) implements StepBuilder {
   static final artifactNameOutput = DeployArtifactBuilder.artifactNameOutput;
-
-  final BuildAppConfig config;
-  final List<Step> preBuildSteps;
-  final List<String> cleanupPaths;
-  final List<Step> packageSteps;
-
-  const new({
-    required this.config,
-    this.preBuildSteps = const [],
-    this.cleanupPaths = const [],
-    this.packageSteps = const [],
-  });
 
   @override
   Iterable<Step> build() => [

@@ -8,21 +8,18 @@ import '../../types/job.dart';
 import '../../types/runs_on.dart';
 import '../steps/update_actions_builder.dart';
 
-final class UpdateActionsJobConfig extends JobConfig
+final class UpdateActionsJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         SdkJobConfig,
         DartSdkJobConfig,
         WorkingDirectoryConfig,
         ProjectPrepareConfig,
-        UpdateActionsConfig {
-  new(super.inputContext, super.secretContext);
-}
+        UpdateActionsConfig;
 
-final class UpdateActionsJobBuilder
+final class const UpdateActionsJobBuilder({required super.config})
     extends SdkJobBuilder<UpdateActionsJobConfig>
     with DartSdkJobBuilderMixin<UpdateActionsJobConfig> {
-  const new({required super.config});
-
   @override
   JobId get id => const JobId('update-actions');
 

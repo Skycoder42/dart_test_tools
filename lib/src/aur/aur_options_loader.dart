@@ -8,11 +8,9 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 import 'aur_options.dart';
 
 @internal
-class AurOptionsLoader {
+class const AurOptionsLoader() {
   static final _changelogRegex = RegExp('change.*log', caseSensitive: false);
   static final _licenseRegexp = RegExp('license', caseSensitive: false);
-
-  const new();
 
   Future<PubspecWithAur> loadAurOptions(Directory projectDirectory) async {
     final pubspecFile = File.fromUri(

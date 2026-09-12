@@ -7,9 +7,7 @@ import '../types/workflow_call.dart';
 import 'jobs/auto_update_job_builder.dart';
 import 'jobs/check_update_required_job_builder.dart';
 
-class AutoUpdateWorkflow implements WorkflowBuilder {
-  const new();
-
+class const AutoUpdateWorkflow() implements WorkflowBuilder {
   @override
   String get name => 'auto-update';
 

@@ -7,11 +7,9 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 import '../../code_gen/dart_generator_mixin.dart';
 import '../../code_gen/references.dart';
 
-class PackageMetadataBuilder extends Builder with DartGeneratorMixin {
-  final BuilderOptions options;
-
-  new(this.options);
-
+class PackageMetadataBuilder(final BuilderOptions options)
+    extends Builder
+    with DartGeneratorMixin {
   @override
   Map<String, List<String>> get buildExtensions => const {
     'pubspec.yaml': ['lib/gen/package_metadata.dart'],

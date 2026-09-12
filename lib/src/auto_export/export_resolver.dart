@@ -14,9 +14,7 @@ import 'auto_export_config.dart';
 import 'unresolved_export.dart';
 import 'yaml_serializable.dart';
 
-class ExportResolver {
-  const new();
-
+class const ExportResolver() {
   Stream<SingleExportDefinition> resolveExports(
     Directory relativeTo,
     Iterable<ExportDefinition> exports,

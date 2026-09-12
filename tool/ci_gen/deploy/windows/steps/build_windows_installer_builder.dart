@@ -20,11 +20,9 @@ base mixin BuildWindowsInstallerConfig on JobConfig, BuildAppConfig {
   IPlatformMatrixSelector get buildPlatform => FlutterPlatform.windows;
 }
 
-class BuildWindowsInstallerBuilder implements StepBuilder {
-  final BuildWindowsInstallerConfig config;
-
-  const new({required this.config});
-
+class const BuildWindowsInstallerBuilder({
+  required final BuildWindowsInstallerConfig config,
+}) implements StepBuilder {
   @override
   Iterable<Step> build() => [
     ...BuildAppBuilder(

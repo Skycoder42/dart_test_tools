@@ -15,51 +15,39 @@ import 'resolve_artifact_prefix_builder.dart';
 ///
 /// [config] supplies the parts that are uniform across jobs (`artifactPrefix`,
 /// `workingDirectory`); the constructor parameters supply what varies per job.
-class DeployArtifactBuilder implements StepBuilder {
-  static const exportStepId = StepId('export-artifact-name');
-  static final artifactNameOutput = exportStepId.output('artifact-name');
-
-  final ResolveArtifactPrefixConfig config;
+class const DeployArtifactBuilder({
+  required final ResolveArtifactPrefixConfig config,
 
   /// The artifact [ArtifactType] or an `Expression` resolving to one.
-  final Object type;
+  required final Object type,
 
   /// The platform (`IPlatformMatrixSelector`) or an `Expression`.
-  final Object platform;
+  required final Object platform,
 
   /// The optional [ArtifactArch] or an `Expression`.
-  final Object? arch;
+  final Object? arch,
 
   /// The path (glob) of the files to upload.
-  final String path;
+  required final String path,
 
   /// The artifact retention in days.
-  final int retentionDays;
+  final int retentionDays = 1,
 
   /// The optional upload compression level (used for already-compressed files).
-  final int? compressionLevel;
+  final int? compressionLevel,
 
   /// Whether the exported name is the wildcard [Artifacts.pattern] instead of
   /// the exact upload name. Required for matrix jobs, whose concrete name
   /// varies per row and would otherwise be non-deterministic as a job output.
-  final bool exportAsPattern;
+  final bool exportAsPattern = false,
 
   /// Whether to emit the [ResolveArtifactPrefixBuilder] step. Set to `false` if
   /// the enclosing job already emits it (e.g. a job that also downloads an
   /// artifact by the resolved prefix before uploading).
-  final bool resolvePrefix;
-
-  const new({
-    required this.config,
-    required this.type,
-    required this.platform,
-    this.arch,
-    required this.path,
-    this.retentionDays = 1,
-    this.compressionLevel,
-    this.exportAsPattern = false,
-    this.resolvePrefix = true,
-  });
+  final bool resolvePrefix = true,
+}) implements StepBuilder {
+  static const exportStepId = StepId('export-artifact-name');
+  static final artifactNameOutput = exportStepId.output('artifact-name');
 
   @override
   Iterable<Step> build() {

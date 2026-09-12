@@ -9,7 +9,7 @@ import '../api/workflow_input.dart';
 import '../contexts.dart';
 import '../globals.dart';
 
-class InstallToolsActionBuilder implements ActionBuilder {
+class const InstallToolsActionBuilder() implements ActionBuilder {
   static const _actionName = 'install-tools';
   static const _withDartTestToolsInput = WorkflowInput(
     name: 'withDartTestTools',
@@ -19,8 +19,6 @@ class InstallToolsActionBuilder implements ActionBuilder {
       description: 'Also install dart_test_tools as global dart tool.',
     ),
   );
-
-  const new();
 
   static Step step({
     StepId? id,

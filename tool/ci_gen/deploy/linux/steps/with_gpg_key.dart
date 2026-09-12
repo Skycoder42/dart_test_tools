@@ -11,12 +11,10 @@ base mixin WithGpgKeyConfig on JobConfig {
   late final gpgKeyId = secretContext(WorkflowSecrets.gpgKeyId(requireGpgKey));
 }
 
-class WithGpgKey implements StepBuilder {
-  final WithGpgKeyConfig config;
-  final Steps steps;
-
-  const new({required this.config, required this.steps});
-
+class const WithGpgKey({
+  required final WithGpgKeyConfig config,
+  required final Steps steps,
+}) implements StepBuilder {
   @override
   Iterable<Step> build() => [
     Step.run(

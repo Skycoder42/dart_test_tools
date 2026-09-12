@@ -6,9 +6,7 @@ import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'jobs/docker_job_builder.dart';
 
-class DockerWorkflow implements WorkflowBuilder {
-  const new();
-
+class const DockerWorkflow() implements WorkflowBuilder {
   @override
   String get name => 'docker';
 

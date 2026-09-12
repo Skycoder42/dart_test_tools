@@ -17,12 +17,10 @@ base mixin IosIntegrationTestConfig
         InstallXcodeSigningConfig,
         SetupGCloudConfig;
 
-class IosIntegrationTestBuilder implements StepBuilder {
+class const IosIntegrationTestBuilder({
+  required final IosIntegrationTestConfig config,
+}) implements StepBuilder {
   static const testSetupCacheStepId = StepId('test-setup-cache');
-
-  final IosIntegrationTestConfig config;
-
-  const new({required this.config});
 
   @override
   Iterable<Step> build() => [

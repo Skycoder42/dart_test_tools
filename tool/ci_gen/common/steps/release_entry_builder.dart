@@ -13,7 +13,13 @@ base mixin ReleaseEntryConfig on JobConfig, WorkingDirectoryConfig {
   late final tagPrefix = inputContext(WorkflowInputs.tagPrefix);
 }
 
-class ReleaseEntryBuilder implements StepBuilder {
+class const ReleaseEntryBuilder({
+  required final ReleaseEntryConfig config,
+  required final Expression versionUpdate,
+  final String? changelogExtra,
+  final String? files,
+  final bool failOnUnmatchedFiles = true,
+}) implements StepBuilder {
   static const releaseContentStepId = StepId('release_content');
   static final releaseContentTagName = releaseContentStepId.output('tag_name');
   static final releaseContentReleaseName = releaseContentStepId.output(
@@ -22,20 +28,6 @@ class ReleaseEntryBuilder implements StepBuilder {
   static final releaseContentBodyPath = releaseContentStepId.output(
     'body_path',
   );
-
-  final ReleaseEntryConfig config;
-  final Expression versionUpdate;
-  final String? changelogExtra;
-  final String? files;
-  final bool failOnUnmatchedFiles;
-
-  const new({
-    required this.config,
-    required this.versionUpdate,
-    this.changelogExtra,
-    this.files,
-    this.failOnUnmatchedFiles = true,
-  });
 
   @override
   Iterable<Step> build() => [

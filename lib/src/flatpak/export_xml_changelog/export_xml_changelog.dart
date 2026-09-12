@@ -5,9 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:markdown/markdown.dart';
 import 'package:xml/xml.dart';
 
-class ExportXmlChangelog {
-  const new();
-
+class const ExportXmlChangelog() {
   Future<void> call({required File outFile, bool isMetadataXml = true}) async {
     final changelogFile = File('CHANGELOG.md');
     final changelog = parseChangelog(await changelogFile.readAsString());
@@ -90,10 +88,10 @@ class ExportXmlChangelog {
   }
 }
 
-class _DescriptionVisitor extends NodeVisitor {
+class _DescriptionVisitor() extends NodeVisitor {
   XmlElement _currentElement;
 
-  new() : _currentElement = XmlElement.tag('li');
+  this : _currentElement = XmlElement.tag('li');
 
   String toXml() => _currentElement.toXmlString();
 

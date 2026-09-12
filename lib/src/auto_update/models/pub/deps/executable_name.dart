@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'executable_name.freezed.dart';
 
 @Freezed(fromJson: false, toJson: false)
-sealed class ExecutableName with _$ExecutableName {
+sealed class const ExecutableName._() with _$ExecutableName {
   const factory root(String name) = RootExecutableName;
   const factory package(String package, String name) = PackageExecutableName;
 
@@ -19,8 +19,6 @@ sealed class ExecutableName with _$ExecutableName {
       return ExecutableName.package(json, json);
     }
   }
-
-  const new _();
 
   String toJson() => switch (this) {
     RootExecutableName(:final name) => ':$name',

@@ -12,7 +12,7 @@ import '../../types/expression.dart';
 import '../../types/id.dart';
 import '../../types/step.dart';
 
-enum ArchiveType {
+enum ArchiveType() {
   tar,
   zip;
 
@@ -32,9 +32,8 @@ base mixin CompileConfig
   bool get releaseMode => true;
 }
 
-final class ExecutableSuffixProperty extends IMatrixProperty<DartPlatform> {
-  const new();
-
+final class const ExecutableSuffixProperty()
+    extends IMatrixProperty<DartPlatform> {
   @override
   String get name => 'executableSuffix';
 
@@ -45,9 +44,8 @@ final class ExecutableSuffixProperty extends IMatrixProperty<DartPlatform> {
   };
 }
 
-final class ArchiveTypeMatrixProperty extends IMatrixProperty<DartPlatform> {
-  const new();
-
+final class const ArchiveTypeMatrixProperty()
+    extends IMatrixProperty<DartPlatform> {
   @override
   String get name => 'archiveType';
 
@@ -58,22 +56,15 @@ final class ArchiveTypeMatrixProperty extends IMatrixProperty<DartPlatform> {
   };
 }
 
-class CompileBuilder implements StepBuilder {
+class CompileBuilder({
+  required final CompileConfig config,
+  required final PlatformMatrixProperty platform,
+  required final ExecutableSuffixProperty executableSuffix,
+  required final ArchiveTypeMatrixProperty archiveType,
+}) implements StepBuilder {
   static const detectArchiveNameId = StepId('detect-archive-name');
   static final archiveNameOutput = detectArchiveNameId.output('archive-name');
   static final artifactNameOutput = DeployArtifactBuilder.artifactNameOutput;
-
-  final CompileConfig config;
-  final PlatformMatrixProperty platform;
-  final ExecutableSuffixProperty executableSuffix;
-  final ArchiveTypeMatrixProperty archiveType;
-
-  new({
-    required this.config,
-    required this.platform,
-    required this.executableSuffix,
-    required this.archiveType,
-  });
 
   @override
   Iterable<Step> build() => [

@@ -9,11 +9,8 @@ base mixin PrepareArchConfig on JobConfig {
   late final dartSdkVersion = inputContext(WorkflowInputs.dartSdkVersion);
 }
 
-class PrepareArchBuilder implements StepBuilder {
-  final PrepareArchConfig config;
-
-  const new({required this.config});
-
+class const PrepareArchBuilder({required final PrepareArchConfig config})
+    implements StepBuilder {
   @override
   Iterable<Step> build() => [
     const Step.run(

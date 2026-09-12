@@ -8,9 +8,7 @@ import '../../types/workflow.dart';
 import '../../types/workflow_call.dart';
 import 'jobs/build_linux_job_builder.dart';
 
-class BuildLinuxWorkflow implements WorkflowBuilder {
-  const new();
-
+class const BuildLinuxWorkflow() implements WorkflowBuilder {
   @override
   String get name => 'build-linux';
 

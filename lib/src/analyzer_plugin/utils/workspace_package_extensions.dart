@@ -2,7 +2,7 @@ import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/workspace/workspace.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
-class _WorkspacePackageExtra {
+class _WorkspacePackageExtra() {
   Folder? lib;
   Folder? libSrc;
   Folder? libGen;

@@ -4,7 +4,8 @@ import '../../types/expression.dart';
 import '../dart_platform.dart';
 import 'dart_sdk_job_builder_mixin.dart';
 
-final class DartUnitTestJobConfig extends UnitTestJobConfig
+final class DartUnitTestJobConfig(super.inputContext, super.secretContext)
+    extends UnitTestJobConfig
     with DartSdkJobConfig {
   @override
   String get coverageArgs => '--coverage=coverage';
@@ -17,13 +18,12 @@ final class DartUnitTestJobConfig extends UnitTestJobConfig
   late final needsFlutterSdk = ExpressionOrValue.expression(
     inputContext(WorkflowInputs.needsFlutterSdk),
   );
-
-  new(super.inputContext, super.secretContext);
 }
 
-final class DartUnitTestJobBuilder
-    extends UnitTestJobBuilder<DartUnitTestJobConfig>
+final class DartUnitTestJobBuilder({
+  required super.enabledPlatformsOutput,
+  required super.config,
+}) extends UnitTestJobBuilder<DartUnitTestJobConfig>
     with DartSdkJobBuilderMixin<DartUnitTestJobConfig> {
-  new({required super.enabledPlatformsOutput, required super.config})
-    : super(platformSelectors: DartPlatform.values);
+  this : super(platformSelectors: DartPlatform.values);
 }

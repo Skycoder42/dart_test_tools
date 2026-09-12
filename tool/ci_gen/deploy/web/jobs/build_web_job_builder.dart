@@ -15,7 +15,8 @@ import '../../steps/flutter_build_builder.dart';
 import '../../steps/generate_build_number_builder.dart';
 import '../steps/build_web_archive_builder.dart';
 
-final class BuildWebJobConfig extends JobConfig
+final class BuildWebJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
@@ -26,14 +27,11 @@ final class BuildWebJobConfig extends JobConfig
         ResolveArtifactPrefixConfig,
         BuildAppConfig,
         BuildWebArchiveConfig,
-        FlutterSdkJobConfig {
-  new(super.inputContext, super.secretContext);
-}
+        FlutterSdkJobConfig;
 
-final class BuildWebJobBuilder extends SdkJobBuilder<BuildWebJobConfig>
+final class const BuildWebJobBuilder({required super.config})
+    extends SdkJobBuilder<BuildWebJobConfig>
     with FlutterSdkJobBuilderMixin<BuildWebJobConfig> {
-  const new({required super.config});
-
   @override
   JobId get id => const JobId('build_web');
 

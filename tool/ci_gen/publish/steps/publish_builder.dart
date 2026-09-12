@@ -38,14 +38,11 @@ base mixin PublishConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
   bool get localResolution => true;
 }
 
-class PublishBuilder implements StepBuilder {
+class PublishBuilder({required final PublishConfig config})
+    implements StepBuilder {
   static const toolsStepId = StepId('tools');
   static final toolsPub = toolsStepId.output('pub');
   static final toolsPubRun = toolsStepId.output('pubRun');
-
-  final PublishConfig config;
-
-  new({required this.config});
 
   @override
   Iterable<Step> build() => [

@@ -13,11 +13,9 @@ base mixin UploadSentrySymbolsConfig
   // late final sentryDist = secretContext(WorkflowSecrets.sentryDist);
 }
 
-class UploadSentrySymbolsBuilder implements StepBuilder {
-  final UploadSentrySymbolsConfig config;
-
-  const new({required this.config});
-
+class const UploadSentrySymbolsBuilder({
+  required final UploadSentrySymbolsConfig config,
+}) implements StepBuilder {
   @override
   Iterable<Step> build() => [
     Step.run(

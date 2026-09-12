@@ -27,14 +27,12 @@ base mixin ProjectPrepareConfig
       : null;
 }
 
-class ProjectPrepareBuilder implements StepBuilder {
+class const ProjectPrepareBuilder({
+  final String? titleSuffix,
+  required final ProjectPrepareConfig config,
+}) implements StepBuilder {
   static const checkGenerateStepId = StepId('checkGenerate');
   static final generateOutput = checkGenerateStepId.output('generate');
-
-  final String? titleSuffix;
-  final ProjectPrepareConfig config;
-
-  const new({this.titleSuffix, required this.config});
 
   @override
   Iterable<Step> build() => [

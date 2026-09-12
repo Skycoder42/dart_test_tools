@@ -12,20 +12,13 @@ base mixin FlutterBuildConfig on JobConfig, WorkingDirectoryConfig {
   String? get buildArgs => null;
 }
 
-class FlutterBuildBuilder implements StepBuilder {
+class const FlutterBuildBuilder({
+  required final Expression buildNumber,
+  required final FlutterBuildConfig config,
+  final List<Step> preBuildSteps = const [],
+  final List<String> cleanupPaths = const [],
+}) implements StepBuilder {
   static final _dartDefinesPath = '${Runner.temp}/dart-defines.env';
-
-  final Expression buildNumber;
-  final FlutterBuildConfig config;
-  final List<Step> preBuildSteps;
-  final List<String> cleanupPaths;
-
-  const new({
-    required this.buildNumber,
-    required this.config,
-    this.preBuildSteps = const [],
-    this.cleanupPaths = const [],
-  });
 
   @override
   Iterable<Step> build() {

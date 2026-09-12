@@ -4,19 +4,12 @@ import '../../types/expression.dart';
 import '../../types/step.dart';
 import '../flutter_platform.dart';
 
-class FlutterSdkBuilder implements StepBuilder {
-  final Expression flutterSdkChannel;
-  final ExpressionOrValue? buildPlatform;
-  final Expression? javaJdkVersion;
-  final Expression? ifExpression;
-
-  const new({
-    required this.flutterSdkChannel,
-    this.buildPlatform,
-    this.javaJdkVersion,
-    this.ifExpression,
-  });
-
+class const FlutterSdkBuilder({
+  required final Expression flutterSdkChannel,
+  final ExpressionOrValue? buildPlatform,
+  final Expression? javaJdkVersion,
+  final Expression? ifExpression,
+}) implements StepBuilder {
   @override
   Iterable<Step> build() => [
     ?_maybeSetupJdk(),

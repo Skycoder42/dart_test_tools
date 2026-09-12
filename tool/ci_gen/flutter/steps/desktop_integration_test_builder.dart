@@ -12,9 +12,8 @@ import 'prepare_integration_test_builder.dart';
 base mixin DesktopIntegrationTestConfig
     on JobConfig, CommonIntegrationTestConfig;
 
-final class TestArgsMatrixProperty extends IMatrixProperty<FlutterPlatform> {
-  const new();
-
+final class const TestArgsMatrixProperty()
+    extends IMatrixProperty<FlutterPlatform> {
   @override
   String get name => 'testArgs';
 
@@ -27,9 +26,8 @@ final class TestArgsMatrixProperty extends IMatrixProperty<FlutterPlatform> {
   };
 }
 
-final class RunPrefixMatrixProperty extends IMatrixProperty<FlutterPlatform> {
-  const new();
-
+final class const RunPrefixMatrixProperty()
+    extends IMatrixProperty<FlutterPlatform> {
   @override
   String get name => 'runPrefix';
 
@@ -40,20 +38,13 @@ final class RunPrefixMatrixProperty extends IMatrixProperty<FlutterPlatform> {
   };
 }
 
-class DesktopIntegrationTestBuilder implements StepBuilder {
+class const DesktopIntegrationTestBuilder({
+  required final DesktopIntegrationTestConfig config,
+  required final PlatformMatrixProperty platform,
+  required final TestArgsMatrixProperty testArgs,
+  required final RunPrefixMatrixProperty runPrefix,
+}) implements StepBuilder {
   static const testSetupCacheStepId = StepId('test-setup-cache');
-
-  final DesktopIntegrationTestConfig config;
-  final PlatformMatrixProperty platform;
-  final TestArgsMatrixProperty testArgs;
-  final RunPrefixMatrixProperty runPrefix;
-
-  const new({
-    required this.config,
-    required this.platform,
-    required this.testArgs,
-    required this.runPrefix,
-  });
 
   @override
   Iterable<Step> build() => [

@@ -15,7 +15,8 @@ import '../../steps/flutter_build_builder.dart';
 import '../../steps/generate_build_number_builder.dart';
 import '../steps/build_windows_installer_builder.dart';
 
-final class BuildWindowsJobConfig extends JobConfig
+final class BuildWindowsJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
@@ -26,14 +27,11 @@ final class BuildWindowsJobConfig extends JobConfig
         ResolveArtifactPrefixConfig,
         BuildAppConfig,
         BuildWindowsInstallerConfig,
-        FlutterSdkJobConfig {
-  new(super.inputContext, super.secretContext);
-}
+        FlutterSdkJobConfig;
 
-final class BuildWindowsJobBuilder extends SdkJobBuilder<BuildWindowsJobConfig>
+final class const BuildWindowsJobBuilder({required super.config})
+    extends SdkJobBuilder<BuildWindowsJobConfig>
     with FlutterSdkJobBuilderMixin<BuildWindowsJobConfig> {
-  const new({required super.config});
-
   @override
   JobId get id => const JobId('build_windows');
 

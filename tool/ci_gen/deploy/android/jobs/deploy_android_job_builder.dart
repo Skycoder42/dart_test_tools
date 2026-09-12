@@ -8,19 +8,16 @@ import '../../../types/job.dart';
 import '../../../types/runs_on.dart';
 import '../steps/deploy_android_app_builder.dart';
 
-final class DeployAndroidJobConfig extends JobConfig
+final class DeployAndroidJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         WorkingDirectoryConfig,
         ResolveArtifactPrefixConfig,
-        DeployAndroidConfig {
-  new(super.inputContext, super.secretContext);
-}
+        DeployAndroidConfig;
 
-final class DeployAndroidJobBuilder implements JobBuilder {
-  final DeployAndroidJobConfig config;
-
-  const new({required this.config});
-
+final class const DeployAndroidJobBuilder({
+  required final DeployAndroidJobConfig config,
+}) implements JobBuilder {
   @override
   JobId get id => const JobId('deploy_android');
 

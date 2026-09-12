@@ -2,13 +2,11 @@ import 'package:meta/meta.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 @internal
-class NfpmVersion {
-  final String version;
-  final String? prerelease;
-  final String? release;
-
-  const new({required this.version, this.prerelease, this.release});
-}
+class const NfpmVersion({
+  required final String version,
+  final String? prerelease,
+  final String? release,
+});
 
 @internal
 NfpmVersion convertVersion(Version version) {

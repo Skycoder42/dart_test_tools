@@ -25,10 +25,9 @@ base mixin PrepareIntegrationTestConfig on ProjectSetupConfig {
       '$workingDirectory/$integrationTestProject';
 }
 
-final class _TestProjectConfig extends JobConfig
+final class _TestProjectConfig(final PrepareIntegrationTestConfig baseConfig)
+    extends JobConfig
     with SdkJobConfig, WorkingDirectoryConfig, ProjectPrepareConfig {
-  final PrepareIntegrationTestConfig baseConfig;
-
   @override
   late final isFlutter = const ExpressionOrValue.value(false);
 
@@ -55,17 +54,14 @@ final class _TestProjectConfig extends JobConfig
     Expression.empty,
   );
 
-  new(this.baseConfig)
-    : super(baseConfig.inputContext, baseConfig.secretContext);
+  this : super(baseConfig.inputContext, baseConfig.secretContext);
 }
 
-class PrepareIntegrationTestBuilder implements StepBuilder {
+class const PrepareIntegrationTestBuilder({
+  required final ExpressionOrValue platform,
+  required final PrepareIntegrationTestConfig config,
+}) implements StepBuilder {
   static const testSetupCacheStepId = StepId('test-setup-cache');
-
-  final ExpressionOrValue platform;
-  final PrepareIntegrationTestConfig config;
-
-  const new({required this.platform, required this.config});
 
   @override
   Iterable<Step> build() => [

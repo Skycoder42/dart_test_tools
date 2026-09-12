@@ -8,9 +8,7 @@ import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'jobs/release_job_builder.dart';
 
-class ReleaseWorkflow implements WorkflowBuilder {
-  const new();
-
+class const ReleaseWorkflow() implements WorkflowBuilder {
   @override
   String get name => 'release';
 

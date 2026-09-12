@@ -9,14 +9,12 @@ part 'workflow_secret.freezed.dart';
 typedef InputBuilderFn<TParam> = Input Function(TParam param);
 
 @freezed
-sealed class WorkflowSecret with _$WorkflowSecret {
+sealed class const WorkflowSecret._() with _$WorkflowSecret {
   const factory({required String name, required Secret secret}) =
       _WorkflowSecret;
-
-  const new _();
 }
 
-class WorkflowSecretContext {
+class WorkflowSecretContext() {
   final _secrets = <WorkflowSecret>{};
 
   Expression call(WorkflowSecret secret) {

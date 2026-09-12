@@ -13,9 +13,7 @@ import 'jobs/desktop_integration_test_job_builder.dart';
 import 'jobs/ios_integration_test_job_builder.dart';
 import 'jobs/web_integration_test_job_builder.dart';
 
-class FlutterIntegrationWorkflow implements WorkflowBuilder {
-  const new();
-
+class const FlutterIntegrationWorkflow() implements WorkflowBuilder {
   @override
   String get name => 'flutter-integration';
 

@@ -8,9 +8,7 @@ import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'jobs/build_nfpm_job_builder.dart';
 
-class NfpmWorkflow implements WorkflowBuilder {
-  const new();
-
+class const NfpmWorkflow() implements WorkflowBuilder {
   @override
   String get name => 'nfpm';
 

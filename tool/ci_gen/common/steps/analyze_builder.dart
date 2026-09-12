@@ -16,17 +16,15 @@ base mixin AnalyzeConfig on JobConfig, ProjectSetupConfig, RunPublishConfig {
   late final withSubmodules = inputContext(WorkflowInputs.withSubmodules);
 }
 
-class AnalyzeBuilder implements StepBuilder {
+class const AnalyzeBuilder({
+  required final AnalyzeConfig config,
+  required final StepBuilderFn buildAnalyzeStep,
+}) implements StepBuilder {
   static const checkPublishStepId = StepId('checkPublish');
   static final checkPublishOutput = checkPublishStepId.output('publish');
 
   static const checkPlatformsStepId = StepId('checkPlatforms');
   static final platformsOutput = checkPlatformsStepId.output('platforms');
-
-  final AnalyzeConfig config;
-  final StepBuilderFn buildAnalyzeStep;
-
-  const new({required this.config, required this.buildAnalyzeStep});
 
   @override
   Iterable<Step> build() => [

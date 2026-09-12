@@ -9,28 +9,21 @@ import '../steps/release_entry_builder.dart';
 import '../steps/resolve_artifact_prefix_builder.dart';
 import '../steps/tag_release_builder.dart';
 
-final class TagReleaseJobConfig extends JobConfig
+final class TagReleaseJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         WorkingDirectoryConfig,
         ResolveArtifactPrefixConfig,
         ReleaseEntryConfig,
         TagReleaseConfig {
   late final releaseRef = inputContext(WorkflowInputs.releaseRef);
-
-  new(super.inputContext, super.secretContext);
 }
 
-class TagReleaseJobBuilder implements JobBuilder {
-  final Set<JobId>? compileJobIds;
-  final TagReleaseJobConfig config;
-  final bool failOnUnmatchedFiles;
-
-  const new({
-    this.compileJobIds,
-    required this.config,
-    this.failOnUnmatchedFiles = true,
-  });
-
+class const TagReleaseJobBuilder({
+  final Set<JobId>? compileJobIds,
+  required final TagReleaseJobConfig config,
+  final bool failOnUnmatchedFiles = true,
+}) implements JobBuilder {
   @override
   JobId get id => const JobId('release');
 

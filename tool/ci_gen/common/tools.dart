@@ -1,8 +1,6 @@
 import 'package:dart_test_tools/src/tools/github.dart';
 
-abstract class Tools {
-  new _();
-
+abstract class Tools._() {
   /// https://github.com/actions/checkout/releases
   static late final String actionsCheckout;
 

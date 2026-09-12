@@ -9,17 +9,11 @@ import 'cask_options_loader.dart';
 
 /// A raw Ruby literal that is written to the cask script verbatim, without
 /// being wrapped in quotes (e.g. a symbol like `:catalina`).
-class _CaskLiteral {
-  final String value;
+class const _CaskLiteral(final String value);
 
-  const new(this.value);
-}
-
-class CaskGenerator {
-  final CaskOptionsLoader _caskOptionsLoader;
-
-  const new([this._caskOptionsLoader = const CaskOptionsLoader()]);
-
+class const CaskGenerator([
+  final CaskOptionsLoader _caskOptionsLoader = const CaskOptionsLoader(),
+]) {
   Future<void> call({
     required Directory inDir,
     required Directory outDir,

@@ -12,13 +12,13 @@ import '../steps/setup_gcloud_builder.dart';
 import 'common_integration_test_config.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-final class AndroidIntegrationTestJobConfig
-    extends CommonIntegrationTestJobConfig
+final class AndroidIntegrationTestJobConfig(
+  super.inputContext,
+  super.secretContext,
+) extends CommonIntegrationTestJobConfig
     with SetupGCloudConfig, AndroidIntegrationTestConfig {
   @override
   late final javaJdkVersion = inputContext(WorkflowInputs.javaJdkVersion);
-
-  new(super.inputContext, super.secretContext);
 }
 
 final class AndroidIntegrationTestJobBuilder

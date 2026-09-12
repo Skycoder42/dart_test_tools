@@ -6,9 +6,7 @@ import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'jobs/aur_deploy_job_builder.dart';
 
-class AurWorkflow implements WorkflowBuilder {
-  const new();
-
+class const AurWorkflow() implements WorkflowBuilder {
   @override
   String get name => 'aur';
 

@@ -29,12 +29,9 @@ base mixin DeployToPagesConfig on JobConfig, WithGpgKeyConfig {
   );
 }
 
-class DeployToPagesBuilder implements StepBuilder {
+class DeployToPagesBuilder({required final DeployToPagesConfig config})
+    implements StepBuilder {
   static const _gpPagesBranch = 'gh-pages';
-
-  final DeployToPagesConfig config;
-
-  new({required this.config});
 
   @override
   Iterable<Step> build() => [

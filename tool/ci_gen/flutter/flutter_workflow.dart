@@ -17,9 +17,7 @@ import 'jobs/flutter_unit_test_job_builder.dart';
 import 'jobs/ios_integration_test_job_builder.dart';
 import 'jobs/web_integration_test_job_builder.dart';
 
-class FlutterWorkflow implements WorkflowBuilder {
-  const new();
-
+class const FlutterWorkflow() implements WorkflowBuilder {
   @override
   String get name => 'flutter';
 

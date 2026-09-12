@@ -11,14 +11,11 @@ base mixin ReleaseConfig on ReleaseEntryConfig, TriggerDeployConfig {
   late final dartSdkVersion = inputContext(WorkflowInputs.dartSdkVersion);
 }
 
-class ReleaseBuilder implements StepBuilder {
+class ReleaseBuilder({required final ReleaseConfig config})
+    implements StepBuilder {
   static const versionStepId = StepId('version');
   static final versionUpdate = versionStepId.output('update');
   static final versionOutput = versionStepId.output('version');
-
-  final ReleaseConfig config;
-
-  new({required this.config});
 
   @override
   Iterable<Step> build() => [

@@ -24,11 +24,8 @@ base mixin BuildMacosDmgConfig on JobConfig, BuildAppConfig {
   IPlatformMatrixSelector get buildPlatform => FlutterPlatform.macos;
 }
 
-class BuildMacosDmgBuilder implements StepBuilder {
-  final BuildMacosDmgConfig config;
-
-  const new({required this.config});
-
+class const BuildMacosDmgBuilder({required final BuildMacosDmgConfig config})
+    implements StepBuilder {
   @override
   Iterable<Step> build() => [
     Step.uses(name: 'Setup NodeJS', uses: Tools.actionsSetupNode),

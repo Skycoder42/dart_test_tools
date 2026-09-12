@@ -8,19 +8,16 @@ import '../inputs.dart';
 import '../steps/coverage_builder_mixin.dart';
 import '../steps/validate_coverage_builder.dart';
 
-final class ValidateCoverageJobConfig extends JobConfig
+final class ValidateCoverageJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with WorkingDirectoryConfig, CoverageBuilderConfig, ValidateCoverageConfig {
   late final unitTestPaths = inputContext(WorkflowInputs.unitTestPaths);
-
-  new(super.inputContext, super.secretContext);
 }
 
-class ValidateCoverageJobBuilder implements JobBuilder {
-  final JobId unitTestJobId;
-  final ValidateCoverageJobConfig config;
-
-  new({required this.unitTestJobId, required this.config});
-
+class ValidateCoverageJobBuilder({
+  required final JobId unitTestJobId,
+  required final ValidateCoverageJobConfig config,
+}) implements JobBuilder {
   @override
   JobId get id => const JobId('coverage');
 

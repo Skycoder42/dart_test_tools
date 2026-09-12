@@ -9,21 +9,19 @@ import '../../../types/job.dart';
 import '../../../types/runs_on.dart';
 import '../steps/deploy_to_tap_builder.dart';
 
-final class DeployMacosJobConfig extends JobConfig
+final class DeployMacosJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
         DeployToTapConfig,
         DartSdkJobConfig {
   late final version = inputContext(WorkflowInputs.version);
-
-  new(super.inputContext, super.secretContext);
 }
 
-final class DeployMacosJobBuilder extends SdkJobBuilder<DeployMacosJobConfig>
+final class const DeployMacosJobBuilder({required super.config})
+    extends SdkJobBuilder<DeployMacosJobConfig>
     with DartSdkJobBuilderMixin<DeployMacosJobConfig> {
-  const new({required super.config});
-
   @override
   JobId get id => const JobId('deploy_macos');
 

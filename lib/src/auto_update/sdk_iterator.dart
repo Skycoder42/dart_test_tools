@@ -12,11 +12,7 @@ typedef SdkCallback = Future<void> Function(
   Version? flutterVersion,
 );
 
-class SdkIterator {
-  final PubWrapper pub;
-
-  new(this.pub);
-
+class SdkIterator(final PubWrapper pub) {
   Future<void> iterate(SdkCallback callback) async {
     final deps = await pub.deps();
     final dartVersion = deps.sdks

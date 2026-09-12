@@ -16,7 +16,7 @@ const yamlSerializable = JsonSerializable(
 );
 
 @Freezed(fromJson: false, toJson: false)
-sealed class ListOrValue<T>
+sealed class const ListOrValue<T>._()
     with _$ListOrValue<T>, ListMixin<T>, _UnmodifiableListMixin<T> {
   const factory list(List<T> list) = _List;
   const factory value(T value) = _ListValue;
@@ -33,8 +33,6 @@ sealed class ListOrValue<T>
           : ListOrValue.value(fromJsonT(json));
     }
   }
-
-  const new _();
 
   bool get isList => switch (this) {
     _List() => true,

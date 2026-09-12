@@ -6,10 +6,8 @@ import '../../dart/dart_platform.dart';
 import '../../types/expression.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-final class FlutterCoverageArgsMatrixProperty
+final class const FlutterCoverageArgsMatrixProperty()
     extends IMatrixProperty<IPlatformMatrixSelector> {
-  const new();
-
   @override
   String get name => 'coverageArgs';
 
@@ -20,8 +18,8 @@ final class FlutterCoverageArgsMatrixProperty
   };
 }
 
-class FlutterUnitTestMatrix extends UnitTestMatrix {
-  const new() : super(DartPlatform.values);
+class const FlutterUnitTestMatrix() extends UnitTestMatrix {
+  this : super(DartPlatform.values);
 
   FlutterCoverageArgsMatrixProperty get coverageArgs =>
       const FlutterCoverageArgsMatrixProperty();
@@ -33,7 +31,8 @@ class FlutterUnitTestMatrix extends UnitTestMatrix {
   ];
 }
 
-final class FlutterUnitTestJobConfig extends UnitTestJobConfig
+final class FlutterUnitTestJobConfig(super.inputContext, super.secretContext)
+    extends UnitTestJobConfig
     with FlutterSdkJobConfig {
   @override
   late final javaJdkVersion = inputContext(WorkflowInputs.javaJdkVersion);
@@ -49,14 +48,14 @@ final class FlutterUnitTestJobConfig extends UnitTestJobConfig
 
   @override
   bool get needsFormatting => false;
-
-  new(super.inputContext, super.secretContext);
 }
 
-final class FlutterUnitTestJobBuilder
-    extends UnitTestJobBuilder<FlutterUnitTestJobConfig>
+final class FlutterUnitTestJobBuilder({
+  required super.enabledPlatformsOutput,
+  required super.config,
+}) extends UnitTestJobBuilder<FlutterUnitTestJobConfig>
     with FlutterSdkJobBuilderMixin<FlutterUnitTestJobConfig> {
-  new({required super.enabledPlatformsOutput, required super.config})
+  this
     : super(
         platformSelectors: DartPlatform.values,
         matrix: const FlutterUnitTestMatrix(),

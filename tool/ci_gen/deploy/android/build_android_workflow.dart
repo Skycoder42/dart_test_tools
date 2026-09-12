@@ -8,9 +8,7 @@ import '../../types/workflow.dart';
 import '../../types/workflow_call.dart';
 import 'jobs/build_android_job_builder.dart';
 
-class BuildAndroidWorkflow implements WorkflowBuilder {
-  const new();
-
+class const BuildAndroidWorkflow() implements WorkflowBuilder {
   @override
   String get name => 'build-android';
 

@@ -7,20 +7,19 @@ import '../../types/job.dart';
 import '../../types/runs_on.dart';
 import '../steps/check_update_required_builder.dart';
 
-final class CheckUpdateRequiredJobConfig extends JobConfig
+final class CheckUpdateRequiredJobConfig(
+  super.inputContext,
+  super.secretContext,
+) extends JobConfig
     with
         SdkJobConfig,
         FlutterSdkJobConfig,
         WorkingDirectoryConfig,
-        CheckUpdateRequiredConfig {
-  new(super.inputContext, super.secretContext);
-}
+        CheckUpdateRequiredConfig;
 
-final class CheckUpdateRequiredJobBuilder
+final class CheckUpdateRequiredJobBuilder({required super.config})
     extends SdkJobBuilder<CheckUpdateRequiredJobConfig>
     with FlutterSdkJobBuilderMixin {
-  new({required super.config});
-
   @override
   JobId get id => const JobId('check-update-required');
 

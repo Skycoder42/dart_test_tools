@@ -7,20 +7,13 @@ import '../tools/github.dart';
 import 'pub_wrapper.dart';
 import 'sdk_iterator.dart';
 
-class Updater {
-  final bool flutterCompat;
-  final bool bumpVersion;
-  final bool autoFix;
-  final String? reportPath;
-
+class Updater({
+  required final bool flutterCompat,
+  required final bool bumpVersion,
+  required final bool autoFix,
+  required final String? reportPath,
+}) {
   IOSink? _reportSink;
-
-  new({
-    required this.flutterCompat,
-    required this.bumpVersion,
-    required this.autoFix,
-    required this.reportPath,
-  });
 
   Future<void> call(Directory targetDirectory) async {
     if (reportPath case final String path) {

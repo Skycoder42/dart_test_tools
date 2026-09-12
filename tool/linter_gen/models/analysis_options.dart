@@ -9,7 +9,12 @@ import 'analysis_options_ref.dart';
 part 'analysis_options.freezed.dart';
 part 'analysis_options.g.dart';
 
-enum DiagnosticLevel { error, warning, info, ignore }
+enum DiagnosticLevel() {
+  error,
+  warning,
+  info,
+  ignore,
+}
 
 @freezed
 sealed class AnalysisOptions with _$AnalysisOptions {
@@ -42,14 +47,12 @@ sealed class AnalysisOptionsAnalyzer with _$AnalysisOptionsAnalyzer {
 }
 
 @freezed
-sealed class AnalysisOptionsLinter with _$AnalysisOptionsLinter {
+sealed class const AnalysisOptionsLinter._() with _$AnalysisOptionsLinter {
   @JsonSerializable(anyMap: true, checked: true, disallowUnrecognizedKeys: true)
   const factory({required dynamic rules}) = _AnalysisOptionsLinter;
 
   factory fromJson(Map<String, dynamic> json) =>
       _$AnalysisOptionsLinterFromJson(json);
-
-  const new _();
 
   Map<String, bool> get ruleMap {
     final dynamic rulesValue = rules;
@@ -70,7 +73,7 @@ sealed class AnalysisOptionsLinter with _$AnalysisOptionsLinter {
 }
 
 @Freezed(fromJson: false, toJson: false)
-sealed class ListOrValue<T>
+sealed class const ListOrValue<T>._()
     with _$ListOrValue<T>, ListMixin<T>, _UnmodifiableListMixin<T> {
   const factory list(List<T> list) = _List;
   const factory value(T value) = _ListValue;
@@ -87,8 +90,6 @@ sealed class ListOrValue<T>
           : ListOrValue.value(fromJsonT(json));
     }
   }
-
-  const new _();
 
   bool get isList => switch (this) {
     _List() => true,

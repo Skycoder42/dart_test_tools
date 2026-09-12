@@ -15,15 +15,10 @@ import 'export_file_writer.dart';
 import 'export_resolver.dart';
 import 'yaml_serializable.dart';
 
-class AutoExportBuilder {
-  final ExportResolver resolver;
-  final ExportFileWriter writer;
-
-  const new({
-    this.resolver = const ExportResolver(),
-    this.writer = const ExportFileWriter(),
-  });
-
+class const AutoExportBuilder({
+  final ExportResolver resolver = const ExportResolver(),
+  final ExportFileWriter writer = const ExportFileWriter(),
+}) {
   Future<void> createExports(File configFile) async {
     final configYaml = await configFile.readAsString();
     final config = checkedYamlDecode(

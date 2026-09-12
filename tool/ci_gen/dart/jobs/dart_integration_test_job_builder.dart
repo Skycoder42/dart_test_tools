@@ -13,7 +13,10 @@ import '../dart_platform.dart';
 import '../steps/dart_integration_test_builder.dart';
 import 'dart_sdk_job_builder_mixin.dart';
 
-final class DartIntegrationTestJobConfig extends JobConfig
+final class DartIntegrationTestJobConfig(
+  super.inputContext,
+  super.secretContext,
+) extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
@@ -26,12 +29,10 @@ final class DartIntegrationTestJobConfig extends JobConfig
   late final needsFlutterSdk = ExpressionOrValue.expression(
     inputContext(WorkflowInputs.needsFlutterSdk),
   );
-
-  new(super.inputContext, super.secretContext);
 }
 
-final class DartIntegrationTestMatrix extends PlatformMatrix {
-  const new() : super(DartPlatform.values);
+final class const DartIntegrationTestMatrix() extends PlatformMatrix {
+  this : super(DartPlatform.values);
 
   DartTestArgsMatrixProperty get dartTestArgs =>
       const DartTestArgsMatrixProperty();
@@ -43,8 +44,10 @@ final class DartIntegrationTestMatrix extends PlatformMatrix {
   ];
 }
 
-final class DartIntegrationTestJobBuilder
-    extends SdkJobBuilder<DartIntegrationTestJobConfig>
+final class DartIntegrationTestJobBuilder({
+  required final JobIdOutput enabledPlatformsOutput,
+  required super.config,
+}) extends SdkJobBuilder<DartIntegrationTestJobConfig>
     with
         DartSdkJobBuilderMixin<DartIntegrationTestJobConfig>,
         MatrixJobBuilderMixin<
@@ -52,13 +55,10 @@ final class DartIntegrationTestJobBuilder
           IPlatformMatrixSelector
         >,
         PlatformJobBuilderMixin<DartIntegrationTestMatrix> {
-  final JobIdOutput enabledPlatformsOutput;
-
   @override
   final DartIntegrationTestMatrix matrix;
 
-  new({required this.enabledPlatformsOutput, required super.config})
-    : matrix = const DartIntegrationTestMatrix();
+  this : matrix = const DartIntegrationTestMatrix();
 
   @override
   JobId get id => const JobId('integration_tests');

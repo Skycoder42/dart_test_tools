@@ -11,21 +11,18 @@ import '../../../types/job.dart';
 import '../../../types/runs_on.dart';
 import '../steps/deploy_windows_installer_builder.dart';
 
-final class DeployWindowsJobConfig extends JobConfig
+final class DeployWindowsJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
         ResolveArtifactPrefixConfig,
         DeployWindowsInstallerConfig,
-        FlutterSdkJobConfig {
-  new(super.inputContext, super.secretContext);
-}
+        FlutterSdkJobConfig;
 
-final class DeployWindowsJobBuilder
+final class const DeployWindowsJobBuilder({required super.config})
     extends SdkJobBuilder<DeployWindowsJobConfig>
     with FlutterSdkJobBuilderMixin<DeployWindowsJobConfig> {
-  const new({required super.config});
-
   @override
   JobId get id => const JobId('deploy_windows');
 

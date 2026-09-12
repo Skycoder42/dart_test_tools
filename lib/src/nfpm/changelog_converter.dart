@@ -8,9 +8,9 @@ import 'package:yaml_writer/yaml_writer.dart';
 ///
 /// See https://github.com/goreleaser/chglog for the target format.
 @internal
-class ChangelogConverter {
+class const ChangelogConverter() {
   /// Default constructor.
-  const new();
+  this;
 
   /// Parses [changelogFile] and returns the chglog YAML representation.
   ///

@@ -5,17 +5,15 @@ import '../../types/expression.dart';
 import '../../types/runs_on.dart';
 import 'matrix_job_builder_mixin.dart';
 
-abstract interface class IPlatformMatrixSelector implements IMatrixSelector {
+abstract interface class IPlatformMatrixSelector() implements IMatrixSelector {
   String get platform;
   RunsOn get os;
 
   bool get isWeb;
 }
 
-final class PlatformMatrixProperty
+final class const PlatformMatrixProperty()
     extends IMatrixProperty<IPlatformMatrixSelector> {
-  const new();
-
   @override
   String get name => 'platform';
 
@@ -23,9 +21,8 @@ final class PlatformMatrixProperty
   Object? valueFor(IPlatformMatrixSelector include) => include.platform;
 }
 
-final class OsMatrixProperty extends IMatrixProperty<IPlatformMatrixSelector> {
-  const new();
-
+final class const OsMatrixProperty()
+    extends IMatrixProperty<IPlatformMatrixSelector> {
   @override
   String get name => 'os';
 
@@ -33,9 +30,8 @@ final class OsMatrixProperty extends IMatrixProperty<IPlatformMatrixSelector> {
   Object? valueFor(IPlatformMatrixSelector include) => include.os.id;
 }
 
-abstract class PlatformMatrix extends Matrix<IPlatformMatrixSelector> {
-  const new(super._selectors);
-
+abstract class const PlatformMatrix(super._selectors)
+    extends Matrix<IPlatformMatrixSelector> {
   @nonVirtual
   PlatformMatrixProperty get platform => const PlatformMatrixProperty();
 
@@ -69,9 +65,7 @@ base mixin PlatformJobBuilderMixin<TMatrix extends PlatformMatrix>
   Expression get matrixRunsOn => matrix.os.expression;
 }
 
-abstract base class EnabledPlatforms {
-  new _();
-
+abstract base class EnabledPlatforms._() {
   static Expression check(Expression enabledPlatforms, Expression platform) =>
       (enabledPlatforms.eq(const Expression.literal('[]')) |
               const Expression('contains')([

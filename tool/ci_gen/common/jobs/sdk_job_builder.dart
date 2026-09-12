@@ -12,13 +12,9 @@ base mixin SdkJobConfig on JobConfig {
   String get runTool => '$pubTool run';
 }
 
-abstract base class SdkJobBuilder<TConfig extends SdkJobConfig>
-    implements JobBuilder {
-  @protected
-  final TConfig config;
-
-  const new({required this.config});
-
+abstract base class const SdkJobBuilder<TConfig extends SdkJobConfig>({
+  @protected required final TConfig config,
+}) implements JobBuilder {
   @protected
   Iterable<Step> buildSetupSdkSteps();
 }

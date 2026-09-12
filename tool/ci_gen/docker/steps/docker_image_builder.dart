@@ -19,16 +19,13 @@ base mixin DockerImageConfig on JobConfig {
   late final dockerHubToken = secretContext(WorkflowSecrets.dockerHubToken);
 }
 
-class DockerImageBuilder implements StepBuilder {
+class DockerImageBuilder({required final DockerImageConfig config})
+    implements StepBuilder {
   static const _setupBuildxId = StepId('setup-docker-buildx');
   static final _buildxPlatformsOutput = _setupBuildxId.output('platforms');
 
   static const _generateTags = StepId('generate-tags');
   static final _generateTagsOutput = _generateTags.output('tags');
-
-  final DockerImageConfig config;
-
-  new({required this.config});
 
   @override
   Iterable<Step> build() => [

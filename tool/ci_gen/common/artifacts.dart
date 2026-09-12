@@ -1,10 +1,20 @@
 import 'api/platform_matrix_job_builder_mixin.dart';
 
-enum ArtifactType { appbundle, dmg, msix, archive, flatpak, cli }
+enum ArtifactType() {
+  appbundle,
+  dmg,
+  msix,
+  archive,
+  flatpak,
+  cli,
+}
 
-enum ArtifactArch { x86_64, aarch64 }
+enum ArtifactArch() {
+  x86_64,
+  aarch64,
+}
 
-abstract base class Artifacts {
+abstract base class Artifacts() {
   static String name({
     required Object prefix,
     required Object type,

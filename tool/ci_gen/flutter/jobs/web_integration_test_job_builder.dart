@@ -8,10 +8,9 @@ import '../steps/web_integration_test_builder.dart';
 import 'common_integration_test_config.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-final class WebIntegrationTestJobConfig extends CommonIntegrationTestJobConfig
-    with WebIntegrationTestConfig {
-  new(super.inputContext, super.secretContext);
-}
+final class WebIntegrationTestJobConfig(super.inputContext, super.secretContext)
+    extends CommonIntegrationTestJobConfig
+    with WebIntegrationTestConfig;
 
 final class WebIntegrationTestJobBuilder
     extends SdkJobBuilder<WebIntegrationTestJobConfig>

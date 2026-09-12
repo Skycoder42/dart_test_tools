@@ -20,15 +20,13 @@ base mixin TagReleaseConfig
   late final releaseFiles = inputContext(WorkflowInputs.releaseFiles);
 }
 
-class TagReleaseBuilder implements StepBuilder {
+class const TagReleaseBuilder({
+  required final TagReleaseConfig config,
+  final bool failOnUnmatchedFiles = true,
+}) implements StepBuilder {
   static const versionStepId = StepId('version');
   static final updateOutput = versionStepId.output('update');
   static final versionOutput = versionStepId.output('version');
-
-  final TagReleaseConfig config;
-  final bool failOnUnmatchedFiles;
-
-  const new({required this.config, this.failOnUnmatchedFiles = true});
 
   @override
   Iterable<Step> build() => [

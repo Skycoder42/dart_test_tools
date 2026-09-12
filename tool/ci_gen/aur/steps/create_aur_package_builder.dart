@@ -1,9 +1,7 @@
 import '../../common/api/step_builder.dart';
 import '../../types/step.dart';
 
-class CreateAurPackageBuilder implements StepBuilder {
-  const new();
-
+class const CreateAurPackageBuilder() implements StepBuilder {
   @override
   Iterable<Step> build() => [
     const Step.run(

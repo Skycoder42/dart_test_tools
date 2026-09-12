@@ -15,13 +15,11 @@ base mixin CheckUpdateRequiredConfig
   late final flutterCompat = inputContext(WorkflowInputs.flutterCompat);
 }
 
-class CheckUpdateRequiredBuilder implements StepBuilder {
+class const CheckUpdateRequiredBuilder({
+  required final CheckUpdateRequiredConfig config,
+}) implements StepBuilder {
   static const checkStepId = StepId('check_auto_update');
   static final needsUpdate = checkStepId.output('needs_update');
-
-  final CheckUpdateRequiredConfig config;
-
-  const new({required this.config});
 
   @override
   Iterable<Step> build() sync* {

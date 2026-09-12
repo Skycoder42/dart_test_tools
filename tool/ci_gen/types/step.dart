@@ -8,9 +8,7 @@ part 'step.freezed.dart';
 part 'step.g.dart';
 
 @freezed
-sealed class Step with _$Step {
-  const new _();
-
+sealed class const Step._() with _$Step {
   const factory run({
     @JsonKey(includeIfNull: false) StepId? id,
     required String name,

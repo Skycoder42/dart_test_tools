@@ -8,9 +8,7 @@ import '../../types/workflow.dart';
 import '../../types/workflow_call.dart';
 import 'jobs/build_macos_job_builder.dart';
 
-class BuildMacosWorkflow implements WorkflowBuilder {
-  const new();
-
+class const BuildMacosWorkflow() implements WorkflowBuilder {
   @override
   String get name => 'build-macos';
 

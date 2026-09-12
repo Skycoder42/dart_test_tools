@@ -7,11 +7,11 @@ import '../../types/matrix.dart' as m;
 import '../../types/strategy.dart';
 import 'job_builder.dart';
 
-abstract interface class IMatrixSelector;
+abstract interface class IMatrixSelector();
 
-abstract base class IMatrixProperty<TMatrixSelector extends IMatrixSelector> {
-  const new();
-
+abstract base class const IMatrixProperty<
+  TMatrixSelector extends IMatrixSelector
+>() {
   String get name;
 
   Object? valueFor(TMatrixSelector include);
@@ -19,17 +19,14 @@ abstract base class IMatrixProperty<TMatrixSelector extends IMatrixSelector> {
   Expression get expression => Expression('matrix.$name');
 }
 
-abstract interface class IMatrix<TMatrixSelector extends IMatrixSelector> {
+abstract interface class IMatrix<TMatrixSelector extends IMatrixSelector>() {
   @internal
   m.Matrix build();
 }
 
-abstract class Matrix<TMatrixSelector extends IMatrixSelector>
-    implements IMatrix<TMatrixSelector> {
-  final List<TMatrixSelector> _selectors;
-
-  const new(this._selectors);
-
+abstract class const Matrix<TMatrixSelector extends IMatrixSelector>(
+  final List<TMatrixSelector> _selectors,
+) implements IMatrix<TMatrixSelector> {
   IMatrixProperty<TMatrixSelector> get selectorProperty;
 
   List<IMatrixProperty<TMatrixSelector>>? get includeProperties => null;
@@ -65,12 +62,9 @@ abstract class Matrix<TMatrixSelector extends IMatrixSelector>
   }
 }
 
-abstract base class ExpressionMatrix<TMatrixSelector extends IMatrixSelector>
-    implements IMatrix<TMatrixSelector> {
-  final Expression expression;
-
-  new(this.expression);
-
+abstract base class ExpressionMatrix<TMatrixSelector extends IMatrixSelector>(
+  final Expression expression,
+) implements IMatrix<TMatrixSelector> {
   IMatrixProperty<TMatrixSelector> get selectorProperty;
 
   @override

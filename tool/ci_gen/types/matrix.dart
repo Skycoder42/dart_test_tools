@@ -5,7 +5,7 @@ import 'expression.dart';
 part 'matrix.freezed.dart';
 
 @freezed
-sealed class Matrix with _$Matrix {
+sealed class const Matrix._() with _$Matrix {
   const factory(
     Map<String, dynamic> matrix, {
     List<Map<String, dynamic>>? include,
@@ -13,8 +13,6 @@ sealed class Matrix with _$Matrix {
   }) = _Matrix;
 
   const factory expression(Expression expression) = _MatrixExpression;
-
-  const new _();
 
   factory fromJson(Map<String, dynamic> json) {
     final include = _extractFilter(json, 'include');

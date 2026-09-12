@@ -12,35 +12,27 @@ import '../../../types/job.dart';
 import '../../../types/runs_on.dart';
 import '../steps/packagecloud_upload_builder.dart';
 
-final class DeployPackagecloudJobConfig extends JobConfig
+final class DeployPackagecloudJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         WorkingDirectoryConfig,
         ResolveArtifactPrefixConfig,
         PackagecloudUploadConfig {
   late final ubuntuVersions = inputContext(WorkflowInputs.ubuntuVersions);
-
-  new(super.inputContext, super.secretContext);
 }
 
-final class DeployPackagecloudMatrix extends ExpressionMatrix<UbuntuCodeName> {
-  new(super.expression);
-
+final class DeployPackagecloudMatrix(super.expression)
+    extends ExpressionMatrix<UbuntuCodeName> {
   CodeNameMatrixProperty get codeName => const CodeNameMatrixProperty();
 
   @override
   IMatrixProperty<UbuntuCodeName> get selectorProperty => codeName;
 }
 
-final class DeployPackagecloudJobBuilder
-    with MatrixJobBuilderMixin<DeployPackagecloudMatrix, UbuntuCodeName>
+final class DeployPackagecloudJobBuilder({
+  required final DeployPackagecloudJobConfig config,
+}) with MatrixJobBuilderMixin<DeployPackagecloudMatrix, UbuntuCodeName>
     implements JobBuilder {
-  final DeployPackagecloudJobConfig config;
-
-  new({required this.config})
-    : matrix = DeployPackagecloudMatrix(
-        Functions.fromJson(config.ubuntuVersions),
-      );
-
   @override
   JobId get id => const JobId('deploy_packagecloud');
 
@@ -48,7 +40,9 @@ final class DeployPackagecloudJobBuilder
   Expression get matrixRunsOn => Expression.fake(RunsOn.ubuntuLatest.id);
 
   @override
-  final DeployPackagecloudMatrix matrix;
+  final matrix = DeployPackagecloudMatrix(
+    Functions.fromJson(config.ubuntuVersions),
+  );
 
   @override
   Job buildGeneric(String runsOn) => Job(

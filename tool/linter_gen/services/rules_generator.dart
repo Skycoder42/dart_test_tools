@@ -5,14 +5,10 @@ import '../models/analysis_options_ref.dart';
 import 'known_rules_loader.dart';
 import 'rules_collector.dart';
 
-class RulesGenerator {
-  @internal
-  final KnownRulesLoader knownRulesLoader;
-  @internal
-  final RulesCollector rulesCollector;
-
-  new({required this.knownRulesLoader, required this.rulesCollector});
-
+class RulesGenerator({
+  @internal required final KnownRulesLoader knownRulesLoader,
+  @internal required final RulesCollector rulesCollector,
+}) {
   Future<AnalysisOptions> generateRules({
     required List<AnalysisOptionsRef> baseOptions,
     AnalysisOptionsRef? relativeTo,

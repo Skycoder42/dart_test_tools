@@ -18,7 +18,8 @@ import '../../types/job.dart';
 import '../steps/flutter_auth_builder.dart';
 import '../steps/publish_builder.dart';
 
-final class PublishJobConfig extends JobConfig
+final class PublishJobConfig(super.inputContext, super.secretContext)
+    extends JobConfig
     with
         SdkJobConfig,
         WorkingDirectoryConfig,
@@ -29,15 +30,10 @@ final class PublishJobConfig extends JobConfig
         FlutterSdkJobConfig,
         PublishConfig {
   late final tagPrefix = inputContext(WorkflowInputs.tagPrefix);
-
-  new(super.inputContext, super.secretContext);
 }
 
-class PublishJobBuilder implements JobBuilder {
-  final PublishJobConfig config;
-
-  new({required this.config});
-
+class PublishJobBuilder({required final PublishJobConfig config})
+    implements JobBuilder {
   @override
   JobId get id => const JobId('publish');
 

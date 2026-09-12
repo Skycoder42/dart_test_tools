@@ -5,19 +5,12 @@ import '../../types/step.dart';
 import '../api/step_builder.dart';
 import '../tools.dart';
 
-class CacheBuilder implements StepBuilder {
-  final StepId cacheStepId;
-  final ExpressionOrValue platform;
-  final Expression cacheConfig;
-  final Expression? ifExpression;
-
-  const new({
-    required this.cacheStepId,
-    required this.platform,
-    required this.cacheConfig,
-    this.ifExpression,
-  });
-
+class const CacheBuilder({
+  required final StepId cacheStepId,
+  required final ExpressionOrValue platform,
+  required final Expression cacheConfig,
+  final Expression? ifExpression,
+}) implements StepBuilder {
   static Env createEnv(StepId cacheStepId) =>
       Env({'CACHE_HIT': cacheStepId.output('cache-hit').expression.toString()});
 

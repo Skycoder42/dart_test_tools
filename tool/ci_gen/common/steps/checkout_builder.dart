@@ -3,25 +3,15 @@ import '../../types/step.dart';
 import '../api/step_builder.dart';
 import '../tools.dart';
 
-class CheckoutBuilder implements StepBuilder {
-  final String? path;
-  final Expression? repository;
-  final Expression? gitRef;
-  final ExpressionOrValue? persistCredentials;
-  final int? fetchDepth;
-  final Expression? withSubmodules;
-  final Expression? token;
-
-  const new({
-    this.path,
-    this.repository,
-    this.gitRef,
-    this.persistCredentials,
-    this.fetchDepth,
-    this.withSubmodules,
-    this.token,
-  });
-
+class const CheckoutBuilder({
+  final String? path,
+  final Expression? repository,
+  final Expression? gitRef,
+  final ExpressionOrValue? persistCredentials,
+  final int? fetchDepth,
+  final Expression? withSubmodules,
+  final Expression? token,
+}) implements StepBuilder {
   @override
   Iterable<Step> build() => [
     Step.uses(

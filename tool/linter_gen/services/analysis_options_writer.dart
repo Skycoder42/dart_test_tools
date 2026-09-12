@@ -5,11 +5,7 @@ import 'package:yaml_writer/yaml_writer.dart';
 import '../models/analysis_options.dart';
 import '../models/analysis_options_ref.dart';
 
-class AnalysisOptionsWriter {
-  final YamlWriter yamlWriter;
-
-  new({required this.yamlWriter});
-
+class AnalysisOptionsWriter({required final YamlWriter yamlWriter}) {
   Future<void> saveAnalysisOptions(
     AnalysisOptionsRef target,
     AnalysisOptions analysisOptions,

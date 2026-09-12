@@ -10,14 +10,12 @@ part 'aur_options.g.dart';
 
 @internal
 @freezed
-sealed class PubspecWithAur with _$PubspecWithAur {
+sealed class const PubspecWithAur._() with _$PubspecWithAur {
   const factory({
     required Pubspec pubspec,
     required AurOptions aurOptions,
     required Map<String, String?> executables,
   }) = _PubspecWithAur;
-
-  const new _();
 
   String get archivePrefix =>
       aurOptions.binariesArchivePrefix ?? '${pubspec.name}-${pubspec.version}';

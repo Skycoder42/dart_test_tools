@@ -12,13 +12,9 @@ import '../steps/setup_gcloud_builder.dart';
 import 'common_integration_test_config.dart';
 import 'flutter_sdk_job_builder_mixin.dart';
 
-final class IosIntegrationTestJobConfig extends CommonIntegrationTestJobConfig
-    with
-        InstallXcodeSigningConfig,
-        SetupGCloudConfig,
-        IosIntegrationTestConfig {
-  new(super.inputContext, super.secretContext);
-}
+final class IosIntegrationTestJobConfig(super.inputContext, super.secretContext)
+    extends CommonIntegrationTestJobConfig
+    with InstallXcodeSigningConfig, SetupGCloudConfig, IosIntegrationTestConfig;
 
 final class IosIntegrationTestJobBuilder
     extends SdkJobBuilder<IosIntegrationTestJobConfig>

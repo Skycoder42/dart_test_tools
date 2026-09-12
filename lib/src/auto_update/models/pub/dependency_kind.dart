@@ -1,1 +1,6 @@
-enum DependencyKind { transitive, dev, direct, root }
+enum DependencyKind() {
+  transitive,
+  dev,
+  direct,
+  root,
+}

@@ -8,13 +8,11 @@ part 'workflow_input.freezed.dart';
 typedef InputBuilderFn<TParam> = Input Function(TParam param);
 
 @freezed
-sealed class WorkflowInput with _$WorkflowInput {
+sealed class const WorkflowInput._() with _$WorkflowInput {
   const factory({required String name, required Input input}) = _WorkflowInput;
-
-  const new _();
 }
 
-class WorkflowInputContext {
+class WorkflowInputContext() {
   final _inputs = <WorkflowInput>{};
 
   Expression call(WorkflowInput input) {

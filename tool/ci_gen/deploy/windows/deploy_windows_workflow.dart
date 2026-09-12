@@ -12,9 +12,7 @@ import 'jobs/deploy_windows_job_builder.dart';
 /// The installer artifact is auto-linked to `build-windows` via the convention
 /// default of the `artifactName` input. Gate the invocation on a created
 /// release with a job-level `if:` in the calling workflow.
-class DeployWindowsWorkflow implements WorkflowBuilder {
-  const new();
-
+class const DeployWindowsWorkflow() implements WorkflowBuilder {
   @override
   String get name => 'deploy-windows';
 

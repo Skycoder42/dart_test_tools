@@ -27,12 +27,13 @@ base mixin BuildFlatpakBundleConfig
   bool get requireGpgKey => true;
 }
 
-enum FlatpakArchMatrixSelector implements IMatrixSelector { x86_64, aarch64 }
+enum FlatpakArchMatrixSelector() implements IMatrixSelector {
+  x86_64,
+  aarch64,
+}
 
-final class ArchMatrixProperty
+final class const ArchMatrixProperty()
     extends IMatrixProperty<FlatpakArchMatrixSelector> {
-  const new();
-
   @override
   String get name => 'arch';
 
@@ -40,10 +41,8 @@ final class ArchMatrixProperty
   Object? valueFor(FlatpakArchMatrixSelector include) => include.name;
 }
 
-final class YqArchMatrixProperty
+final class const YqArchMatrixProperty()
     extends IMatrixProperty<FlatpakArchMatrixSelector> {
-  const new();
-
   @override
   String get name => 'yqArch';
 
@@ -54,16 +53,14 @@ final class YqArchMatrixProperty
   };
 }
 
-class BuildFlatpakBundleBuilder implements StepBuilder {
+class const BuildFlatpakBundleBuilder({
+  required final BuildFlatpakBundleConfig config,
+  required final ArchMatrixProperty arch,
+  required final YqArchMatrixProperty yqArch,
+}) implements StepBuilder {
   static final artifactNameOutput = DeployArtifactBuilder.artifactNameOutput;
   static const bundleNameStepId = StepId('flatpak-bundle-name');
   static final bundleNameOutput = bundleNameStepId.output('bundle-name');
-
-  final BuildFlatpakBundleConfig config;
-  final ArchMatrixProperty arch;
-  final YqArchMatrixProperty yqArch;
-
-  const new({required this.config, required this.arch, required this.yqArch});
 
   @override
   Iterable<Step> build() => [
