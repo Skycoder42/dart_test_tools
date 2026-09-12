@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - AI agent skills bundled under `skills/`, installable with `dart run skills@ get`
+- `dart-test-tools-auto-update` skill to run or resume an automatic dependency update locally
 
 ## [7.3.2] - 2026-08-28
 ### Fixed

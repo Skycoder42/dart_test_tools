@@ -13,6 +13,7 @@ dart run skills@ get dart_test_tools
 
 | Skill | Purpose |
 | --- | --- |
+| `dart-test-tools-auto-update` | Run a new dependency update, or pick up the one open on `automatic-dependency-updates`, mirroring the shared auto-update workflow locally. |
 | `dart-test-tools-cli-help` | Answer questions about the command line tools in `bin/` by running them with `--help`. |
 
 To add a new skill, scaffold it with `dart run skills@ create` — the directory
