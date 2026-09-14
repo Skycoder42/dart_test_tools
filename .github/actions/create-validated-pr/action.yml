@@ -43,7 +43,7 @@ runs:
         token: ${{ case(inputs.token != '', inputs.token, github.token) }}
     - name: Manually validate pull request
       if: inputs.validationWorkflow != ''
-      uses: benc-uk/workflow-dispatch@31e2b3319479a63f0ab15bf800eff9e913504e26
+      uses: benc-uk/workflow-dispatch@d004979be141727c7a17c28f603e2facc40d0855
       with:
         workflow: ${{ inputs.validationWorkflow }}
         ref: refs/heads/${{ steps.create-pull-request.outputs.pull-request-branch }}
