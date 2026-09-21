@@ -16,11 +16,11 @@ on:
       dockerPlatforms:
         type: string
         required: false
-        description: A comma or newline separated list of docker target platforms to build the docker image for. If not specified, the image is built for all available platforms. Passed to docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a as "platforms".
+        description: A comma or newline separated list of docker target platforms to build the docker image for. If not specified, the image is built for all available platforms. Passed to docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc as "platforms".
       dockerBuildArgs:
         type: string
         required: false
-        description: A newline separated list of docker build arguments to build the docker image with. Passed to docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a as "build-args"
+        description: A newline separated list of docker build arguments to build the docker image with. Passed to docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc as "build-args"
     secrets:
       dockerHubUsername:
         required: true
@@ -35,10 +35,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup QEMU
-        uses: docker/setup-qemu-action@1f40c72289eff860ee54a304f1438e3cff362e0a
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1
       - id: setup-docker-buildx
         name: Setup docker buildx
-        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
       - id: generate-tags
         name: Generate docker image tags
         run: |
@@ -64,7 +64,7 @@ jobs:
           username: ${{ secrets.dockerHubUsername }}
           password: ${{ secrets.dockerHubToken }}
       - name: Build and push image
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
         with:
           platforms: ${{ inputs.dockerPlatforms != '' && inputs.dockerPlatforms || steps.setup-docker-buildx.outputs.platforms }}
           build-args: ${{ inputs.dockerBuildArgs }}
