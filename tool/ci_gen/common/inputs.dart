@@ -519,7 +519,7 @@ artifacts/*.dmg
     input: Input(
       type: Type.string,
       required: false,
-      defaultValue: '25.08',
+      defaultValue: '26.08',
       description: 'The version of the freedesktop sdk and runtime being used.',
     ),
   );
@@ -529,7 +529,7 @@ artifacts/*.dmg
     input: Input(
       type: Type.string,
       required: false,
-      defaultValue: 'ghcr.io/flathub-infra/flatpak-github-actions:gnome-48',
+      defaultValue: 'ghcr.io/flathub-infra/flatpak-github-actions:gnome-51',
       description: 'The docker image to be used to build the bundle with',
     ),
   );

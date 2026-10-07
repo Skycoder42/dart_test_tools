@@ -1,5 +1,3 @@
-// ignore_for_file: experimental_member_use for XPath extensions
-
 import 'dart:io';
 
 import 'package:path/path.dart' as path;

@@ -4,7 +4,7 @@ on:
       flatpakPlatformImage:
         type: string
         required: false
-        default: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
+        default: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
         description: The docker image to be used to build the bundle with
       artifactPrefix:
         type: string

@@ -4,7 +4,7 @@ on:
       flatpakPlatformImage:
         type: string
         required: false
-        default: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
+        default: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
         description: The docker image to be used to build the bundle with
       dartSdkVersion:
         type: string
@@ -14,7 +14,7 @@ on:
       flatpakSdkVersion:
         type: string
         required: false
-        default: "25.08"
+        default: "26.08"
         description: The version of the freedesktop sdk and runtime being used.
       workingDirectory:
         type: string
