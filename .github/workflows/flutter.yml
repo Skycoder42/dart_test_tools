@@ -327,7 +327,7 @@ jobs:
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload coverage data
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.minCoverage > 0 && matrix.coverageArgs != ''
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: coverage-info-${{ matrix.platform }}
           path: ${{ inputs.workingDirectory }}/coverage/lcov.info
@@ -350,7 +350,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Download coverage data
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           path: ${{ inputs.workingDirectory }}/coverage
           pattern: coverage-info-*
@@ -371,7 +371,7 @@ jobs:
         run: genhtml --no-function-coverage --synthesize-missing -o coverage/html coverage/cleaned.info
         working-directory: ${{ inputs.workingDirectory }}
       - name: Upload coverage HTML report
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: coverage-html
           path: ${{ inputs.workingDirectory }}/coverage/html
@@ -608,7 +608,7 @@ jobs:
         run: ${{ fromJSON(inputs.integrationTestSetup)['ios'] }}
         working-directory: ${{ inputs.workingDirectory }}
       - name: Install Signing Identity
-        uses: apple-actions/import-codesign-certs@5142e029c445c10ffc7149d172e540235a065466
+        uses: apple-actions/import-codesign-certs@77ba2a2a8f5cfc8c405ebf3159f767c323e238f9
         with:
           p12-file-base64: ${{ secrets.signingIdentity }}
           p12-password: ${{ secrets.signingIdentityPassphrase }}
