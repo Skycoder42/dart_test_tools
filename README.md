@@ -14,6 +14,7 @@ dart run skills@ get dart_test_tools
 | Skill | Purpose |
 | --- | --- |
 | `dart-test-tools-auto-update` | Run a new dependency update, or pick up the one open on `automatic-dependency-updates`, then validate the package the way CI does. |
+| `dart-test-tools-native-update` | Regenerate the native platform projects of a flutter app from the current Flutter templates, keep the template updates and restore the project's own identifiers and customisations. |
 | `dart-test-tools-cli-help` | Answer questions about the command line tools in `bin/` by running them with `--help`. |
 
 To add a new skill, scaffold it with `dart run skills@ create` — the directory

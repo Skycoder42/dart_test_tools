@@ -5,7 +5,9 @@ description: >-
   flutter package — either starting a fresh update from the default branch, or working on
   the update that is already open on the 'automatic-dependency-updates' branch. Resolves
   which of the two it is, puts the worktree on the right branch, reproduces the shared
-  auto-update CI workflow locally, and then validates the package the way CI would.
+  auto-update CI workflow locally, and then validates the package the way CI would. When
+  Flutter moved to a new minor version, it offers to update the native platform projects
+  as well.
 license: BSD-3-Clause
 user-invocable: true
 argument-hint: "[new|existing] [force]"
@@ -35,7 +37,9 @@ This skill drives the same thing locally. There are exactly two situations:
 The skill runs in phases. **Phase 1** resolves the branch and, for a new update, runs the
 update. **Phase 2** validates the package state against the checks CI performs. Both
 phases always run — phase 2 applies whether or not an update was just executed, because
-in `existing` mode the point is precisely to fix what CI is unhappy about.
+in `existing` mode the point is precisely to fix what CI is unhappy about. **Phase 3** only
+applies after a new Flutter minor (or major) version: it offers to update the native
+platform projects too.
 
 Throughout: **never commit, never push, never publish for real.** Working-tree changes
 plus a summary are the whole output.
@@ -99,6 +103,13 @@ Always present:
 | `analyze_root` | **run analyze and format from here** — the workspace root |
 | `workspace` | `yes` when `target` is a pub workspace with members |
 | `package_count` | how many `package.<n>.*` groups follow |
+| `flutter_min_base` / `flutter_min_now` | the highest minimum Flutter version any package declares, before the update and now, or `none` |
+| `flutter_update` | how far that moved: `major`, `minor`, `patch`, `none`, or `n/a` when it cannot be compared |
+| `flutter_apps` | how many flutter app projects (with native platform folders) the repository has |
+
+"Before the update" means the commit where the current branch forked off the default
+branch. In `new` mode that is `HEAD`. In `existing` mode it is the state before CI's
+update commits.
 
 One group per package, `<n>` from 1 to `package_count`:
 
@@ -232,4 +243,29 @@ When the loop ends, tell the user:
 - Anything you deliberately left alone, and the decision you need from them.
 - For a new update, what `update_report` says was actually updated.
 
-Then stop. The user commits.
+Then go to phase 3. If it does not apply, stop there — the user commits.
+
+---
+
+## Phase 3 — offer a native project update
+
+The dependency update never touches the native platform projects of a flutter app
+(`android/`, `ios/`, `linux/`, `macos/`, `web/`, `windows/`). Their templates move with
+Flutter releases. If they are left behind, a native build eventually breaks — for example
+when a plugin needs a newer Gradle, Android Gradle Plugin or deployment target.
+
+Only offer the native update when **both** of these hold. Otherwise do not mention it.
+
+- `flutter_update` is `major` or `minor`.
+- `flutter_apps` is greater than `0`.
+
+Ask only after the phase 2 report, never before. Name the versions
+(`flutter_min_base` → `flutter_min_now`) and ask whether the native projects should be
+updated as well.
+
+- **No** — stop. The user commits.
+- **Yes** — hand over to the `dart-test-tools-native-update` skill. It only runs on a
+  clean working tree, and the dependency update has just left changes behind. So:
+  1. Ask the user to commit the dependency update first. This skill still never commits
+     itself, and the two changes belong in separate commits anyway.
+  2. Once they confirm, invoke the `dart-test-tools-native-update` skill and follow it.

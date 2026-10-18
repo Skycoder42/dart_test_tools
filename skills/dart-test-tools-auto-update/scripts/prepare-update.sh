@@ -445,6 +445,83 @@ scan_packages() {
 	fi
 }
 
+# --- flutter versions ------------------------------------------------------------------
+
+# The commit the current state is compared against: where the branch forked off the
+# default branch. On the default branch that is HEAD — the state before a new update; on
+# the update branch it is the state before the update commits CI made.
+base_commit() {
+	local main ref
+	main="$(main_branch)"
+	for ref in "$main" "origin/$main"; do
+		git merge-base "$ref" HEAD 2>/dev/null && return
+	done
+	git rev-parse --verify --quiet HEAD
+}
+
+# Prints the lower bound of a version constraint ('>=3.47.0', '^3.47.0', '3.47.0'), or
+# nothing when it has none.
+lower_bound() {
+	if [[ $1 =~ ^(\^|>=|>)?[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+		printf '%s\n' "${BASH_REMATCH[2]}"
+	fi
+}
+
+# Prints the highest of the given versions, or nothing when none is given.
+highest_version() {
+	printf '%s\n' "$@" | sed '/^$/d' | sort -V | tail -n 1
+}
+
+# Sets FLUTTER_MIN_BASE and FLUTTER_MIN_NOW to the highest minimum flutter version any
+# package declares at the base commit and in the working tree, and FLUTTER_UPDATE to how
+# far it moved. Also counts the flutter app projects into FLUTTER_APPS: their native
+# platform projects come from templates that change with flutter releases, and nothing in
+# the dependency update touches them.
+scan_flutter_versions() {
+	local base='' entry path rel metadata
+	local -a now=() before=()
+
+	base="$(base_commit)" ||
+		warn "could not determine the commit the update started from — flutter_update is 'n/a'"
+
+	for entry in "${PACKAGE_INFO[@]}"; do
+		IFS=$US read -r _ path _ <<<"$entry"
+		rel="${path#"$ROOT"}"
+		rel="${rel#/}"
+		rel="${rel:+$rel/}pubspec.yaml"
+		now+=("$(lower_bound "$(yq -r '.environment.flutter // ""' "$path/pubspec.yaml" 2>/dev/null || true)")")
+		[[ -z $base ]] ||
+			before+=("$(lower_bound "$(git show "$base:$rel" 2>/dev/null | yq -r '.environment.flutter // ""' 2>/dev/null || true)")")
+	done
+
+	FLUTTER_MIN_NOW="$(highest_version ${now[@]+"${now[@]}"})"
+	FLUTTER_MIN_BASE="$(highest_version ${before[@]+"${before[@]}"})"
+
+	local now_major now_minor now_patch base_major base_minor base_patch
+	if [[ -z $FLUTTER_MIN_NOW || -z $FLUTTER_MIN_BASE ]]; then
+		FLUTTER_UPDATE=n/a
+	else
+		IFS=. read -r now_major now_minor now_patch <<<"$FLUTTER_MIN_NOW"
+		IFS=. read -r base_major base_minor base_patch <<<"$FLUTTER_MIN_BASE"
+		if ((now_major > base_major)); then
+			FLUTTER_UPDATE=major
+		elif ((now_major == base_major && now_minor > base_minor)); then
+			FLUTTER_UPDATE=minor
+		elif ((now_major == base_major && now_minor == base_minor && now_patch > base_patch)); then
+			FLUTTER_UPDATE='patch'
+		else
+			FLUTTER_UPDATE=none
+		fi
+	fi
+
+	FLUTTER_APPS=0
+	while IFS= read -r -d '' metadata; do
+		if [[ "$(yq -r '.project_type // ""' "$ROOT/$metadata" 2>/dev/null || true)" == app ]]; then
+			FLUTTER_APPS=$((FLUTTER_APPS + 1))
+		fi
+	done < <(git -C "$ROOT" ls-files -z -- ':(glob)**/.metadata')
+}
+
 # --- record ----------------------------------------------------------------------------
 
 emit_record() {
@@ -464,6 +541,11 @@ emit_record() {
 		printf 'update_log: %s\n' "$UPDATE_LOG"
 		printf 'update_report: %s\n' "$UPDATE_REPORT"
 	fi
+
+	printf 'flutter_min_base: %s\n' "${FLUTTER_MIN_BASE:-none}"
+	printf 'flutter_min_now: %s\n' "${FLUTTER_MIN_NOW:-none}"
+	printf 'flutter_update: %s\n' "$FLUTTER_UPDATE"
+	printf 'flutter_apps: %s\n' "$FLUTTER_APPS"
 
 	printf 'analyze_root: %s\n' "$ANALYZE_ROOT"
 	printf 'workspace: %s\n' "$IS_WORKSPACE"
@@ -530,6 +612,7 @@ main() {
 
 	# After the update, so that the record describes the post-update state.
 	scan_packages "$TARGET"
+	scan_flutter_versions
 	emit_record
 }
 
