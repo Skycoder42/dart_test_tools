@@ -578,6 +578,7 @@ have been added:
 ### Added
 - Initial release
 
+[7.3.7]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.6...v7.3.7
 [7.3.6]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.5...v7.3.6
 [7.3.5]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.4...v7.3.5
 [7.3.4]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.3...v7.3.4
