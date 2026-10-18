@@ -4,12 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [7.3.4] - 2026-10-18
 ### Added
 - `dart-test-tools-native-update` skill to update the native platform projects of a flutter app to the current Flutter templates
 
 ### Changed
 - `dart-test-tools-auto-update` skill offers a native project update when Flutter moved to a new minor version
+- Updated min sdk version to ^3.13.0
+- Updated dependencies
 
 ## [7.3.3] - 2026-09-12
 ### Added
@@ -564,7 +566,7 @@ have been added:
 ### Added
 - Initial release
 
-[Unreleased]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.3...vHEAD
+[7.3.4]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.3...v7.3.4
 [7.3.3]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.2...v7.3.3
 [7.3.2]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.1...v7.3.2
 [7.3.1]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.0...v7.3.1
