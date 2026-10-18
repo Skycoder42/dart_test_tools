@@ -109,7 +109,7 @@ All notable changes to this project will be documented in this file.
 
     final nfpm = await generateAndLoad();
 
-    expect(nfpm['name'], 'test_package');
+    expect(nfpm['name'], 'test-package');
     expect(nfpm['description'], 'A pubspec description.');
     expect(nfpm['homepage'], 'https://example.com/home');
   });
@@ -219,7 +219,7 @@ contents: []
 
     expect(trees, hasLength(1));
     expect(trees.single['src'], bundleDir.absolute.path);
-    expect(trees.single['dst'], '/opt/test_package');
+    expect(trees.single['dst'], '/opt/test-package');
   });
 
   test('adds a symlink for every executable with correct mapping', () async {
@@ -234,7 +234,7 @@ contents: []
       symlinks,
       contains(
         allOf(
-          containsPair('src', '/opt/test_package/bin/srv'),
+          containsPair('src', '/opt/test-package/bin/srv'),
           containsPair('dst', '/usr/bin/srv'),
         ),
       ),
@@ -243,7 +243,7 @@ contents: []
       symlinks,
       contains(
         allOf(
-          containsPair('src', '/opt/test_package/bin/cli_main'),
+          containsPair('src', '/opt/test-package/bin/cli_main'),
           containsPair('dst', '/usr/bin/my-cli'),
         ),
       ),
@@ -264,6 +264,7 @@ contents: []
       licenses.single['src'],
       File.fromUri(srcDir.uri.resolve('LICENSE')).resolveSymbolicLinksSync(),
     );
+    expect(licenses.single['dst'], '/usr/share/licenses/test-package/LICENSE');
     // A regular file, so nfpm packages it for deb/rpm/apk alike.
     expect(licenses.single.containsKey('type'), isFalse);
   });
@@ -376,10 +377,10 @@ contents: []
 
     final nfpm = await generateAndLoad();
     final entry = (nfpm['contents'] as YamlList).cast<YamlMap>().firstWhere(
-      (e) => (e['dst'] as String).startsWith('/opt/test_package/'),
+      (e) => (e['dst'] as String).startsWith('/opt/test-package/'),
     );
 
-    expect(entry['dst'], '/opt/test_package/1.0.0-beta.1+3/x');
+    expect(entry['dst'], '/opt/test-package/1.0.0-beta.1+3/x');
   });
 
   test('treats an empty executable value like a null one', () async {
@@ -401,7 +402,7 @@ executables:
       symlinks,
       contains(
         allOf(
-          containsPair('src', '/opt/test_package/bin/srv'),
+          containsPair('src', '/opt/test-package/bin/srv'),
           containsPair('dst', '/usr/bin/srv'),
         ),
       ),

@@ -103,7 +103,7 @@ class const NfpmGenerator([
 
   void _applyMetadata(YamlEditor editor, Pubspec pubspec) {
     if (!_isSet(editor, 'name')) {
-      editor.update(['name'], pubspec.name);
+      editor.update(['name'], _packageName(pubspec));
     }
     if (!_isSet(editor, 'description') && pubspec.description != null) {
       editor.update(['description'], pubspec.description);
@@ -184,7 +184,7 @@ class const NfpmGenerator([
   ///
   /// For every entry this rewrites a relative `src` to an absolute path
   /// anchored at [inputDir] and expands `%{name}` / `%{version}` placeholders
-  /// in `dst` using [pubspec].
+  /// in `dst` using [pubspec] (`%{name}` being the [_packageName]).
   void _resolveContentSources(
     YamlEditor editor,
     Directory inputDir,
@@ -241,7 +241,7 @@ class const NfpmGenerator([
     }
 
     final expanded = dst
-        .replaceAll('%{name}', pubspec.name)
+        .replaceAll('%{name}', _packageName(pubspec))
         .replaceAll('%{version}', pubspec.version?.toString() ?? '');
     if (expanded != dst) {
       editor.update(['contents', index, 'dst'], expanded);
@@ -261,7 +261,7 @@ class const NfpmGenerator([
     Directory bundleRoot,
   ) => {
     'src': _absolute(bundleRoot.path),
-    'dst': '/opt/${pubspec.name}',
+    'dst': '/opt/${_packageName(pubspec)}',
     'type': 'tree',
   };
 
@@ -271,7 +271,7 @@ class const NfpmGenerator([
   ) => [
     for (final MapEntry(key: command, value: source) in executables.entries)
       {
-        'src': '/opt/${pubspec.name}/bin/$source',
+        'src': '/opt/${_packageName(pubspec)}/bin/$source',
         'dst': '/usr/bin/$command',
         'type': 'symlink',
       },
@@ -288,7 +288,7 @@ class const NfpmGenerator([
     final licenseName = p.basename(licenseFile.path);
     return {
       'src': File(_absolute(licenseFile.path)).resolveSymbolicLinksSync(),
-      'dst': '/usr/share/licenses/${pubspec.name}/$licenseName',
+      'dst': '/usr/share/licenses/${_packageName(pubspec)}/$licenseName',
     };
   }
 
@@ -332,6 +332,12 @@ class const NfpmGenerator([
     }
     return null;
   }
+
+  /// The package name derived from the pubspec name.
+  ///
+  /// Underscores are replaced by dashes, as they are not allowed in debian
+  /// package names.
+  String _packageName(Pubspec pubspec) => pubspec.name.replaceAll('_', '-');
 
   String _absolute(String path) => p.normalize(p.absolute(path));
 }

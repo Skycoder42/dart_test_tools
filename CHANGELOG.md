@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.3.7] - 2026-10-18
+### Fixed
+- `generate-nfpm` replaces underscores in the pubspec name by dashes for the default package name, the `/opt` install directory, `%{name}` and the license directory, as underscores are not allowed in debian package names
+
 ## [7.3.6] - 2026-10-18
 ### Fixed
 - `generate-cask` reads `MACOSX_DEPLOYMENT_TARGET` directly from the Xcode project file instead of using `xcodebuild`, which fails without a fully set up flutter project
