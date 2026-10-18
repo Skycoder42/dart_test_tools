@@ -46,7 +46,7 @@ sealed class CaskPubspecOptions with _$CaskPubspecOptions {
   const factory({
     String? caskName,
     required String downloadUrl,
-    @Default(':catalina') String minMacosVersion,
+    String? minMacosVersion,
     List<String>? zap,
   }) = _CaskPubspecOptions;
 

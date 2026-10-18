@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
@@ -19,7 +20,7 @@ class const CaskGenerator([
     required Directory outDir,
   }) async {
     final options = await _caskOptionsLoader.load(inDir);
-    final config = await _buildCasksConfig(options);
+    final config = await _buildCasksConfig(inDir, options);
 
     final caskName = _getCaskName(options);
     await Github.env.setOutput('caskName', caskName);
@@ -28,6 +29,7 @@ class const CaskGenerator([
   }
 
   Future<List<Map<String, dynamic>>> _buildCasksConfig(
+    Directory inDir,
     CaskOptions options,
   ) async => [
     {
@@ -40,7 +42,11 @@ class const CaskGenerator([
       'desc': options.pubspec.description,
       'homepage': options.pubspec.homepage,
     },
-    {'depends_on macos:': _CaskLiteral(options.options.minMacosVersion)},
+    {
+      'depends_on macos:': _CaskLiteral(
+        options.options.minMacosVersion ?? await _getMinMacosVersion(inDir),
+      ),
+    },
     {'app': '${options.appInfo.productName}.app'},
     if (options.options.zap case final List<dynamic> zap when zap.isNotEmpty)
       {'zap trash:': zap}
@@ -51,6 +57,75 @@ class const CaskGenerator([
         ],
       },
   ];
+
+  /// Reads MACOSX_DEPLOYMENT_TARGET of the macOS project via xcodebuild and
+  /// converts it to the matching homebrew macOS symbol (e.g. `:monterey`).
+  Future<String> _getMinMacosVersion(Directory inDir) async {
+    final result = await Process.run('xcodebuild', [
+      '-project',
+      inDir.subDir('macos').subDir('Runner.xcodeproj').path,
+      '-scheme',
+      'Runner',
+      '-configuration',
+      'Release',
+      '-showBuildSettings',
+      '-json',
+    ]);
+    if (result.exitCode != 0) {
+      throw Exception(
+        'Failed to read build settings via xcodebuild '
+        '(exit code ${result.exitCode}): ${result.stderr}',
+      );
+    }
+
+    final settings = jsonDecode(result.stdout as String) as List<dynamic>;
+    final deploymentTarget = settings
+        .cast<Map<String, dynamic>>()
+        .map(
+          (e) =>
+              (e['buildSettings']
+                  as Map<String, dynamic>)['MACOSX_DEPLOYMENT_TARGET'],
+        )
+        .whereType<String>()
+        .firstOrNull;
+    if (deploymentTarget == null) {
+      throw Exception(
+        'MACOSX_DEPLOYMENT_TARGET is not set in the macOS project',
+      );
+    }
+
+    return await _macosVersionToSymbol(deploymentTarget);
+  }
+
+  /// Asks homebrew itself for the symbol of the given macOS version, so no
+  /// version names have to be maintained here.
+  Future<String> _macosVersionToSymbol(String deploymentTarget) async {
+    if (!RegExp(r'^\d+(\.\d+){0,2}$').hasMatch(deploymentTarget)) {
+      throw Exception('Invalid macOS deployment target: $deploymentTarget');
+    }
+
+    final result = await Process.run('brew', [
+      'ruby',
+      '-e',
+      'puts MacOSVersion.new("$deploymentTarget").to_sym',
+    ]);
+    if (result.exitCode != 0) {
+      throw Exception(
+        'Failed to resolve macOS version $deploymentTarget via homebrew '
+        '(exit code ${result.exitCode}): ${result.stderr}',
+      );
+    }
+
+    final symbol = (result.stdout as String).trim();
+    if (symbol.isEmpty || symbol == 'dunno') {
+      throw Exception(
+        'Homebrew does not know a macOS release for deployment target '
+        '$deploymentTarget (too old or too new for the installed homebrew). '
+        'Set cask.minMacosVersion in the pubspec.yaml explicitly.',
+      );
+    }
+    return ':$symbol';
+  }
 
   Future<String> _getDmgSha256Sum(CaskOptions options) async {
     final client = HttpClient();

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.3.5] - 2026-10-18
+### Changed
+- `generate-cask` now derives `depends_on macos:` from the `MACOSX_DEPLOYMENT_TARGET` of the macOS project (via `xcodebuild`, resolved to the symbol by `brew ruby`) instead of defaulting to the no longer supported `:catalina`. `cask.minMacosVersion` still overrides it.
+
 ## [7.3.4] - 2026-10-18
 ### Added
 - `dart-test-tools-native-update` skill to update the native platform projects of a flutter app to the current Flutter templates
@@ -566,6 +570,7 @@ have been added:
 ### Added
 - Initial release
 
+[7.3.5]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.4...v7.3.5
 [7.3.4]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.3...v7.3.4
 [7.3.3]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.2...v7.3.3
 [7.3.2]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.1...v7.3.2
