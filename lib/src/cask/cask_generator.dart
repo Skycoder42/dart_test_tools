@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
@@ -58,43 +57,47 @@ class const CaskGenerator([
       },
   ];
 
-  /// Reads MACOSX_DEPLOYMENT_TARGET of the macOS project via xcodebuild and
-  /// converts it to the matching homebrew macOS symbol (e.g. `:monterey`).
+  /// Reads MACOSX_DEPLOYMENT_TARGET from the macOS xcode project and converts
+  /// it to the matching homebrew macOS symbol (e.g. `:monterey`).
+  ///
+  /// The project file is parsed directly, as xcodebuild would require a fully
+  /// set up flutter project (with generated files and packages).
   Future<String> _getMinMacosVersion(Directory inDir) async {
-    final result = await Process.run('xcodebuild', [
-      '-project',
-      inDir.subDir('macos').subDir('Runner.xcodeproj').path,
-      '-scheme',
-      'Runner',
-      '-configuration',
-      'Release',
-      '-showBuildSettings',
-      '-json',
-    ]);
-    if (result.exitCode != 0) {
-      throw Exception(
-        'Failed to read build settings via xcodebuild '
-        '(exit code ${result.exitCode}): ${result.stderr}',
-      );
-    }
+    final pbxprojFile = inDir
+        .subDir('macos')
+        .subDir('Runner.xcodeproj')
+        .subFile('project.pbxproj');
+    final pbxproj = await pbxprojFile.readAsString();
 
-    final settings = jsonDecode(result.stdout as String) as List<dynamic>;
-    final deploymentTarget = settings
-        .cast<Map<String, dynamic>>()
-        .map(
-          (e) =>
-              (e['buildSettings']
-                  as Map<String, dynamic>)['MACOSX_DEPLOYMENT_TARGET'],
-        )
-        .whereType<String>()
-        .firstOrNull;
+    // If configurations differ, the highest one is the effective minimum.
+    final deploymentTarget = RegExp(
+      r'MACOSX_DEPLOYMENT_TARGET\s*=\s*"?(\d+(?:\.\d+){0,2})"?\s*;',
+    ).allMatches(pbxproj).map((m) => m[1]!).fold<String?>(null, _maxVersion);
     if (deploymentTarget == null) {
       throw Exception(
-        'MACOSX_DEPLOYMENT_TARGET is not set in the macOS project',
+        'MACOSX_DEPLOYMENT_TARGET is not set in ${pbxprojFile.path}. '
+        'Set cask.minMacosVersion in the pubspec.yaml explicitly.',
       );
     }
 
     return await _macosVersionToSymbol(deploymentTarget);
+  }
+
+  String _maxVersion(String? a, String b) {
+    if (a == null) {
+      return b;
+    }
+
+    final aParts = a.split('.').map(int.parse).toList();
+    final bParts = b.split('.').map(int.parse).toList();
+    for (var i = 0; i < aParts.length || i < bParts.length; ++i) {
+      final aPart = i < aParts.length ? aParts[i] : 0;
+      final bPart = i < bParts.length ? bParts[i] : 0;
+      if (aPart != bPart) {
+        return aPart > bPart ? a : b;
+      }
+    }
+    return a;
   }
 
   /// Asks homebrew itself for the symbol of the given macOS version, so no
