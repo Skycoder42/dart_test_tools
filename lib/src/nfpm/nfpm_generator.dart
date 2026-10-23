@@ -84,7 +84,7 @@ class const NfpmGenerator([
     }
   }
 
-  Map<String, String> _readExecutables(String pubspecYaml) {
+  List<String> _readExecutables(String pubspecYaml) {
     final doc = loadYaml(pubspecYaml);
     if (doc is! YamlMap) {
       throw Exception('Invalid pubspec.yaml!');
@@ -95,10 +95,7 @@ class const NfpmGenerator([
       throw Exception('pubspec.yaml must define at least one executable!');
     }
 
-    return executables.cast<String, String?>().map(
-      (command, source) =>
-          MapEntry(command, source?.isEmpty ?? true ? command : source!),
-    );
+    return executables.keys.cast<String>().toList();
   }
 
   void _applyMetadata(YamlEditor editor, Pubspec pubspec) {
@@ -267,11 +264,11 @@ class const NfpmGenerator([
 
   List<Map<String, Object?>> _symlinkEntries(
     Pubspec pubspec,
-    Map<String, String> executables,
+    List<String> executables,
   ) => [
-    for (final MapEntry(key: command, value: source) in executables.entries)
+    for (final command in executables)
       {
-        'src': '/opt/${_packageName(pubspec)}/bin/$source',
+        'src': '/opt/${_packageName(pubspec)}/bin/$command',
         'dst': '/usr/bin/$command',
         'type': 'symlink',
       },

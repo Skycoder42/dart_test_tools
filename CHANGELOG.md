@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.3.8] - 2026-10-23
+### Fixed
+- `generate-nfpm` points the `/usr/bin` symlinks at the binary named after the executable instead of the dart script, matching how the compile workflow names the binaries in the bundle
+
 ## [7.3.7] - 2026-10-18
 ### Fixed
 - `generate-nfpm` replaces underscores in the pubspec name by dashes for the default package name, the `/opt` install directory, `%{name}` and the license directory, as underscores are not allowed in debian package names
@@ -578,6 +582,7 @@ have been added:
 ### Added
 - Initial release
 
+[7.3.8]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.7...v7.3.8
 [7.3.7]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.6...v7.3.7
 [7.3.6]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.5...v7.3.6
 [7.3.5]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.4...v7.3.5

@@ -5,6 +5,14 @@
 - Use the `dart` MCP server for Dart tasks instead of shelling out to the `dart` CLI.
   In particular, use `mcp__dart__analyze_files` for analysis rather than `dart analyze`.
 
+## Changelog and versioning
+
+- Changelog entries and version bumps MUST always be done via `bin/cider.dart`
+  (which wraps the `cider` dart package), e.g.
+  `dart run bin/cider.dart log fixed '<entry>'`, `dart run bin/cider.dart bump patch`
+  and `dart run bin/cider.dart release`. Never edit `CHANGELOG.md` or the
+  `pubspec.yaml` version by hand, and do not use a globally installed `cider`.
+
 ## Generated files
 
 - The GitHub Actions workflows in `.github/workflows/*.yml` are **generated** from

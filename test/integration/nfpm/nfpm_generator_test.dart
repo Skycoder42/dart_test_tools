@@ -243,7 +243,7 @@ contents: []
       symlinks,
       contains(
         allOf(
-          containsPair('src', '/opt/test-package/bin/cli_main'),
+          containsPair('src', '/opt/test-package/bin/my-cli'),
           containsPair('dst', '/usr/bin/my-cli'),
         ),
       ),
@@ -404,6 +404,15 @@ executables:
         allOf(
           containsPair('src', '/opt/test-package/bin/srv'),
           containsPair('dst', '/usr/bin/srv'),
+        ),
+      ),
+    );
+    expect(
+      symlinks,
+      contains(
+        allOf(
+          containsPair('src', '/opt/test-package/bin/tool'),
+          containsPair('dst', '/usr/bin/tool'),
         ),
       ),
     );
