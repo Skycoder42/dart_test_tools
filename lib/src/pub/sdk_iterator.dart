@@ -22,10 +22,7 @@ class SdkIterator(final PubWrapper pub) {
         .singleWhereOrNull((s) => s.name == 'Flutter')
         ?.version;
 
-    final workspaces = await PubWrapper(
-      pub.workingDirectory,
-      isFlutter: false,
-    ).workspaceList();
+    final workspaces = await pub.workspaceList();
 
     for (final info in workspaces.packages) {
       await callback(

@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:pub_semver/pub_semver.dart';
 
+import '../pub/models/pub/dependency_kind.dart';
+import '../pub/models/pub/outdated/package_info.dart';
+import '../pub/pub_wrapper.dart';
+import '../pub/sdk_iterator.dart';
 import '../tools/github.dart';
-import 'models/pub/dependency_kind.dart';
-import 'models/pub/outdated/package_info.dart';
-import 'pub_wrapper.dart';
-import 'sdk_iterator.dart';
 
 class const UpdateChecker({required final bool flutterCompat}) {
   Future<void> call(Directory targetDirectory) async {

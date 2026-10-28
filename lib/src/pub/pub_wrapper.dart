@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cider/cider.dart';
 import 'package:meta/meta.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
+import '../cider/version_sync_plugin.dart';
 import '../tools/github.dart';
 import '../tools/io.dart';
 import 'models/dependency_source.dart';
@@ -89,6 +91,8 @@ class PubWrapper(
     }
   }
 
+  Future<void> get() async => await _execPub('get');
+
   Future<void> upgrade() async => await _execPub('upgrade');
 
   Stream<String> upgradeMajor() =>
@@ -135,15 +139,16 @@ class PubWrapper(
   }
 
   Future<Dependencies> deps() async =>
-      await _execJson('deps').map(Dependencies.fromJson).single;
+      await _execJson('deps', const []).map(Dependencies.fromJson).single;
 
   Future<OutdatedInfo> outdated() async => await _execJson('outdated', [
     '--show-all',
     '--dev-dependencies',
   ]).map(OutdatedInfo.fromJson).single;
 
-  Future<Workspaces> workspaceList() async =>
-      await _execJson('workspace', ['list']).map(Workspaces.fromJson).single;
+  Future<Workspaces> workspaceList() async => await _execJson('workspace', [
+    'list',
+  ], executable: 'dart').map(Workspaces.fromJson).single;
 
   Future<void> format() async =>
       await _exec(executable: 'dart', 'format', ['.']);
@@ -158,12 +163,19 @@ class PubWrapper(
     ]);
   }
 
-  Future<void> cider(List<String> commands) => Github.exec(
-    'cider',
-    commands,
-    workingDirectory: workingDirectory,
-    runInShell: Platform.isWindows,
-  );
+  Future<void> cider(List<String> commands) async {
+    print('[command] cider ${commands.join(' ')}');
+    final cli = CiderCli();
+    cli.addCommand(VersionSyncCommand(cli.console));
+    final exitCode = await cli.run([
+      '--project-root',
+      workingDirectory.path,
+      ...commands,
+    ]);
+    if (exitCode != 0) {
+      throw Exception('cider failed with exit code: $exitCode');
+    }
+  }
 
   Future<void> _exec(String command, List<String> args, {String? executable}) =>
       Github.exec(
@@ -188,17 +200,20 @@ class PubWrapper(
   );
 
   Stream<String> _execPubLines(
-    String command, [
-    List<String> args = const [],
-  ]) => _execLines('pub', [command, ...args]);
+    String command,
+    List<String> args, {
+    String? executable,
+  }) => _execLines('pub', [command, ...args], executable: executable);
 
   Stream<Map<String, dynamic>> _execJson(
-    String command, [
-    List<String> args = const [],
-  ]) => _execPubLines(command, [
-    ...args,
-    '--json',
-  ]).transform(json.decoder).cast<Map<String, dynamic>>();
+    String command,
+    List<String> args, {
+    String? executable,
+  }) => _execPubLines(
+    command,
+    [...args, '--json'],
+    executable: executable,
+  ).transform(json.decoder).cast<Map<String, dynamic>>();
 
   static Future<bool> _isFlutterProject(Directory workingDirectory) async {
     final wrapper = PubWrapper(workingDirectory, isFlutter: false);
