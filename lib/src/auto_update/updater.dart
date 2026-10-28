@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
+import '../pub/pub_wrapper.dart';
+import '../pub/sdk_iterator.dart';
 import '../tools/github.dart';
-import 'pub_wrapper.dart';
-import 'sdk_iterator.dart';
 
 class Updater({
   required final bool flutterCompat,
