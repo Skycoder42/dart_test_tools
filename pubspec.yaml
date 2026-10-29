@@ -15,7 +15,8 @@ executables:
   export-xml-changelog: export_xml_changelog
   generate-cask: generate_cask
   generate-nfpm: generate_nfpm
-  auto-update: auto_update
+  renovate-post-upgrade: renovate_post_upgrade
+  renovate-config: renovate_config
   auto-export: auto_export
 
 dependencies:
