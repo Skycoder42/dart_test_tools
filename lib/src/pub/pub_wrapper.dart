@@ -144,6 +144,7 @@ class PubWrapper(
   Future<OutdatedInfo> outdated() async => await _execJson('outdated', [
     '--show-all',
     '--dev-dependencies',
+    '--no-dependency-overrides',
   ]).map(OutdatedInfo.fromJson).single;
 
   Future<Workspaces> workspaceList() async => await _execJson('workspace', [
