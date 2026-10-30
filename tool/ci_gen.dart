@@ -30,6 +30,7 @@ import 'ci_gen/nfpm/nfpm_workflow.dart';
 import 'ci_gen/package/package_workflow.dart';
 import 'ci_gen/publish/publish_workflow.dart';
 import 'ci_gen/release/release_workflow.dart';
+import 'ci_gen/renovate/renovate_workflow.dart';
 import 'ci_gen/update_actions/update_actions_workflow.dart';
 
 Future<void> main() async {
@@ -62,6 +63,7 @@ Future<void> main() async {
     DeployPackagecloudWorkflow(),
     DeployWindowsWorkflow(),
     AutoUpdateWorkflow(),
+    RenovateWorkflow(),
     UpdateActionsWorkflow(),
   ];
 

@@ -643,18 +643,6 @@ artifacts/*.dmg
     ),
   );
 
-  static const reviewer = WorkflowInput(
-    name: 'reviewer',
-    input: Input(
-      type: Type.string,
-      required: false,
-      defaultValue: '',
-      description:
-          'The GitHub user to request as reviewer and to mention on failures. '
-          'If left empty, the repository owner is used.',
-    ),
-  );
-
   static const succeeded = WorkflowInput(
     name: 'succeeded',
     input: Input(

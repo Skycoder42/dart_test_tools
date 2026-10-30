@@ -1,0 +1,71 @@
+on:
+  workflow_call:
+    inputs:
+      flutterSdkChannel:
+        type: string
+        required: false
+        default: stable
+        description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action".
+      flutterCompat:
+        type: boolean
+        required: false
+        default: true
+        description: Whether Renovate must not propose dependency versions beyond the ones pinned by the Flutter SDK.
+      renovateVersion:
+        type: string
+        required: false
+        default: 44.198.0
+        description: The version of the renovate npm package to run.
+jobs:
+  renovate:
+    name: Renovate
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      statuses: write
+    concurrency: renovate-${{ github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
+      - name: Download flutter binary artifacts
+        run: flutter precache --universal
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
+        with:
+          withDartTestTools: "true"
+      - name: Install Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          path: repo
+      - name: Write Renovate global config
+        run: renovate-config --repository 'repo' ${{ case(inputs.flutterCompat, '--flutter-compat', '--no-flutter-compat') }} --output '${{ runner.temp }}/renovate-config.json'
+      - name: Restore Renovate repository cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: /tmp/renovate/cache/renovate/repository
+          key: renovate-cache-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: renovate-cache-
+      - name: Run Renovate
+        env:
+          RENOVATE_TOKEN: ${{ github.token }}
+          RENOVATE_CONFIG_FILE: ${{ runner.temp }}/renovate-config.json
+          RENOVATE_REPOSITORIES: ${{ github.repository }}
+          RENOVATE_REPOSITORY_CACHE: enabled
+          RENOVATE_REVIEWERS: ${{ github.repository_owner }}
+          RENOVATE_GIT_AUTHOR: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          LOG_LEVEL: info
+        run: npx --yes renovate@${{ inputs.renovateVersion }}
+      - name: Save Renovate repository cache
+        if: always()
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: /tmp/renovate/cache/renovate/repository
+          key: renovate-cache-${{ github.run_id }}-${{ github.run_attempt }}
