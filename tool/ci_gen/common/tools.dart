@@ -13,6 +13,12 @@ abstract class Tools._() {
   /// https://github.com/actions/cache/releases
   static late final String actionsCache;
 
+  /// https://github.com/actions/cache/releases
+  static late final String actionsCacheRestore;
+
+  /// https://github.com/actions/cache/releases
+  static late final String actionsCacheSave;
+
   /// https://github.com/actions/setup-java/releases
   static late final String actionsSetupJava;
 
@@ -79,6 +85,8 @@ abstract class Tools._() {
     'actions/upload-artifact@v7': (t) => actionsUploadArtifact = t,
     'actions/download-artifact@v8': (t) => actionsDownloadArtifact = t,
     'actions/cache@v6': (t) => actionsCache = t,
+    'actions/cache/restore@v6': (t) => actionsCacheRestore = t,
+    'actions/cache/save@v6': (t) => actionsCacheSave = t,
     'actions/setup-java@v6': (t) => actionsSetupJava = t,
     'dart-lang/setup-dart@v1': (t) => dartLangSetupDart = t,
     'docker/setup-qemu-action@v4': (t) => dockerSetupQemuAction = t,

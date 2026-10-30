@@ -628,8 +628,66 @@ artifacts/*.dmg
       required: false,
       defaultValue: true,
       description:
-          'Whether the update needs to ensure the package stays compatible '
-          'to the latest flutter or not.',
+          'Whether Renovate must not propose dependency versions beyond the '
+          'ones pinned by the Flutter SDK.',
+    ),
+  );
+
+  static const renovateVersion = WorkflowInput(
+    name: 'renovateVersion',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: '44.198.0',
+      description: 'The version of the renovate npm package to run.',
+    ),
+  );
+
+  static const reviewer = WorkflowInput(
+    name: 'reviewer',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: '',
+      description:
+          'The GitHub user to request as reviewer and to mention on failures. '
+          'If left empty, the repository owner is used.',
+    ),
+  );
+
+  static const succeeded = WorkflowInput(
+    name: 'succeeded',
+    input: Input(
+      type: Type.boolean,
+      required: true,
+      description:
+          'Whether all CI jobs of the calling workflow succeeded. Only then '
+          'the Renovate pull request is merged.',
+    ),
+  );
+
+  static const mergeMethod = WorkflowInput(
+    name: 'mergeMethod',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: 'squash',
+      description:
+          'The method used to merge the Renovate pull request '
+          '(squash, merge or rebase).',
+    ),
+  );
+
+  static const dispatchWorkflow = WorkflowInput(
+    name: 'dispatchWorkflow',
+    input: Input(
+      type: Type.string,
+      required: false,
+      defaultValue: '',
+      description:
+          'The name or file name of the workflow to dispatch on the default '
+          'branch after a successful merge. If left empty, the calling '
+          'workflow is dispatched.',
     ),
   );
 

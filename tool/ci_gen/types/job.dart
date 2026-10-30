@@ -55,6 +55,7 @@ sealed class Job with _$Job {
     Expression? ifExpression,
     @JsonKey(includeIfNull: false) String? environment,
     @JsonKey(includeIfNull: false) Map<String, String>? permissions,
+    @JsonKey(includeIfNull: false) String? concurrency,
     @JsonKey(includeIfNull: false) Strategy? strategy,
     @JsonKey(includeIfNull: false)
     @_StepOutputMapConverter()
