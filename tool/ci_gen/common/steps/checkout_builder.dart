@@ -11,6 +11,7 @@ class const CheckoutBuilder({
   final int? fetchDepth,
   final Expression? withSubmodules,
   final Expression? token,
+  final String? sparseCheckout,
 }) implements StepBuilder {
   @override
   Iterable<Step> build() => [
@@ -25,6 +26,7 @@ class const CheckoutBuilder({
         if (fetchDepth != null) 'fetch-depth': fetchDepth,
         if (withSubmodules != null) 'submodules': withSubmodules.toString(),
         if (token != null) 'token': token.toString(),
+        if (sparseCheckout != null) 'sparse-checkout': sparseCheckout,
       },
     ),
   ];

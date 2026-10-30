@@ -633,16 +633,6 @@ artifacts/*.dmg
     ),
   );
 
-  static const renovateVersion = WorkflowInput(
-    name: 'renovateVersion',
-    input: Input(
-      type: Type.string,
-      required: false,
-      defaultValue: '44.198.0',
-      description: 'The version of the renovate npm package to run.',
-    ),
-  );
-
   static const succeeded = WorkflowInput(
     name: 'succeeded',
     input: Input(

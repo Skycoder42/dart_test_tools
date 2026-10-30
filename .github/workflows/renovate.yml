@@ -11,11 +11,6 @@ on:
         required: false
         default: true
         description: Whether Renovate must not propose dependency versions beyond the ones pinned by the Flutter SDK.
-      renovateVersion:
-        type: string
-        required: false
-        default: 44.198.0
-        description: The version of the renovate npm package to run.
 jobs:
   renovate:
     name: Renovate
@@ -38,8 +33,23 @@ jobs:
         uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
         with:
           withDartTestTools: "true"
+      - name: Checkout Skycoder42/dart_test_tools
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          path: dart_test_tools
+          repository: Skycoder42/dart_test_tools
+          ref: main
+          sparse-checkout: tool/renovate
       - name: Install Node.js
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version-file: dart_test_tools/tool/renovate/package.json
+          cache: npm
+          cache-dependency-path: dart_test_tools/tool/renovate/package-lock.json
+      - name: Install Renovate
+        run: npm ci --no-audit --no-fund
+        working-directory: dart_test_tools/tool/renovate
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -62,7 +72,8 @@ jobs:
           RENOVATE_REVIEWERS: ${{ github.repository_owner }}
           RENOVATE_GIT_AUTHOR: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
           LOG_LEVEL: info
-        run: npx --yes renovate@${{ inputs.renovateVersion }}
+        run: node_modules/.bin/renovate
+        working-directory: dart_test_tools/tool/renovate
       - name: Save Renovate repository cache
         if: always()
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9

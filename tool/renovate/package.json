@@ -1,0 +1,11 @@
+{
+  "name": "dart-test-tools-renovate",
+  "private": true,
+  "description": "The Renovate version run by the reusable renovate workflow.",
+  "engines": {
+    "node": "^24.11.0"
+  },
+  "dependencies": {
+    "renovate": "^44.198.0"
+  }
+}
