@@ -15,7 +15,7 @@ on:
         type: boolean
         required: false
         default: true
-        description: Whether the update needs to ensure the package stays compatible to the latest flutter or not.
+        description: Whether Renovate must not propose dependency versions beyond the ones pinned by the Flutter SDK.
       validationWorkflow:
         type: string
         required: false
