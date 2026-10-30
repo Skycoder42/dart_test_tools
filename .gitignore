@@ -28,3 +28,6 @@ doc/api/
 lib/gen
 
 *.log
+
+# Renovate npm install (renovate/package.json)
+node_modules/

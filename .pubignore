@@ -1,6 +1,9 @@
 # Ignore
 ## Internal analysis options file
 lib/src/analysis_options.yaml
+## Renovate presets and npm lockfile (used from GitHub, not from pub)
+/renovate/
+/tool/renovate/
 
 # Unignore
 ## Generated build files

@@ -10,12 +10,16 @@ import '../../types/step.dart';
 
 base mixin RenovateConfig on JobConfig {
   late final flutterCompat = inputContext(WorkflowInputs.flutterCompat);
-  late final renovateVersion = inputContext(WorkflowInputs.renovateVersion);
 }
 
 class const RenovateBuilder({required final RenovateConfig config})
     implements StepBuilder {
   static const _repositoryPath = 'repo';
+  static const _toolsPath = 'dart_test_tools';
+  // tool/renovate/package.json and its lockfile pin the Renovate version (and
+  // the node version via engines). This repository's own Renovate updates them.
+  static const _renovateDir = 'tool/renovate';
+  static const _renovatePath = '$_toolsPath/$_renovateDir';
   static const _cachePath = '/tmp/renovate/cache/renovate/repository';
   static const _cacheKeyPrefix = 'renovate-cache-';
 
@@ -39,7 +43,26 @@ class const RenovateBuilder({required final RenovateConfig config})
 
   Iterable<Step> _setup() sync* {
     yield InstallToolsActionBuilder.step(withDartTestTools: true);
-    yield Step.uses(name: 'Install Node.js', uses: Tools.actionsSetupNode);
+    yield* const CheckoutBuilder(
+      repository: .fake('Skycoder42/dart_test_tools'),
+      gitRef: .fake('main'),
+      path: _toolsPath,
+      sparseCheckout: _renovateDir,
+    ).build();
+    yield Step.uses(
+      name: 'Install Node.js',
+      uses: Tools.actionsSetupNode,
+      withArgs: const <String, dynamic>{
+        'node-version-file': '$_renovatePath/package.json',
+        'cache': 'npm',
+        'cache-dependency-path': '$_renovatePath/package-lock.json',
+      },
+    );
+    yield const Step.run(
+      name: 'Install Renovate',
+      run: 'npm ci',
+      workingDirectory: _renovatePath,
+    );
     yield* const CheckoutBuilder(
       path: _repositoryPath,
       persistCredentials: .value(false),
@@ -72,7 +95,8 @@ class const RenovateBuilder({required final RenovateConfig config})
     );
     yield Step.run(
       name: 'Run Renovate',
-      run: 'npx --yes renovate@${config.renovateVersion}',
+      run: 'node_modules/.bin/renovate',
+      workingDirectory: _renovatePath,
       env: Env({
         'RENOVATE_TOKEN': Github.token.toString(),
         'RENOVATE_CONFIG_FILE': _configPath,
