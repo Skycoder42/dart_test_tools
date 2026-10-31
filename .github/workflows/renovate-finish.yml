@@ -1,0 +1,68 @@
+on:
+  workflow_call:
+    inputs:
+      succeeded:
+        type: boolean
+        required: true
+        description: Whether all CI jobs of the calling workflow succeeded. Only then the Renovate pull request is merged.
+      mergeMethod:
+        type: string
+        required: false
+        default: squash
+        description: The method used to merge the Renovate pull request (squash, merge or rebase).
+      dispatchWorkflow:
+        type: string
+        required: false
+        default: ""
+        description: The name or file name of the workflow to dispatch on the default branch after a successful merge. If left empty, the calling workflow is dispatched.
+jobs:
+  finish:
+    name: Finish Renovate PR
+    if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'github-actions[bot]' && startsWith(github.head_ref, 'renovate/') && github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    runs-on: ubuntu-latest
+    steps:
+      - id: merge
+        name: Merge pull request
+        if: inputs.succeeded
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          MERGE_METHOD: ${{ inputs.mergeMethod }}
+        run: gh pr merge "$PR" --repo "$GITHUB_REPOSITORY" --"$MERGE_METHOD" --delete-branch --match-head-commit "$HEAD_SHA"
+      - name: Dispatch workflow on the default branch
+        if: inputs.succeeded && steps.merge.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW: ${{ inputs.dispatchWorkflow }}
+          WORKFLOW_REF: ${{ github.workflow_ref }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          workflow="$WORKFLOW"
+          if [ -z "$workflow" ]; then
+            # owner/repo/.github/workflows/<file>@<ref> -> <file>
+            workflow="${WORKFLOW_REF%@*}"
+            workflow="${workflow##*/}"
+          fi
+          gh workflow run "$workflow" --repo "$GITHUB_REPOSITORY" --ref "$DEFAULT_BRANCH"
+      - name: Notify reviewer
+        if: always() && (!inputs.succeeded || steps.merge.outcome == 'failure')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          SUCCEEDED: ${{ inputs.succeeded }}
+          REVIEWER: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+          if [ "$SUCCEEDED" = true ]; then
+            what="The automatic merge failed"
+          else
+            what="CI failed"
+          fi
+          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" \
+            --body "@$REVIEWER $what: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"

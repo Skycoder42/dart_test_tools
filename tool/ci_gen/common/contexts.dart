@@ -28,6 +28,14 @@ abstract base class const Github._() {
   static const runId = Expression('github.run_id');
 
   static const runAttempt = Expression('github.run_attempt');
+
+  static const eventName = Expression('github.event_name');
+
+  static const event = Expression('github.event');
+
+  static const headRef = Expression('github.head_ref');
+
+  static const workflowRef = Expression('github.workflow_ref');
 }
 
 abstract base class const Functions._() {
@@ -42,6 +50,9 @@ abstract base class const Functions._() {
 
   static Expression fromJson(Expression jsonString) =>
       Expression.invoke('fromJson', [jsonString]);
+
+  static Expression startsWith(Expression searchString, Expression value) =>
+      Expression.invoke('startsWith', [searchString, value]);
 
   static Expression case$(
     List<(Expression, ExpressionOrValue)> cases, [

@@ -31,6 +31,7 @@ import 'ci_gen/package/package_workflow.dart';
 import 'ci_gen/publish/publish_workflow.dart';
 import 'ci_gen/release/release_workflow.dart';
 import 'ci_gen/renovate/renovate_workflow.dart';
+import 'ci_gen/renovate_finish/renovate_finish_workflow.dart';
 import 'ci_gen/update_actions/update_actions_workflow.dart';
 
 Future<void> main() async {
@@ -64,6 +65,7 @@ Future<void> main() async {
     DeployWindowsWorkflow(),
     AutoUpdateWorkflow(),
     RenovateWorkflow(),
+    RenovateFinishWorkflow(),
     UpdateActionsWorkflow(),
   ];
 
