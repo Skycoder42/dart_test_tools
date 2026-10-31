@@ -6,5 +6,8 @@
     "packagecloud",
     "pana",
     "pkgbuild"
-  ]
+  ],
+  "json.schemaDownload.trustedDomains": {
+    "https://docs.renovatebot.com/": true
+  }
 }

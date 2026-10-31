@@ -217,7 +217,9 @@ Added 2026-10-30: this repo's own Renovate also updates `tool/renovate/package.j
 
 ---
 
-### Task 7: Presets
+### Task 7: Presets — ✅ DONE 2026-10-31
+
+Deviations: the "(minor)"/"(major)"/"(patch)" title suffix is appended by Renovate to group PR titles (`workers/repository/updates/generate.js`, `compilePrTitle`) unless `prTitleStrict: true`; set on both breaking rules (`groupName: "breaking dependencies"`) and on the base "all" group (a 0.x patch with `separateMinorPatch` could otherwise add " (patch)" to the weekly library PR). Validation runs as repo config in strict mode: `renovate-config-validator --strict --no-global …` (without `--no-global` the files are validated as global config).
 
 **Files:**
 - Create: `renovate/base.json`, `renovate/library.json`, `renovate/application.json`
@@ -228,7 +230,7 @@ Added 2026-10-30: this repo's own Renovate also updates `tool/renovate/package.j
   `[{{#each upgrades}}{"manager":"{{{manager}}}","depName":"{{{depName}}}","packageFile":"{{{packageFile}}}","depType":"{{{depType}}}","currentValue":"{{{currentValue}}}","newValue":"{{{newValue}}}","updateType":"{{{updateType}}}"}{{#unless @last}},{{/unless}}{{/each}}]`
 
 - [ ] **Step 1:** Write the three files.
-- [ ] **Step 2:** In `tool/renovate/`: `npm ci`, then `node_modules/.bin/renovate-config-validator ../../renovate/base.json ../../renovate/library.json ../../renovate/application.json` (validator from the lockfile, same version as the workflow) → "Config validated successfully" for each.
+- [ ] **Step 2:** In `tool/renovate/`: `npm ci`, then `node_modules/.bin/renovate-config-validator --strict --no-global ../../renovate/base.json ../../renovate/library.json ../../renovate/application.json` (validator from the lockfile, same version as the workflow) → "Config validated successfully" for each.
 - [ ] **Step 3:** Stage.
 
 ---

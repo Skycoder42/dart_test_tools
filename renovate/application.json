@@ -1,0 +1,12 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Application preset (lockfile committed, all updates incl. majors)",
+  "extends": ["github>Skycoder42/dart_test_tools//renovate/base"],
+  "separateMajorMinor": false,
+  "postUpgradeTasks": {
+    "commands": ["renovate-post-upgrade --mode application"],
+    "executionMode": "branch",
+    "fileFilters": ["**/*"],
+    "dataFileTemplate": "[{{#each upgrades}}{\"manager\":\"{{{manager}}}\",\"depName\":\"{{{depName}}}\",\"packageFile\":\"{{{packageFile}}}\",\"depType\":\"{{{depType}}}\",\"currentValue\":\"{{{currentValue}}}\",\"newValue\":\"{{{newValue}}}\",\"updateType\":\"{{{updateType}}}\"}{{#unless @last}},{{/unless}}{{/each}}]"
+  }
+}
