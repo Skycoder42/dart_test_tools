@@ -19,8 +19,8 @@ readonly -a PLATFORMS=(android ios linux macos web windows)
 # Top level files the template rewrites but that are never part of the native update.
 readonly -a PROJECT_FILES=(pubspec.yaml pubspec.lock)
 
-# ASCII unit separator, used to pack fields into one array entry. See prepare-update.sh of
-# the dart-test-tools-auto-update skill for why it is not TAB.
+# ASCII unit separator, used to pack fields into one array entry. See prepare-fix.sh of
+# the dart-test-tools-renovate-fix skill for why it is not TAB.
 readonly US=$'\x1f'
 
 # Accumulated `warning:` lines, printed with the record.

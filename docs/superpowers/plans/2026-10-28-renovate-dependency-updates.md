@@ -276,7 +276,9 @@ Deviations: `github.workflow_ref` reaches the dispatch script as `WORKFLOW_REF` 
 
 ---
 
-### Task 10: Repair skill and docs
+### Task 10: Repair skill and docs — ✅ DONE 2026-10-31
+
+Deviations: the skill never commits or pushes (like the old one); it tells the user both ways to finish (push onto the Renovate branch / land the fix on the default branch, then rebase). The re-run does not rebuild the branch from base: `prepare-fix.sh` restores only the cider effects (changed `CHANGELOG.md` files, pubspec `version:`) to the merge base and runs the CLI on top of the branch — every other post-upgrade step converges, and Renovate's non-pub changes and later fix commits stay. Arguments: `[<pull request>] [skip-post-upgrade | allow-dirty]` (`allow-dirty` for the re-run after fixing a failed run). The CLI comes from `PATH` (as in CI), else from a resolved `dart_test_tools` via `dart run --packages=<package_config> <bin>` from the repo root. The record adds `checks_failed`/`checks_pending`/`artifact_error` from `gh`, and one `root.<n>` per pub root, because the analyze/format root is no longer a single `workingDirectory`. Verified against a scratch repo with a stub `gh`: the stub CLI and the real CLI through the package-config fallback both ran. Removing `skills/dart-test-tools-auto-update/` was left to the user (the sandbox makes `skills/` read-only for shell commands).
 
 **Files:**
 - Delete: `skills/dart-test-tools-auto-update/`

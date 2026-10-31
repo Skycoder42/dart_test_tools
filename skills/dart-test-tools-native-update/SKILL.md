@@ -60,7 +60,7 @@ Run it once. Do not run `flutter create` yourself, and do not use `git restore`,
 ### The record
 
 The script prints a record on stdout, in the same format as the
-`dart-test-tools-auto-update` skill:
+`dart-test-tools-renovate-fix` skill:
 
 - It sits between `>>> native-update` and `<<< native-update`.
 - Each line is one `key: value` pair. Keys may be dotted and indexed.
