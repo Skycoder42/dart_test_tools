@@ -210,8 +210,13 @@ Consumers use `{"extends": ["github>Skycoder42/dart_test_tools//renovate/library
   executionMode: "branch", fileFilters: ["**/*"], dataFileTemplate: <JSON list of upgrades:
   depName, packageFile, depType, currentValue, newValue, updateType>}` (exact template:
   `spike-presets/application.json` in the test repo).
-- Don't set a global `minimumReleaseAge` without `minimumReleaseAgeBehaviour:
-  "timestamp-optional"` (dart-version has no timestamps → updates would be held forever).
+- `minimumReleaseAge: "3 days"` for `matchManagers: ["pub"]` (added 2026-10-31, user request).
+  Renovate's default `minimumReleaseAgeBehaviour: "timestamp-required"` holds updates without a
+  release timestamp forever; all pub datasources in use have one: `dart` (pub.dev `published`),
+  `flutter-version` (`release_date`) and `custom.flutter-dart` (earliest Flutter release date,
+  all 107 entries checked) — plain `dart-version` has none, but `dart` is always overridden.
+  Too-young versions get no branch (`internalChecksFilter: "strict"`) and show as pending in the
+  dashboard. Packages from third-party pub hosts without `published` would be held forever.
 
 **library** = base +
 - Majors (deps, dev_dependencies *and* SDK — decided by the user): `dependencyDashboardApproval:
@@ -358,7 +363,7 @@ blocks the merge unless the owner also approves the PR itself (not just the runs
 - This repo's `renovate.json` additionally lets Renovate update itself: the `npm` manager is
   enabled (for any npm package, not only `tool/renovate/package.json`, changed 2026-10-31), with the lockfile updated by Renovate (artifact
   updates are on, see Component 2), a minimum release age of
-  a few days for `renovate`. `engines.node` (the Node the workflow runs on): minor/patch
+  a few days for `renovate` (pub updates get theirs from the base preset). `engines.node` (the Node the workflow runs on): minor/patch
   updates in the weekly PR (wanted, although the range already floats within its major); majors only to even (LTS) releases, in
   their own `node` group after dependency dashboard approval (changed 2026-10-31, was: no
   updates at all, raised by hand).

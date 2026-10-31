@@ -24,6 +24,11 @@
       "prTitleStrict": true
     },
     {
+      "description": "Give new pub releases (packages and SDKs) some time before they are used",
+      "matchManagers": ["pub"],
+      "minimumReleaseAge": "3 days"
+    },
+    {
       "description": "SDK constraints keep their range form and only move to x.y.0 versions",
       "matchManagers": ["pub"],
       "matchDatasources": ["dart-version", "flutter-version"],

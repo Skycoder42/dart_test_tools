@@ -21,7 +21,7 @@
 - Renovate token = the job's `GITHUB_TOKEN` with exactly: contents write, pull-requests write, issues write, statuses write. No GitHub App, no PAT, no secrets in any of the new workflows.
 - Finish job token (`GITHUB_TOKEN`) exactly: contents write, pull-requests write, actions write. It acts only on PRs by `github-actions[bot]` from a same-repo `renovate/` branch and merges only with `--match-head-commit` of the run's PR head SHA.
 - Renovate global config: `onboarding: false`, `requireConfig: "required"`, `binarySource: "global"`, `repositoryCache: "enabled"`, `executionTimeout: 30`, `allowedCommands: ["^renovate-post-upgrade --mode (application|library)$"]`.
-- Presets: `enabledManagers: ["pub"]`, `rangeStrategy: "bump"`, `prHourlyLimit: 0`, `vulnerabilityAlerts.enabled: false`, no `schedule`, no `reviewers` (set by the workflow via `RENOVATE_REVIEWERS`), no `automerge`; SDK rule `versioning: "npm"` + `allowedVersions: "/^\\d+\\.\\d+\\.0$/"`.
+- Presets: `enabledManagers: ["pub"]`, `rangeStrategy: "bump"`, `prHourlyLimit: 0`, `vulnerabilityAlerts.enabled: false`, pub `minimumReleaseAge: "3 days"` (added 2026-10-31), no `schedule`, no `reviewers` (set by the workflow via `RENOVATE_REVIEWERS`), no `automerge`; SDK rule `versioning: "npm"` + `allowedVersions: "/^\\d+\\.\\d+\\.0$/"`.
 - Changelog copy: `Updated dependencies`; SDK lines `Updated min sdk version to <constraint>` / `Updated min flutter version to <constraint>`.
 - No commits until the user says so: the user wants spec, plan and implementation committed together. Every "Commit" step below means: stage only (`git add`), do not `git commit`.
 
@@ -219,7 +219,7 @@ Added 2026-10-30: this repo's own Renovate also updates `tool/renovate/package.j
 
 ### Task 7: Presets — ✅ DONE 2026-10-31
 
-Deviations: the "(minor)"/"(major)"/"(patch)" title suffix is appended by Renovate to group PR titles (`workers/repository/updates/generate.js`, `compilePrTitle`) unless `prTitleStrict: true`; set on both breaking rules (`groupName: "breaking dependencies"`) and on the base "all" group (a 0.x patch with `separateMinorPatch` could otherwise add " (patch)" to the weekly library PR). Validation runs as repo config in strict mode: `renovate-config-validator --strict --no-global …` (without `--no-global` the files are validated as global config).
+Deviations: the "(minor)"/"(major)"/"(patch)" title suffix is appended by Renovate to group PR titles (`workers/repository/updates/generate.js`, `compilePrTitle`) unless `prTitleStrict: true`; set on both breaking rules (`groupName: "breaking dependencies"`) and on the base "all" group (a 0.x patch with `separateMinorPatch` could otherwise add " (patch)" to the weekly library PR). Added 2026-10-31 (user request): `base.json` rule `matchManagers: ["pub"], minimumReleaseAge: "3 days"` (spec Component 2 explains why the SDK constraints are not held forever). Validation runs as repo config in strict mode: `renovate-config-validator --strict --no-global …` (without `--no-global` the files are validated as global config).
 
 **Files:**
 - Create: `renovate/base.json`, `renovate/library.json`, `renovate/application.json`
