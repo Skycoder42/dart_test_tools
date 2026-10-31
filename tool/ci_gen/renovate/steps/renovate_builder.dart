@@ -60,7 +60,7 @@ class const RenovateBuilder({required final RenovateConfig config})
     );
     yield const Step.run(
       name: 'Install Renovate',
-      run: 'npm ci',
+      run: 'npm ci --no-audit --no-fund',
       workingDirectory: _renovatePath,
     );
     yield* const CheckoutBuilder(

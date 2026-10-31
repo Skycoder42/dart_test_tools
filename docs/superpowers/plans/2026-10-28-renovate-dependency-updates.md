@@ -235,9 +235,11 @@ Deviations: the "(minor)"/"(major)"/"(patch)" title suffix is appended by Renova
 
 ---
 
-### Task 8: Reusable `renovate-finish.yml`
+### Task 8: Reusable `renovate-finish.yml` — ✅ DONE 2026-10-31
 
 Replaces the former `notify.yml` task (changed 2026-10-29).
+
+Deviations: `github.workflow_ref` reaches the dispatch script as `WORKFLOW_REF` via `env` (not the `GITHUB_WORKFLOW_REF` runner variable the spike used), so it is exactly the context value that Task 12 verifies. New context helpers: `Github.eventName`/`event`/`headRef`/`workflowRef`, `Functions.startsWith`. Side fix: the `--no-audit --no-fund` flags of `npm ci` had been added to the generated `renovate.yml` by hand only; they now come from `renovate_builder.dart`, so regenerating keeps them.
 
 **Files:**
 - Create: `tool/ci_gen/renovate_finish/renovate_finish_workflow.dart`, `tool/ci_gen/renovate_finish/jobs/renovate_finish_job_builder.dart`, `tool/ci_gen/renovate_finish/steps/renovate_finish_builder.dart`
