@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:yaml_writer/yaml_writer.dart';
 
 import 'ci_gen/aur/aur_workflow.dart';
-import 'ci_gen/auto_update/auto_update_workflow.dart';
 import 'ci_gen/common/actions/create_validated_pr_action_builder.dart';
 import 'ci_gen/common/actions/install_tools_action_builder.dart';
 import 'ci_gen/common/api/action_builder.dart';
@@ -63,7 +62,6 @@ Future<void> main() async {
     DeployMacosWorkflow(),
     DeployPackagecloudWorkflow(),
     DeployWindowsWorkflow(),
-    AutoUpdateWorkflow(),
     RenovateWorkflow(),
     RenovateFinishWorkflow(),
     UpdateActionsWorkflow(),

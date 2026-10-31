@@ -1,0 +1,20 @@
+name: Automatic dependency updates
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "15 3 * * 1"
+  issues:
+    types:
+      - edited
+
+jobs:
+  renovate:
+    name: Renovate
+    if: github.event_name != 'issues' || (github.event.issue.title == 'Dependency Dashboard' && !endsWith(github.actor, '[bot]'))
+    uses: Skycoder42/dart_test_tools/.github/workflows/renovate.yml@main
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      statuses: write
