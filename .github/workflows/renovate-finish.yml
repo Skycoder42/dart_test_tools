@@ -1,10 +1,10 @@
 on:
   workflow_call:
     inputs:
-      succeeded:
-        type: boolean
+      needs:
+        type: string
         required: true
-        description: Whether all CI jobs of the calling workflow succeeded. Only then the Renovate pull request is merged.
+        description: The needs context of the calling job as JSON (toJSON(needs)). The Renovate pull request is only merged if none of these jobs failed or was cancelled.
       mergeMethod:
         type: string
         required: false
@@ -27,7 +27,7 @@ jobs:
     steps:
       - id: merge
         name: Merge pull request
-        if: inputs.succeeded
+        if: (!contains(fromJson(inputs.needs).*.result, 'failure') && !contains(fromJson(inputs.needs).*.result, 'cancelled'))
         env:
           GH_TOKEN: ${{ github.token }}
           PR: ${{ github.event.pull_request.number }}
@@ -35,7 +35,7 @@ jobs:
           MERGE_METHOD: ${{ inputs.mergeMethod }}
         run: gh pr merge "$PR" --repo "$GITHUB_REPOSITORY" --"$MERGE_METHOD" --delete-branch --match-head-commit "$HEAD_SHA"
       - name: Dispatch workflow on the default branch
-        if: inputs.succeeded && steps.merge.outcome == 'success'
+        if: (!contains(fromJson(inputs.needs).*.result, 'failure') && !contains(fromJson(inputs.needs).*.result, 'cancelled')) && steps.merge.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           WORKFLOW: ${{ inputs.dispatchWorkflow }}
@@ -51,11 +51,11 @@ jobs:
           fi
           gh workflow run "$workflow" --repo "$GITHUB_REPOSITORY" --ref "$DEFAULT_BRANCH"
       - name: Notify reviewer
-        if: always() && (!inputs.succeeded || steps.merge.outcome == 'failure')
+        if: always() && (!(!contains(fromJson(inputs.needs).*.result, 'failure') && !contains(fromJson(inputs.needs).*.result, 'cancelled')) || steps.merge.outcome == 'failure')
         env:
           GH_TOKEN: ${{ github.token }}
           PR: ${{ github.event.pull_request.number }}
-          SUCCEEDED: ${{ inputs.succeeded }}
+          SUCCEEDED: ${{ (!contains(fromJson(inputs.needs).*.result, 'failure') && !contains(fromJson(inputs.needs).*.result, 'cancelled')) }}
           REVIEWER: ${{ github.repository_owner }}
         run: |
           set -euo pipefail

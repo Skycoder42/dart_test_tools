@@ -52,7 +52,6 @@ These steps also migrate a repository that used the former `auto-update.yml` wor
    jobs:
      renovate:
        name: Renovate
-       if: github.event_name != 'issues' || (github.event.issue.title == 'Dependency Dashboard' && !endsWith(github.actor, '[bot]'))
        uses: Skycoder42/dart_test_tools/.github/workflows/renovate.yml@main
        permissions:
          contents: write
@@ -95,14 +94,14 @@ These steps also migrate a repository that used the former `auto-update.yml` wor
        name: Renovate
        needs:
          - ci # every job of the workflow
-       if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+       if: ${{ !cancelled() }}
        uses: Skycoder42/dart_test_tools/.github/workflows/renovate-finish.yml@main
        permissions:
          contents: write
          pull-requests: write
          actions: write
        with:
-         succeeded: ${{ !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
+         needs: ${{ toJSON(needs) }}
    ```
 
    The job only acts on pull requests opened by Renovate. On green CI it merges the

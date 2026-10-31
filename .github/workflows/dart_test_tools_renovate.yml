@@ -11,7 +11,6 @@ on:
 jobs:
   renovate:
     name: Renovate
-    if: github.event_name != 'issues' || (github.event.issue.title == 'Dependency Dashboard' && !endsWith(github.actor, '[bot]'))
     uses: Skycoder42/dart_test_tools/.github/workflows/renovate.yml@main
     permissions:
       contents: write

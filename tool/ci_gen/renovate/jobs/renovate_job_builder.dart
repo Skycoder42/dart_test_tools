@@ -20,6 +20,16 @@ final class const RenovateJobBuilder({required super.config})
   @override
   Job build() => Job(
     name: 'Renovate',
+    // An edit of the Dependency Dashboard (ticking a checkbox) triggers a run,
+    // but not the edits Renovate does itself.
+    ifExpression:
+        Github.eventName.ne(const .literal('issues')) |
+        (Github.event
+                    .property('issue')
+                    .property('title')
+                    .eq(const .literal('Dependency Dashboard')) &
+                Functions.endsWith(Github.actor, const .literal('[bot]')).not)
+            .parenthesized,
     runsOn: RunsOn.ubuntuLatest.id,
     permissions: const {
       'contents': 'write',

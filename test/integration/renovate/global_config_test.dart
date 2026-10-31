@@ -112,10 +112,12 @@ dev_dependencies:
     sdk: flutter
   test: any
 ''');
-      final result = await Process.run('flutter', const [
-        'pub',
-        'get',
-      ], workingDirectory: oracleDir.path);
+      final result = await Process.run(
+        'flutter',
+        const ['pub', 'get'],
+        workingDirectory: oracleDir.path,
+        runInShell: Platform.isWindows,
+      );
       expect(result.exitCode, 0, reason: '${result.stdout}${result.stderr}');
       final lock = loadYaml(
         File(join(oracleDir.path, 'pubspec.lock')).readAsStringSync(),

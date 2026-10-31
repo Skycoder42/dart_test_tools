@@ -49,11 +49,11 @@ jobs:
     name: Renovate
     needs:
       - ci
-    if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+    if: ${{ !cancelled() }}
     uses: Skycoder42/dart_test_tools/.github/workflows/renovate-finish.yml@main
     permissions:
       contents: write
       pull-requests: write
       actions: write
     with:
-      succeeded: ${{ !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
+      needs: ${{ toJSON(needs) }}

@@ -8,9 +8,16 @@ import '../../types/id.dart';
 import '../../types/step.dart';
 
 base mixin RenovateFinishConfig on JobConfig {
-  late final succeeded = inputContext(WorkflowInputs.succeeded);
+  late final needs = inputContext(WorkflowInputs.needs);
+  late final succeeded =
+      (_noJobWith('failure') & _noJobWith('cancelled')).parenthesized;
   late final mergeMethod = inputContext(WorkflowInputs.mergeMethod);
   late final dispatchWorkflow = inputContext(WorkflowInputs.dispatchWorkflow);
+
+  Expression _noJobWith(String result) => Functions.contains(
+    Functions.fromJson(needs).property('*').property('result'),
+    .literal(result),
+  ).not;
 }
 
 class const RenovateFinishBuilder({required final RenovateFinishConfig config})

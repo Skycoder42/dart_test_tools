@@ -633,14 +633,15 @@ artifacts/*.dmg
     ),
   );
 
-  static const succeeded = WorkflowInput(
-    name: 'succeeded',
+  static const needs = WorkflowInput(
+    name: 'needs',
     input: Input(
-      type: Type.boolean,
+      type: Type.string,
       required: true,
       description:
-          'Whether all CI jobs of the calling workflow succeeded. Only then '
-          'the Renovate pull request is merged.',
+          'The needs context of the calling job as JSON (toJSON(needs)). The '
+          'Renovate pull request is only merged if none of these jobs failed '
+          'or was cancelled.',
     ),
   );
 

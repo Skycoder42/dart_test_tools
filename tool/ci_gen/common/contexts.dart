@@ -54,6 +54,12 @@ abstract base class const Functions._() {
   static Expression startsWith(Expression searchString, Expression value) =>
       Expression.invoke('startsWith', [searchString, value]);
 
+  static Expression endsWith(Expression searchString, Expression value) =>
+      Expression.invoke('endsWith', [searchString, value]);
+
+  static Expression contains(Expression search, Expression item) =>
+      Expression.invoke('contains', [search, item]);
+
   static Expression case$(
     List<(Expression, ExpressionOrValue)> cases, [
     ExpressionOrValue? default$,
