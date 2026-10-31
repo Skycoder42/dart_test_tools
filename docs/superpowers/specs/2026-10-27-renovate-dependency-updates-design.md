@@ -186,9 +186,14 @@ Consumers use `{"extends": ["github>Skycoder42/dart_test_tools//renovate/library
   (the owner differs per repo — the workflow sets them, Component 1); `automerge` stays off
   (Component 4 merges).
 - `rangeStrategy: "bump"`.
-- `skipArtifactsUpdate: true` — Renovate's pub artifact updater is workspace-blind (only looks
-  for a sibling `pubspec.lock`, picks `dart` vs `flutter` wrongly at a workspace root). The
-  post-upgrade CLI does resolution instead.
+- No `skipArtifactsUpdate` (changed 2026-10-31; the spike presets set it `true`). Renovate's pub
+  artifact updater (checked in 44.198.0, `manager/pub/artifacts.js`) only handles a
+  `pubspec.yaml` with a sibling `pubspec.lock` (workspace members and library repos without a
+  committed lockfile are skipped) and runs `dart`/`flutter pub upgrade <deps>` there, choosing
+  `flutter` only if that pubspec contains `sdk: flutter`. A Dart workspace root with Flutter
+  members resolves fine with `dart` as long as the Flutter SDK is installed (tested by the user),
+  so this is harmless; the post-upgrade CLI still does the full resolution afterwards. Leaving it
+  on lets other managers (e.g. npm in this repo) update their lockfiles.
 - Grouping into one branch: rule `{matchPackageNames: ["*"], groupName: "all dependencies",
   groupSlug: "all", group: {branchTopic: "all"}}` (the `branchTopic` collapses the
   major/minor buckets into one branch — verified in lookup mode).
@@ -322,6 +327,12 @@ blocks the merge unless the owner also approves the PR itself (not just the runs
 - Recommended hardening (document, not enforced): ruleset on the default branch requiring PRs
   and status checks (no required approvals, see Component 4), tag ruleset on release tags,
   environment approval for publish workflows.
+- Customising (added 2026-10-31): own `packageRules` come after the preset's. Fine for
+  ignoring, pinning, delaying or regrouping pub packages. Caveats to document: other managers
+  join the `renovate/all` branch and are ignored by the post-upgrade CLI; own `postUpgradeTasks`
+  are refused by `allowedCommands`; no `automerge` / `schedule` / `reviewers`; no rules on the
+  SDK datasources that change `versioning`, `allowedVersions` or `overrideDatasource`; several
+  pub groups each bump the version, so later PRs conflict, get rebuilt and need a new approval.
 - How to use it: open the PR from the review request, check the diff, *Approve workflows to
   run*; green → merged and released automatically; red → comment, fix with the repair skill.
 
@@ -346,7 +357,7 @@ blocks the merge unless the owner also approves the PR itself (not just the runs
   `.github/dependabot.yml`; enable the Actions PR setting (user, repo settings).
 - This repo's `renovate.json` additionally lets Renovate update itself: the `npm` manager is
   enabled for `tool/renovate/package.json` only, with the lockfile updated by Renovate (artifact
-  updates must be on for npm, while pub keeps `skipArtifactsUpdate`), a minimum release age of
+  updates are on, see Component 2), a minimum release age of
   a few days for `renovate`, and no updates of `engines.node` (raised by hand when a Renovate
   major needs a newer Node).
 - Changelog + major version bump via `dart run bin/cider.dart` only (CLAUDE.md).
