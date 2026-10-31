@@ -1,0 +1,42 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Library preset (no lockfile, minor/patch only, breaking updates need dashboard approval)",
+  "extends": ["github>Skycoder42/dart_test_tools//renovate/base"],
+  "postUpgradeTasks": {
+    "commands": ["renovate-post-upgrade --mode library"],
+    "executionMode": "branch",
+    "fileFilters": ["**/*"],
+    "dataFileTemplate": "[{{#each upgrades}}{\"manager\":\"{{{manager}}}\",\"depName\":\"{{{depName}}}\",\"packageFile\":\"{{{packageFile}}}\",\"depType\":\"{{{depType}}}\",\"currentValue\":\"{{{currentValue}}}\",\"newValue\":\"{{{newValue}}}\",\"updateType\":\"{{{updateType}}}\"}{{#unless @last}},{{/unless}}{{/each}}]"
+  },
+  "packageRules": [
+    {
+      "description": "Split 0.x deps into minor and patch buckets so patches keep flowing",
+      "matchManagers": ["pub"],
+      "matchDatasources": ["dart"],
+      "matchCurrentValue": "/^(\\^|~|>=)?\\s*0\\./",
+      "separateMinorPatch": true
+    },
+    {
+      "description": "Majors (deps, dev deps and SDK) wait for dashboard approval and get their own PR",
+      "matchManagers": ["pub"],
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true,
+      "groupName": "breaking dependencies",
+      "groupSlug": "breaking",
+      "group": { "branchTopic": "breaking" },
+      "prTitleStrict": true
+    },
+    {
+      "description": "0.x minors are breaking in pub: same treatment as majors",
+      "matchManagers": ["pub"],
+      "matchDatasources": ["dart"],
+      "matchCurrentVersion": "<1.0.0",
+      "matchUpdateTypes": ["minor"],
+      "dependencyDashboardApproval": true,
+      "groupName": "breaking dependencies",
+      "groupSlug": "breaking",
+      "group": { "branchTopic": "breaking" },
+      "prTitleStrict": true
+    }
+  ]
+}

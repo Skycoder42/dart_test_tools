@@ -1,0 +1,41 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Base preset shared by the library and application presets",
+  "enabledManagers": ["pub"],
+  "dependencyDashboard": true,
+  "vulnerabilityAlerts": { "enabled": false },
+  "prHourlyLimit": 0,
+  "rangeStrategy": "bump",
+  "customDatasources": {
+    "flutter-dart": {
+      "defaultRegistryUrlTemplate": "https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json",
+      "transformTemplates": [
+        "{\"releases\": [releases[channel=\"stable\"]{ $substringBefore(dart_sdk_version, \" \"): $min(release_date.$toMillis($)) } ~> $each(function($v, $k) { {\"version\": $k, \"releaseTimestamp\": $fromMillis($v)} })]}"
+      ]
+    }
+  },
+  "packageRules": [
+    {
+      "description": "Everything in one weekly PR",
+      "matchPackageNames": ["*"],
+      "groupName": "all dependencies",
+      "groupSlug": "all",
+      "group": { "branchTopic": "all" },
+      "prTitleStrict": true
+    },
+    {
+      "description": "SDK constraints keep their range form and only move to x.y.0 versions",
+      "matchManagers": ["pub"],
+      "matchDatasources": ["dart-version", "flutter-version"],
+      "versioning": "npm",
+      "allowedVersions": "/^\\d+\\.\\d+\\.0$/"
+    },
+    {
+      "description": "Only offer Dart SDK versions that shipped with a Flutter stable release (must stay the last rule matching dart-version)",
+      "matchManagers": ["pub"],
+      "matchDepNames": ["dart"],
+      "matchDatasources": ["dart-version"],
+      "overrideDatasource": "custom.flutter-dart"
+    }
+  ]
+}
