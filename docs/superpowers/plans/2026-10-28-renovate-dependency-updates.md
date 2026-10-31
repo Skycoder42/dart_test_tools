@@ -294,7 +294,7 @@ Deviations: the skill never commits or pushes (like the old one); it tells the u
 
 ---
 
-### Task 11: Changelog and major version
+### Task 11: Changelog and major version — ✅ DONE 2026-10-31
 
 - [ ] **Step 1:** `dart run bin/cider.dart log removed 'auto-update workflow, auto-update CLI and dart-test-tools-auto-update skill'`; `log added` entries for: reusable `renovate.yml`, `renovate-finish.yml`, Renovate presets, `renovate-post-upgrade` and `renovate-config` CLIs, `dart-test-tools-renovate-fix` skill.
 - [ ] **Step 2:** `dart run bin/cider.dart bump major` → version `8.0.0`; `dart run bin/cider.dart release`.
