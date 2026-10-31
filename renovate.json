@@ -4,16 +4,21 @@
   "enabledManagers": ["pub", "npm"],
   "packageRules": [
     {
-      "description": "npm is only used for the Renovate version run by the reusable renovate workflow",
-      "matchManagers": ["npm"],
-      "matchFileNames": ["!tool/renovate/package.json"],
-      "enabled": false
-    },
-    {
-      "description": "Node is raised by hand when a Renovate major needs it",
+      "description": "Node only moves to even (LTS) majors",
       "matchManagers": ["npm"],
       "matchDepTypes": ["engines"],
-      "enabled": false
+      "allowedVersions": "/^v?\\d*[02468]\\./"
+    },
+    {
+      "description": "Node majors get their own PR after dashboard approval",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["engines"],
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true,
+      "groupName": "node",
+      "groupSlug": "node",
+      "group": { "branchTopic": "node" },
+      "prTitleStrict": true
     },
     {
       "description": "Give new Renovate releases some time before the workflow runs them",

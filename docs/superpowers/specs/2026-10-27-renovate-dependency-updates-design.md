@@ -356,10 +356,12 @@ blocks the merge unless the owner also approves the PR itself (not just the runs
   job to `dart_test_tools_ci.yml` (it already has `workflow_dispatch`); drop the `pub` entry from
   `.github/dependabot.yml`; enable the Actions PR setting (user, repo settings).
 - This repo's `renovate.json` additionally lets Renovate update itself: the `npm` manager is
-  enabled for `tool/renovate/package.json` only, with the lockfile updated by Renovate (artifact
+  enabled (for any npm package, not only `tool/renovate/package.json`, changed 2026-10-31), with the lockfile updated by Renovate (artifact
   updates are on, see Component 2), a minimum release age of
-  a few days for `renovate`, and no updates of `engines.node` (raised by hand when a Renovate
-  major needs a newer Node).
+  a few days for `renovate`. `engines.node` (the Node the workflow runs on): minor/patch
+  updates in the weekly PR (wanted, although the range already floats within its major); majors only to even (LTS) releases, in
+  their own `node` group after dependency dashboard approval (changed 2026-10-31, was: no
+  updates at all, raised by hand).
 - Changelog + major version bump via `dart run bin/cider.dart` only (CLAUDE.md).
 
 ## Security model
