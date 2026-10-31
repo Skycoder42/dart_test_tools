@@ -12,6 +12,7 @@ sealed class const RenovateUpgrade._() with _$RenovateUpgrade {
   static const _sdkKeys = {'dart': 'sdk', 'flutter': 'flutter'};
 
   const factory({
+    required String manager,
     required String depName,
     required String packageFile,
     @JsonKey(fromJson: _emptyAsNull) String? depType,

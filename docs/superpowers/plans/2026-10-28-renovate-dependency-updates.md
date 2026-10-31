@@ -200,7 +200,7 @@ Results (T1–T9 all ✅, no fallback needed) are recorded in spec "Phase 0b"; t
 
 ---
 
-### Task 6a: Post-upgrade ignores non-pub updates
+### Task 6a: Post-upgrade ignores non-pub updates — ✅ DONE 2026-10-31
 
 Added 2026-10-30: this repo's own Renovate also updates `tool/renovate/package.json` (npm), and all updates share one branch, so the data file can contain npm entries.
 
