@@ -18,13 +18,23 @@ enum PostUpgradeMode() {
 
 @internal
 class const PostUpgrade({required final PostUpgradeMode mode}) {
+  static const _pubManager = 'pub';
+
   Future<void> call(Directory repoRoot, List<RenovateUpgrade> upgrades) async {
+    final pubUpgrades = upgrades
+        .where((u) => u.manager == _pubManager)
+        .toList();
+    if (pubUpgrades.isEmpty) {
+      Github.logInfo('No pub upgrades - nothing to do');
+      return;
+    }
+
     final roots = await PubRoots(repoRoot)
-        .resolve(upgrades.map((u) => u.packageFile));
+        .resolve(pubUpgrades.map((u) => u.packageFile));
     for (final root in roots) {
       await Github.logGroupAsync(
         'Processing ${path.relative(root.path, from: repoRoot.path)}',
-        () => _processRoot(repoRoot, root, upgrades),
+        () => _processRoot(repoRoot, root, pubUpgrades),
       );
     }
   }

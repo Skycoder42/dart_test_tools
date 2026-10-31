@@ -109,6 +109,7 @@ dependencies:
       const sut = PostUpgrade(mode: PostUpgradeMode.application);
       await sut(testDir, const [
         RenovateUpgrade(
+          manager: 'pub',
           depName: 'path',
           packageFile: 'packages/b/pubspec.yaml',
           depType: 'dependencies',
@@ -124,6 +125,7 @@ dependencies:
       const sut = PostUpgrade(mode: PostUpgradeMode.library);
       await sut(testDir, const [
         RenovateUpgrade(
+          manager: 'pub',
           depName: 'path',
           packageFile: 'packages/b/pubspec.yaml',
         ),
@@ -141,12 +143,14 @@ dependencies:
         const sut = PostUpgrade(mode: PostUpgradeMode.library);
         await sut(testDir, const [
           RenovateUpgrade(
+            manager: 'pub',
             depName: 'dart',
             packageFile: 'packages/a/pubspec.yaml',
             currentValue: '^3.9.0',
             newValue: '^3.13.0',
           ),
           RenovateUpgrade(
+            manager: 'pub',
             depName: 'dart',
             packageFile: 'packages/b/pubspec.yaml',
             currentValue: '^3.9.0',
@@ -168,16 +172,19 @@ dependencies:
       const sut = PostUpgrade(mode: PostUpgradeMode.library);
       await sut(testDir, const [
         RenovateUpgrade(
+          manager: 'pub',
           depName: 'dart',
           packageFile: 'packages/b/pubspec.yaml',
           newValue: '^3.13.0',
         ),
         RenovateUpgrade(
+          manager: 'pub',
           depName: 'dart',
           packageFile: 'packages/b/pubspec.yaml',
           newValue: '^3.13.0',
         ),
         RenovateUpgrade(
+          manager: 'pub',
           depName: 'path',
           packageFile: 'packages/b/pubspec.yaml',
         ),
@@ -200,6 +207,7 @@ dependencies:
       const sut = PostUpgrade(mode: PostUpgradeMode.library);
       await sut(testDir, const [
         RenovateUpgrade(
+          manager: 'pub',
           depName: 'build_runner',
           packageFile: 'packages/a/pubspec.yaml',
         ),
@@ -222,6 +230,7 @@ dependencies:
       const sut = PostUpgrade(mode: PostUpgradeMode.library);
       await sut(testDir, const [
         RenovateUpgrade(
+          manager: 'pub',
           depName: 'build_runner',
           packageFile: 'packages/a/pubspec.yaml',
         ),
@@ -248,6 +257,7 @@ dependencies:
       const sut = PostUpgrade(mode: PostUpgradeMode.library);
       await sut(testDir, const [
         RenovateUpgrade(
+          manager: 'pub',
           depName: 'build_runner',
           packageFile: 'packages/a/pubspec.yaml',
         ),
@@ -255,6 +265,51 @@ dependencies:
 
       expect(packageVersion('packages/a'), '2.0.1');
       expect(testFile('packages/a/CHANGELOG.md').existsSync(), isFalse);
+    }, timeout: const Timeout(Duration(minutes: 5)));
+
+    test('only non-pub upgrades run nothing and change nothing', () async {
+      Map<String, DateTime> snapshot() => {
+        for (final entity in testDir.listSync(recursive: true))
+          if (entity is File) entity.path: entity.lastModifiedSync(),
+      };
+      final before = snapshot();
+
+      const sut = PostUpgrade(mode: PostUpgradeMode.application);
+      await sut(testDir, const [
+        RenovateUpgrade(
+          manager: 'npm',
+          depName: 'renovate',
+          packageFile: 'tool/renovate/package.json',
+          currentValue: '44.164.5',
+          newValue: '44.170.0',
+        ),
+      ]);
+
+      expect(snapshot(), before);
+    }, timeout: const Timeout(Duration(minutes: 5)));
+
+    test('non-pub upgrades are ignored next to pub upgrades', () async {
+      const sut = PostUpgrade(mode: PostUpgradeMode.library);
+      await sut(testDir, const [
+        RenovateUpgrade(
+          manager: 'npm',
+          depName: 'renovate',
+          packageFile: 'tool/renovate/package.json',
+          currentValue: '44.164.5',
+          newValue: '44.170.0',
+        ),
+        RenovateUpgrade(
+          manager: 'pub',
+          depName: 'path',
+          packageFile: 'packages/b/pubspec.yaml',
+        ),
+      ]);
+
+      expect(packageVersion('packages/b'), '1.0.1');
+      final lines = changelogLines('packages/b');
+      expect(lines.where((l) => l.startsWith('## ')), hasLength(2));
+      expect(lines.where((l) => l == '- Updated dependencies'), hasLength(1));
+      expect(testFile('tool/renovate/CHANGELOG.md').existsSync(), isFalse);
     }, timeout: const Timeout(Duration(minutes: 5)));
 
     test('syncs analyzer plugins of the workspace root only', () async {
@@ -270,7 +325,11 @@ dependencies:
 
       const sut = PostUpgrade(mode: PostUpgradeMode.library);
       await sut(testDir, const [
-        RenovateUpgrade(depName: 'path', packageFile: 'pubspec.yaml'),
+        RenovateUpgrade(
+          manager: 'pub',
+          depName: 'path',
+          packageFile: 'pubspec.yaml',
+        ),
       ]);
 
       expect(

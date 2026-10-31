@@ -28,6 +28,7 @@ void main() {
     test('load parses all fields', () async {
       await writeData([
         {
+          'manager': 'pub',
           'depName': 'dart',
           'packageFile': 'packages/pure/pubspec.yaml',
           'depType': '',
@@ -36,6 +37,7 @@ void main() {
           'updateType': 'minor',
         },
         {
+          'manager': 'pub',
           'depName': 'collection',
           'packageFile': 'pubspec.yaml',
           'depType': 'dependencies',
@@ -49,6 +51,7 @@ void main() {
 
       expect(result, [
         const RenovateUpgrade(
+          manager: 'pub',
           depName: 'dart',
           packageFile: 'packages/pure/pubspec.yaml',
           currentValue: '^3.6.0',
@@ -56,6 +59,7 @@ void main() {
           updateType: 'minor',
         ),
         const RenovateUpgrade(
+          manager: 'pub',
           depName: 'collection',
           packageFile: 'pubspec.yaml',
           depType: 'dependencies',
@@ -69,6 +73,7 @@ void main() {
     test('empty strings become null', () async {
       await writeData([
         {
+          'manager': 'pub',
           'depName': 'flutter',
           'packageFile': 'pubspec.yaml',
           'depType': '',
@@ -89,13 +94,45 @@ void main() {
 
     test('load accepts missing optional fields', () async {
       await writeData([
-        {'depName': 'path', 'packageFile': 'pubspec.yaml'},
+        {'manager': 'pub', 'depName': 'path', 'packageFile': 'pubspec.yaml'},
       ]);
 
       final result = await UpgradeData.load(dataFile);
 
       expect(result, [
-        const RenovateUpgrade(depName: 'path', packageFile: 'pubspec.yaml'),
+        const RenovateUpgrade(
+          manager: 'pub',
+          depName: 'path',
+          packageFile: 'pubspec.yaml',
+        ),
+      ]);
+    });
+
+    test('load parses entries of other managers', () async {
+      await writeData([
+        {
+          'manager': 'npm',
+          'depName': 'renovate',
+          'packageFile': 'tool/renovate/package.json',
+          'depType': 'dependencies',
+          'currentValue': '44.164.5',
+          'newValue': '44.170.0',
+          'updateType': 'minor',
+        },
+      ]);
+
+      final result = await UpgradeData.load(dataFile);
+
+      expect(result, [
+        const RenovateUpgrade(
+          manager: 'npm',
+          depName: 'renovate',
+          packageFile: 'tool/renovate/package.json',
+          depType: 'dependencies',
+          currentValue: '44.164.5',
+          newValue: '44.170.0',
+          updateType: 'minor',
+        ),
       ]);
     });
 
@@ -109,7 +146,7 @@ void main() {
 
     test('fromEnvironment loads the file named by the env var', () async {
       await writeData([
-        {'depName': 'path', 'packageFile': 'pubspec.yaml'},
+        {'manager': 'pub', 'depName': 'path', 'packageFile': 'pubspec.yaml'},
       ]);
 
       final result = await UpgradeData.fromEnvironment({
@@ -117,7 +154,11 @@ void main() {
       });
 
       expect(result, [
-        const RenovateUpgrade(depName: 'path', packageFile: 'pubspec.yaml'),
+        const RenovateUpgrade(
+          manager: 'pub',
+          depName: 'path',
+          packageFile: 'pubspec.yaml',
+        ),
       ]);
     });
 
@@ -128,7 +169,11 @@ void main() {
 
   group('$RenovateUpgrade', () {
     test('isSdkUpgrade and sdkKey for dart', () {
-      const sut = RenovateUpgrade(depName: 'dart', packageFile: 'pubspec.yaml');
+      const sut = RenovateUpgrade(
+        manager: 'pub',
+        depName: 'dart',
+        packageFile: 'pubspec.yaml',
+      );
 
       expect(sut.isSdkUpgrade, isTrue);
       expect(sut.sdkKey, 'sdk');
@@ -136,6 +181,7 @@ void main() {
 
     test('isSdkUpgrade and sdkKey for flutter', () {
       const sut = RenovateUpgrade(
+        manager: 'pub',
         depName: 'flutter',
         packageFile: 'pubspec.yaml',
       );
@@ -145,7 +191,11 @@ void main() {
     });
 
     test('isSdkUpgrade and sdkKey for other packages', () {
-      const sut = RenovateUpgrade(depName: 'path', packageFile: 'pubspec.yaml');
+      const sut = RenovateUpgrade(
+        manager: 'pub',
+        depName: 'path',
+        packageFile: 'pubspec.yaml',
+      );
 
       expect(sut.isSdkUpgrade, isFalse);
       expect(() => sut.sdkKey, throwsA(isA<StateError>()));
