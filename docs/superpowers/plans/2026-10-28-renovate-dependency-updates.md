@@ -260,7 +260,7 @@ Deviations: `github.workflow_ref` reaches the dispatch script as `WORKFLOW_REF` 
 
 ---
 
-### Task 9: Remove auto-update, migrate this repo
+### Task 9: Remove auto-update, migrate this repo — ✅ DONE 2026-10-31
 
 **Files:**
 - Delete: `tool/ci_gen/auto_update/`, `.github/workflows/auto-update.yml`, `.github/workflows/dart_test_tools_auto_update.yml`

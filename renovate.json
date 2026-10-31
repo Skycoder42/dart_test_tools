@@ -1,0 +1,24 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["github>Skycoder42/dart_test_tools//renovate/library"],
+  "enabledManagers": ["pub", "npm"],
+  "packageRules": [
+    {
+      "description": "npm is only used for the Renovate version run by the reusable renovate workflow",
+      "matchManagers": ["npm"],
+      "matchFileNames": ["!tool/renovate/package.json"],
+      "enabled": false
+    },
+    {
+      "description": "Node is raised by hand when a Renovate major needs it",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["engines"],
+      "enabled": false
+    },
+    {
+      "description": "Give new Renovate releases some time before the workflow runs them",
+      "matchPackageNames": ["renovate"],
+      "minimumReleaseAge": "3 days"
+    }
+  ]
+}
