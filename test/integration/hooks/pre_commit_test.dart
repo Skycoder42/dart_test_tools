@@ -128,7 +128,11 @@ void main() {
 
       expect(result.exitCode, isNot(0));
       expect(await commitCount(), 0);
-      expect('${result.stdout}${result.stderr}', contains('lib/a.dart'));
+      // dart format reports parse errors with the platform path separator
+      expect(
+        '${result.stdout}${result.stderr}',
+        contains(join('lib', 'a.dart')),
+      );
     });
   }, timeout: const Timeout(Duration(minutes: 5)));
 }

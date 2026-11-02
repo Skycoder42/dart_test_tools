@@ -181,18 +181,16 @@ void main() {
       Future<List<String>> warnings({
         bool flutterCompat = true,
         bool withFlutter = true,
-      }) {
-        return HookInstaller(
-          repo.dir,
-          environment: {
-            ...repo.env,
-            pathKey: [
-              gitOnlyPath(),
-              if (withFlutter) flutterBin.path,
-            ].join(pathSeparator),
-          },
-        ).warnings(flutterCompat: flutterCompat);
-      }
+      }) => HookInstaller(
+        repo.dir,
+        environment: {
+          ...repo.env,
+          pathKey: [
+            gitOnlyPath(),
+            if (withFlutter) flutterBin.path,
+          ].join(pathSeparator),
+        },
+      ).warnings(flutterCompat: flutterCompat);
 
       setUp(() async {
         final flutterName = Platform.isWindows ? 'flutter.bat' : 'flutter';
