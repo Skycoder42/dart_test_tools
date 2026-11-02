@@ -18,6 +18,7 @@ executables:
   renovate-post-upgrade: renovate_post_upgrade
   renovate-config: renovate_config
   auto-export: auto_export
+  setup-hooks: setup_hooks
 
 dependencies:
   analysis_server_plugin: ^0.3.18
