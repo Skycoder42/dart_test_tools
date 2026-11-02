@@ -76,12 +76,14 @@ Future<void> writeExecutable(File file, String content) async {
   }
 }
 
+String get pathKey => Platform.environment.keys.firstWhere(
+  (key) => key.toUpperCase() == 'PATH',
+  orElse: () => 'PATH',
+);
+
+String get pathSeparator => Platform.isWindows ? ';' : ':';
+
 Map<String, String> prependPath(String directory) {
-  final key = Platform.environment.keys.firstWhere(
-    (key) => key.toUpperCase() == 'PATH',
-    orElse: () => 'PATH',
-  );
-  final path = Platform.environment[key];
-  final separator = Platform.isWindows ? ';' : ':';
-  return {key: path == null ? directory : '$directory$separator$path'};
+  final path = Platform.environment[pathKey];
+  return {pathKey: path == null ? directory : '$directory$pathSeparator$path'};
 }
