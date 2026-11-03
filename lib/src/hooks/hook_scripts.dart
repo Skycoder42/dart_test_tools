@@ -50,28 +50,69 @@ cd "\$(git rev-parse --show-toplevel)"
 tmp=\$(mktemp -d)
 trap 'rm -rf "\$tmp"' EXIT
 
+''')
+      // Each check runs in the background and writes its exit code to
+      // <name>.code once it finished. The file is renamed into place, so the
+      // code is complete as soon as the file exists.
+      ..write(r'''
+run() {
+  name=$1
+  shift
+  if "$@" </dev/null >"$tmp/$name" 2>&1; then code=0; else code=$?; fi
+  echo "$code" >"$tmp/$name.tmp"
+  mv "$tmp/$name.tmp" "$tmp/$name.code"
+}
 ''');
 
     for (final (name, command) in checks) {
-      final pidVar = '${name.replaceAll('-', '_')}_pid';
-      buffer
-        ..writeln('$command </dev/null >"\$tmp/$name" 2>&1 &')
-        ..writeln('$pidVar=\$!');
+      buffer.writeln('run $name $command &');
     }
 
-    buffer.write(r'''
+    // The progress indicator is only drawn on terminals. It is redrawn in
+    // place and cleared before each result line, so it always stays below
+    // the results and disappears after the last one.
+    buffer
+      ..write('''
 
+total=${checks.length}
+''')
+      ..write(r'''
+completed=0
 failed=0
+frame=0
+spin() {
+  case $frame in
+    0) symbol='⣾' ;;
+    1) symbol='⣽' ;;
+    2) symbol='⣻' ;;
+    3) symbol='⢿' ;;
+    4) symbol='⡿' ;;
+    5) symbol='⣟' ;;
+    6) symbol='⣯' ;;
+    *) symbol='⣷' ;;
+  esac
+  frame=$(((frame + 1) % 8))
+  printf '\r%s [%d/%d] checks completed' "$symbol" "$completed" "$total"
+}
 report() {
-  if wait "$2"; then result=passed; else result=failed; failed=1; fi
-  echo "── $1: $result ──"
-  cat "$tmp/$1"
+  while [ ! -e "$tmp/$1.code" ]; do
+    if [ -t 1 ]; then spin; fi
+    sleep 0.1
+  done
+  if [ -t 1 ]; then printf '\r\033[K'; fi
+  completed=$((completed + 1))
+  if [ "$(cat "$tmp/$1.code")" -eq 0 ]; then
+    echo "✓ $1: passed"
+  else
+    echo "✗ $1: failed"
+    cat "$tmp/$1"
+    failed=1
+  fi
 }
 ''');
 
     for (final (name, _) in checks) {
-      final pidVar = '${name.replaceAll('-', '_')}_pid';
-      buffer.writeln('report $name "\$$pidVar"');
+      buffer.writeln('report $name');
     }
 
     buffer.writeln(r'exit "$failed"');
