@@ -70,6 +70,3 @@ cider:
   link_template:
     tag: https://github.com/Skycoder42/dart_test_tools/releases/tag/v%tag% # initial release link template
     diff: https://github.com/Skycoder42/dart_test_tools/compare/v%from%...v%to% # subsequent releases link template
-
-dart_pre_commit:
-  pull-up-dependencies: false
