@@ -28,13 +28,6 @@ class FlutterCompat({
   required final Directory directory,
   @visibleForTesting final String flutterExecutable = 'flutter',
 }) {
-  // exit code of cmd if a command was not found
-  static const _windowsCommandNotFound = 9009;
-
-  static const _missingFlutterMessage =
-      'flutter was not found in the PATH. Install flutter or rerun '
-      'setup_hooks with --no-flutter-compat.';
-
   Future<FlutterCompatResult> call() async {
     if (!File(join(directory.path, 'pubspec.yaml')).existsSync()) {
       throw FlutterCompatException(
@@ -95,28 +88,12 @@ class FlutterCompat({
       dependency is SdkDependency && dependency.sdk == 'flutter';
 
   Future<({Version dart, Version flutter})> _flutterVersions() async {
-    final ProcessResult result;
-    try {
-      result = await Process.run(flutterExecutable, const [
-        '--version',
-        '--machine',
-      ], runInShell: Platform.isWindows);
-    } on ProcessException {
-      throw FlutterCompatException(_missingFlutterMessage);
-    }
+    final versions = await Github.execLines(
+      flutterExecutable,
+      const ['--version', '--machine'],
+      runInShell: Platform.isWindows,
+    ).transform(json.decoder).cast<Map<String, dynamic>>().single;
 
-    if (Platform.isWindows && result.exitCode == _windowsCommandNotFound) {
-      throw FlutterCompatException(_missingFlutterMessage);
-    }
-    if (result.exitCode != 0) {
-      throw Exception(
-        'flutter --version failed with exit code ${result.exitCode}: '
-        '${result.stderr}',
-      );
-    }
-
-    final versions =
-        json.decode(result.stdout as String) as Map<String, dynamic>;
     return (
       dart: Version.parse(versions['dartSdkVersion'] as String),
       flutter: Version.parse(versions['frameworkVersion'] as String),

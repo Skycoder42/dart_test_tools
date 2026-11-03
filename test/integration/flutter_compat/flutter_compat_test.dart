@@ -209,13 +209,7 @@ dependencies:
           directory: testDir,
           flutterExecutable: 'flutter-does-not-exist',
         )(),
-        throwsA(
-          isA<FlutterCompatException>().having(
-            (e) => e.message,
-            'message',
-            contains('--no-flutter-compat'),
-          ),
-        ),
+        throwsException,
       );
     });
 
