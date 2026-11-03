@@ -172,7 +172,8 @@ dart run dart_test_tools:setup_hooks
   anything, the commit is aborted: review the changes, stage them and commit again.
 - **pre-push** runs `dart analyze --fatal-infos` and the flutter compatibility check
   (`dart run dart_test_tools:flutter_compat`, see below) in parallel and fails if one of
-  them fails. Their output is buffered and printed check by check, never interleaved.
+  them fails. While they run, a progress indicator counts the completed checks. Each
+  check prints one result line, in a fixed order, and its output only if it failed.
 
 Options:
 

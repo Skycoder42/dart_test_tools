@@ -11,18 +11,20 @@ import 'package:test/test.dart';
 import 'git_test_repo.dart';
 
 // Stands in for `dart`: each check prints its output, leaves marks and can
-// wait for a mark of the other check before it finishes.
+// sleep or wait for a mark of the other check before it finishes.
 const _dartStub = r'''
 #!/bin/sh
 case "$1" in
   analyze)
     name=analyze
     wait_for=${ANALYZE_WAIT_FOR:-}
+    delay=${ANALYZE_DELAY:-0}
     code=${ANALYZE_EXIT:-0}
     ;;
   run)
     name=flutter-compat
     wait_for=${FLUTTER_COMPAT_WAIT_FOR:-}
+    delay=${FLUTTER_COMPAT_DELAY:-0}
     code=${FLUTTER_COMPAT_EXIT:-0}
     ;;
   *)
@@ -34,6 +36,7 @@ echo "$*" >"$MARKS/$name.args"
 cat >"$MARKS/$name.stdin"
 touch "$MARKS/$name.started"
 echo "$name output"
+sleep "$delay"
 if [ -n "$wait_for" ]; then
   tries=0
   while [ ! -e "$MARKS/$wait_for" ]; do
@@ -104,6 +107,8 @@ void main() {
       expect(result.exitCode, 0, reason: '${result.stdout}${result.stderr}');
       expect(result.stdout, contains('analyze: passed'));
       expect(result.stdout, contains('flutter-compat: passed'));
+      expect(result.stdout, isNot(contains('output')));
+      expect(result.stdout, isNot(contains('checks completed')));
       expect(
         mark('analyze.args').readAsStringSync().trim(),
         ['analyze', '--fatal-infos'].join(' '),
@@ -119,7 +124,9 @@ void main() {
 
       expect(result.exitCode, 1);
       expect(result.stdout, contains('analyze: failed'));
+      expect(result.stdout, contains('analyze output'));
       expect(result.stdout, contains('flutter-compat: passed'));
+      expect(result.stdout, isNot(contains('flutter-compat output')));
     });
 
     test('fails if flutter-compat fails', () async {
@@ -127,7 +134,9 @@ void main() {
 
       expect(result.exitCode, 1);
       expect(result.stdout, contains('analyze: passed'));
+      expect(result.stdout, isNot(contains('analyze output')));
       expect(result.stdout, contains('flutter-compat: failed'));
+      expect(result.stdout, contains('flutter-compat output'));
     });
 
     test('runs the checks in parallel', () async {
@@ -138,22 +147,54 @@ void main() {
       expect(result.exitCode, 0, reason: '${result.stdout}${result.stderr}');
     });
 
-    test('prints the outputs in a fixed order', () async {
+    test('prints the results in a fixed order', () async {
       final result = await runHook(
-        env: {'ANALYZE_WAIT_FOR': 'flutter-compat.done'},
+        env: {
+          'ANALYZE_WAIT_FOR': 'flutter-compat.done',
+          'ANALYZE_EXIT': '1',
+          'FLUTTER_COMPAT_EXIT': '1',
+        },
       );
 
-      expect(result.exitCode, 0, reason: '${result.stdout}${result.stderr}');
+      expect(result.exitCode, 1, reason: '${result.stdout}${result.stderr}');
       final stdout = result.stdout as String;
-      final analyzeHeader = stdout.indexOf('analyze: passed');
+      final analyzeHeader = stdout.indexOf('analyze: failed');
       final analyzeOutput = stdout.indexOf('analyze output');
-      final flutterCompatHeader = stdout.indexOf('flutter-compat: passed');
+      final flutterCompatHeader = stdout.indexOf('flutter-compat: failed');
       final flutterCompatOutput = stdout.indexOf('flutter-compat output');
       expect(analyzeHeader, isNot(-1));
       expect(analyzeOutput, greaterThan(analyzeHeader));
       expect(flutterCompatHeader, greaterThan(analyzeOutput));
       expect(flutterCompatOutput, greaterThan(flutterCompatHeader));
     });
+
+    test('shows a progress indicator on terminals', () async {
+      final hook = await installHook(flutterCompat: true);
+      // script runs the hook with a pseudo terminal as stdout
+      final result = await Process.run(
+        'script',
+        ['--quiet', '--return', '--command', 'sh ${hook.path}', '/dev/null'],
+        workingDirectory: repo.dir.path,
+        environment: hookEnv({
+          'ANALYZE_DELAY': '0.5',
+          'FLUTTER_COMPAT_DELAY': '1',
+        }),
+        stdoutEncoding: utf8,
+        stderrEncoding: utf8,
+      );
+
+      final stdout = result.stdout as String;
+      expect(result.exitCode, 0, reason: '$stdout${result.stderr}');
+      expect(stdout, contains('[0/2] checks completed'));
+      expect(stdout, contains('[1/2] checks completed'));
+      expect(stdout, isNot(contains('[2/2]')));
+      expect(
+        stdout.indexOf('[1/2] checks completed'),
+        greaterThan(stdout.indexOf('analyze: passed')),
+      );
+      // the indicator is cleared before the last result
+      expect(stdout.trimRight(), endsWith('flutter-compat: passed'));
+    }, testOn: 'linux');
 
     test('skips flutter-compat if disabled', () async {
       final result = await runHook(flutterCompat: false);
