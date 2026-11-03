@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [8.1.0] - 2026-11-03
+### Added
+- New `setup_hooks` executable that installs configuration-free pre-commit (format) and pre-push (analyze, flutter compatibility) git hooks, replacing dart\_pre\_commit
+- New `flutter_compat` executable that checks whether the publishable pure Dart packages of a workspace resolve inside a Flutter app
+- `dart.yml`: new `flutterCompat` input (default `true`) that runs the flutter compatibility check in a separate, parallel job
+
 ## [8.0.1] - 2026-10-31
 ### Changed
 - Updated dependencies
@@ -593,6 +599,7 @@ have been added:
 ### Added
 - Initial release
 
+[8.1.0]: https://github.com/Skycoder42/dart_test_tools/compare/v8.0.1...v8.1.0
 [8.0.1]: https://github.com/Skycoder42/dart_test_tools/compare/v8.0.0...v8.0.1
 [8.0.0]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.8...v8.0.0
 [7.3.8]: https://github.com/Skycoder42/dart_test_tools/compare/v7.3.7...v7.3.8
