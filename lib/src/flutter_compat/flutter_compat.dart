@@ -165,7 +165,6 @@ class FlutterCompat({
         const ['pub', 'get'],
         workingDirectory: probe,
         runInShell: Platform.isWindows,
-        expectedExitCode: null,
       ).toList();
       return true;
     } on Exception catch (e) {
