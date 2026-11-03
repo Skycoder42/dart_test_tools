@@ -156,17 +156,24 @@ class FlutterCompat({
     Version dartVersion,
   ) async {
     final probe = await Directory.systemTemp.createTemp('flutter_compat_');
+    var restoreLines = <String>[];
     try {
       await File(join(probe.path, 'pubspec.yaml'))
           .writeAsString(_probePubspec(packages, dartVersion));
-      final exitCode = await Github.exec(
+      restoreLines = await Github.execLines(
         flutterExecutable,
         const ['pub', 'get'],
         workingDirectory: probe,
         runInShell: Platform.isWindows,
         expectedExitCode: null,
-      );
-      return exitCode == 0;
+      ).toList();
+      return true;
+    } on Exception catch (e) {
+      Github.logGroup('$flutterExecutable pub get output', () {
+        restoreLines.forEach(Github.logError);
+        Github.logError(e.toString());
+      });
+      return false;
     } finally {
       await probe.delete(recursive: true);
     }
