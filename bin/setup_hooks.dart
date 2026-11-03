@@ -37,16 +37,14 @@ void main(List<String> args) => Github.runZoned(() async {
     final flutterCompat = options['flutter-compat'] as bool;
     final installer = HookInstaller(Directory.current);
     final warnings = await installer.warnings(flutterCompat: flutterCompat);
-    for (final warning in warnings) {
-      stderr.writeln('Warning: $warning');
-    }
+    warnings.forEach(Github.logWarning);
 
     final hooks = await installer.install(
       flutterCompat: flutterCompat,
       force: options['force'] as bool,
     );
     for (final hook in hooks) {
-      stdout.writeln('Installed ${hook.path}');
+      Github.logInfo('Installed ${hook.path}');
     }
   } on FormatException catch (e) {
     stderr

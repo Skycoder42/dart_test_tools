@@ -57,8 +57,8 @@ void main() {
 
       expect(result.exitCode, 0, reason: '${result.stdout}${result.stderr}');
       expect(
-        result.stderr,
-        allOf(contains('Warning: '), contains('dart_test_tools')),
+        result.stdout,
+        allOf(contains('::warning::'), contains('dart_test_tools')),
       );
     });
 
@@ -70,7 +70,7 @@ void main() {
         hook('pre-push').readAsStringSync(),
         HookScripts.prePush(flutterCompat: false),
       );
-      expect(result.stderr, isNot(contains('Warning: ')));
+      expect(result.stdout, isNot(contains('::warning::')));
     });
 
     test('refuses to replace foreign hooks without --force', () async {
