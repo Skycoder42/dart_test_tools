@@ -19,6 +19,7 @@ executables:
   renovate-config: renovate_config
   auto-export: auto_export
   setup-hooks: setup_hooks
+  flutter-compat: flutter_compat
 
 dependencies:
   analysis_server_plugin: ^0.3.18
