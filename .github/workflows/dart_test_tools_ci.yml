@@ -30,7 +30,6 @@ jobs:
           "macos": "dart run tool/ci_install_flutter.dart"
         }
       panaScoreThreshold: 30 # should be 20
-      flutterCompat: false
     secrets:
       integrationTestEnvVars: |
         TEST_KEY=test-value
