@@ -62,7 +62,8 @@ These steps also migrate a repository that used the former `auto-update.yml` wor
 
    The `issues` trigger runs Renovate as soon as you tick a checkbox in the Dependency
    Dashboard issue. Inputs: `flutterSdkChannel` (default `stable`) and `flutterCompat`
-   (default `true`: no dependency versions beyond the ones the Flutter SDK pins).
+   (default `true`: no dependency versions beyond the ones the Flutter SDK pins; the same
+   input of `dart.yml` enables the flutter compatibility check, see [Flutter compatibility](#flutter-compatibility)).
 3. Add a `renovate.json` with one of the two presets:
 
    ```json
@@ -156,3 +157,38 @@ mind:
 - Every pub group gets its own pull request with its own patch release. Once one is
   merged, the others conflict on `CHANGELOG.md` and the version, Renovate rebuilds them,
   and they need a new approval.
+
+## Git hooks
+
+`setup_hooks` installs two git hooks that check your changes before they leave your
+machine. They need no configuration. Add `dart_test_tools` as dev dependency, then run
+once per checkout:
+
+```sh
+dart run dart_test_tools:setup_hooks
+```
+
+- **pre-commit** formats the staged Dart files with `dart format`. If that changed
+  anything, the commit is aborted: review the changes, stage them and commit again.
+- **pre-push** runs `dart analyze --fatal-infos` and the flutter compatibility check
+  (`dart run dart_test_tools:flutter_compat`, see below) in parallel and fails if one of
+  them fails. Their output is buffered and printed check by check, never interleaved.
+
+Options:
+
+- `--no-flutter-compat` leaves the compatibility check out of the pre-push hook. Use it
+  for packages that are deliberately not usable from Flutter apps, and for repositories
+  without a `pubspec.yaml` at the root.
+- `--force` replaces existing hooks that `setup_hooks` did not generate, for example the
+  ones of `dart_pre_commit`. Without it, `setup_hooks` refuses to overwrite them.
+
+Rerun `setup_hooks` after updating `dart_test_tools` to get the current version of the
+hooks. To skip them once, use `git commit --no-verify` or `git push --no-verify`; CI still
+runs the same checks.
+
+### Flutter compatibility
+
+`flutter-compat` (or `dart run dart_test_tools:flutter_compat`) checks that a Dart package
+can be used from a Flutter app: its SDK constraints must allow the Dart and Flutter
+versions of the installed Flutter SDK, and its dependencies must resolve together with
+the packages the Flutter SDK pins.
