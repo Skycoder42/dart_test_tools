@@ -627,9 +627,7 @@ artifacts/*.dmg
       type: Type.boolean,
       required: false,
       defaultValue: true,
-      description:
-          'Whether Renovate must not propose dependency versions beyond the '
-          'ones pinned by the Flutter SDK.',
+      description: 'Whether the package must stay usable from Flutter apps.',
     ),
   );
 
