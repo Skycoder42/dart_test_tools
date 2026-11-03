@@ -5,6 +5,7 @@ import 'package:path/path.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
 import '../../gen/package_metadata.dart' as package;
+import '../tools/github.dart';
 import 'hook_scripts.dart';
 
 @internal
@@ -64,12 +65,7 @@ class HookInstaller(
     for (final MapEntry(key: hook, value: script) in hooks.entries) {
       await hook.writeAsString(script);
       if (!Platform.isWindows) {
-        final result = await Process.run('chmod', ['755', hook.path]);
-        if (result.exitCode != 0) {
-          throw Exception(
-            'Failed to make ${hook.path} executable: ${result.stderr}',
-          );
-        }
+        await Github.exec('chmod', ['755', hook.path]);
       }
     }
 
@@ -134,19 +130,10 @@ class HookInstaller(
     return null;
   }
 
-  Future<String> _git(List<String> arguments) async {
-    final result = await Process.run(
-      'git',
-      arguments,
-      workingDirectory: workingDirectory.path,
-      environment: environment,
-    );
-    if (result.exitCode != 0) {
-      throw Exception(
-        'git ${arguments.join(' ')} failed with exit code ${result.exitCode}: '
-        '${(result.stderr as String).trim()}',
-      );
-    }
-    return (result.stdout as String).trim();
-  }
+  Future<String> _git(List<String> arguments) async => await Github.execLines(
+    'git',
+    arguments,
+    workingDirectory: workingDirectory,
+    environment: environment,
+  ).single;
 }
