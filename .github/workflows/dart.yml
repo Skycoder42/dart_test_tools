@@ -54,6 +54,11 @@ on:
         required: false
         default: 0
         description: The threshold that the pana score is allowed to be below the maximum value.
+      flutterCompat:
+        type: boolean
+        required: false
+        default: true
+        description: Whether the package must stay usable from Flutter apps.
       unitTestPaths:
         type: string
         required: false
@@ -205,6 +210,30 @@ jobs:
       - name: Validate pana score
         if: steps.checkPublish.outputs.publish == 'true'
         run: dart pub global run pana --exit-code-threshold ${{ inputs.panaScoreThreshold }} .
+        working-directory: ${{ inputs.workingDirectory }}
+  flutter_compat:
+    name: Flutter compatibility
+    if: inputs.flutterCompat
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Flutter-SDK (${{ inputs.flutterSdkChannel }})
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          channel: ${{ inputs.flutterSdkChannel }}
+          cache: true
+      - name: Download flutter binary artifacts
+        run: flutter precache --universal
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          submodules: ${{ inputs.withSubmodules }}
+      - name: Install tools
+        uses: Skycoder42/dart_test_tools/.github/actions/install-tools@main
+        with:
+          withDartTestTools: "true"
+      - name: Check flutter compatibility
+        run: flutter-compat
         working-directory: ${{ inputs.workingDirectory }}
   unit_tests:
     name: Unit tests

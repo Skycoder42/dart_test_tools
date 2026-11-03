@@ -11,6 +11,7 @@ import '../types/on.dart';
 import '../types/workflow.dart';
 import '../types/workflow_call.dart';
 import 'jobs/dart_analyze_job_builder.dart';
+import 'jobs/dart_flutter_compat_job_builder.dart';
 import 'jobs/dart_integration_test_job_builder.dart';
 import 'jobs/dart_unit_test_job_builder.dart';
 
@@ -30,6 +31,10 @@ class const DartWorkflow() implements WorkflowBuilder {
     outputContext.add(
       WorkflowOutputs.enabledPlatforms,
       analyzeJobBuilder.platformsOutput,
+    );
+
+    final flutterCompatBuilder = DartFlutterCompatJobBuilder(
+      config: DartFlutterCompatJobConfig(inputContext, secretContext),
     );
 
     final unitTestBuilder = DartUnitTestJobBuilder(
@@ -52,6 +57,7 @@ class const DartWorkflow() implements WorkflowBuilder {
     return Workflow(
       jobs: {
         analyzeJobBuilder.id: analyzeJobBuilder.build(),
+        flutterCompatBuilder.id: flutterCompatBuilder.build(),
         unitTestBuilder.id: unitTestBuilder.build(),
         validateCoverageBuilder.id: validateCoverageBuilder.build(),
         integrationTestBuilder.id: integrationTestBuilder.build(),
