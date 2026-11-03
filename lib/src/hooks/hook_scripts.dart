@@ -95,10 +95,6 @@ spin() {
   printf '\r%s [%d/%d] checks completed' "$symbol" "$completed" "$total"
 }
 report() {
-  while [ ! -e "$tmp/$1.code" ]; do
-    if [ -t 1 ]; then spin; fi
-    sleep 0.1
-  done
   if [ -t 1 ]; then printf '\r\033[K'; fi
   completed=$((completed + 1))
   if [ "$(cat "$tmp/$1.code")" -eq 0 ]; then
@@ -109,13 +105,28 @@ report() {
     failed=1
   fi
 }
+
+''')
+      // Reports each check as soon as it finished, until none is pending.
+      ..writeln('pending="${checks.map((check) => check.$1).join(' ')}"')
+      ..write(r'''
+while [ -n "$pending" ]; do
+  running=
+  for name in $pending; do
+    if [ -e "$tmp/$name.code" ]; then
+      report "$name"
+    else
+      running="$running $name"
+    fi
+  done
+  pending=$running
+  if [ -n "$pending" ]; then
+    if [ -t 1 ]; then spin; fi
+    sleep 0.1
+  fi
+done
+exit "$failed"
 ''');
-
-    for (final (name, _) in checks) {
-      buffer.writeln('report $name');
-    }
-
-    buffer.writeln(r'exit "$failed"');
     return buffer.toString();
   }
 }

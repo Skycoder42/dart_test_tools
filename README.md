@@ -173,7 +173,8 @@ dart run dart_test_tools:setup_hooks
 - **pre-push** runs `dart analyze --fatal-infos` and the flutter compatibility check
   (`dart run dart_test_tools:flutter_compat`, see below) in parallel and fails if one of
   them fails. While they run, a progress indicator counts the completed checks. Each
-  check prints one result line, in a fixed order, and its output only if it failed.
+  check prints one result line as soon as it finished, and its output only if it
+  failed.
 
 Options:
 

@@ -147,10 +147,11 @@ void main() {
       expect(result.exitCode, 0, reason: '${result.stdout}${result.stderr}');
     });
 
-    test('prints the results in a fixed order', () async {
+    test('prints the results in the order the checks finish', () async {
       final result = await runHook(
         env: {
-          'ANALYZE_WAIT_FOR': 'flutter-compat.done',
+          // the delay keeps both checks from being reported in the same round
+          'ANALYZE_DELAY': '0.5',
           'ANALYZE_EXIT': '1',
           'FLUTTER_COMPAT_EXIT': '1',
         },
@@ -158,14 +159,14 @@ void main() {
 
       expect(result.exitCode, 1, reason: '${result.stdout}${result.stderr}');
       final stdout = result.stdout as String;
-      final analyzeHeader = stdout.indexOf('analyze: failed');
-      final analyzeOutput = stdout.indexOf('analyze output');
       final flutterCompatHeader = stdout.indexOf('flutter-compat: failed');
       final flutterCompatOutput = stdout.indexOf('flutter-compat output');
-      expect(analyzeHeader, isNot(-1));
-      expect(analyzeOutput, greaterThan(analyzeHeader));
-      expect(flutterCompatHeader, greaterThan(analyzeOutput));
+      final analyzeHeader = stdout.indexOf('analyze: failed');
+      final analyzeOutput = stdout.indexOf('analyze output');
+      expect(flutterCompatHeader, isNot(-1));
       expect(flutterCompatOutput, greaterThan(flutterCompatHeader));
+      expect(analyzeHeader, greaterThan(flutterCompatOutput));
+      expect(analyzeOutput, greaterThan(analyzeHeader));
     });
 
     test('shows a progress indicator on terminals', () async {
