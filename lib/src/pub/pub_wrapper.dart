@@ -166,7 +166,7 @@ class PubWrapper(
 
   Future<void> cider(List<String> commands) async {
     print('[command] cider ${commands.join(' ')}');
-    final cli = CiderCli();
+    final cli = CiderCli(console: const Console(out: _PrintChannel()));
     cli.addCommand(VersionSyncCommand(cli.console));
     final exitCode = await cli.run([
       '--project-root',
@@ -223,4 +223,11 @@ class PubWrapper(
       (p) => p.source == DependencySource.sdk && p.name.contains('flutter'),
     );
   }
+}
+
+/// Routes cider output through [print], so it honors zone print overrides,
+/// like the stderr redirection of [Github.runZoned].
+class const _PrintChannel() implements Channel {
+  @override
+  void writeln([Object message = '']) => print(message);
 }

@@ -106,7 +106,7 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
     }
 
     await pub.format();
-    await pub.fix().forEach(stdout.writeln);
+    await pub.fix().forEach(print);
     await pub.format();
   }
 

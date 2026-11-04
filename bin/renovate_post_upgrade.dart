@@ -5,7 +5,9 @@ import 'package:dart_test_tools/src/renovate/post_upgrade.dart';
 import 'package:dart_test_tools/src/renovate/upgrade_data.dart';
 import 'package:dart_test_tools/src/tools/github.dart';
 
-void main(List<String> args) => Github.runZoned(() async {
+// Renovate only reports stderr of failed post upgrade tasks and discards
+// stdout, so all logs have to go to stderr to be able to see why it failed.
+void main(List<String> args) => Github.runZoned(logToStderr: true, () async {
   final parser =
       ArgParser(
           usageLineLength: stdout.hasTerminal ? stdout.terminalColumns : null,

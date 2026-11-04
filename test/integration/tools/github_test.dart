@@ -131,6 +131,29 @@ void main() {
           ),
         );
       });
+
+      test('runZoned with logToStderr redirects logs to stderr', () async {
+        expect(Github.logsToStderr, isFalse);
+        var logsToStderr = false;
+        await expectLater(
+          () => Github.runZoned(logToStderr: true, () {
+            logsToStderr = Github.logsToStderr;
+            Github.logInfo('test');
+          }),
+          prints(isEmpty),
+        );
+        expect(logsToStderr, isTrue);
+      });
+
+      test('runZoned with logToStderr logs captured errors to stderr', () {
+        expect(
+          () => Github.runZoned(
+            logToStderr: true,
+            () => throw Exception('Test-Failure'),
+          ),
+          prints(isEmpty),
+        );
+      });
     });
 
     group('exec', testOn: 'posix', () {
@@ -170,6 +193,24 @@ void main() {
             expectedExitCode: null,
           ),
           completion(24),
+        );
+      });
+
+      test('redirects process output to stderr if logsToStderr', () async {
+        final result = await Process.run('dart', [
+          'run',
+          'test/integration/tools/github_stderr_runner.dart',
+        ]);
+        expect(result.exitCode, 1, reason: '${result.stderr}');
+        expect(result.stdout, isEmpty);
+        expect(
+          result.stderr,
+          allOf(
+            contains('[command] bash -c'),
+            contains('child-stdout'),
+            contains('child-stderr'),
+            contains('::error::Exception: Process bash failed'),
+          ),
         );
       });
 

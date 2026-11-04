@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:meta/meta.dart';
+
 import 'io.dart';
 
 class const _GithubEnv() {
@@ -95,16 +97,41 @@ abstract base class Github._() {
     }
   }
 
+  static const _logToStderrKey = #dart_test_tools.github.logToStderr;
+
+  @visibleForTesting
+  static bool get logsToStderr => Zone.current[_logToStderrKey] == true;
+
+  /// Runs [main] and logs all uncaught errors.
+  ///
+  /// If [logToStderr] is true, everything that is printed, including the
+  /// output of processes started via [exec], is written to stderr instead of
+  /// stdout. Use this for tools that are run by other tools that only report
+  /// stderr on failure, like the renovate post upgrade tasks.
   static Future<void> runZoned(
     FutureOr<void> Function() main, {
     bool setExitCode = true,
-  }) async => runZonedGuarded(main, (error, stack) {
-    logError(error.toString());
-    logGroup('Stack-Trace', () => print(stack));
-    if (setExitCode) {
-      exitCode = 1;
-    }
-  });
+    bool logToStderr = false,
+  }) async {
+    final zone = logToStderr
+        ? Zone.current.fork(
+            specification: ZoneSpecification(
+              print: (_, _, _, line) => stderr.writeln(line),
+            ),
+            zoneValues: {_logToStderrKey: true},
+          )
+        : Zone.current;
+
+    return await zone.run(
+      () => runZonedGuarded(main, (error, stack) {
+        logError(error.toString());
+        logGroup('Stack-Trace', () => print(stack));
+        if (setExitCode) {
+          exitCode = 1;
+        }
+      }),
+    );
+  }
 
   static Future<int> exec(
     String executable,
@@ -115,14 +142,25 @@ abstract base class Github._() {
     int? expectedExitCode = 0,
   }) async {
     print('[command] $executable ${arguments.join(' ')}');
+    final redirectToStderr = logsToStderr;
     final process = await Process.start(
       executable,
       arguments,
       workingDirectory: workingDirectory?.path,
       environment: environment,
       runInShell: runInShell,
-      mode: ProcessStartMode.inheritStdio,
+      mode: redirectToStderr
+          ? ProcessStartMode.normal
+          : ProcessStartMode.inheritStdio,
     );
+
+    if (redirectToStderr) {
+      await process.stdin.close();
+      await Future.wait([
+        process.stdout.forEach(stderr.add),
+        process.stderr.forEach(stderr.add),
+      ]);
+    }
 
     final exitCode = await process.exitCode;
     if (expectedExitCode != null && exitCode != expectedExitCode) {
