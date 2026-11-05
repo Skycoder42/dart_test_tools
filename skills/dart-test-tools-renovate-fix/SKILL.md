@@ -30,8 +30,9 @@ allowed-tools:
 from a `renovate/…` branch (`renovate/all` for the weekly update, `renovate/breaking` for
 approved breaking updates of the library preset). The pull request has exactly one commit
 by `github-actions[bot]`. It contains Renovate's constraint changes plus everything the
-`renovate-post-upgrade` CLI did in the same commit: dependency resolution, analyzer plugin
-pins, build_runner, `dart format`, `dart fix`, changelog entries and a patch release.
+`renovate-post-upgrade` CLI did in the same commit: dependency resolution, the
+`renovate.pre_build_command` of the root pubspec (if set), analyzer plugin pins,
+build_runner, `dart format`, `dart fix`, changelog entries and a patch release.
 Once the owner approved the CI runs, a finish job at the end of CI merges the pull
 request when CI is green, or comments with a mention when it is red.
 

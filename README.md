@@ -158,6 +158,29 @@ mind:
   merged, the others conflict on `CHANGELOG.md` and the version, Renovate rebuilds them,
   and they need a new approval.
 
+#### Pre-build command
+
+Some repositories may need to run custom code to cleanup the repository. Set a
+pre-build command in the `pubspec.yaml` of the repository root (the workspace
+root, for pub workspaces):
+
+```yaml
+renovate:
+  pre_build_command: echo "my command"
+```
+
+The post-upgrade step runs it in the directory of that pubspec, after dependency
+resolution and before `build_runner`. A non-zero exit code fails the
+post-upgrade step. You can also specify platform specific commands if required:
+
+```yaml
+renovate:
+  pre_build_command:
+    linux: echo "PLATFORM=linux" >> .env
+    macos: echo "PLATFORM=macos" >> .env
+    windows: echo "PLATFORM=windows" >> .env
+```
+
 ## Git hooks
 
 `setup_hooks` installs two git hooks that check your changes before they leave your

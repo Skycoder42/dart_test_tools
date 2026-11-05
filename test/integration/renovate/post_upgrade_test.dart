@@ -312,6 +312,111 @@ dependencies:
       expect(testFile('tool/renovate/CHANGELOG.md').existsSync(), isFalse);
     }, timeout: const Timeout(Duration(minutes: 5)));
 
+    group('pre-build command', () {
+      const pathUpgrade = RenovateUpgrade(
+        manager: 'pub',
+        depName: 'path',
+        packageFile: 'packages/b/pubspec.yaml',
+      );
+
+      Future<void> setPreBuildCommand(String config) => writeFile(
+        'pubspec.yaml',
+        '${testFile('pubspec.yaml').readAsStringSync()}'
+            'renovate:\n'
+            '  pre_build_command:$config\n',
+      );
+
+      test('runs in the workspace root', () async {
+        await setPreBuildCommand(' echo ok > marker.txt');
+
+        const sut = PostUpgrade(mode: PostUpgradeMode.library);
+        await sut(testDir, const [pathUpgrade]);
+
+        expect(testFile('marker.txt').readAsStringSync(), 'ok\n');
+      }, timeout: const Timeout(Duration(minutes: 5)));
+
+      test('runs multi line scripts', () async {
+        await setPreBuildCommand(r'''
+ |
+    mkdir -p out
+    cd out
+    greeting=hello
+    echo "$greeting" > first.txt
+    echo world >> first.txt
+    cp first.txt ../second.txt''');
+
+        const sut = PostUpgrade(mode: PostUpgradeMode.library);
+        await sut(testDir, const [pathUpgrade]);
+
+        expect(testFile('out/first.txt').readAsStringSync(), 'hello\nworld\n');
+        expect(testFile('second.txt').readAsStringSync(), 'hello\nworld\n');
+      }, timeout: const Timeout(Duration(minutes: 5)));
+
+      test('runs before build_runner', () async {
+        // The builder of a imports a library with a missing part, so
+        // build_runner cannot compile its build script until the pre-build
+        // command created the part.
+        await writeFile(
+          'packages/a/pubspec.yaml',
+          testFile('packages/a/pubspec.yaml').readAsStringSync().replaceFirst(
+            'dev_dependencies:',
+            'dependencies:\n  build: ^4.0.0\ndev_dependencies:',
+          ),
+        );
+        await writeFile('packages/a/build.yaml', '''
+builders:
+  noop:
+    import: package:a/builder.dart
+    builder_factories:
+      - noopBuilder
+    build_extensions:
+      .noop:
+        - .noop.out
+    auto_apply: none
+''');
+        await writeFile('packages/a/lib/builder.dart', '''
+import 'package:build/build.dart';
+
+part 'builder.g.dart';
+
+Builder noopBuilder(BuilderOptions options) => createBuilder();
+''');
+        await writeFile('packages/a/builder.g.dart.in', '''
+part of 'builder.dart';
+
+Builder createBuilder() => _NoopBuilder();
+
+class _NoopBuilder implements Builder {
+  @override
+  Map<String, List<String>> get buildExtensions => const {
+    '.noop': ['.noop.out'],
+  };
+
+  @override
+  Future<void> build(BuildStep buildStep) async {}
+}
+''');
+        await pubGet();
+
+        const sut = PostUpgrade(mode: PostUpgradeMode.library);
+        await expectLater(sut(testDir, const [pathUpgrade]), throwsException);
+
+        await setPreBuildCommand(
+          ' cp packages/a/builder.g.dart.in packages/a/lib/builder.g.dart',
+        );
+        await sut(testDir, const [pathUpgrade]);
+
+        expect(testFile('packages/a/lib/builder.g.dart').existsSync(), isTrue);
+      }, timeout: const Timeout(Duration(minutes: 10)));
+
+      test('fails if the command fails', () async {
+        await setPreBuildCommand(' exit 3');
+
+        const sut = PostUpgrade(mode: PostUpgradeMode.library);
+        await expectLater(sut(testDir, const [pathUpgrade]), throwsException);
+      }, timeout: const Timeout(Duration(minutes: 5)));
+    }, testOn: 'posix');
+
     test('syncs analyzer plugins of the workspace root only', () async {
       await writeFile(
         'pubspec.yaml',

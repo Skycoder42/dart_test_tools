@@ -22,6 +22,9 @@ class PubWrapper(
 }) {
   static const flutterTestPackageName = 'flutter_test';
   static const buildRunnerPackageName = 'build_runner';
+  static const _renovateKey = 'renovate';
+  static const _preBuildCommandKey = 'pre_build_command';
+  static const _combinedKey = '$_renovateKey.$_preBuildCommandKey';
 
   String get _executable => isFlutter ? 'flutter' : 'dart';
 
@@ -50,6 +53,42 @@ class PubWrapper(
     if (editor.edits.isNotEmpty) {
       await file.writeAsString(editor.toString(), flush: true);
     }
+  }
+
+  /// Returns the `renovate.pre_build_command` of `pubspec.yaml`.
+  ///
+  /// Schema:
+  /// ```yaml
+  /// renovate?:
+  ///   pre_build_command?: <string>
+  /// ```
+  Future<String?> renovatePreBuildCommand() async {
+    final file = workingDirectory.subFile('pubspec.yaml');
+    final yaml =
+        loadYaml(await file.readAsString(), sourceUrl: file.uri) as YamlMap;
+
+    return switch (yaml[_renovateKey]) {
+      null || YamlMap(isEmpty: true) || {_preBuildCommandKey: null} => null,
+      {_preBuildCommandKey: final String command} =>
+        command.trim().isEmpty
+            ? throw Exception('$_combinedKey in ${file.path} must not be empty')
+            : command,
+      _ => throw Exception(
+        '$_combinedKey in ${file.path} must be a string or null',
+      ),
+    };
+  }
+
+  /// Runs [command] in [workingDirectory] with `/bin/sh -c`, or `cmd.exe /c`
+  /// on windows.
+  Future<void> runShellCommand(String command) async {
+    final (shell, flag) = Platform.isWindows
+        ? ('cmd.exe', '/c')
+        : ('/bin/sh', '-c');
+    await Github.exec(shell, [
+      flag,
+      command,
+    ], workingDirectory: workingDirectory);
   }
 
   /// Returns the analyzer plugins declared in `analysis_options.yaml` that use

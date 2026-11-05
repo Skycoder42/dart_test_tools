@@ -52,6 +52,7 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
         await pub.get();
     }
 
+    await _runPreBuildCommand(pub);
     await _updateAnalyzerPlugins(pub);
     await _autoFix(pub);
 
@@ -65,6 +66,19 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
     for (final (info, package) in packages) {
       await _release(repoPath, info, package, upgrades);
     }
+  }
+
+  Future<void> _runPreBuildCommand(PubWrapper pub) async {
+    final command = await pub.renovatePreBuildCommand();
+    if (command == null) {
+      Github.logDebug('No pre-build command configured');
+      return;
+    }
+
+    await Github.logGroupAsync(
+      'Running pre-build command',
+      () async => await pub.runShellCommand(command),
+    );
   }
 
   Future<void> _updateAnalyzerPlugins(PubWrapper pub) async {
