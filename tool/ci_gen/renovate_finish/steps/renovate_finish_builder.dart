@@ -9,19 +9,14 @@ import '../../types/step.dart';
 
 base mixin RenovateFinishConfig on JobConfig {
   late final needs = inputContext(WorkflowInputs.needs);
-  late final succeeded =
-      (_noJobWith('failure') & _noJobWith('cancelled')).parenthesized;
   late final mergeMethod = inputContext(WorkflowInputs.mergeMethod);
   late final dispatchWorkflow = inputContext(WorkflowInputs.dispatchWorkflow);
-
-  Expression _noJobWith(String result) => Functions.contains(
-    Functions.fromJson(needs).property('*').property('result'),
-    .literal(result),
-  ).not;
 }
 
 class const RenovateFinishBuilder({required final RenovateFinishConfig config})
     implements StepBuilder {
+  static const _checkStepId = StepId('check');
+  static final _succeededOutput = _checkStepId.output('succeeded');
   static const _mergeStepId = StepId('merge');
 
   static const _pullRequest = Expression('github.event.pull_request');
@@ -35,14 +30,36 @@ class const RenovateFinishBuilder({required final RenovateFinishConfig config})
 
   @override
   Iterable<Step> build() sync* {
+    final succeeded = _succeededOutput.expression.eq(const .literal('true'));
     final mergeFailed = _mergeOutcome.eq(const .literal('failure'));
+
+    // Allowlist instead of denylist: a needed job may also end up as e.g.
+    // "abandoned" (a reusable workflow whose job was cancelled because no
+    // runner picked it up), which must block the merge just like a failure.
+    // An empty needs context is treated as failed, too.
+    yield Step.run(
+      id: _checkStepId,
+      name: 'Check CI results',
+      env: Env({'NEEDS': config.needs.toString()}),
+      run:
+          '''
+set -euo pipefail
+if jq -e 'length > 0 and all(.[]; .result == "success" or .result == "skipped")' <<< "\$NEEDS" > /dev/null; then
+  succeeded=true
+else
+  succeeded=false
+  jq -r 'to_entries[] | select(.value.result != "success" and .value.result != "skipped") | "::error::Job \\(.key) did not succeed: \\(.value.result)"' <<< "\$NEEDS"
+fi
+${_succeededOutput.bashSetter(r'$succeeded')}
+''',
+    );
 
     // Pinning the head SHA merges only the commit whose CI run was approved.
     // If Renovate pushed in between, GitHub refuses the merge.
     yield Step.run(
       id: _mergeStepId,
       name: 'Merge pull request',
-      ifExpression: config.succeeded,
+      ifExpression: succeeded,
       env: Env({
         ..._ghEnv,
         'HEAD_SHA': _pullRequest.property('head').property('sha').toString(),
@@ -57,8 +74,7 @@ class const RenovateFinishBuilder({required final RenovateFinishConfig config})
     // workflow_dispatch is allowed - this starts the release chain.
     yield Step.run(
       name: 'Dispatch workflow on the default branch',
-      ifExpression:
-          config.succeeded & _mergeOutcome.eq(const .literal('success')),
+      ifExpression: succeeded & _mergeOutcome.eq(const .literal('success')),
       env: Env({
         'GH_TOKEN': Github.token.toString(),
         'WORKFLOW': config.dispatchWorkflow.toString(),
@@ -84,10 +100,12 @@ gh workflow run "$workflow" --repo "$GITHUB_REPOSITORY" --ref "$DEFAULT_BRANCH"
     yield Step.run(
       name: 'Notify reviewer',
       ifExpression:
-          Functions.always & (config.succeeded.not | mergeFailed).parenthesized,
+          Functions.always &
+          (_succeededOutput.expression.ne(const .literal('true')) | mergeFailed)
+              .parenthesized,
       env: Env({
         ..._ghEnv,
-        'SUCCEEDED': config.succeeded.toString(),
+        'SUCCEEDED': _succeededOutput.expression.toString(),
         'REVIEWER': Github.repositoryOwner.toString(),
       }),
       run: r'''

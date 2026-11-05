@@ -638,8 +638,8 @@ artifacts/*.dmg
       required: true,
       description:
           'The needs context of the calling job as JSON (toJSON(needs)). The '
-          'Renovate pull request is only merged if none of these jobs failed '
-          'or was cancelled.',
+          'Renovate pull request is only merged if all of these jobs either '
+          'succeeded or were skipped.',
     ),
   );
 

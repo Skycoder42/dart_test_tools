@@ -4,7 +4,7 @@ on:
       needs:
         type: string
         required: true
-        description: The needs context of the calling job as JSON (toJSON(needs)). The Renovate pull request is only merged if none of these jobs failed or was cancelled.
+        description: The needs context of the calling job as JSON (toJSON(needs)). The Renovate pull request is only merged if all of these jobs either succeeded or were skipped.
       mergeMethod:
         type: string
         required: false
@@ -25,9 +25,22 @@ jobs:
       actions: write
     runs-on: ubuntu-latest
     steps:
+      - id: check
+        name: Check CI results
+        env:
+          NEEDS: ${{ inputs.needs }}
+        run: |
+          set -euo pipefail
+          if jq -e 'length > 0 and all(.[]; .result == "success" or .result == "skipped")' <<< "$NEEDS" > /dev/null; then
+            succeeded=true
+          else
+            succeeded=false
+            jq -r 'to_entries[] | select(.value.result != "success" and .value.result != "skipped") | "::error::Job \(.key) did not succeed: \(.value.result)"' <<< "$NEEDS"
+          fi
+          echo "succeeded=$succeeded" >> $GITHUB_OUTPUT
       - id: merge
         name: Merge pull request
-        if: (!contains(fromJson(inputs.needs).*.result, 'failure') && !contains(fromJson(inputs.needs).*.result, 'cancelled'))
+        if: steps.check.outputs.succeeded == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           PR: ${{ github.event.pull_request.number }}
@@ -35,7 +48,7 @@ jobs:
           MERGE_METHOD: ${{ inputs.mergeMethod }}
         run: gh pr merge "$PR" --repo "$GITHUB_REPOSITORY" --"$MERGE_METHOD" --delete-branch --match-head-commit "$HEAD_SHA"
       - name: Dispatch workflow on the default branch
-        if: (!contains(fromJson(inputs.needs).*.result, 'failure') && !contains(fromJson(inputs.needs).*.result, 'cancelled')) && steps.merge.outcome == 'success'
+        if: steps.check.outputs.succeeded == 'true' && steps.merge.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           WORKFLOW: ${{ inputs.dispatchWorkflow }}
@@ -51,11 +64,11 @@ jobs:
           fi
           gh workflow run "$workflow" --repo "$GITHUB_REPOSITORY" --ref "$DEFAULT_BRANCH"
       - name: Notify reviewer
-        if: always() && (!(!contains(fromJson(inputs.needs).*.result, 'failure') && !contains(fromJson(inputs.needs).*.result, 'cancelled')) || steps.merge.outcome == 'failure')
+        if: always() && (steps.check.outputs.succeeded != 'true' || steps.merge.outcome == 'failure')
         env:
           GH_TOKEN: ${{ github.token }}
           PR: ${{ github.event.pull_request.number }}
-          SUCCEEDED: ${{ (!contains(fromJson(inputs.needs).*.result, 'failure') && !contains(fromJson(inputs.needs).*.result, 'cancelled')) }}
+          SUCCEEDED: ${{ steps.check.outputs.succeeded }}
           REVIEWER: ${{ github.repository_owner }}
         run: |
           set -euo pipefail
