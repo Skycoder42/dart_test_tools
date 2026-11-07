@@ -2,6 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["github>Skycoder42/dart_test_tools//renovate/library"],
   "enabledManagers": ["pub", "npm"],
+  "postUpdateOptions": ["npmDedupe"],
   "packageRules": [
     {
       "description": "Node only moves to even (LTS) majors",

@@ -16,6 +16,32 @@ on:
       - .github/workflows/flatpak-flutter-extension.yaml
 
 jobs:
+  renovate-lockfile:
+    name: Validate Renovate lockfile
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          sparse-checkout: tool/renovate
+      - name: Install Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version-file: tool/renovate/package.json
+          cache: npm
+          cache-dependency-path: tool/renovate/package-lock.json
+      # Same command the reusable renovate workflow runs in every consumer
+      # repository, so a broken lockfile fails here before it reaches main.
+      - name: Install Renovate
+        run: npm ci --no-audit --no-fund --ignore-scripts
+        working-directory: tool/renovate
+      - name: Verify Renovate runs
+        run: node_modules/.bin/renovate --version
+        working-directory: tool/renovate
+
   ci:
     name: CI
     uses: Skycoder42/dart_test_tools/.github/workflows/dart.yml@main
@@ -48,6 +74,7 @@ jobs:
   renovate:
     name: Renovate
     needs:
+      - renovate-lockfile
       - ci
     if: ${{ !cancelled() }}
     uses: Skycoder42/dart_test_tools/.github/workflows/renovate-finish.yml@main
