@@ -1,9 +1,13 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "description": "Base preset shared by the library and application presets",
-  "enabledManagers": ["pub"],
+  "enabledManagers": [
+    "pub"
+  ],
   "dependencyDashboard": true,
-  "vulnerabilityAlerts": { "enabled": false },
+  "vulnerabilityAlerts": {
+    "enabled": false
+  },
   "prHourlyLimit": 0,
   "rangeStrategy": "bump",
   "customDatasources": {
@@ -17,29 +21,39 @@
   "packageRules": [
     {
       "description": "Everything in one weekly PR",
-      "matchPackageNames": ["*"],
+      "matchPackageNames": [
+        "*"
+      ],
       "groupName": "all dependencies",
       "groupSlug": "all",
-      "group": { "branchTopic": "all" },
+      "group": {
+        "branchTopic": "all"
+      },
       "prTitleStrict": true
     },
     {
-      "description": "Give new pub releases (packages and SDKs) some time before they are used",
-      "matchManagers": ["pub"],
-      "minimumReleaseAge": "3 days"
-    },
-    {
       "description": "SDK constraints keep their range form and only move to x.y.0 versions",
-      "matchManagers": ["pub"],
-      "matchDatasources": ["dart-version", "flutter-version"],
+      "matchManagers": [
+        "pub"
+      ],
+      "matchDatasources": [
+        "dart-version",
+        "flutter-version"
+      ],
       "versioning": "npm",
       "allowedVersions": "/^\\d+\\.\\d+\\.0$/"
     },
     {
       "description": "Only offer Dart SDK versions that shipped with a Flutter stable release (must stay the last rule matching dart-version)",
-      "matchManagers": ["pub"],
-      "matchDepNames": ["dart"],
-      "matchDatasources": ["dart-version"],
+      "matchManagers": [
+        "pub"
+      ],
+      "matchDepNames": [
+        "dart"
+      ],
+      "matchDatasources": [
+        "dart-version"
+      ],
       "overrideDatasource": "custom.flutter-dart"
     }
   ]
