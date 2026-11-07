@@ -6,6 +6,6 @@
     "node": "^24.22.2"
   },
   "dependencies": {
-    "renovate": "^44.198.0"
+    "renovate": "^44.210.2"
   }
 }
