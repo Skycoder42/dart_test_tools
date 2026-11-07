@@ -21,13 +21,20 @@ final class const RenovateJobBuilder({required super.config})
   Job build() => Job(
     name: 'Renovate',
     // An edit of the Dependency Dashboard (ticking a checkbox) triggers a run,
-    // but not the edits Renovate does itself.
+    // but not the edits Renovate does itself. Only the dashboard Renovate
+    // created counts: anyone can open and edit an issue with that title, and
+    // must not be able to start a run holding a write token.
     ifExpression:
         Github.eventName.ne(const .literal('issues')) |
         (Github.event
                     .property('issue')
                     .property('title')
                     .eq(const .literal('Dependency Dashboard')) &
+                Github.event
+                    .property('issue')
+                    .property('user')
+                    .property('login')
+                    .eq(const .literal('github-actions[bot]')) &
                 Functions.endsWith(Github.actor, const .literal('[bot]')).not)
             .parenthesized,
     runsOn: RunsOn.ubuntuLatest.id,
