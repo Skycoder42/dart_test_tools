@@ -5,7 +5,26 @@
   "engines": {
     "node": "^24.22.2"
   },
+  "scripts": {
+    "lint-lockfile": "lockfile-lint"
+  },
   "dependencies": {
     "renovate": "^44.210.2"
+  },
+  "devDependencies": {
+    "lockfile-lint": "^5.1.0"
+  },
+  "lockfile-lint": {
+    "path": "package-lock.json",
+    "type": "npm",
+    "allowedHosts": ["npm"],
+    "validateHttps": true,
+    "validateIntegrity": true,
+    "validatePackageNames": true,
+    "allowedPackageNameAliases": [
+      "string-width-cjs:string-width",
+      "strip-ansi-cjs:strip-ansi",
+      "wrap-ansi-cjs:wrap-ansi"
+    ]
   }
 }

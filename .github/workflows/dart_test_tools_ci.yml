@@ -33,10 +33,11 @@ jobs:
           node-version-file: tool/renovate/package.json
           cache: npm
           cache-dependency-path: tool/renovate/package-lock.json
-      # Same command the reusable renovate workflow runs in every consumer
-      # repository, so a broken lockfile fails here before it reaches main.
       - name: Install Renovate
         run: npm ci --no-audit --no-fund --ignore-scripts
+        working-directory: tool/renovate
+      - name: Lint Renovate lockfile
+        run: npm run lint-lockfile
         working-directory: tool/renovate
       - name: Verify Renovate runs
         run: node_modules/.bin/renovate --version

@@ -49,7 +49,7 @@ jobs:
           cache: npm
           cache-dependency-path: dart_test_tools/tool/renovate/package-lock.json
       - name: Install Renovate
-        run: npm ci --no-audit --no-fund
+        run: npm ci --omit=dev --no-audit --no-fund
         working-directory: dart_test_tools/tool/renovate
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
