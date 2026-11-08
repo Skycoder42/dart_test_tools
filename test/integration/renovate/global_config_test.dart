@@ -154,6 +154,10 @@ dev_dependencies:
           }),
         ),
       );
+      expect(
+        config['dependencyDashboardFooter'],
+        contains('| `test` | $testVersion | `>$testVersion` |'),
+      );
     }, timeout: const Timeout(Duration(minutes: 5)));
 
     test('no flutter_test injected if a member depends on it', () async {
@@ -180,7 +184,7 @@ dev_dependencies:
       expect(testFile('pubspec.yaml').readAsStringSync(), pubspecBefore);
     }, timeout: const Timeout(Duration(minutes: 5)));
 
-    group('resolvableCap', () {
+    group('$ResolvableCap', () {
       PackageInfo info(
         String resolvable,
         String latest, {
@@ -192,21 +196,24 @@ dev_dependencies:
         latest: VersionInfo(version: Version.parse(latest)),
       );
 
-      test('returns null if resolvable is latest', () {
-        expect(GlobalConfig.resolvableCap(info('1.2.3', '1.2.3')), isNull);
+      test('is null if resolvable is latest', () {
+        expect(ResolvableCap.fromPackage(info('1.2.3', '1.2.3')), isNull);
       });
 
-      test('returns null for transitive and root packages', () {
+      test('is null for transitive and root packages', () {
         for (final kind in [DependencyKind.transitive, DependencyKind.root]) {
           expect(
-            GlobalConfig.resolvableCap(info('1.2.3', '1.3.0', kind: kind)),
+            ResolvableCap.fromPackage(info('1.2.3', '1.3.0', kind: kind)),
             isNull,
           );
         }
       });
 
       test('caps minor and patch updates', () {
-        expect(GlobalConfig.resolvableCap(info('13.3.0', '13.5.1')), {
+        final cap = ResolvableCap.fromPackage(info('13.3.0', '13.5.1'))!;
+
+        expect(cap.heldBack, '>13.3.0');
+        expect(cap.packageRule, {
           'description': 'Newest resolvable version is 13.3.0',
           'matchManagers': ['pub'],
           'matchPackageNames': ['pkg'],
@@ -215,7 +222,10 @@ dev_dependencies:
       });
 
       test('keeps major updates allowed', () {
-        expect(GlobalConfig.resolvableCap(info('13.3.0', '14.7.0')), {
+        final cap = ResolvableCap.fromPackage(info('13.3.0', '14.7.0'))!;
+
+        expect(cap.heldBack, '>13.3.0 <14.0.0');
+        expect(cap.packageRule, {
           'description':
               'Newest resolvable version is 13.3.0, breaking updates '
               'stay allowed',
@@ -227,12 +237,58 @@ dev_dependencies:
 
       test('treats 0.x minor updates as breaking', () {
         expect(
-          GlobalConfig.resolvableCap(info('0.14.12', '0.15.2')),
-          containsPair('allowedVersions', '<=0.14.12 || >=0.15.0'),
+          ResolvableCap.fromPackage(info('0.14.12', '0.15.2'))!.allowedVersions,
+          '<=0.14.12 || >=0.15.0',
         );
         expect(
-          GlobalConfig.resolvableCap(info('0.14.12', '0.14.20')),
-          containsPair('allowedVersions', '<=0.14.12'),
+          ResolvableCap.fromPackage(info('0.14.12', '0.14.20'))!
+              .allowedVersions,
+          '<=0.14.12',
+        );
+      });
+    });
+
+    group('heldBackFooter', () {
+      final caps = [
+        ResolvableCap(
+          package: 'analyzer',
+          resolvable: Version(13, 3, 0),
+          latest: Version(14, 7, 0),
+        ),
+        ResolvableCap(
+          package: 'test',
+          resolvable: Version(1, 31, 1),
+          latest: Version(1, 33, 0),
+        ),
+      ];
+
+      test('is null without caps', () {
+        expect(
+          GlobalConfig.heldBackFooter(const [], flutterCompat: true),
+          isNull,
+        );
+      });
+
+      test('lists all caps in a table', () {
+        final footer = GlobalConfig.heldBackFooter(caps, flutterCompat: false);
+
+        expect(footer, startsWith('## Held back updates\n'));
+        expect(footer, isNot(contains('Flutter')));
+        expect(
+          footer,
+          endsWith(
+            '| Package | Resolvable | Held back | Latest |\n'
+            '|---|---|---|---|\n'
+            '| `analyzer` | 13.3.0 | `>13.3.0 <14.0.0` | 14.7.0 |\n'
+            '| `test` | 1.31.1 | `>1.31.1` | 1.33.0 |',
+          ),
+        );
+      });
+
+      test('mentions the flutter sdk with flutterCompat', () {
+        expect(
+          GlobalConfig.heldBackFooter(caps, flutterCompat: true),
+          contains('the dependencies pinned by the Flutter SDK'),
         );
       });
     });

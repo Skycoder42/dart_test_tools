@@ -5,9 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Renovate dependency dashboard lists the updates held back because they do not resolve with the other dependencies
+
 ### Changed
 - Renovate global config only caps minor/patch updates at the newest resolvable version; breaking updates are no longer filtered and show up in the dependency dashboard
 - Renovate workflow derives Flutter SDK compatibility from the preset: always enforced for the library preset, never for the application preset
+- Application Renovate preset opens a separate pull request per major update (and 0.x minor update) instead of putting them into the grouped pull request
 
 ### Removed
 - `flutterCompat` input of the renovate workflow and `--flutter-compat` option of `renovate-config`

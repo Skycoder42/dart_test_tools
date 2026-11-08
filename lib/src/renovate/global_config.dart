@@ -35,6 +35,17 @@ class const GlobalConfig({
     }
 
     final outdated = await pub.outdated();
+    final caps = [
+      for (final package in outdated.packages)
+        if (!workspacePackages.contains(package.package))
+          ?ResolvableCap.fromPackage(package),
+    ];
+    for (final cap in caps) {
+      Github.logInfo(
+        'Capping ${cap.package} at resolvable version ${cap.resolvable}: '
+        'allowed versions are ${cap.allowedVersions} (latest is ${cap.latest})',
+      );
+    }
 
     return {
       'platform': 'github',
@@ -46,6 +57,10 @@ class const GlobalConfig({
       'allowedCommands': [
         r'^renovate-post-upgrade --mode (application|library)$',
       ],
+      'dependencyDashboardFooter': ?heldBackFooter(
+        caps,
+        flutterCompat: flutterCompat,
+      ),
       'packageRules': [
         {
           'description': 'Workspace packages are resolved locally',
@@ -53,20 +68,56 @@ class const GlobalConfig({
           'matchPackageNames': workspacePackages,
           'enabled': false,
         },
-        for (final package in outdated.packages)
-          if (!workspacePackages.contains(package.package))
-            ?resolvableCap(package),
+        for (final cap in caps) cap.packageRule,
       ],
     };
   }
 
-  /// Caps non-breaking updates of [package] at its newest resolvable version.
-  ///
-  /// Breaking updates (from [Version.nextBreaking] of the resolvable version
-  /// on) stay allowed, as they need manual handling anyway and must show up in
-  /// the dependency dashboard.
   @visibleForTesting
-  static Map<String, dynamic>? resolvableCap(PackageInfo package) {
+  static String? heldBackFooter(
+    List<ResolvableCap> caps, {
+    required bool flutterCompat,
+  }) {
+    if (caps.isEmpty) {
+      return null;
+    }
+
+    final sb = StringBuffer()
+      ..writeln('## Held back updates')
+      ..writeln()
+      ..write(
+        'Non-breaking updates of these dependencies are held back at the '
+        'newest version that resolves together with all other dependencies',
+      )
+      ..writeln(
+        flutterCompat
+            ? ' and the dependencies pinned by the Flutter SDK.'
+            : '.',
+      )
+      ..writeln(
+        'Breaking updates are offered anyway, even if they do not resolve '
+        'yet.',
+      )
+      ..writeln()
+      ..writeln('| Package | Resolvable | Held back | Latest |')
+      ..writeln('|---|---|---|---|');
+    for (final cap in caps) {
+      sb.writeln(
+        '| `${cap.package}` | ${cap.resolvable} | `${cap.heldBack}` '
+        '| ${cap.latest} |',
+      );
+    }
+    return sb.toString().trimRight();
+  }
+}
+
+@internal
+class const ResolvableCap({
+  required final String package,
+  required final Version resolvable,
+  required final Version latest,
+}) {
+  static ResolvableCap? fromPackage(PackageInfo package) {
     if (package.kind case .root || .transitive) {
       return null;
     }
@@ -77,32 +128,37 @@ class const GlobalConfig({
       return null;
     }
 
-    final nextBreaking = resolvable.nextBreaking;
-    if (latest >= nextBreaking) {
-      Github.logInfo(
-        'Capping non-breaking updates of ${package.package} at resolvable '
-        'version $resolvable (breaking updates from $nextBreaking on stay '
-        'allowed, latest is $latest)',
-      );
-      return {
-        'description':
-            'Newest resolvable version is $resolvable, breaking updates '
-            'stay allowed',
-        'matchManagers': ['pub'],
-        'matchPackageNames': [package.package],
-        'allowedVersions': '<=$resolvable || >=$nextBreaking',
-      };
-    }
-
-    Github.logInfo(
-      'Capping ${package.package} at resolvable version $resolvable '
-      '(latest is $latest)',
+    return ResolvableCap(
+      package: package.package,
+      resolvable: resolvable,
+      latest: latest,
     );
-    return {
-      'description': 'Newest resolvable version is $resolvable',
-      'matchManagers': ['pub'],
-      'matchPackageNames': [package.package],
-      'allowedVersions': '<=$resolvable',
-    };
   }
+
+  Version? get breakingFrom {
+    final nextBreaking = resolvable.nextBreaking;
+    return latest >= nextBreaking ? nextBreaking : null;
+  }
+
+  String get allowedVersions => switch (breakingFrom) {
+    null => '<=$resolvable',
+    final breaking => '<=$resolvable || >=$breaking',
+  };
+
+  String get heldBack => switch (breakingFrom) {
+    null => '>$resolvable',
+    final breaking => '>$resolvable <$breaking',
+  };
+
+  Map<String, dynamic> get packageRule => {
+    'description': switch (breakingFrom) {
+      null => 'Newest resolvable version is $resolvable',
+      _ =>
+        'Newest resolvable version is $resolvable, breaking updates stay '
+            'allowed',
+    },
+    'matchManagers': ['pub'],
+    'matchPackageNames': [package],
+    'allowedVersions': allowedVersions,
+  };
 }

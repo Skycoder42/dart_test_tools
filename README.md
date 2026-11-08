@@ -61,10 +61,12 @@ These steps also migrate a repository that used the former `auto-update.yml` wor
    ```
 
    The `issues` trigger runs Renovate as soon as you tick a checkbox in the Dependency
-   Dashboard issue. Input: `flutterSdkChannel` (default `stable`). Flutter SDK
-   compatibility follows the preset: with the library preset, non-breaking updates are
-   capped at the versions the Flutter SDK pins allow (see [Flutter compatibility](#flutter-compatibility));
-   with the application preset, there is no such cap.
+   Dashboard issue. Input: `flutterSdkChannel` (default `stable`). Non-breaking updates
+   are held back at the newest version that resolves together with all other
+   dependencies; with the library preset also together with the dependencies the Flutter
+   SDK pins (see [Flutter compatibility](#flutter-compatibility)). Breaking updates are
+   never held back. The held back updates are listed at the bottom of the Dependency
+   Dashboard.
 3. Add a `renovate.json` with one of the two presets:
 
    ```json
@@ -78,8 +80,9 @@ These steps also migrate a repository that used the former `auto-update.yml` wor
      updates only, but lower bounds are raised. Majors (and minors of `0.x`
      dependencies) wait for approval in the Dependency Dashboard and then get their
      own pull request.
-   - `application` — for repositories with a committed `pubspec.lock`. All updates,
-     majors included, plus a full `pub upgrade`.
+   - `application` — for repositories with a committed `pubspec.lock`. All minor and
+     patch updates in one pull request, plus a full `pub upgrade`. Majors (and minors of
+     `0.x` dependencies) get one pull request per dependency, without approval.
 
    Pub workspaces are supported; Renovate finds every member on its own.
 4. Add the finish job as the last job of your CI workflow, and make sure the workflow
