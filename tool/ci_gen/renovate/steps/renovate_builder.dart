@@ -1,19 +1,12 @@
 import '../../common/actions/install_tools_action_builder.dart';
-import '../../common/api/job_config.dart';
 import '../../common/api/step_builder.dart';
 import '../../common/contexts.dart';
-import '../../common/inputs.dart';
 import '../../common/steps/checkout_builder.dart';
 import '../../common/tools.dart';
 import '../../types/env.dart';
 import '../../types/step.dart';
 
-base mixin RenovateConfig on JobConfig {
-  late final flutterCompat = inputContext(WorkflowInputs.flutterCompat);
-}
-
-class const RenovateBuilder({required final RenovateConfig config})
-    implements StepBuilder {
+class const RenovateBuilder() implements StepBuilder {
   static const _repositoryPath = 'repo';
   static const _toolsPath = 'dart_test_tools';
   // tool/renovate/package.json and its lockfile pin the Renovate version (and
@@ -70,15 +63,11 @@ class const RenovateBuilder({required final RenovateConfig config})
   }
 
   Iterable<Step> _writeConfig() sync* {
-    final flutterCompatOption = Functions.case$([
-      (config.flutterCompat, const .value('--flutter-compat')),
-    ], const .value('--no-flutter-compat'));
     yield Step.run(
       name: 'Write Renovate global config',
       run:
           'renovate-config '
           "--repository '$_repositoryPath' "
-          '$flutterCompatOption '
           "--output '$_configPath'",
     );
   }

@@ -6,11 +6,6 @@ on:
         required: false
         default: stable
         description: The Flutter-SDK channel. Passed as "channel" to "subosito/flutter-action".
-      flutterCompat:
-        type: boolean
-        required: false
-        default: true
-        description: Whether the package must stay usable from Flutter apps.
 jobs:
   renovate:
     name: Renovate
@@ -57,7 +52,7 @@ jobs:
           persist-credentials: false
           path: repo
       - name: Write Renovate global config
-        run: renovate-config --repository 'repo' ${{ case(inputs.flutterCompat, '--flutter-compat', '--no-flutter-compat') }} --output '${{ runner.temp }}/renovate-config.json'
+        run: renovate-config --repository 'repo' --output '${{ runner.temp }}/renovate-config.json'
       - name: Restore Renovate repository cache
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
         with:

@@ -3,8 +3,13 @@ library;
 
 import 'dart:io';
 
+import 'package:dart_test_tools/src/pub/models/pub/dependency_kind.dart';
+import 'package:dart_test_tools/src/pub/models/pub/outdated/package_info.dart';
+import 'package:dart_test_tools/src/pub/models/pub/outdated/version_info.dart';
 import 'package:dart_test_tools/src/renovate/global_config.dart';
+import 'package:dart_test_tools/src/renovate/renovate_preset.dart';
 import 'package:path/path.dart' show join;
+import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
@@ -61,7 +66,10 @@ dependencies:
     });
 
     test('contains fixed global values', () async {
-      final sut = GlobalConfig(repository: testDir, flutterCompat: false);
+      final sut = GlobalConfig(
+        repository: testDir,
+        preset: RenovatePreset.application,
+      );
 
       final config = await sut.build();
 
@@ -80,7 +88,10 @@ dependencies:
     }, timeout: const Timeout(Duration(minutes: 5)));
 
     test('workspace rule lists all workspace package names', () async {
-      final sut = GlobalConfig(repository: testDir, flutterCompat: false);
+      final sut = GlobalConfig(
+        repository: testDir,
+        preset: RenovatePreset.application,
+      );
 
       final config = await sut.build();
 
@@ -125,7 +136,10 @@ dev_dependencies:
       final testVersion =
           ((lock['packages'] as Map)['test'] as Map)['version'] as String;
 
-      final sut = GlobalConfig(repository: testDir, flutterCompat: true);
+      final sut = GlobalConfig(
+        repository: testDir,
+        preset: RenovatePreset.library,
+      );
 
       final config = await sut.build();
 
@@ -157,16 +171,79 @@ dev_dependencies:
 ''');
       final pubspecBefore = testFile('pubspec.yaml').readAsStringSync();
 
-      final sut = GlobalConfig(repository: testDir, flutterCompat: true);
+      final sut = GlobalConfig(
+        repository: testDir,
+        preset: RenovatePreset.library,
+      );
       await sut.build();
 
       expect(testFile('pubspec.yaml').readAsStringSync(), pubspecBefore);
     }, timeout: const Timeout(Duration(minutes: 5)));
 
-    test('no flutter_test injected without flutterCompat', () async {
+    group('resolvableCap', () {
+      PackageInfo info(
+        String resolvable,
+        String latest, {
+        DependencyKind kind = DependencyKind.direct,
+      }) => PackageInfo(
+        package: 'pkg',
+        kind: kind,
+        resolvable: VersionInfo(version: Version.parse(resolvable)),
+        latest: VersionInfo(version: Version.parse(latest)),
+      );
+
+      test('returns null if resolvable is latest', () {
+        expect(GlobalConfig.resolvableCap(info('1.2.3', '1.2.3')), isNull);
+      });
+
+      test('returns null for transitive and root packages', () {
+        for (final kind in [DependencyKind.transitive, DependencyKind.root]) {
+          expect(
+            GlobalConfig.resolvableCap(info('1.2.3', '1.3.0', kind: kind)),
+            isNull,
+          );
+        }
+      });
+
+      test('caps minor and patch updates', () {
+        expect(GlobalConfig.resolvableCap(info('13.3.0', '13.5.1')), {
+          'description': 'Newest resolvable version is 13.3.0',
+          'matchManagers': ['pub'],
+          'matchPackageNames': ['pkg'],
+          'allowedVersions': '<=13.3.0',
+        });
+      });
+
+      test('keeps major updates allowed', () {
+        expect(GlobalConfig.resolvableCap(info('13.3.0', '14.7.0')), {
+          'description':
+              'Newest resolvable version is 13.3.0, breaking updates '
+              'stay allowed',
+          'matchManagers': ['pub'],
+          'matchPackageNames': ['pkg'],
+          'allowedVersions': '<=13.3.0 || >=14.0.0',
+        });
+      });
+
+      test('treats 0.x minor updates as breaking', () {
+        expect(
+          GlobalConfig.resolvableCap(info('0.14.12', '0.15.2')),
+          containsPair('allowedVersions', '<=0.14.12 || >=0.15.0'),
+        );
+        expect(
+          GlobalConfig.resolvableCap(info('0.14.12', '0.14.20')),
+          containsPair('allowedVersions', '<=0.14.12'),
+        );
+      });
+    });
+
+    test('no flutter_test injected for the application preset', () async {
       final pubspecBefore = testFile('pubspec.yaml').readAsStringSync();
 
-      final sut = GlobalConfig(repository: testDir, flutterCompat: false);
+      final sut = GlobalConfig(
+        repository: testDir,
+        preset: RenovatePreset.application,
+      );
       await sut.build();
 
       expect(testFile('pubspec.yaml').readAsStringSync(), pubspecBefore);

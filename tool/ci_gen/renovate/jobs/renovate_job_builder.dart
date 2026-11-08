@@ -9,7 +9,7 @@ import '../steps/renovate_builder.dart';
 
 final class RenovateJobConfig(super.inputContext, super.secretContext)
     extends JobConfig
-    with SdkJobConfig, FlutterSdkJobConfig, RenovateConfig;
+    with SdkJobConfig, FlutterSdkJobConfig;
 
 final class const RenovateJobBuilder({required super.config})
     extends SdkJobBuilder<RenovateJobConfig>
@@ -45,9 +45,6 @@ final class const RenovateJobBuilder({required super.config})
       'statuses': 'write',
     },
     concurrency: 'renovate-${Github.repository}',
-    steps: [
-      ...buildSetupSdkSteps(),
-      ...RenovateBuilder(config: config).build(),
-    ],
+    steps: [...buildSetupSdkSteps(), ...const RenovateBuilder().build()],
   );
 }

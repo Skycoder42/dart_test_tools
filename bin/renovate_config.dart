@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:dart_test_tools/src/renovate/global_config.dart';
+import 'package:dart_test_tools/src/renovate/renovate_preset.dart';
 import 'package:dart_test_tools/src/tools/github.dart';
 
 void main(List<String> args) => Github.runZoned(() async {
@@ -16,15 +17,9 @@ void main(List<String> args) => Github.runZoned(() async {
           valueHelp: 'path',
           help:
               'The <path> of a checkout of the repository to compute the '
-              'package rules for. The checkout gets modified.',
-        )
-        ..addFlag(
-          'flutter-compat',
-          abbr: 'f',
-          defaultsTo: true,
-          help:
-              'Cap dependencies at the newest versions that are compatible '
-              'with the current flutter sdk.',
+              'package rules for. The checkout gets modified. Flutter SDK '
+              'compatibility is enforced if its Renovate config extends the '
+              'library preset, but not for the application preset.',
         )
         ..addOption(
           'output',
@@ -51,9 +46,10 @@ void main(List<String> args) => Github.runZoned(() async {
       throw const FormatException('Option output is mandatory.');
     }
 
+    final repositoryDir = Directory(repository);
     final config = await GlobalConfig(
-      repository: Directory(repository),
-      flutterCompat: options['flutter-compat'] as bool,
+      repository: repositoryDir,
+      preset: await RenovatePreset.detect(repositoryDir),
     ).build();
 
     await File(output).writeAsString(

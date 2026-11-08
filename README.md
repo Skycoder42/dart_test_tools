@@ -61,9 +61,10 @@ These steps also migrate a repository that used the former `auto-update.yml` wor
    ```
 
    The `issues` trigger runs Renovate as soon as you tick a checkbox in the Dependency
-   Dashboard issue. Inputs: `flutterSdkChannel` (default `stable`) and `flutterCompat`
-   (default `true`: no dependency versions beyond the ones the Flutter SDK pins; the same
-   input of `dart.yml` enables the flutter compatibility check, see [Flutter compatibility](#flutter-compatibility)).
+   Dashboard issue. Input: `flutterSdkChannel` (default `stable`). Flutter SDK
+   compatibility follows the preset: with the library preset, non-breaking updates are
+   capped at the versions the Flutter SDK pins allow (see [Flutter compatibility](#flutter-compatibility));
+   with the application preset, there is no such cap.
 3. Add a `renovate.json` with one of the two presets:
 
    ```json
