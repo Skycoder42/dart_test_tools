@@ -61,6 +61,16 @@
         "branchTopic": "breaking"
       },
       "prTitleStrict": true
+    },
+    {
+      "description": "analyzer is widened instead of bumped, so older analyzer versions stay allowed (the post-upgrade step merges the widened range into one pub range)",
+      "matchManagers": [
+        "pub"
+      ],
+      "matchPackageNames": [
+        "analyzer"
+      ],
+      "rangeStrategy": "widen"
     }
   ]
 }

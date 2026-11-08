@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
+import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
+import 'package:yaml_edit/yaml_edit.dart';
 
 import '../pub/models/pub/workspace/workspace_info.dart';
 import '../pub/pub_wrapper.dart';
@@ -19,6 +21,11 @@ enum PostUpgradeMode() {
 @internal
 class const PostUpgrade({required final PostUpgradeMode mode}) {
   static const _pubManager = 'pub';
+  static const _dependencyKeys = [
+    'dependencies',
+    'dev_dependencies',
+    'dependency_overrides',
+  ];
 
   Future<void> call(Directory repoRoot, List<RenovateUpgrade> upgrades) async {
     final pubUpgrades = upgrades
@@ -29,6 +36,8 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
       return;
     }
 
+    await _mergeWidenedConstraints(repoRoot, pubUpgrades);
+
     final roots = await PubRoots(repoRoot)
         .resolve(pubUpgrades.map((u) => u.packageFile));
     for (final root in roots) {
@@ -37,6 +46,77 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
         () => _processRoot(repoRoot, root, pubUpgrades),
       );
     }
+  }
+
+  Future<void> _mergeWidenedConstraints(
+    Directory repoRoot,
+    List<RenovateUpgrade> upgrades,
+  ) async {
+    for (final upgrade in upgrades) {
+      final widened = upgrade.newValue;
+      if (widened == null || !widened.contains('||')) {
+        continue;
+      }
+
+      final merged = mergeWidenedConstraint(widened).toString();
+      final pub = PubWrapper(
+        Directory(path.join(repoRoot.path, path.dirname(upgrade.packageFile))),
+        isFlutter: false,
+      );
+      await pub.pubspecEdit((editor) {
+        for (final key in _dependencyKeys) {
+          final depKey = [key, upgrade.depName];
+          final dependency = editor.parseAt(
+            depKey,
+            orElse: () => wrapAsYamlNode(null),
+          );
+          final versionPath = switch (dependency.value) {
+            final String version when version == widened => depKey,
+            {'version': final String version} when version == widened => [
+              ...depKey,
+              'version',
+            ],
+            _ => null,
+          };
+          if (versionPath != null) {
+            editor.update(versionPath, merged);
+            Github.logInfo(
+              'Merged widened constraint of ${upgrade.depName} in '
+              '${upgrade.packageFile}: $widened -> $merged',
+            );
+          }
+        }
+      });
+    }
+  }
+
+  /// Merges a range widened by renovate (`^1.2.0 || ^2.0.0`), which pub does
+  /// not support, into a single range covering all parts (`>=1.2.0 <3.0.0`).
+  @visibleForTesting
+  static VersionRange mergeWidenedConstraint(String constraint) {
+    final ranges = [
+      for (final part in constraint.split('||'))
+        switch (VersionConstraint.parse(part.trim())) {
+          final VersionRange range => range,
+          final other => throw FormatException(
+            'Unsupported part $other in widened constraint',
+            constraint,
+          ),
+        },
+    ];
+
+    final lower = ranges.reduce(
+      (a, b) => a.min == null || (b.min != null && a.min! <= b.min!) ? a : b,
+    );
+    final upper = ranges.reduce(
+      (a, b) => a.max == null || (b.max != null && a.max! >= b.max!) ? a : b,
+    );
+    return VersionRange(
+      min: lower.min,
+      includeMin: lower.includeMin,
+      max: upper.max,
+      includeMax: upper.includeMax,
+    );
   }
 
   Future<void> _processRoot(

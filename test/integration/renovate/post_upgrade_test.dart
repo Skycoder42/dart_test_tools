@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:dart_test_tools/src/renovate/models/renovate_upgrade.dart';
 import 'package:dart_test_tools/src/renovate/post_upgrade.dart';
 import 'package:path/path.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
@@ -446,5 +447,106 @@ class _NoopBuilder implements Builder {
         memberOptions,
       );
     }, timeout: const Timeout(Duration(minutes: 5)));
+
+    test('merges widened constraints before resolving', () async {
+      await writeFile('packages/b/pubspec.yaml', '''
+name: b
+version: 1.0.0
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.9.0
+dependencies:
+  path: ^1.8.0 || ^1.9.0
+dev_dependencies:
+  meta:
+    hosted: https://pub.dev
+    version: ^1.15.0 || ^1.16.0
+''');
+
+      const sut = PostUpgrade(mode: PostUpgradeMode.library);
+      await sut(testDir, const [
+        RenovateUpgrade(
+          manager: 'pub',
+          depName: 'path',
+          packageFile: 'packages/b/pubspec.yaml',
+          currentValue: '^1.8.0',
+          newValue: '^1.8.0 || ^1.9.0',
+        ),
+        RenovateUpgrade(
+          manager: 'pub',
+          depName: 'meta',
+          packageFile: 'packages/b/pubspec.yaml',
+          currentValue: '^1.15.0',
+          newValue: '^1.15.0 || ^1.16.0',
+        ),
+      ]);
+
+      final pubspec = testFile('packages/b/pubspec.yaml').readAsStringSync();
+      expect(pubspec, contains('  path: ">=1.8.0 <2.0.0"\n'));
+      expect(pubspec, contains('    version: ">=1.15.0 <2.0.0"\n'));
+      expect(testFile('pubspec.lock').existsSync(), isTrue);
+    }, timeout: const Timeout(Duration(minutes: 5)));
+
+    test('merges widened constraints next to empty sections', () async {
+      await writeFile('packages/b/pubspec.yaml', '''
+name: b
+version: 1.0.0
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.9.0
+dependencies:
+dev_dependencies:
+  path: ^1.8.0 || ^1.9.0
+''');
+
+      const sut = PostUpgrade(mode: PostUpgradeMode.library);
+      await sut(testDir, const [
+        RenovateUpgrade(
+          manager: 'pub',
+          depName: 'path',
+          packageFile: 'packages/b/pubspec.yaml',
+          currentValue: '^1.8.0',
+          newValue: '^1.8.0 || ^1.9.0',
+        ),
+      ]);
+
+      final pubspec = testFile('packages/b/pubspec.yaml').readAsStringSync();
+      expect(pubspec, contains('dependencies:\ndev_dependencies:\n'));
+      expect(pubspec, contains('  path: ">=1.8.0 <2.0.0"\n'));
+    }, timeout: const Timeout(Duration(minutes: 5)));
+
+    group('mergeWidenedConstraint', () {
+      test('merges caret ranges into one range', () {
+        expect(
+          PostUpgrade.mergeWidenedConstraint('^13.3.0 || ^14.0.0'),
+          VersionConstraint.parse('>=13.3.0 <15.0.0'),
+        );
+        expect(
+          PostUpgrade.mergeWidenedConstraint('^13.3.0 || ^14.0.0').toString(),
+          '>=13.3.0 <15.0.0',
+        );
+      });
+
+      test('covers gaps and keeps unbounded ends', () {
+        expect(
+          PostUpgrade.mergeWidenedConstraint('>=1.0.0 <2.0.0 || >=3.0.0')
+              .toString(),
+          '>=1.0.0',
+        );
+        expect(
+          PostUpgrade.mergeWidenedConstraint('^2.0.0 || <1.5.0').toString(),
+          '<3.0.0',
+        );
+      });
+
+      test('throws on unsupported parts', () {
+        expect(
+          () => PostUpgrade.mergeWidenedConstraint('^1.0.0 || foo'),
+          throwsFormatException,
+        );
+      });
+    });
   });
 }

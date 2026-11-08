@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renovate global config only caps minor/patch updates at the newest resolvable version; breaking updates are no longer filtered and show up in the dependency dashboard
 - Renovate workflow derives Flutter SDK compatibility from the preset: always enforced for the library preset, never for the application preset
 - Application Renovate preset opens a separate pull request per major update (and 0.x minor update) instead of putting them into the grouped pull request
+- Library preset: the `analyzer` constraint is widened instead of bumped, the post-upgrade step merges the widened range into one pub range
 
 ### Removed
 - `flutterCompat` input of the renovate workflow and `--flutter-compat` option of `renovate-config`
