@@ -63,14 +63,21 @@
       "prTitleStrict": true
     },
     {
-      "description": "analyzer is widened instead of bumped, so older analyzer versions stay allowed (the post-upgrade step merges the widened range into one pub range)",
+      "description": "analyzer is widened instead of bumped, so older analyzer versions stay allowed (the post-upgrade step merges the widened range into one pub range). Its majors need no approval and go into the grouped PR",
       "matchManagers": [
         "pub"
       ],
       "matchPackageNames": [
         "analyzer"
       ],
-      "rangeStrategy": "widen"
+      "rangeStrategy": "widen",
+      "separateMajorMinor": false,
+      "dependencyDashboardApproval": false,
+      "groupName": "all dependencies",
+      "groupSlug": "all",
+      "group": {
+        "branchTopic": "all"
+      }
     }
   ]
 }

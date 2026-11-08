@@ -81,7 +81,7 @@ These steps also migrate a repository that used the former `auto-update.yml` wor
      dependencies) wait for approval in the Dependency Dashboard and then get their
      own pull request. `analyzer` is the exception: its constraint is widened instead
      of bumped (`^13.3.0` becomes `>=13.3.0 <15.0.0`), so older analyzer versions
-     stay allowed.
+     stay allowed, and its majors go into the grouped pull request without approval.
    - `application` — for repositories with a committed `pubspec.lock`. All minor and
      patch updates in one pull request, plus a full `pub upgrade`. Majors (and minors of
      `0.x` dependencies) get one pull request per dependency, without approval.
