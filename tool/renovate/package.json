@@ -9,7 +9,7 @@
     "lint-lockfile": "lockfile-lint"
   },
   "dependencies": {
-    "renovate": "^44.210.2"
+    "renovate": "^44.221.5"
   },
   "devDependencies": {
     "lockfile-lint": "^5.1.0"
