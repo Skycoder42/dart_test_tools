@@ -1,0 +1,95 @@
+# syntax=docker/sandbox-kit:3
+# yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
+schemaVersion: "3"
+kind: mixin
+displayName: Flutter SDK
+author: Skycoder42
+description: >-
+  The Flutter and Dart SDK at /opt/flutter, checked out from the stable
+  release tag and precached for the host, linux and web targets, plus the
+  network access pub needs.
+sourceUrl: https://github.com/Skycoder42/dart_test_tools/tree/main/sbx/flutter
+licenses: [BSD-3-Clause]
+
+# One value drives the checkout, the build's version check, the provide, the
+# published version and the tag.
+version: "${{ kit.args.flutterVersion }}"
+
+args:
+  flutterVersion:
+    default: "3.50.0"
+    pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+    description: Flutter stable release to install
+    buildArg: FLUTTER_VERSION
+  dartVersion:
+    # Must be the Dart SDK the Flutter release ships with - the build checks
+    # it against Flutter's release index and fails on a mismatch.
+    default: "3.14.0"
+    pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+    description: Dart SDK version bundled with that Flutter release
+    buildArg: DART_VERSION
+
+provides:
+  - "flutter@${{ kit.args.flutterVersion }}"
+  - "dart@${{ kit.args.dartVersion }}"
+
+capabilities:
+  - type: com.docker.sandbox/network-policy@2
+    config:
+      runtime:
+        allow:
+          - pub.dev
+          - hosts:
+              - storage.googleapis.com
+            methods:
+              - GET
+              - HEAD
+            paths:
+              - /flutter_infra_release/**
+          - github.com
+          - codeload.github.com
+
+  - type: com.docker.sandbox/lifecycle@1
+    config:
+      startup:
+        - description: Disable Dart analytics
+          command:
+            - /opt/flutter/bin/dart
+            - --disable-analytics
+        - description: Disable Flutter analytics
+          command:
+            - /opt/flutter/bin/flutter
+            - config
+            - --no-analytics
+            - --no-cli-animations
+
+  - type: com.docker.sandbox/volume@1
+    optional: true
+    description: Persistent pub cache
+    config:
+      path: /home/agent/.pub-cache
+      size: 4g
+
+  # Accept one context version through runtime policy, or skip both.
+  - type: com.docker.sandbox/agent-context@1
+    optional: true
+    config: &agent-context
+      content: |
+        ## Flutter ${{ kit.args.flutterVersion }} (Dart ${{ kit.args.dartVersion }})
+
+        `flutter` and `dart` are on PATH, installed at `/opt/flutter`.
+
+        - Use `dart analyze`, `dart format`, `dart test` and `flutter test` to verify
+          changes; `dart pub get` / `flutter pub get` to resolve dependencies.
+        - Do not run `flutter upgrade`, `flutter channel` or `flutter downgrade`: the SDK
+          version is pinned by this sandbox.
+        - Network access is limited to pub.dev, GitHub and Flutter's artifact storage.
+          If a download fails with a 403, report the blocked host instead of working
+          around it.
+        - Native builds (`flutter build linux|apk`, `flutter test --platform chrome`)
+          need additional tooling that this sandbox may not have. iOS and macOS builds
+          are impossible here.
+
+  - type: com.docker.sandbox/agent-context@2
+    optional: true
+    config: *agent-context
