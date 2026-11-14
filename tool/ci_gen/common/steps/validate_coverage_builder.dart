@@ -2,13 +2,20 @@ import '../../types/step.dart';
 import '../api/job_config.dart';
 import '../api/step_builder.dart';
 import '../api/working_directory_config.dart';
+import '../artifacts.dart';
 import '../inputs.dart';
 import '../tools.dart';
 import 'checkout_builder.dart';
 import 'coverage_builder_mixin.dart';
+import 'coverage_collector_builder.dart';
+import 'resolve_artifact_prefix_builder.dart';
 
 base mixin ValidateCoverageConfig
-    on JobConfig, WorkingDirectoryConfig, CoverageBuilderConfig {
+    on
+        JobConfig,
+        WorkingDirectoryConfig,
+        ResolveArtifactPrefixConfig,
+        CoverageBuilderConfig {
   late final coverageExclude = inputContext(WorkflowInputs.coverageExclude);
 }
 
@@ -26,12 +33,16 @@ sudo apt-get -qq install lcov dos2unix
 ''',
     ),
     ...const CheckoutBuilder().build(),
+    ...ResolveArtifactPrefixBuilder(config: config).build(),
     Step.uses(
       name: 'Download coverage data',
       uses: Tools.actionsDownloadArtifact,
       withArgs: <String, dynamic>{
         'path': '${config.workingDirectory}/coverage',
-        'pattern': 'coverage-info-*',
+        'pattern': Artifacts.pattern(
+          prefix: config.resolvedPrefix,
+          type: coverageInfoArtifactType,
+        ),
       },
     ),
     Step.run(
@@ -67,7 +78,7 @@ lcov $LCOV_ARGS --output-file coverage/combined.info
       name: 'Upload coverage HTML report',
       uses: Tools.actionsUploadArtifact,
       withArgs: <String, dynamic>{
-        'name': 'coverage-html',
+        'name': '${config.resolvedPrefix}-coverage-html',
         'path': '${config.workingDirectory}/coverage/html',
         'retention-days': 14,
         'if-no-files-found': 'error',

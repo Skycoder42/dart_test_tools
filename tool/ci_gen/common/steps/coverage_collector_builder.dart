@@ -5,12 +5,19 @@ import '../api/matrix_job_builder_mixin.dart';
 import '../api/platform_matrix_job_builder_mixin.dart';
 import '../api/step_builder.dart';
 import '../api/working_directory_config.dart';
+import '../artifacts.dart';
 import '../jobs/sdk_job_builder.dart';
 import '../tools.dart';
 import 'coverage_builder_mixin.dart';
+import 'resolve_artifact_prefix_builder.dart';
 
 base mixin CoverageCollectorConfig
-    on JobConfig, SdkJobConfig, WorkingDirectoryConfig, CoverageBuilderConfig {
+    on
+        JobConfig,
+        SdkJobConfig,
+        WorkingDirectoryConfig,
+        ResolveArtifactPrefixConfig,
+        CoverageBuilderConfig {
   bool get needsFormatting;
 }
 
@@ -36,6 +43,9 @@ final class const LcovCleanCommandMatrixProperty()
 ''',
   };
 }
+
+/// The artifact type of the per-platform lcov coverage data.
+const coverageInfoArtifactType = 'coverage-info';
 
 class const CoverageCollectorBuilder({
   required final CoverageCollectorConfig config,
@@ -63,12 +73,20 @@ class const CoverageCollectorBuilder({
       run: lcovCleanCommand.expression.toString(),
       workingDirectory: config.workingDirectory.toString(),
     ),
+    ...ResolveArtifactPrefixBuilder(
+      config: config,
+      ifExpression: config.runCoverageExpression,
+    ).build(),
     Step.uses(
       name: 'Upload coverage data',
       ifExpression: config.runCoverageExpression,
       uses: Tools.actionsUploadArtifact,
       withArgs: <String, dynamic>{
-        'name': 'coverage-info-${platform.expression}',
+        'name': Artifacts.name(
+          prefix: config.resolvedPrefix,
+          type: coverageInfoArtifactType,
+          platform: platform.expression,
+        ),
         'path': '${config.workingDirectory}/coverage/lcov.info',
         'retention-days': 1,
         'if-no-files-found': 'error',

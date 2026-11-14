@@ -28,6 +28,7 @@ base mixin ResolveArtifactPrefixConfig on JobConfig, WorkingDirectoryConfig {
 /// `pubspec.yaml`, so the names line up without any explicit wiring.
 class const ResolveArtifactPrefixBuilder({
   required final ResolveArtifactPrefixConfig config,
+  final Expression? ifExpression,
 }) implements StepBuilder {
   static const stepId = StepId('resolve-artifact-prefix');
   static final output = stepId.output('prefix');
@@ -37,7 +38,11 @@ class const ResolveArtifactPrefixBuilder({
     Step.run(
       id: stepId,
       name: 'Resolve artifact prefix',
-      ifExpression: config.artifactPrefix.eq(Expression.empty),
+      ifExpression: switch (ifExpression) {
+        null => config.artifactPrefix.eq(Expression.empty),
+        final Expression condition =>
+          condition & config.artifactPrefix.eq(Expression.empty),
+      },
       run: output.bashSetter('yq -r .name pubspec.yaml', isCommand: true),
       workingDirectory: config.workingDirectory.toString(),
       shell: 'bash',

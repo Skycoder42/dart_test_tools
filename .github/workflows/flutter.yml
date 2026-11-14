@@ -59,6 +59,11 @@ on:
         required: false
         default: 95
         description: Minimal coverage (in percent) required for the CI to succeed. Passed as "min_coverage" to "VeryGoodOpenSource/very_good_coverage".
+      artifactPrefix:
+        type: string
+        required: false
+        default: ""
+        description: The prefix for build/bundle artifact names, combined into the normalized "<prefix>-<type>-<platform>" name. If left empty, it falls back at runtime to the package name from the pubspec.yaml in "workingDirectory". Set this to keep artifact names unique when multiple packages are built within the same pipeline.
       coverageExclude:
         type: string
         required: false
@@ -325,11 +330,17 @@ jobs:
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.minCoverage > 0 && matrix.coverageArgs != ''
         run: ${{ matrix.lcovCleanCommand }}
         working-directory: ${{ inputs.workingDirectory }}
+      - id: resolve-artifact-prefix
+        name: Resolve artifact prefix
+        if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.minCoverage > 0 && matrix.coverageArgs != '' && inputs.artifactPrefix == ''
+        run: echo "prefix=$(yq -r .name pubspec.yaml)" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Upload coverage data
         if: (needs.analyze.outputs.platforms == '[]' || contains(fromJSON(needs.analyze.outputs.platforms), matrix.platform)) && inputs.minCoverage > 0 && matrix.coverageArgs != ''
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
-          name: coverage-info-${{ matrix.platform }}
+          name: ${{ inputs.artifactPrefix || steps.resolve-artifact-prefix.outputs.prefix }}-coverage-info-${{ matrix.platform }}
           path: ${{ inputs.workingDirectory }}/coverage/lcov.info
           retention-days: 1
           if-no-files-found: error
@@ -349,11 +360,17 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+      - id: resolve-artifact-prefix
+        name: Resolve artifact prefix
+        if: inputs.artifactPrefix == ''
+        run: echo "prefix=$(yq -r .name pubspec.yaml)" >> $GITHUB_OUTPUT
+        working-directory: ${{ inputs.workingDirectory }}
+        shell: bash
       - name: Download coverage data
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           path: ${{ inputs.workingDirectory }}/coverage
-          pattern: coverage-info-*
+          pattern: ${{ inputs.artifactPrefix || steps.resolve-artifact-prefix.outputs.prefix }}-coverage-info-*
       - name: Merge coverage data
         run: |
           set -euo pipefail
@@ -373,7 +390,7 @@ jobs:
       - name: Upload coverage HTML report
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
-          name: coverage-html
+          name: ${{ inputs.artifactPrefix || steps.resolve-artifact-prefix.outputs.prefix }}-coverage-html
           path: ${{ inputs.workingDirectory }}/coverage/html
           retention-days: 14
           if-no-files-found: error
