@@ -9,6 +9,9 @@ A [Docker Sandboxes](https://docs.docker.com/ai/sandboxes/) kit (format v3,
 - network access for pub.dev, GitHub (git dependencies) and Flutter's
   artifact storage
 - Flutter and Dart analytics disabled on every sandbox start
+- the [Dart MCP server](https://github.com/dart-lang/ai/tree/main/pkgs/dart_mcp_server)
+  (`dart mcp-server`) registered as `dart` in the agent's user config on
+  every sandbox start (currently for Claude Code; other agents are skipped)
 - optional persistent pub cache volume (`/home/agent/.pub-cache`, 4 GiB)
 - agent instructions describing the environment
 

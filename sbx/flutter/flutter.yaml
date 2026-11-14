@@ -62,6 +62,17 @@ capabilities:
             - config
             - --no-analytics
             - --no-cli-animations
+        # The Dart MCP server has to run inside the sandbox, next to the SDK
+        # and the workspace, so it cannot go through `sbx mcp` (host side).
+        - description: Register the Dart MCP server with the agent
+          user: agent
+          command: |
+            export PATH="$HOME/.local/bin:$HOME/.claude/local:$PATH"
+            if command -v claude > /dev/null 2>&1; then
+              claude mcp remove --scope user dart > /dev/null 2>&1 || true
+              claude mcp add --scope user dart -- /opt/flutter/bin/dart mcp-server \
+                || echo "flutter: could not register the Dart MCP server with claude" >&2
+            fi
 
   - type: com.docker.sandbox/volume@1
     optional: true
@@ -81,6 +92,9 @@ capabilities:
 
         - Use `dart analyze`, `dart format`, `dart test` and `flutter test` to verify
           changes; `dart pub get` / `flutter pub get` to resolve dependencies.
+        - The Dart MCP server (`dart mcp-server`) is registered as the `dart` MCP
+          server. Prefer its tools (e.g. `analyze_files`, `run_tests`, `pub`,
+          `pub_dev_search`, `read_package_uris`) over shelling out where they fit.
         - Do not run `flutter upgrade`, `flutter channel` or `flutter downgrade`: the SDK
           version is pinned by this sandbox.
         - Network access is limited to pub.dev, GitHub and Flutter's artifact storage.
