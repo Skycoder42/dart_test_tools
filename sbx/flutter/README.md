@@ -59,15 +59,28 @@ another Flutter version, update `flutterVersion` and `dartVersion` (or pass
 
 Each skill needs its own `agent-skill@1` entry with a literal path, and the
 `skills` arg lists the same names: the build fails when they do not match the
-skills at the pinned commits. After changing `dartSkillsRef` or
-`flutterSkillsRef`, regenerate both from the repository root:
+skills at the pinned commits. After changing `flutterVersion`, `dartSkillsRef`
+or `flutterSkillsRef`, regenerate the derived args from the repository root:
 
 ```sh
 dart run sbx/tool/update_flutter_skills.dart
 ```
 
-The tool fetches both repositories at exactly the pinned commits (it never
-changes them), lists the `dart-*` skills of `dart-lang/skills` and the
+## Automatic updates
+
+Renovate (see `renovate.json` in the repository root) bumps `flutterVersion`
+to the latest stable Flutter release (after 3 days) and `dartSkillsRef` /
+`flutterSkillsRef` to the latest `main` commits, as part of the weekly
+"all dependencies" pull request. Because the repository `pubspec.yaml` lists
+the `regex` manager in `renovate.pre_build_extra_managers`, the post-upgrade
+step then runs its `renovate.pre_build_command`, i.e. the tool
+above, which sets `dartVersion` and the skill list to match.
+
+## The update tool
+
+The tool looks up the Dart SDK of `flutterVersion` in Flutter's release index
+and sets `dartVersion` to it. It fetches both skill repositories at exactly the
+pinned commits (it never changes them), lists the `dart-*` skills of `dart-lang/skills` and the
 `flutter-*` skills of `flutter/agent-plugins`, and fails if a `SKILL.md`
 frontmatter `name` does not match its directory. It then rewrites the `skills`
 arg and adds or removes `agent-skill@1` entries in `flutter.yaml`, leaving the

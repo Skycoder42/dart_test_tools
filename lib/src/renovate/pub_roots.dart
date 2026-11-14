@@ -7,26 +7,18 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 
 @internal
 class PubRoots(final Directory repoRoot) {
-  Future<List<Directory>> resolve(Iterable<String> packageFiles) async {
-    final roots = <String>{};
-    for (final packageFile in packageFiles) {
-      roots.add(await _findRoot(packageFile));
-    }
-    return roots
-        .map(
-          (root) => Directory(path.normalize(path.join(repoRoot.path, root))),
-        )
-        .toList();
-  }
+  static const root = '.';
 
-  Future<String> _findRoot(String packageFile) async {
+  Pubspec? _repoRootPubspec;
+
+  Future<String> findRoot(String packageFile) async {
     final packageDir = path.posix.normalize(path.posix.dirname(packageFile));
     final pubspec = await _readPubspec(packageDir);
     if (pubspec.resolution != 'workspace') {
       return packageDir;
     }
 
-    final workspace = (await _readPubspec('.')).workspace ?? const [];
+    final workspace = (await _readRootPubspec()).workspace ?? const [];
     final isMember = workspace.any(
       (entry) => Glob(path.posix.normalize(entry)).matches(packageDir),
     );
@@ -37,8 +29,11 @@ class PubRoots(final Directory repoRoot) {
       );
     }
 
-    return '.';
+    return root;
   }
+
+  Future<Pubspec> _readRootPubspec() async =>
+      _repoRootPubspec ??= await _readPubspec(root);
 
   Future<Pubspec> _readPubspec(String packageDir) async {
     final pubspecFile = File(

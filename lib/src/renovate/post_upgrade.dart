@@ -28,31 +28,56 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
   ];
 
   Future<void> call(Directory repoRoot, List<RenovateUpgrade> upgrades) async {
+    if (upgrades.isEmpty) {
+      Github.logInfo('No upgrades - nothing to do');
+      return;
+    }
     final pubUpgrades = upgrades
         .where((u) => u.manager == _pubManager)
         .toList();
-    if (pubUpgrades.isEmpty) {
-      Github.logInfo('No pub upgrades - nothing to do');
-      return;
-    }
 
     await _mergeWidenedConstraints(repoRoot, pubUpgrades);
 
-    final roots = await PubRoots(repoRoot)
-        .resolve(pubUpgrades.map((u) => u.packageFile));
-    for (final root in roots) {
+    final roots = await _resolveRoots(repoRoot, upgrades);
+    for (final (root, managers) in roots) {
       await Github.logGroupAsync(
         'Processing ${path.relative(root.path, from: repoRoot.path)}',
-        () => _processRoot(repoRoot, root, pubUpgrades),
+        () => _processRoot(repoRoot, root, managers, pubUpgrades),
       );
     }
   }
 
+  Future<List<(Directory, Set<String>)>> _resolveRoots(
+    Directory repoRoot,
+    Iterable<RenovateUpgrade> upgrades,
+  ) async {
+    final pubRoots = PubRoots(repoRoot);
+    final roots = <String, Set<String>>{};
+    for (final upgrade in upgrades) {
+      if (upgrade.manager == _pubManager) {
+        final root = await pubRoots.findRoot(upgrade.packageFile);
+        (roots[root] ??= {}).add(_pubManager);
+      } else {
+        // non pub upgrades can only ever be relevant for post commands, which
+        // always run in the repository root
+        (roots[PubRoots.root] ??= {}).add(upgrade.manager);
+      }
+    }
+    return roots.entries
+        .map(
+          (entry) => (
+            Directory(path.normalize(path.join(repoRoot.path, entry.key))),
+            entry.value,
+          ),
+        )
+        .toList();
+  }
+
   Future<void> _mergeWidenedConstraints(
     Directory repoRoot,
-    List<RenovateUpgrade> upgrades,
+    List<RenovateUpgrade> pubUpgrades,
   ) async {
-    for (final upgrade in upgrades) {
+    for (final upgrade in pubUpgrades) {
       final widened = upgrade.newValue;
       if (widened == null || !widened.contains('||')) {
         continue;
@@ -122,17 +147,37 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
   Future<void> _processRoot(
     Directory repoRoot,
     Directory root,
-    List<RenovateUpgrade> upgrades,
+    Set<String> managers,
+    List<RenovateUpgrade> pubUpgrades,
   ) async {
+    final hasPubManager = managers.contains(_pubManager);
     final pub = await PubWrapper.create(root);
-    switch (mode) {
-      case .application:
-        await pub.upgrade();
-      case .library:
-        await pub.get();
+    if (!hasPubManager && !pub.isValid) {
+      return;
+    }
+    final config = await pub.renovateConfig();
+
+    final hasPubOrCustomManagers = {
+      _pubManager,
+      ...config.preBuildExtraManagers,
+    }.intersection(managers).isNotEmpty;
+    if (!hasPubOrCustomManagers) {
+      return;
     }
 
-    await _runPreBuildCommand(pub);
+    switch (mode) {
+      case .application when !hasPubManager:
+      case .library:
+        await pub.get();
+      case .application:
+        await pub.upgrade();
+    }
+
+    await _runPreBuildCommand(pub, config.preBuildCommand);
+    if (!hasPubManager) {
+      return;
+    }
+
     await _updateAnalyzerPlugins(pub);
     await _autoFix(pub);
 
@@ -144,12 +189,11 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
 
     final repoPath = await repoRoot.resolveSymbolicLinks();
     for (final (info, package) in packages) {
-      await _release(repoPath, info, package, upgrades);
+      await _release(repoPath, info, package, pubUpgrades);
     }
   }
 
-  Future<void> _runPreBuildCommand(PubWrapper pub) async {
-    final command = await pub.renovatePreBuildCommand();
+  Future<void> _runPreBuildCommand(PubWrapper pub, String? command) async {
     if (command == null) {
       Github.logDebug('No pre-build command configured');
       return;
@@ -208,7 +252,7 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
     String repoPath,
     WorkspaceInfo info,
     PubWrapper pub,
-    List<RenovateUpgrade> upgrades,
+    List<RenovateUpgrade> pubUpgrades,
   ) async {
     final pubspec = await pub.pubspec();
     if (pubspec.workspace case List(isEmpty: false)) {
@@ -226,7 +270,7 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
     final packageDir = path.posix.joinAll(
       path.split(path.relative(packagePath, from: repoPath)),
     );
-    final packageUpgrades = upgrades
+    final packageUpgrades = pubUpgrades
         .where((u) => _packageDir(u) == packageDir)
         .toList();
     if (packageUpgrades.isEmpty) {

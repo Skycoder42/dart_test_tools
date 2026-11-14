@@ -289,6 +289,21 @@ dependencies:
       expect(snapshot(), before);
     }, timeout: const Timeout(Duration(minutes: 5)));
 
+    test('non-pub upgrades without a root pubspec do nothing', () async {
+      await testFile('pubspec.yaml').delete();
+
+      const sut = PostUpgrade(mode: PostUpgradeMode.library);
+      await sut(testDir, const [
+        RenovateUpgrade(
+          manager: 'regex',
+          depName: 'flutter',
+          packageFile: 'sbx/flutter/flutter.yaml',
+        ),
+      ]);
+
+      expect(testFile('pubspec.yaml').existsSync(), isFalse);
+    }, timeout: const Timeout(Duration(minutes: 5)));
+
     test('non-pub upgrades are ignored next to pub upgrades', () async {
       const sut = PostUpgrade(mode: PostUpgradeMode.library);
       await sut(testDir, const [
@@ -409,6 +424,120 @@ class _NoopBuilder implements Builder {
 
         expect(testFile('packages/a/lib/builder.g.dart').existsSync(), isTrue);
       }, timeout: const Timeout(Duration(minutes: 10)));
+
+      group('extra managers', () {
+        const regexUpgrade = RenovateUpgrade(
+          manager: 'regex',
+          depName: 'flutter',
+          packageFile: 'sbx/flutter/flutter.yaml',
+          currentValue: '3.50.0',
+          newValue: '3.51.0',
+        );
+        const npmUpgrade = RenovateUpgrade(
+          manager: 'npm',
+          depName: 'renovate',
+          packageFile: 'tool/renovate/package.json',
+          currentValue: '44.164.5',
+          newValue: '44.170.0',
+        );
+
+        Future<void> setRenovateConfig(String extraManagers, String command) =>
+            writeFile(
+              'pubspec.yaml',
+              '${testFile('pubspec.yaml').readAsStringSync()}'
+                  'renovate:\n'
+                  '  pre_build_extra_managers: $extraManagers\n'
+                  '  pre_build_command: $command\n',
+            );
+
+        test(
+          'run the command in the repository root without a release',
+          () async {
+            await setRenovateConfig('regex', 'echo ok > marker.txt');
+
+            const sut = PostUpgrade(mode: PostUpgradeMode.library);
+            await sut(testDir, const [regexUpgrade]);
+
+            expect(testFile('marker.txt').readAsStringSync(), 'ok\n');
+            expect(packageVersion('packages/b'), '1.0.0');
+            expect(
+              changelogLines('packages/b').where((l) => l.startsWith('## ')),
+              hasLength(1),
+            );
+          },
+          timeout: const Timeout(Duration(minutes: 5)),
+        );
+
+        test('can be given as a list', () async {
+          await setRenovateConfig('[npm, regex]', 'echo ok > marker.txt');
+
+          const sut = PostUpgrade(mode: PostUpgradeMode.library);
+          await sut(testDir, const [regexUpgrade]);
+
+          expect(testFile('marker.txt').readAsStringSync(), 'ok\n');
+        }, timeout: const Timeout(Duration(minutes: 5)));
+
+        test('ignore managers that are not listed', () async {
+          await setRenovateConfig('regex', 'echo ok > marker.txt');
+
+          const sut = PostUpgrade(mode: PostUpgradeMode.library);
+          await sut(testDir, const [npmUpgrade]);
+
+          expect(testFile('marker.txt').existsSync(), isFalse);
+        }, timeout: const Timeout(Duration(minutes: 5)));
+
+        test('only get dependencies in application mode', () async {
+          Future<void> setPathConstraint(String from, String to) => writeFile(
+            'packages/b/pubspec.yaml',
+            testFile('packages/b/pubspec.yaml')
+                .readAsStringSync()
+                .replaceFirst('path: $from', 'path: $to'),
+          );
+
+          await setPathConstraint('^1.9.0', '1.8.0');
+          await pubGet();
+          await setPathConstraint('1.8.0', '^1.8.0');
+          await setRenovateConfig('regex', 'echo ok > marker.txt');
+
+          const sut = PostUpgrade(mode: PostUpgradeMode.application);
+          await sut(testDir, const [regexUpgrade]);
+
+          expect(testFile('marker.txt').readAsStringSync(), 'ok\n');
+          expect(lockedVersion('path'), '1.8.0');
+        }, timeout: const Timeout(Duration(minutes: 5)));
+
+        test('fail if the command fails', () async {
+          await setRenovateConfig('regex', 'exit 3');
+
+          const sut = PostUpgrade(mode: PostUpgradeMode.library);
+          await expectLater(
+            sut(testDir, const [regexUpgrade]),
+            throwsException,
+          );
+        }, timeout: const Timeout(Duration(minutes: 5)));
+
+        test('run the command once next to pub upgrades of the root', () async {
+          await setRenovateConfig('regex', 'echo ok >> marker.txt');
+
+          const sut = PostUpgrade(mode: PostUpgradeMode.library);
+          await sut(testDir, const [regexUpgrade, pathUpgrade]);
+
+          expect(testFile('marker.txt').readAsStringSync(), 'ok\n');
+          expect(packageVersion('packages/b'), '1.0.1');
+        }, timeout: const Timeout(Duration(minutes: 5)));
+      });
+
+      test('rejects unknown renovate config keys', () async {
+        await writeFile(
+          'pubspec.yaml',
+          '${testFile('pubspec.yaml').readAsStringSync()}'
+              'renovate:\n'
+              '  pre_build_comand: echo typo\n',
+        );
+
+        const sut = PostUpgrade(mode: PostUpgradeMode.library);
+        await expectLater(sut(testDir, const [pathUpgrade]), throwsA(anything));
+      }, timeout: const Timeout(Duration(minutes: 5)));
 
       test('fails if the command fails', () async {
         await setPreBuildCommand(' exit 3');

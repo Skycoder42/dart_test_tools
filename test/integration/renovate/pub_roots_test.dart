@@ -27,26 +27,20 @@ void main() {
       await file.writeAsString(content);
     }
 
-    Matcher isDir(String path) => isA<Directory>().having(
-      (d) => d.absolute.path,
-      'absolute path',
-      normalize(join(testDir.absolute.path, path)),
-    );
-
     test('plain package at root', () async {
       await writePubspec('.', 'name: root\n');
 
-      final result = await sut.resolve(['pubspec.yaml']);
+      final result = await sut.findRoot('pubspec.yaml');
 
-      expect(result, [isDir('.')]);
+      expect(result, '.');
     });
 
     test('package in sub/dir', () async {
       await writePubspec('sub/dir', 'name: sub\n');
 
-      final result = await sut.resolve(['sub/dir/pubspec.yaml']);
+      final result = await sut.findRoot('sub/dir/pubspec.yaml');
 
-      expect(result, [isDir('sub/dir')]);
+      expect(result, 'sub/dir');
     });
 
     test('two members of one workspace', () async {
@@ -59,16 +53,12 @@ workspace:
       await writePubspec('packages/a', 'name: a\nresolution: workspace\n');
       await writePubspec('packages/b', 'name: b\nresolution: workspace\n');
 
-      final result = await sut.resolve([
-        'packages/a/pubspec.yaml',
-        'packages/b/pubspec.yaml',
-        'pubspec.yaml',
-      ]);
-
-      expect(result, [isDir('.')]);
+      expect(await sut.findRoot('packages/a/pubspec.yaml'), PubRoots.root);
+      expect(await sut.findRoot('packages/b/pubspec.yaml'), PubRoots.root);
+      expect(await sut.findRoot('pubspec.yaml'), PubRoots.root);
     });
 
-    test('keeps first-seen order of distinct roots', () async {
+    test('package next to a workspace is its own root', () async {
       await writePubspec('.', '''
 name: workspace
 workspace:
@@ -77,13 +67,8 @@ workspace:
       await writePubspec('packages/a', 'name: a\nresolution: workspace\n');
       await writePubspec('tool/sub', 'name: sub\n');
 
-      final result = await sut.resolve([
-        'tool/sub/pubspec.yaml',
-        'packages/a/pubspec.yaml',
-        'pubspec.yaml',
-      ]);
-
-      expect(result, [isDir('tool/sub'), isDir('.')]);
+      expect(await sut.findRoot('tool/sub/pubspec.yaml'), 'tool/sub');
+      expect(await sut.findRoot('packages/a/pubspec.yaml'), PubRoots.root);
     });
 
     test('member without workspace at repo root', () async {
@@ -91,7 +76,7 @@ workspace:
       await writePubspec('packages/a', 'name: a\nresolution: workspace\n');
 
       expect(
-        () => sut.resolve(['packages/a/pubspec.yaml']),
+        () => sut.findRoot('packages/a/pubspec.yaml'),
         throwsA(
           isA<StateError>().having(
             (e) => e.message,
@@ -108,7 +93,7 @@ workspace:
       await writePubspec('ws/packages/a', 'name: a\nresolution: workspace\n');
 
       expect(
-        () => sut.resolve(['ws/packages/a/pubspec.yaml']),
+        () => sut.findRoot('ws/packages/a/pubspec.yaml'),
         throwsA(isA<StateError>()),
       );
     });
@@ -119,7 +104,7 @@ workspace:
       await writePubspec('packages/b', 'name: b\nresolution: workspace\n');
 
       expect(
-        () => sut.resolve(['packages/a/pubspec.yaml']),
+        () => sut.findRoot('packages/a/pubspec.yaml'),
         throwsA(
           isA<StateError>().having(
             (e) => e.message,
@@ -134,18 +119,18 @@ workspace:
       await writePubspec('.', 'name: root\nworkspace:\n  - packages/*\n');
       await writePubspec('packages/a', 'name: a\nresolution: workspace\n');
 
-      final result = await sut.resolve(['packages/a/pubspec.yaml']);
+      final result = await sut.findRoot('packages/a/pubspec.yaml');
 
-      expect(result, [isDir('.')]);
+      expect(result, '.');
     });
 
     test('member listed with a non-normalized path', () async {
       await writePubspec('.', 'name: root\nworkspace:\n  - ./packages/a/\n');
       await writePubspec('packages/a', 'name: a\nresolution: workspace\n');
 
-      final result = await sut.resolve(['packages/a/pubspec.yaml']);
+      final result = await sut.findRoot('packages/a/pubspec.yaml');
 
-      expect(result, [isDir('.')]);
+      expect(result, '.');
     });
   });
 }

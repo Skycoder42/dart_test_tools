@@ -33,6 +33,8 @@ by `github-actions[bot]`. It contains Renovate's constraint changes plus everyth
 `renovate-post-upgrade` CLI did in the same commit: dependency resolution, the
 `renovate.pre_build_command` of the root pubspec (if set), analyzer plugin pins,
 build_runner, `dart format`, `dart fix`, changelog entries and a patch release.
+Updates of the managers listed in `renovate.pre_build_extra_managers` (e.g. `regex`)
+only get dependency resolution and the pre-build command.
 Once the owner approved the CI runs, a finish job at the end of CI merges the pull
 request when CI is green, or comments with a mention when it is red.
 

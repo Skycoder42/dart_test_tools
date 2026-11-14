@@ -71,3 +71,7 @@ cider:
   link_template:
     tag: https://github.com/Skycoder42/dart_test_tools/releases/tag/v%tag% # initial release link template
     diff: https://github.com/Skycoder42/dart_test_tools/compare/v%from%...v%to% # subsequent releases link template
+
+renovate:
+  pre_build_extra_managers: regex
+  pre_build_command: dart run sbx/tool/update_flutter_skills.dart

@@ -14,6 +14,7 @@ import 'models/dependency_source.dart';
 import 'models/pub/deps/dependencies.dart';
 import 'models/pub/outdated/outdated_info.dart';
 import 'models/pub/workspace/workspaces.dart';
+import 'models/renovate_config.dart';
 
 @internal
 class PubWrapper(
@@ -23,8 +24,6 @@ class PubWrapper(
   static const flutterTestPackageName = 'flutter_test';
   static const buildRunnerPackageName = 'build_runner';
   static const _renovateKey = 'renovate';
-  static const _preBuildCommandKey = 'pre_build_command';
-  static const _combinedKey = '$_renovateKey.$_preBuildCommandKey';
 
   String get _executable => isFlutter ? 'flutter' : 'dart';
 
@@ -35,6 +34,8 @@ class PubWrapper(
     workingDirectory,
     isFlutter: forceFlutter || await _isFlutterProject(workingDirectory),
   );
+
+  bool get isValid => workingDirectory.subFile('pubspec.yaml').existsSync();
 
   Future<Pubspec> pubspec() async {
     final file = workingDirectory.subFile('pubspec.yaml');
@@ -55,26 +56,24 @@ class PubWrapper(
     }
   }
 
-  /// Returns the `renovate.pre_build_command` of `pubspec.yaml`.
+  /// Returns the `renovate` configuration of `pubspec.yaml`.
   ///
   /// Schema:
   /// ```yaml
   /// renovate?:
+  ///   pre_build_extra_managers?: <string> | <list<string>>
   ///   pre_build_command?: <string>
   /// ```
-  Future<String?> renovatePreBuildCommand() async {
+  Future<RenovateConfig> renovateConfig() async {
     final file = workingDirectory.subFile('pubspec.yaml');
     final yaml =
         loadYaml(await file.readAsString(), sourceUrl: file.uri) as YamlMap;
 
     return switch (yaml[_renovateKey]) {
-      null || YamlMap(isEmpty: true) || {_preBuildCommandKey: null} => null,
-      {_preBuildCommandKey: final String command} =>
-        command.trim().isEmpty
-            ? throw Exception('$_combinedKey in ${file.path} must not be empty')
-            : command,
+      null || YamlMap(isEmpty: true) => const .new(),
+      YamlMap map => .fromYaml(map),
       _ => throw Exception(
-        '$_combinedKey in ${file.path} must be a string or null',
+        '$_renovateKey in ${file.path} must be a map or null',
       ),
     };
   }
@@ -257,6 +256,9 @@ class PubWrapper(
 
   static Future<bool> _isFlutterProject(Directory workingDirectory) async {
     final wrapper = PubWrapper(workingDirectory, isFlutter: false);
+    if (!wrapper.isValid) {
+      return false;
+    }
     final dependencies = await wrapper.deps();
     return dependencies.packages.any(
       (p) => p.source == DependencySource.sdk && p.name.contains('flutter'),

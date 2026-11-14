@@ -177,15 +177,26 @@ renovate:
 
 The post-upgrade step runs it in the directory of that pubspec, after dependency
 resolution and before `build_runner`. A non-zero exit code fails the
-post-upgrade step. You can also specify platform specific commands if required:
+post-upgrade step.
+
+By default, the command only runs for pub updates. If files that the command
+works on are updated by other Renovate managers (e.g. a custom regex manager),
+list those managers as well. Use the manager name Renovate reports in the
+upgrade, i.e. `regex` or `jsonata` for custom managers, not `custom.regex`:
 
 ```yaml
 renovate:
-  pre_build_command:
-    linux: echo "PLATFORM=linux" >> .env
-    macos: echo "PLATFORM=macos" >> .env
-    windows: echo "PLATFORM=windows" >> .env
+  pre_build_extra_managers: regex # or a list: [regex, npm]
+  pre_build_command: dart run tool/regenerate.dart
 ```
+
+For an update of only these managers, the post-upgrade step runs `pub get` and
+the command in the repository root, and nothing else: no `pub upgrade`, no
+`build_runner`, no formatting or fixes, no changelog entry or release. Updates
+of managers that are not listed are ignored.
+
+The command is a single string for all platforms, run with `/bin/sh -c` (or
+`cmd.exe /c` on Windows). Platform specific commands are not supported.
 
 ## Git hooks
 
