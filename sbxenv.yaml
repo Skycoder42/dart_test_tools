@@ -5,6 +5,7 @@ agent: claude
 kits:
   - sbx/claude:latest
   - ./sbx/flutter
+  - ./sbx/flutter-linux
 
 workspace: .
 

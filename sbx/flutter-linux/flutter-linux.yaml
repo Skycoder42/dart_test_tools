@@ -1,0 +1,59 @@
+# syntax=docker/sandbox-kit:3
+# yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
+schemaVersion: "3"
+kind: mixin
+displayName: Flutter Linux desktop toolchain
+author: Skycoder42
+description: >-
+  The native toolchain `flutter build linux` needs (clang, cmake, ninja,
+  pkg-config, GTK 3 headers, xvfb), installed with apt when the sandbox is created.
+  Declaration-only: it adds no layer and needs a Debian-based workload.
+sourceUrl: https://github.com/Skycoder42/dart_test_tools/tree/main/sbx/flutter-linux
+licenses: [BSD-3-Clause]
+
+version: "1.0.0"
+provides:
+  - flutter-linux@1.0.0
+
+requires:
+  - flutter
+
+capabilities:
+  - type: com.docker.sandbox/network-policy@2
+    config:
+      install:
+        allow:
+          - deb.debian.org
+          - dhi.io
+
+  - type: com.docker.sandbox/lifecycle@1
+    config:
+      install:
+        - description: Install the Flutter Linux desktop toolchain
+          user: "0"
+          command: |
+            if ! command -v apt-get > /dev/null 2>&1; then
+              echo "flutter-linux: this kit needs a Debian-based workload with apt-get" >&2
+              exit 1
+            fi
+            export DEBIAN_FRONTEND=noninteractive
+            apt-get update -qq
+            apt-get install -y -qq --no-install-recommends \
+              clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev mesa-utils \
+              xvfb xauth
+            rm -rf /var/lib/apt/lists/*
+
+  - type: com.docker.sandbox/agent-context@1
+    optional: true
+    config: &agent-context
+      content: |
+        ## Flutter Linux desktop
+
+        The Linux desktop toolchain (clang, cmake, ninja, pkg-config, GTK 3) is
+        installed, so `flutter build linux` works. The sandbox has no display: run
+        the app or Linux integration tests under a virtual X server, e.g.
+        `xvfb-run -a flutter test integration_test -d linux`.
+
+  - type: com.docker.sandbox/agent-context@2
+    optional: true
+    config: *agent-context
