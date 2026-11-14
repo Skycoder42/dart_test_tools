@@ -12,6 +12,9 @@ A [Docker Sandboxes](https://docs.docker.com/ai/sandboxes/) kit (format v3,
 - the [Dart MCP server](https://github.com/dart-lang/ai/tree/main/pkgs/dart_mcp_server)
   (`dart mcp-server`) registered as `dart` in the agent's user config on
   every sandbox start (currently for Claude Code; other agents are skipped)
+- the official [Dart](https://github.com/dart-lang/skills) (`dart-*`) and
+  [Flutter](https://github.com/flutter/agent-plugins) (`flutter-*`) agent
+  skills, exposed in the skills directory of whichever agent the sandbox runs
 - optional persistent pub cache volume (`/home/agent/.pub-cache`, 4 GiB)
 - agent instructions describing the environment
 
@@ -47,9 +50,29 @@ Flutter and Gradle builds benefit from more resources than the default, e.g.
 |---|---|---|
 | `flutterVersion` | build | Flutter stable release to install |
 | `dartVersion` | build | Dart SDK version shipped with that release; the build fails on a mismatch |
+| `dartSkillsRef` | build | Commit of `dart-lang/skills` the `dart-*` skills are taken from |
+| `flutterSkillsRef` | build | Commit of `flutter/agent-plugins` the `flutter-*` skills are taken from |
 
-Both are build-phase args: they are baked into the published kit. To build
-another version, update both defaults (or pass `--build-arg`s) together.
+All args are build-phase args: they are baked into the published kit. To build
+another Flutter version, update `flutterVersion` and `dartVersion` (or pass
+`--build-arg`s) together.
+
+Each skill needs its own `agent-skill@1` entry with a literal path, and the
+`skills` arg lists the same names: the build fails when they do not match the
+skills at the pinned commits. After changing `dartSkillsRef` or
+`flutterSkillsRef`, regenerate both from the repository root:
+
+```sh
+dart run sbx/tool/update_flutter_skills.dart
+```
+
+The tool fetches both repositories at exactly the pinned commits (it never
+changes them), lists the `dart-*` skills of `dart-lang/skills` and the
+`flutter-*` skills of `flutter/agent-plugins`, and fails if a `SKILL.md`
+frontmatter `name` does not match its directory. It then rewrites the `skills`
+arg and adds or removes `agent-skill@1` entries in `flutter.yaml`, leaving the
+rest of the file untouched, and prints the added and removed skills. If
+nothing changed, the file is left as is.
 
 ## Build and verify
 

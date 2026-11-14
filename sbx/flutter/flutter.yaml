@@ -28,6 +28,49 @@ args:
     pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
     description: Dart SDK version bundled with that Flutter release
     buildArg: DART_VERSION
+  dartSkillsRef:
+    default: fa691671fda391ea1d1f8c7ae61bddc03348ec85
+    pattern: "^[0-9a-f]{40}$"
+    description: Commit of github.com/dart-lang/skills to bundle the dart-* skills from
+    buildArg: DART_SKILLS_REF
+  flutterSkillsRef:
+    default: e5a88d2be19cbf7ba1ef974375e5846492aca2ac
+    pattern: "^[0-9a-f]{40}$"
+    description: Commit of github.com/flutter/agent-plugins to bundle the flutter-* skills from
+    buildArg: FLUTTER_SKILLS_REF
+  skills:
+    # Must match the agent-skill@1 entries below: the build fails unless the
+    # pinned commits contain exactly these skills. Regenerate both with
+    # `dart run sbx/tool/update_flutter_skills.dart`.
+    default: |-
+        dart-add-unit-test
+        dart-build-cli-app
+        dart-collect-coverage
+        dart-fix-runtime-errors
+        dart-generate-test-mocks
+        dart-migrate-to-checks-package
+        dart-resolve-package-conflicts
+        dart-run-static-analysis
+        dart-setup-ffi-assets
+        dart-use-doc-examples
+        dart-use-ffigen
+        dart-use-path-package
+        dart-use-pattern-matching
+        dart-use-primary-constructors
+        dart-write-documentation
+        flutter-add-integration-test
+        flutter-add-widget-preview
+        flutter-add-widget-test
+        flutter-apply-architecture-best-practices
+        flutter-build-responsive-layout
+        flutter-fix-layout-issues
+        flutter-implement-json-serialization
+        flutter-setup-declarative-routing
+        flutter-setup-localization
+        flutter-use-http-package
+    pattern: '^[a-z0-9-]+(\n[a-z0-9-]+)*$'
+    description: Newline-separated names of the bundled dart-* and flutter-* skills
+    buildArg: SKILLS
 
 provides:
   - "flutter@${{ kit.args.flutterVersion }}"
@@ -82,9 +125,9 @@ capabilities:
       size: 4g
 
   # Accept one context version through runtime policy, or skip both.
-  - type: com.docker.sandbox/agent-context@1
+  - type: com.docker.sandbox/agent-context@2
     optional: true
-    config: &agent-context
+    config:
       content: |
         ## Flutter ${{ kit.args.flutterVersion }} (Dart ${{ kit.args.dartVersion }})
 
@@ -95,6 +138,8 @@ capabilities:
         - The Dart MCP server (`dart mcp-server`) is registered as the `dart` MCP
           server. Prefer its tools (e.g. `analyze_files`, `run_tests`, `pub`,
           `pub_dev_search`, `read_package_uris`) over shelling out where they fit.
+        - The official Dart (`dart-*`) and Flutter (`flutter-*`) agent skills are
+          installed. Use them for the tasks they describe.
         - Do not run `flutter upgrade`, `flutter channel` or `flutter downgrade`: the SDK
           version is pinned by this sandbox.
         - Network access is limited to pub.dev, GitHub and Flutter's artifact storage.
@@ -104,6 +149,126 @@ capabilities:
           need additional tooling that this sandbox may not have. iOS and macOS builds
           are impossible here.
 
-  - type: com.docker.sandbox/agent-context@2
+  - type: com.docker.sandbox/agent-context@1
     optional: true
-    config: *agent-context
+    config:
+      content: |
+        ## Flutter ${{ kit.args.flutterVersion }} (Dart ${{ kit.args.dartVersion }})
+
+        `flutter` and `dart` are on PATH, installed at `/opt/flutter`.
+
+        - Use `dart analyze`, `dart format`, `dart test` and `flutter test` to verify
+          changes; `dart pub get` / `flutter pub get` to resolve dependencies.
+        - The Dart MCP server (`dart mcp-server`) is registered as the `dart` MCP
+          server. Prefer its tools (e.g. `analyze_files`, `run_tests`, `pub`,
+          `pub_dev_search`, `read_package_uris`) over shelling out where they fit.
+        - The official Dart (`dart-*`) and Flutter (`flutter-*`) agent skills are
+          installed. Use them for the tasks they describe.
+        - Do not run `flutter upgrade`, `flutter channel` or `flutter downgrade`: the SDK
+          version is pinned by this sandbox.
+        - Network access is limited to pub.dev, GitHub and Flutter's artifact storage.
+          If a download fails with a 403, report the blocked host instead of working
+          around it.
+        - Native builds (`flutter build linux|apk`, `flutter test --platform chrome`)
+          need additional tooling that this sandbox may not have. iOS and macOS builds
+          are impossible here.
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/dart-add-unit-test
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/dart-build-cli-app
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/dart-collect-coverage
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/dart-fix-runtime-errors
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/dart-generate-test-mocks
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/dart-migrate-to-checks-package
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/dart-resolve-package-conflicts
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/dart-run-static-analysis
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/dart-setup-ffi-assets
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/dart-use-doc-examples
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/dart-use-ffigen
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/dart-use-path-package
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/dart-use-pattern-matching
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/dart-use-primary-constructors
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/dart-write-documentation
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/flutter-add-integration-test
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/flutter-add-widget-preview
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/flutter-add-widget-test
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/flutter-apply-architecture-best-practices
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/flutter-build-responsive-layout
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/flutter-fix-layout-issues
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/flutter-implement-json-serialization
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/flutter-setup-declarative-routing
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/flutter-setup-localization
+  - type: com.docker.sandbox/agent-skill@1
+    optional: true
+    config:
+      path: /opt/flutter-skills/flutter-use-http-package
