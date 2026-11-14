@@ -28,7 +28,6 @@ void main() {
     await testDir.delete(recursive: true);
   });
 
-  // ignore: avoid_positional_boolean_parameters because is first
   Future<void> createSources(bool minimal) async {
     final writer = YamlWriter();
     final pubspecYaml = writer.write({

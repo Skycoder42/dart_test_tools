@@ -55,17 +55,18 @@ class const RepoFileGenerator() {
     ..._createCommonInfo(metadata, gpgKey),
   };
 
-  Map<String, String> _createCommonInfo(RepoMetadata metadata, String gpgKey) =>
-      {
-        if (metadata.homepage case final Uri homepage)
-          'Homepage': homepage.toString(),
-        if (metadata.summary case final String summary) 'Comment': summary,
-        if (metadata.description case final String description)
-          'Description': description.replaceAll(_whitespaceRegex, ' ').trim(),
-        if (metadata.icon case IconInfo(iconUrl: final iconUrl))
-          'Icon': iconUrl.toString(),
-        'GPGKey': gpgKey,
-      };
+  Map<String, String> _createCommonInfo(
+    RepoMetadata metadata,
+    String gpgKey,
+  ) => {
+    if (metadata.homepage case final Uri homepage)
+      'Homepage': homepage.toString(),
+    if (metadata.summary case final String summary) 'Comment': summary,
+    if (metadata.description case final String description)
+      'Description': description.replaceAll(_whitespaceRegex, ' ').trim(),
+    if (metadata.icon case IconInfo(:final iconUrl)) 'Icon': iconUrl.toString(),
+    'GPGKey': gpgKey,
+  };
 
   Future<void> _writeInfoFile(
     File file,
@@ -87,10 +88,7 @@ class const RepoFileGenerator() {
   }
 
   Future<void> _copyIcon(Directory repo, RepoMetadata metadata) async {
-    if (metadata.icon case IconInfo(
-      iconName: final iconName,
-      iconFile: final iconFile,
-    )) {
+    if (metadata.icon case IconInfo(:final iconName, :final iconFile)) {
       await iconFile.copy(repo.subFile(iconName).path);
     }
   }

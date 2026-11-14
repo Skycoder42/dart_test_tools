@@ -67,7 +67,6 @@ class AnalysisOptionsWriter({required final YamlWriter yamlWriter}) {
           _writeRecursive(sink, level + 1, element);
         }
       }
-      // ignore: no_dynamic_casts false positive
     } else if (encodedData case String() when encodedData.startsWith('*')) {
       sink
         ..write('"')

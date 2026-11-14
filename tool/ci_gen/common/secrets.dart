@@ -108,7 +108,6 @@ VARIABLE2=value2
     ),
   );
 
-  // ignore: avoid_positional_boolean_parameters single arguments
   static WorkflowSecret gpgKey(bool required) => WorkflowSecret(
     name: 'gpgKey',
     secret: Secret(
@@ -118,13 +117,11 @@ VARIABLE2=value2
     ),
   );
 
-  // ignore: avoid_positional_boolean_parameters single arguments
   static WorkflowSecret gpgKeyId(bool required) => WorkflowSecret(
     name: 'gpgKeyId',
     secret: Secret(required: required, description: 'The id of the gpgKey'),
   );
 
-  // ignore: avoid_positional_boolean_parameters single arguments
   static WorkflowSecret targetRepoToken(bool required) => WorkflowSecret(
     name: 'targetRepoToken',
     secret: Secret(

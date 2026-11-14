@@ -90,7 +90,6 @@ extension ElementCodeGenX on Element {
 }
 
 extension ReferenceX on Reference {
-  // ignore: avoid_positional_boolean_parameters for single parameter
   Reference asNullable(bool isNullable) => switch (type) {
     TypeReference(symbol: 'void' || 'dynamic') => this,
     final TypeReference ref => TypeReference(

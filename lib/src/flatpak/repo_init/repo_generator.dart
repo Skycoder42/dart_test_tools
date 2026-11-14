@@ -45,8 +45,7 @@ class const RepoGenerator() {
         if (metadata.description case final String description)
           '--description=$description',
         if (metadata.homepage case final Uri homepage) '--homepage=$homepage',
-        if (metadata.icon case IconInfo(iconUrl: final iconUrl))
-          '--icon=$iconUrl',
+        if (metadata.icon case IconInfo(:final iconUrl)) '--icon=$iconUrl',
         '--gpg-import=${metadata.gpgInfo.publicKeyFile.path}',
         '--default-branch=${metadata.branch}',
         '--generate-static-deltas',
