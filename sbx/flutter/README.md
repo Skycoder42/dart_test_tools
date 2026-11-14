@@ -22,7 +22,8 @@ Not included: tooling for native builds (`flutter build linux` needs
 clang/cmake/GTK, `flutter test --platform chrome` needs Chromium, Android
 needs a JDK and the Android SDK). iOS and macOS builds are impossible in a
 Linux sandbox. The Linux desktop toolchain comes with the
-[flutter-linux kit](../flutter-linux).
+[flutter-linux kit](../flutter-linux), Chromium with the
+[flutter-web kit](../flutter-web).
 
 ## Usage
 

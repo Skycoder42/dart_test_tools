@@ -6,6 +6,7 @@ kits:
   - sbx/claude:latest
   - ./sbx/flutter
   - ./sbx/flutter-linux
+  - ./sbx/flutter-web
 
 workspace: .
 

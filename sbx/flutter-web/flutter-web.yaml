@@ -1,0 +1,57 @@
+# syntax=docker/sandbox-kit:3
+# yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
+schemaVersion: "3"
+kind: mixin
+displayName: Flutter web toolchain
+author: Skycoder42
+description: >-
+  Chromium and chromedriver for `flutter test --platform chrome` and web
+  integration tests, installed with apt when the sandbox is created.
+  Declaration-only: it adds no layer and needs a Debian-based workload.
+sourceUrl: https://github.com/Skycoder42/dart_test_tools/tree/main/sbx/flutter-web
+licenses: [BSD-3-Clause]
+version: "1.0.0"
+provides:
+  - flutter-web@1.0.0
+requires:
+  - flutter
+capabilities:
+  - type: com.docker.sandbox/network-policy@2
+    config:
+      install:
+        allow:
+          - deb.debian.org
+          - dhi.io
+  - type: com.docker.sandbox/lifecycle@1
+    config:
+      install:
+        - description: Install Chromium for Flutter web
+          user: "0"
+          command: |
+            if ! command -v apt-get > /dev/null 2>&1; then
+              echo "flutter-web: this kit needs a Debian-based workload with apt-get" >&2
+              exit 1
+            fi
+            export DEBIAN_FRONTEND=noninteractive
+            apt-get update -qq
+            apt-get install -y -qq --no-install-recommends \
+              chromium chromium-driver fonts-liberation
+            rm -rf /var/lib/apt/lists/*
+            # Flutter looks for `google-chrome` on Linux. A link instead of
+            # CHROME_EXECUTABLE needs no image layer and reaches non-login shells.
+            if ! command -v google-chrome > /dev/null 2>&1; then
+              ln -s /usr/bin/chromium /usr/local/bin/google-chrome
+            fi
+  - type: com.docker.sandbox/agent-context@1
+    optional: true
+    config: &agent-context
+      content: |
+        ## Flutter web
+        Chromium is installed (also as `google-chrome`), so
+        `flutter test --platform chrome` and `flutter build web` work. The sandbox
+        has no display: browser tests run headless. For web integration tests start
+        `chromedriver --port=4444 &` and run
+        `flutter drive --driver test_driver/integration_test.dart --target integration_test/<test>.dart -d web-server --browser-name chrome --headless`.
+  - type: com.docker.sandbox/agent-context@2
+    optional: true
+    config: *agent-context
