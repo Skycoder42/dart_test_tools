@@ -38,7 +38,7 @@ Linux sandbox. The Linux desktop toolchain comes with the
 sbx run claude --kit ./sbx/flutter .
 
 # published kit
-sbx run claude --kit docker.io/<namespace>/sbx-kit-flutter:3.50.0 .
+sbx run claude --kit docker.io/skycoder42/sbx-kit-flutter:3.50.0 .
 ```
 
 Flutter and Gradle builds benefit from more resources than the default, e.g.
@@ -109,15 +109,82 @@ sbx exec flutter-test flutter doctor -v
 sbx policy log   # shows blocked hosts
 ```
 
-## Publish
+## Published images
+
+CI publishes this kit and the [flutter-linux](../flutter-linux) and
+[flutter-web](../flutter-web) kits to Docker Hub as
+`docker.io/skycoder42/sbx-kit-<kit>` for `linux/amd64` and `linux/arm64`
+([`.github/workflows/sbx-kits.yml`](../../.github/workflows/sbx-kits.yml),
+called by the repository's CI workflow). A kit is published from `main` whenever
+a commit changed it, with three tags:
+
+| Tag | Moves | Use |
+|---|---|---|
+| `3.50.0-<commit>` | never (immutable) | exactly one build; `<commit>` is the commit it was built from |
+| `3.50.0` | with every rebuild of that version (e.g. new skill commits) | a Flutter version, latest build |
+| `latest` | with every publish | newest kit |
+
+For exact content, pin the digest (`…@sha256:…`) or use the immutable tag.
+
+Every published kit is checked before any tag points to it: it is built with
+SLSA provenance (`mode=max`) and an SPDX SBOM, validated with `kit-tck`,
+keyless-signed with `sbx kit sign` and attested with GitHub artifact
+attestations. Only then are the tags set, to exactly that digest.
+
+### Verify a published kit
+
+The signer is the kit workflow on `main`, nothing else:
 
 ```sh
-docker buildx build --builder kit-builder sbx/flutter -f sbx/flutter/flutter.yaml \
-  --platform linux/amd64,linux/arm64 --provenance=mode=min --push \
-  -t docker.io/<namespace>/sbx-kit-flutter:3.50.0 \
-  -t docker.io/<namespace>/sbx-kit-flutter:latest
-kit-tck validate docker.io/<namespace>/sbx-kit-flutter:3.50.0
+sbx kit verify docker.io/skycoder42/sbx-kit-flutter:3.50.0 \
+  --certificate-identity https://github.com/Skycoder42/dart_test_tools/.github/workflows/sbx-kits.yml@refs/heads/main \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
 
-`sbx` only accepts kits from Docker Hub by default; kits from other
-registries need `sbx settings set kit.allowedSources '[...]'`.
+To make `sbx` refuse unsigned or foreign kits, trust that identity and require
+signatures (this replaces the whole `kit.trustedSigners` list):
+
+```sh
+sbx settings set kit.trustedSigners '[{"identity":"https://github.com/Skycoder42/dart_test_tools/.github/workflows/sbx-kits.yml@refs/heads/main","issuer":"https://token.actions.githubusercontent.com"}]'
+sbx settings set kit.requireSignature true
+```
+
+The GitHub-signed build provenance names the repository, workflow, commit and
+runner:
+
+```sh
+gh attestation verify oci://docker.io/skycoder42/sbx-kit-flutter:3.50.0 \
+  --repo Skycoder42/dart_test_tools \
+  --signer-workflow Skycoder42/dart_test_tools/.github/workflows/sbx-kits.yml \
+  --source-ref refs/heads/main --deny-self-hosted-runners
+```
+
+`sbx kit provenance` does not show it: that command only reads the provenance
+`sbx kit push` attaches to v1/v2 kits. The BuildKit provenance and SBOM are in
+the image index (`docker buildx imagetools inspect <ref> --format '{{json .Provenance}}'`);
+they are covered by the signature, because the signed index lists them by
+digest.
+
+## Licenses
+
+The image ships the Flutter SDK and the bundled skills unmodified, including
+their license files:
+
+- Flutter framework and Dart SDK: BSD-3-Clause (`/opt/flutter/LICENSE`,
+  `/opt/flutter/bin/cache/dart-sdk/LICENSE`)
+- Flutter engine and its third-party code: see
+  `/opt/flutter/bin/cache/pkg/sky_engine/LICENSE` and the `LICENSE.*.md` files
+  next to the engine artifacts
+- Roboto fonts: Apache-2.0, Material Icons font: CC-BY-4.0
+  (`/opt/flutter/bin/cache/artifacts/material_fonts/`)
+- `dart-lang/skills` and `flutter/agent-plugins`: BSD-3-Clause
+  (`/opt/flutter-skills/LICENSES/`)
+- this kit's descriptor and recipe: BSD-3-Clause, see [LICENSE](../../LICENSE)
+
+The descriptor's `licenses` reflect this as
+`BSD-3-Clause, Apache-2.0, CC-BY-4.0, LicenseRef-Flutter-Third-Party`.
+
+## Trademarks
+
+Flutter and the related logo are trademarks of Google LLC. This kit is not
+endorsed by or affiliated with Google LLC.

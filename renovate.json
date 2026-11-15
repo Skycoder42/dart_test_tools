@@ -38,6 +38,17 @@
       "packageNameTemplate": "https://github.com/flutter/agent-plugins",
       "currentValueTemplate": "main",
       "datasourceTemplate": "git-refs"
+    },
+    {
+      "description": "Digest-pinned BuildKit frontends and base images of the sbx kits",
+      "customType": "regex",
+      "managerFilePatterns": ["/^sbx/[^/]+/[^/]+\\.(yaml|dockerfile)$/"],
+      "matchStrings": [
+        "# syntax=(?<depName>[^:\\s]+):(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[0-9a-f]{64})",
+        "ARG [A-Z_]+=(?<depName>[^:\\s]+):(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[0-9a-f]{64})"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
     }
   ],
   "packageRules": [
@@ -69,6 +80,18 @@
       "matchDatasources": ["flutter-version"],
       "allowedVersions": "/^\\d+\\.\\d+\\.\\d+$/",
       "minimumReleaseAge": "3 days"
+    },
+    {
+      "description": "New frontend grammar or syntax versions of the sbx kits need a manual migration: their own PR after dashboard approval (digest updates stay in the weekly PR)",
+      "matchManagers": ["custom.regex"],
+      "matchDatasources": ["docker"],
+      "matchDepNames": ["docker/sandbox-kit", "docker/dockerfile"],
+      "matchUpdateTypes": ["major", "minor", "patch"],
+      "dependencyDashboardApproval": true,
+      "groupName": "sbx kit frontends",
+      "groupSlug": "sbx-frontends",
+      "group": { "branchTopic": "sbx-frontends" },
+      "prTitleStrict": true
     }
   ]
 }

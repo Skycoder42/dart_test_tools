@@ -1,0 +1,282 @@
+name: Sandbox kits
+
+on:
+  workflow_call:
+    inputs:
+      publish:
+        type: boolean
+        required: true
+        description: Publish changed kits to Docker Hub (main only).
+
+permissions: {}
+
+env:
+  IMAGE_NAMESPACE: docker.io/skycoder42
+  PLATFORMS: linux/amd64,linux/arm64
+  PLATFORM_COUNT: "2"
+  # Paths outside sbx/<kit>/ that change every published kit.
+  SHARED_PATHS: .github/workflows/sbx-kits.yml
+  # https://github.com/docker/sandbox-kit-spec/releases (checksums.txt)
+  KIT_TCK_VERSION: 3.0.0-m.12
+  KIT_TCK_SHA256: 473b72d7bb48b11987250493e9b47fb2c616de601777e139191a86fc5e962f21
+  # docker-sbx from Docker's apt repository, verified with Docker's release key
+  SBX_VERSION: 0.51.0-1~ubuntu.24.04~noble
+  DOCKER_APT_KEY_FINGERPRINT: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+  # The keyless signer every published kit must carry: this workflow on main.
+  SIGNER_WORKFLOW: Skycoder42/dart_test_tools/.github/workflows/sbx-kits.yml
+  SIGNER_IDENTITY: https://github.com/Skycoder42/dart_test_tools/.github/workflows/sbx-kits.yml@refs/heads/main
+  SIGNER_ISSUER: https://token.actions.githubusercontent.com
+
+jobs:
+  changes:
+    name: Detect changed kits
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      kits: ${{ steps.detect.outputs.kits }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: detect
+        name: Detect kits to build
+        env:
+          PUBLISH: ${{ inputs.publish }}
+        run: |
+          set -euo pipefail
+          kits='[]'
+          for dir in sbx/*/; do
+            kit=$(basename "$dir")
+            [ -f "$dir/$kit.yaml" ] || continue
+            paths=("sbx/$kit" $SHARED_PATHS)
+            version=$(sbx/tool/kit-version.sh "sbx/$kit")
+            if [ "$PUBLISH" = true ]; then
+              # Compare against the commit the current <version> tag was built
+              # from (its index revision annotation). Skipped only if the kit
+              # did not change since; a missing tag, annotation or commit means
+              # build. A failed publish never moves the tag, so the next run
+              # retries it.
+              tag="$IMAGE_NAMESPACE/sbx-kit-$kit:$version"
+              published=$(docker buildx imagetools inspect "$tag" --raw 2> /dev/null \
+                | jq -r '.annotations["org.opencontainers.image.revision"] // empty' || true)
+              if [ -n "$published" ] \
+                && git cat-file -e "$published^{commit}" 2> /dev/null \
+                && git diff --quiet "$published" HEAD -- "${paths[@]}"; then
+                echo "$kit: unchanged since $tag ($published)"
+                continue
+              fi
+            else
+              if git diff --quiet HEAD^1 HEAD -- "${paths[@]}"; then
+                echo "$kit: unchanged"
+                continue
+              fi
+            fi
+            echo "$kit: build $version"
+            kits=$(jq -c --arg kit "$kit" --arg version "$version" \
+              '. + [{kit: $kit, version: $version}]' <<< "$kits")
+          done
+          echo "kits=$kits" >> "$GITHUB_OUTPUT"
+
+  validate:
+    name: Validate ${{ matrix.kit }} kit
+    needs: changes
+    if: ${{ !inputs.publish && needs.changes.outputs.kits != '[]' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.changes.outputs.kits) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install kit-tck
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/kit-tck.tar.gz"
+          curl -fsSL -o "$archive" \
+            "https://github.com/docker/sandbox-kit-spec/releases/download/v${KIT_TCK_VERSION}/kit-tck_${KIT_TCK_VERSION}_linux_amd64.tar.gz"
+          echo "$KIT_TCK_SHA256  $archive" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/kit-tck"
+          tar -xzf "$archive" -C "$RUNNER_TEMP/kit-tck" kit-tck
+          echo "$RUNNER_TEMP/kit-tck" >> "$GITHUB_PATH"
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+      - name: Setup docker buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Build kit
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: sbx/${{ matrix.kit }}
+          file: sbx/${{ matrix.kit }}/${{ matrix.kit }}.yaml
+          platforms: ${{ env.PLATFORMS }}
+          tags: sbx-kit-${{ matrix.kit }}:${{ matrix.version }}
+          outputs: type=oci,dest=${{ runner.temp }}/kit-layout,tar=false
+          provenance: mode=max
+          sbom: true
+          pull: true
+          no-cache: true
+      - name: Check attestations
+        run: sbx/tool/check-attestations.sh layout "$RUNNER_TEMP/kit-layout" "$PLATFORM_COUNT"
+      - name: Validate kit
+        env:
+          VERSION: ${{ matrix.version }}
+        run: kit-tck validate --verbose --layout "$RUNNER_TEMP/kit-layout" "$VERSION"
+
+  publish:
+    name: Publish ${{ matrix.kit }} kit
+    needs: changes
+    if: ${{ inputs.publish && github.ref == 'refs/heads/main' && needs.changes.outputs.kits != '[]' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    environment: docker-hub
+    concurrency:
+      group: sbx-kit-publish-${{ matrix.kit }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write # keyless signing and attestations
+      attestations: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.changes.outputs.kits) }}
+    env:
+      IMAGE: docker.io/skycoder42/sbx-kit-${{ matrix.kit }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: meta
+        name: Generate image tags
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ${{ env.IMAGE }}
+          flavor: latest=false
+          tags: |
+            type=raw,value=${{ matrix.version }}
+            type=raw,value=${{ matrix.version }}-${{ github.sha }}
+            type=raw,value=latest
+      - name: Install kit-tck
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/kit-tck.tar.gz"
+          curl -fsSL -o "$archive" \
+            "https://github.com/docker/sandbox-kit-spec/releases/download/v${KIT_TCK_VERSION}/kit-tck_${KIT_TCK_VERSION}_linux_amd64.tar.gz"
+          echo "$KIT_TCK_SHA256  $archive" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/kit-tck"
+          tar -xzf "$archive" -C "$RUNNER_TEMP/kit-tck" kit-tck
+          echo "$RUNNER_TEMP/kit-tck" >> "$GITHUB_PATH"
+      - name: Install sbx
+        run: |
+          set -euo pipefail
+          key="$RUNNER_TEMP/docker-sbx.asc"
+          curl -fsSL -o "$key" https://download.docker.com/linux/ubuntu/gpg
+          # Exactly one primary key, and it is Docker's release key.
+          keys=$(gpg --show-keys --with-colons "$key" | awk -F: '$1 == "pub"' | wc -l)
+          fingerprint=$(gpg --show-keys --with-colons "$key" | awk -F: '$1 == "fpr" { print $10; exit }')
+          test "$keys" = 1
+          test "$fingerprint" = "$DOCKER_APT_KEY_FINGERPRINT"
+          sudo install -m 0644 "$key" /etc/apt/keyrings/docker-sbx.asc
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker-sbx.asc] https://download.docker.com/linux/ubuntu noble stable" \
+            | sudo tee /etc/apt/sources.list.d/docker-sbx.list > /dev/null
+          # Only this source, so no other repository can provide the package.
+          apt_opts=(-o Dir::Etc::sourcelist=sources.list.d/docker-sbx.list -o Dir::Etc::sourceparts=-)
+          sudo apt-get "${apt_opts[@]}" update
+          sudo apt-get "${apt_opts[@]}" install -y --no-install-recommends "docker-sbx=$SBX_VERSION"
+          sbx version
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+      - name: Setup docker buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Login to Docker Hub
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          username: ${{ secrets.dockerHubUsername }}
+          password: ${{ secrets.dockerHubToken }}
+      # Pushed by digest only: no tag points to the kit until it passed every
+      # check, carries a signature and an attestation.
+      - id: build
+        name: Build and push kit by digest
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: sbx/${{ matrix.kit }}
+          file: sbx/${{ matrix.kit }}/${{ matrix.kit }}.yaml
+          platforms: ${{ env.PLATFORMS }}
+          outputs: type=image,name=${{ env.IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          # Read back by the changes job to skip unchanged kits.
+          annotations: index:org.opencontainers.image.revision=${{ github.sha }}
+          provenance: mode=max
+          sbom: true
+          pull: true
+          no-cache: true
+      - name: Check attestations
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: sbx/tool/check-attestations.sh registry "$IMAGE@$DIGEST" "$PLATFORM_COUNT"
+      - name: Validate kit
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: kit-tck validate --verbose "$IMAGE@$DIGEST"
+      - name: Sign kit
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: sbx kit sign "$IMAGE@$DIGEST"
+      - name: Attest build provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true
+          create-storage-record: false
+      - name: Verify signature
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          sbx kit verify "$IMAGE@$DIGEST" \
+            --certificate-identity "$SIGNER_IDENTITY" \
+            --certificate-oidc-issuer "$SIGNER_ISSUER"
+      - name: Verify attestation
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          verify=(
+            gh attestation verify "oci://$IMAGE@$DIGEST"
+            --repo "$GITHUB_REPOSITORY"
+            --signer-workflow "$SIGNER_WORKFLOW"
+            --cert-oidc-issuer "$SIGNER_ISSUER"
+            --source-ref refs/heads/main
+            --source-digest "$GITHUB_SHA"
+            --deny-self-hosted-runners
+          )
+          # Once from GitHub's attestation store, once from the registry copy.
+          "${verify[@]}"
+          "${verify[@]}" --bundle-from-oci
+      # A carbon copy of the verified index, so the tags resolve to exactly the
+      # signed and attested digest.
+      - name: Tag kit
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          set -euo pipefail
+          mapfile -t tags < <(jq -r '.tags[]' <<< "$DOCKER_METADATA_OUTPUT_JSON")
+          docker buildx imagetools create --prefer-index=false \
+            $(printf -- '--tag %s ' "${tags[@]}") "$IMAGE@$DIGEST"
+          for tag in "${tags[@]}"; do
+            actual=$(docker buildx imagetools inspect "$tag" --format '{{json .Manifest}}' | jq -r .digest)
+            if [ "$actual" != "$DIGEST" ]; then
+              echo "::error::$tag points to $actual instead of $DIGEST" >&2
+              exit 1
+            fi
+            echo "$tag -> $DIGEST"
+          done

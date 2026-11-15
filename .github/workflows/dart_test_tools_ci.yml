@@ -61,6 +61,16 @@ jobs:
       integrationTestEnvVars: |
         TEST_KEY=test-value
 
+  sbx-kits:
+    name: Sandbox kits
+    uses: ./.github/workflows/sbx-kits.yml
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    with:
+      publish: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+
   cd:
     name: CD
     needs:
@@ -77,6 +87,7 @@ jobs:
     needs:
       - renovate-lockfile
       - ci
+      - sbx-kits
     if: ${{ !cancelled() }}
     uses: Skycoder42/dart_test_tools/.github/workflows/renovate-finish.yml@main
     permissions:

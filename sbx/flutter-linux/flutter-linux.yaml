@@ -1,4 +1,4 @@
-# syntax=docker/sandbox-kit:3
+# syntax=docker/sandbox-kit:3@sha256:adbc0d1ea63451871d5d78111120bb29f2fd2b265e63d39c664ae2c3d722c805
 # yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
 schemaVersion: "3"
 kind: mixin
@@ -8,8 +8,11 @@ description: >-
   The native toolchain `flutter build linux` needs (clang, cmake, ninja,
   pkg-config, GTK 3 headers, xvfb), installed with apt when the sandbox is created.
   Declaration-only: it adds no layer and needs a Debian-based workload.
+  Flutter and the related logo are trademarks of Google LLC. This kit is not
+  endorsed by or affiliated with Google LLC.
 sourceUrl: https://github.com/Skycoder42/dart_test_tools/tree/main/sbx/flutter-linux
-licenses: [BSD-3-Clause]
+licenses:
+  - BSD-3-Clause
 
 version: "1.0.0"
 provides:

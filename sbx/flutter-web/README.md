@@ -36,8 +36,17 @@ flutter drive --driver test_driver/integration_test.dart \
 ## Usage
 
 ```sh
+# local source directories
 sbx run claude --kit ./sbx/flutter --kit ./sbx/flutter-web .
+
+# published kits
+sbx run claude \
+  --kit docker.io/skycoder42/sbx-kit-flutter:3.50.0 \
+  --kit docker.io/skycoder42/sbx-kit-flutter-web:1.0.0 .
 ```
+
+Publishing, tags and signature verification work as described for the
+[flutter kit](../flutter/README.md#published-images).
 
 Or add `./sbx/flutter-web` to the `kits` of an `sbxenv.yaml`, as the
 repository root does.
@@ -51,3 +60,8 @@ sbx kit validate ./sbx/flutter-web
 flutter doctor -v           # "Chrome - develop for the web" must be green
 flutter create --platforms web /tmp/app && cd /tmp/app && flutter test --platform chrome
 ```
+
+## Trademarks
+
+Flutter and the related logo are trademarks of Google LLC. This kit is not
+endorsed by or affiliated with Google LLC.
