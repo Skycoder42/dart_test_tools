@@ -135,8 +135,8 @@ jobs:
           DIGEST: ${{ steps.build.outputs.digest }}
         run: |
           sbx kit verify "$IMAGE@$DIGEST" \
-          --certificate-oidc-issuer "$SIGNER_ISSUER"
-          --certificate-identity "$SIGNER_IDENTITY" \
+            --certificate-identity "$SIGNER_IDENTITY" \
+            --certificate-oidc-issuer "$SIGNER_ISSUER"
       - name: Verify attestation
         env:
           DIGEST: ${{ steps.build.outputs.digest }}
