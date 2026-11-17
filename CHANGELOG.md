@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- renovate-finish workflow: `dispatchWorkflow` accepts several workflows, one per line, that are all dispatched after the merge (an empty value still dispatches the calling workflow)
+
 ## [8.2.1] - 2026-11-14
 ### Added
 - `renovate.pre_build_extra_managers` in the root pubspec: updates of the listed (non-pub) Renovate managers run dependency resolution and the `renovate.pre_build_command`
@@ -628,6 +632,7 @@ have been added:
 ### Added
 - Initial release
 
+[Unreleased]: https://github.com/Skycoder42/dart_test_tools/compare/v8.2.1...vHEAD
 [8.2.1]: https://github.com/Skycoder42/dart_test_tools/compare/v8.2.0...v8.2.1
 [8.2.0]: https://github.com/Skycoder42/dart_test_tools/compare/v8.1.3...v8.2.0
 [8.1.3]: https://github.com/Skycoder42/dart_test_tools/compare/v8.1.2...v8.1.3

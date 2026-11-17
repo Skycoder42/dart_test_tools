@@ -662,9 +662,9 @@ artifacts/*.dmg
       required: false,
       defaultValue: '',
       description:
-          'The name or file name of the workflow to dispatch on the default '
-          'branch after a successful merge. If left empty, the calling '
-          'workflow is dispatched.',
+          'The names or file names of the workflows to dispatch on the default '
+          'branch after a successful merge, one per line (empty lines are '
+          'ignored). If left empty, the calling workflow is dispatched.',
     ),
   );
 

@@ -1,0 +1,91 @@
+name: Validate sandbox kits
+
+on:
+  workflow_call:
+    outputs:
+      kits:
+        description: The validated kits as JSON list of {kit, version} objects - all kits if any kit related file changed compared to the default branch, else empty.
+        value: ${{ jobs.changes.outputs.kits }}
+
+permissions: {}
+
+env:
+  PLATFORMS: linux/amd64,linux/arm64
+  KIT_PATHS: >-
+    sbx
+    .github/workflows/sbx-kits.yml
+    .github/workflows/sbx-kits-validate.yml
+
+jobs:
+  changes:
+    name: Detect changed kits
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      kits: ${{ steps.detect.outputs.kits }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: detect
+        name: Detect kits to validate
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          # Everything the branch (or the merge commit of a pull request)
+          # changed since it forked from the default branch.
+          if ! base=$(git merge-base "origin/$DEFAULT_BRANCH" HEAD); then
+            echo "::warning::No merge base with $DEFAULT_BRANCH, validating all kits"
+            kits=$(sbx/tool/list-kits.sh)
+          elif git diff --quiet "$base" HEAD -- $KIT_PATHS; then
+            echo "No kit related changes since $base (merge base with $DEFAULT_BRANCH)"
+            kits='[]'
+          else
+            echo "Kit related changes since $base (merge base with $DEFAULT_BRANCH), validating all kits"
+            kits=$(sbx/tool/list-kits.sh)
+          fi
+          echo "kits=$kits" >> "$GITHUB_OUTPUT"
+
+  validate:
+    name: Validate ${{ matrix.kit }} kit
+    needs: changes
+    if: needs.changes.outputs.kits != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.changes.outputs.kits) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install kit-tck
+        run: sbx/tool/install-kit-tck.sh
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+      - name: Setup docker buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Build kit
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: sbx/${{ matrix.kit }}
+          file: sbx/${{ matrix.kit }}/${{ matrix.kit }}.yaml
+          platforms: ${{ env.PLATFORMS }}
+          tags: sbx-kit-${{ matrix.kit }}:${{ matrix.version }}
+          outputs: type=oci,dest=${{ runner.temp }}/kit-layout,tar=false
+          provenance: mode=max
+          sbom: true
+          pull: true
+          no-cache: true
+      - name: Validate kit
+        env:
+          VERSION: ${{ matrix.version }}
+        run: kit-tck validate --verbose --layout "$RUNNER_TEMP/kit-layout" "$VERSION"

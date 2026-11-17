@@ -61,6 +61,13 @@ jobs:
       integrationTestEnvVars: |
         TEST_KEY=test-value
 
+  sbx-kits:
+    name: Sandbox kits
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/sbx-kits-validate.yml
+    permissions:
+      contents: read
+
   cd:
     name: CD
     needs:
@@ -77,6 +84,7 @@ jobs:
     needs:
       - renovate-lockfile
       - ci
+      - sbx-kits
     if: ${{ !cancelled() }}
     uses: Skycoder42/dart_test_tools/.github/workflows/renovate-finish.yml@main
     permissions:
@@ -85,3 +93,8 @@ jobs:
       actions: write
     with:
       needs: ${{ toJSON(needs) }}
+      # The merge triggers no push event: start the release chain, and the
+      # kit publishing if the pull request changed a kit.
+      dispatchWorkflow: |
+        dart_test_tools_ci.yml
+        ${{ needs.sbx-kits.outputs.kits != '' && needs.sbx-kits.outputs.kits != '[]' && 'sbx-kits.yml' || '' }}

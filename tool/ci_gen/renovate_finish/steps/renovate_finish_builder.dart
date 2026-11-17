@@ -72,8 +72,9 @@ ${_succeededOutput.bashSetter(r'$succeeded')}
 
     // A merge done with GITHUB_TOKEN triggers no push workflow, but
     // workflow_dispatch is allowed - this starts the release chain.
+    // Every listed workflow is dispatched, even if an earlier one failed.
     yield Step.run(
-      name: 'Dispatch workflow on the default branch',
+      name: 'Dispatch workflows on the default branch',
       ifExpression: succeeded & _mergeOutcome.eq(const .literal('success')),
       env: Env({
         'GH_TOKEN': Github.token.toString(),
@@ -87,13 +88,27 @@ ${_succeededOutput.bashSetter(r'$succeeded')}
       }),
       run: r'''
 set -euo pipefail
-workflow="$WORKFLOW"
-if [ -z "$workflow" ]; then
+# one workflow per line, surrounding whitespace and empty lines dropped
+workflows=()
+while read -r workflow; do
+  if [ -n "$workflow" ]; then
+    workflows+=("$workflow")
+  fi
+done <<< "$WORKFLOW"
+if [ "${#workflows[@]}" -eq 0 ]; then
   # owner/repo/.github/workflows/<file>@<ref> -> <file>
   workflow="${WORKFLOW_REF%@*}"
-  workflow="${workflow##*/}"
+  workflows=("${workflow##*/}")
 fi
-gh workflow run "$workflow" --repo "$GITHUB_REPOSITORY" --ref "$DEFAULT_BRANCH"
+failed=false
+for workflow in "${workflows[@]}"; do
+  echo "Dispatching $workflow"
+  if ! gh workflow run "$workflow" --repo "$GITHUB_REPOSITORY" --ref "$DEFAULT_BRANCH"; then
+    echo "::error::Failed to dispatch $workflow"
+    failed=true
+  fi
+done
+[ "$failed" = false ]
 ''',
     );
 

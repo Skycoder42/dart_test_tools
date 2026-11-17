@@ -22,8 +22,17 @@ The sandbox has no display. Run the app or Linux integration tests under
 ## Usage
 
 ```sh
+# local source directories
 sbx run claude --kit ./sbx/flutter --kit ./sbx/flutter-linux .
+
+# published kits
+sbx run claude \
+  --kit docker.io/skycoder42/sbx-kit-flutter:3.50.0 \
+  --kit docker.io/skycoder42/sbx-kit-flutter-linux:1.0.0 .
 ```
+
+Publishing, tags and signature verification work as described for the
+[flutter kit](../flutter/README.md#published-images).
 
 Or add `./sbx/flutter-linux` to the `kits` of an `sbxenv.yaml`, as the
 repository root does.
@@ -37,3 +46,8 @@ sbx kit validate ./sbx/flutter-linux
 flutter doctor -v           # "Linux toolchain" must be green
 flutter create --platforms linux /tmp/app && cd /tmp/app && flutter build linux
 ```
+
+## Trademarks
+
+Flutter and the related logo are trademarks of Google LLC. This kit is not
+endorsed by or affiliated with Google LLC.
