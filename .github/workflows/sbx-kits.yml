@@ -87,10 +87,8 @@ jobs:
           codename=$(. /etc/os-release && echo "$VERSION_CODENAME")
           echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker-sbx.asc] https://download.docker.com/linux/ubuntu $codename stable" \
             | sudo tee /etc/apt/sources.list.d/docker-sbx.list > /dev/null
-          # Only this source, so no other repository can provide the package.
-          apt_opts=(-o Dir::Etc::sourcelist=sources.list.d/docker-sbx.list -o Dir::Etc::sourceparts=-)
-          sudo apt-get "${apt_opts[@]}" update
-          sudo apt-get "${apt_opts[@]}" install -y --no-install-recommends "docker-sbx=$SBX_VERSION-*"
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends "docker-sbx=$SBX_VERSION-*"
           sbx version
       - name: Setup QEMU
         uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
