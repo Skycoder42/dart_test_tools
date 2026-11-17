@@ -80,7 +80,7 @@
       "versioningTemplate": "semver"
     },
     {
-      "description": "sbx used to sign the sbx kits, from Docker's apt repository (the workflow installs exactly this package version)",
+      "description": "sbx used to sign the sbx kits, from Docker's apt repository",
       "customType": "regex",
       "managerFilePatterns": [
         "/^\\.github/workflows/sbx-kits\\.yml$/"
@@ -90,8 +90,9 @@
       ],
       "depNameTemplate": "docker-sbx",
       "datasourceTemplate": "deb",
-      "versioningTemplate": "deb",
-      "registryUrlTemplate": "https://download.docker.com/linux/ubuntu?suite=noble&components=stable&binaryArch=amd64"
+      "registryUrlTemplate": "https://download.docker.com/linux/ubuntu?suite=resolute&components=stable&binaryArch=amd64",
+      "extractVersionTemplate": "^(?<version>[^-]+)-",
+      "versioningTemplate": "semver"
     }
   ],
   "packageRules": [
