@@ -5,7 +5,7 @@ set -euo pipefail
 # Updated by Renovate (see renovate.json). It lives here and not in the
 # workflow, because Renovate runs with the GITHUB_TOKEN, which may not push
 # changes to workflow files - such updates would never get a branch.
-SBX_VERSION=0.51.0
+SBX_VERSION=0.54.0
 
 sudo install -m 0644 sbx/tool/docker-apt.asc /etc/apt/keyrings/docker-sbx.asc
 codename=$(. /etc/os-release && echo "$VERSION_CODENAME")
