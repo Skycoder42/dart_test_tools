@@ -677,5 +677,136 @@ dev_dependencies:
         );
       });
     });
+
+    group('changesUpperBound', () {
+      test('keeps the bound for a caret minor bump', () {
+        expect(PostUpgrade.changesUpperBound('^1.2.0', '^1.3.0'), isFalse);
+      });
+
+      test('keeps the bound for an equivalent range', () {
+        expect(
+          PostUpgrade.changesUpperBound('^1.8.0', '>=1.9.0 <2.0.0'),
+          isFalse,
+        );
+      });
+
+      test('keeps the bound of a raised lower range bound', () {
+        expect(
+          PostUpgrade.changesUpperBound('>=1.0.0 <3.0.0', '>=2.0.0 <3.0.0'),
+          isFalse,
+        );
+      });
+
+      test('detects a major bump', () {
+        expect(PostUpgrade.changesUpperBound('^1.2.0', '^2.0.0'), isTrue);
+      });
+
+      test('detects a 0.x minor bump', () {
+        expect(PostUpgrade.changesUpperBound('^0.14.0', '^0.15.0'), isTrue);
+      });
+
+      test('detects a widened constraint', () {
+        expect(
+          PostUpgrade.changesUpperBound('^13.3.0', '^13.3.0 || ^14.0.0'),
+          isTrue,
+        );
+      });
+
+      test('detects a bounded constraint becoming unbounded', () {
+        expect(PostUpgrade.changesUpperBound('^1.0.0', '>=1.0.0'), isTrue);
+      });
+
+      test('detects a pinned version bump', () {
+        expect(PostUpgrade.changesUpperBound('1.2.3', '1.2.4'), isTrue);
+      });
+
+      test('bumps if a value is missing', () {
+        expect(PostUpgrade.changesUpperBound(null, '^1.0.0'), isTrue);
+        expect(PostUpgrade.changesUpperBound('^1.0.0', null), isTrue);
+      });
+
+      test('bumps for unparsable values', () {
+        expect(PostUpgrade.changesUpperBound('main', 'v2'), isTrue);
+      });
+    });
+
+    group('requiresVersionBump', () {
+      RenovateUpgrade dep(String? depType, String current, String next) =>
+          RenovateUpgrade(
+            manager: 'pub',
+            depName: 'pkg',
+            packageFile: 'pubspec.yaml',
+            depType: depType,
+            currentValue: current,
+            newValue: next,
+          );
+
+      test('is false without upgrades', () {
+        expect(PostUpgrade.requiresVersionBump(const []), isFalse);
+      });
+
+      test('is true for sdk upgrades', () {
+        for (final sdk in const ['dart', 'flutter']) {
+          expect(
+            PostUpgrade.requiresVersionBump([
+              RenovateUpgrade(
+                manager: 'pub',
+                depName: sdk,
+                packageFile: 'pubspec.yaml',
+                currentValue: '^3.9.0',
+                newValue: '^3.10.0',
+              ),
+            ]),
+            isTrue,
+            reason: sdk,
+          );
+        }
+      });
+
+      test('is false for dependencies within their bound', () {
+        expect(
+          PostUpgrade.requiresVersionBump([
+            dep('dependencies', '^1.2.0', '^1.3.0'),
+          ]),
+          isFalse,
+        );
+      });
+
+      test('is true for dependencies with a new bound', () {
+        expect(
+          PostUpgrade.requiresVersionBump([
+            dep('dependencies', '^1.2.0', '^2.0.0'),
+          ]),
+          isTrue,
+        );
+      });
+
+      test('ignores dev dependencies', () {
+        expect(
+          PostUpgrade.requiresVersionBump([
+            dep('dev_dependencies', '^1.2.0', '^2.0.0'),
+          ]),
+          isFalse,
+        );
+      });
+
+      test('treats a missing depType as dependency', () {
+        expect(
+          PostUpgrade.requiresVersionBump([dep(null, '^1.2.0', '^2.0.0')]),
+          isTrue,
+        );
+      });
+
+      test('is true if any upgrade requires it', () {
+        expect(
+          PostUpgrade.requiresVersionBump([
+            dep('dependencies', '^1.2.0', '^1.3.0'),
+            dep('dev_dependencies', '^1.0.0', '^2.0.0'),
+            dep('dependencies', '^0.1.0', '^0.2.0'),
+          ]),
+          isTrue,
+        );
+      });
+    });
   });
 }

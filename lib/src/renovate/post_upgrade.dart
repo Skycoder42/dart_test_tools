@@ -144,6 +144,56 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
     );
   }
 
+  /// Checks whether the upper bound of a constraint changed between
+  /// [currentValue] and [newValue].
+  ///
+  /// Returns `true` whenever this cannot be decided reliably, e.g. for missing
+  /// or unparsable values.
+  @visibleForTesting
+  static bool changesUpperBound(String? currentValue, String? newValue) {
+    if (currentValue == null || newValue == null) {
+      return true;
+    }
+
+    final currentBound = _upperBound(currentValue);
+    final newBound = _upperBound(newValue);
+    if (currentBound == null || newBound == null) {
+      return true;
+    }
+
+    return currentBound != newBound;
+  }
+
+  /// Checks whether the given [upgrades] of a package require a new release
+  /// of a library, which is the case for SDK upgrades and dependencies with
+  /// a changed upper bound.
+  @visibleForTesting
+  static bool requiresVersionBump(Iterable<RenovateUpgrade> upgrades) =>
+      upgrades.any(
+        (upgrade) =>
+            upgrade.isSdkUpgrade ||
+            (upgrade.depType != 'dev_dependencies' &&
+                changesUpperBound(upgrade.currentValue, upgrade.newValue)),
+      );
+
+  static (Version?, bool)? _upperBound(String constraint) {
+    try {
+      final parsed = constraint.contains('||')
+          ? mergeWidenedConstraint(constraint)
+          : VersionConstraint.parse(constraint);
+      return switch (parsed) {
+        VersionRange(:final max, :final includeMax) => (max, includeMax),
+        VersionUnion(:final ranges) => (
+          ranges.last.max,
+          ranges.last.includeMax,
+        ),
+        _ => null,
+      };
+    } on FormatException {
+      return null;
+    }
+  }
+
   Future<void> _processRoot(
     Directory repoRoot,
     Directory root,
