@@ -35,12 +35,12 @@ args:
     description: Dart SDK version bundled with that Flutter release
     buildArg: DART_VERSION
   dartSkillsRef:
-    default: fa691671fda391ea1d1f8c7ae61bddc03348ec85
+    default: f84b16872b5d186f4e877511b49b93c204a1c4ef
     pattern: "^[0-9a-f]{40}$"
     description: Commit of github.com/dart-lang/skills to bundle the dart-* skills from
     buildArg: DART_SKILLS_REF
   flutterSkillsRef:
-    default: e5a88d2be19cbf7ba1ef974375e5846492aca2ac
+    default: 17fe9182f4c462d69d6a7963aef01b44b1f7f189
     pattern: "^[0-9a-f]{40}$"
     description: Commit of github.com/flutter/agent-plugins to bundle the flutter-* skills from
     buildArg: FLUTTER_SKILLS_REF
