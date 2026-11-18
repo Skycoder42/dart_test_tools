@@ -30,6 +30,12 @@ void main() {
       expect(RenovatePreset.application.flutterCompat, isFalse);
     });
 
+    test('only the application preset offers unresolvable breaking '
+        'updates', () {
+      expect(RenovatePreset.library.offerBreaking, isFalse);
+      expect(RenovatePreset.application.offerBreaking, isTrue);
+    });
+
     group('detect', () {
       for (final preset in RenovatePreset.values) {
         test('detects the ${preset.name} preset', () async {

@@ -185,35 +185,36 @@ dev_dependencies:
     }, timeout: const Timeout(Duration(minutes: 5)));
 
     group('$ResolvableCap', () {
-      PackageInfo info(
+      ResolvableCap? cap(
         String resolvable,
         String latest, {
         DependencyKind kind = DependencyKind.direct,
-      }) => PackageInfo(
-        package: 'pkg',
-        kind: kind,
-        resolvable: VersionInfo(version: Version.parse(resolvable)),
-        latest: VersionInfo(version: Version.parse(latest)),
+        bool offerBreaking = true,
+      }) => ResolvableCap.fromPackage(
+        PackageInfo(
+          package: 'pkg',
+          kind: kind,
+          resolvable: VersionInfo(version: Version.parse(resolvable)),
+          latest: VersionInfo(version: Version.parse(latest)),
+        ),
+        offerBreaking: offerBreaking,
       );
 
       test('is null if resolvable is latest', () {
-        expect(ResolvableCap.fromPackage(info('1.2.3', '1.2.3')), isNull);
+        expect(cap('1.2.3', '1.2.3'), isNull);
       });
 
       test('is null for transitive and root packages', () {
         for (final kind in [DependencyKind.transitive, DependencyKind.root]) {
-          expect(
-            ResolvableCap.fromPackage(info('1.2.3', '1.3.0', kind: kind)),
-            isNull,
-          );
+          expect(cap('1.2.3', '1.3.0', kind: kind), isNull);
         }
       });
 
       test('caps minor and patch updates', () {
-        final cap = ResolvableCap.fromPackage(info('13.3.0', '13.5.1'))!;
+        final sut = cap('13.3.0', '13.5.1')!;
 
-        expect(cap.heldBack, '>13.3.0');
-        expect(cap.packageRule, {
+        expect(sut.heldBack, '>13.3.0');
+        expect(sut.packageRule, {
           'description': 'Newest resolvable version is 13.3.0',
           'matchManagers': ['pub'],
           'matchPackageNames': ['pkg'],
@@ -221,11 +222,11 @@ dev_dependencies:
         });
       });
 
-      test('keeps major updates allowed', () {
-        final cap = ResolvableCap.fromPackage(info('13.3.0', '14.7.0'))!;
+      test('keeps major updates allowed with offerBreaking', () {
+        final sut = cap('13.3.0', '14.7.0')!;
 
-        expect(cap.heldBack, '>13.3.0 <14.0.0');
-        expect(cap.packageRule, {
+        expect(sut.heldBack, '>13.3.0 <14.0.0');
+        expect(sut.packageRule, {
           'description':
               'Newest resolvable version is 13.3.0, breaking updates '
               'stay allowed',
@@ -235,45 +236,62 @@ dev_dependencies:
         });
       });
 
+      test('caps major updates without offerBreaking', () {
+        final sut = cap('13.3.0', '14.7.0', offerBreaking: false)!;
+
+        expect(sut.heldBack, '>13.3.0');
+        expect(sut.packageRule, {
+          'description': 'Newest resolvable version is 13.3.0',
+          'matchManagers': ['pub'],
+          'matchPackageNames': ['pkg'],
+          'allowedVersions': '<=13.3.0',
+        });
+      });
+
       test('treats 0.x minor updates as breaking', () {
         expect(
-          ResolvableCap.fromPackage(info('0.14.12', '0.15.2'))!.allowedVersions,
+          cap('0.14.12', '0.15.2')!.allowedVersions,
           '<=0.14.12 || >=0.15.0',
         );
+        expect(cap('0.14.12', '0.14.20')!.allowedVersions, '<=0.14.12');
         expect(
-          ResolvableCap.fromPackage(info('0.14.12', '0.14.20'))!
-              .allowedVersions,
+          cap('0.14.12', '0.15.2', offerBreaking: false)!.allowedVersions,
           '<=0.14.12',
         );
       });
     });
 
     group('heldBackFooter', () {
-      final caps = [
+      List<ResolvableCap> caps(RenovatePreset preset) => [
         ResolvableCap(
           package: 'analyzer',
           resolvable: Version(13, 3, 0),
           latest: Version(14, 7, 0),
+          offerBreaking: preset.offerBreaking,
         ),
         ResolvableCap(
           package: 'test',
           resolvable: Version(1, 31, 1),
           latest: Version(1, 33, 0),
+          offerBreaking: preset.offerBreaking,
         ),
       ];
 
       test('is null without caps', () {
-        expect(
-          GlobalConfig.heldBackFooter(const [], flutterCompat: true),
-          isNull,
-        );
+        for (final preset in RenovatePreset.values) {
+          expect(GlobalConfig.heldBackFooter(const [], preset: preset), isNull);
+        }
       });
 
       test('lists all caps in a table', () {
-        final footer = GlobalConfig.heldBackFooter(caps, flutterCompat: false);
+        final footer = GlobalConfig.heldBackFooter(
+          caps(RenovatePreset.application),
+          preset: RenovatePreset.application,
+        );
 
         expect(footer, startsWith('## Held back updates\n'));
         expect(footer, isNot(contains('Flutter')));
+        expect(footer, contains('Breaking updates are offered anyway'));
         expect(
           footer,
           endsWith(
@@ -285,10 +303,21 @@ dev_dependencies:
         );
       });
 
-      test('mentions the flutter sdk with flutterCompat', () {
+      test('holds back breaking updates for the library preset', () {
+        final footer = GlobalConfig.heldBackFooter(
+          caps(RenovatePreset.library),
+          preset: RenovatePreset.library,
+        );
+
+        expect(footer, contains('the dependencies pinned by the Flutter SDK'));
+        expect(footer, isNot(contains('offered anyway')));
+        expect(footer, contains('Breaking updates are held back as well'));
         expect(
-          GlobalConfig.heldBackFooter(caps, flutterCompat: true),
-          contains('the dependencies pinned by the Flutter SDK'),
+          footer,
+          endsWith(
+            '| `analyzer` | 13.3.0 | `>13.3.0` | 14.7.0 |\n'
+            '| `test` | 1.31.1 | `>1.31.1` | 1.33.0 |',
+          ),
         );
       });
     });

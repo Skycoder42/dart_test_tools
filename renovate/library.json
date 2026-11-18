@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "description": "Library preset (no lockfile, minor/patch only, breaking updates need dashboard approval)",
+  "description": "Library preset (no lockfile, all updates in one PR; updates only up to the version that resolves)",
   "extends": [
     "github>Skycoder42/dart_test_tools//renovate/base"
   ],
@@ -16,68 +16,21 @@
   },
   "packageRules": [
     {
-      "description": "Split 0.x deps into minor and patch buckets so patches keep flowing",
+      "description": "Majors (and 0.x minors) go into the grouped PR without approval: they are only offered up to the version that resolves together with all other dependencies",
       "matchManagers": [
         "pub"
       ],
-      "matchDatasources": [
-        "dart"
-      ],
-      "matchCurrentValue": "/^(\\^|~|>=)?\\s*0\\./",
-      "separateMinorPatch": true
+      "separateMajorMinor": false
     },
     {
-      "description": "Majors (deps, dev deps and SDK) wait for dashboard approval and get their own PR",
-      "matchManagers": [
-        "pub"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
-      "dependencyDashboardApproval": true,
-      "groupName": "breaking dependencies",
-      "groupSlug": "breaking",
-      "group": {
-        "branchTopic": "breaking"
-      },
-      "prTitleStrict": true
-    },
-    {
-      "description": "0.x minors are breaking in pub: same treatment as majors",
-      "matchManagers": [
-        "pub"
-      ],
-      "matchDatasources": [
-        "dart"
-      ],
-      "matchCurrentVersion": "<1.0.0",
-      "matchUpdateTypes": [
-        "minor"
-      ],
-      "dependencyDashboardApproval": true,
-      "groupName": "breaking dependencies",
-      "groupSlug": "breaking",
-      "group": {
-        "branchTopic": "breaking"
-      },
-      "prTitleStrict": true
-    },
-    {
-      "description": "analyzer is widened instead of bumped, so older analyzer versions stay allowed (the post-upgrade step merges the widened range into one pub range). Its majors need no approval and go into the grouped PR",
+      "description": "analyzer is widened instead of bumped, so older analyzer versions stay allowed (the post-upgrade step merges the widened range into one pub range)",
       "matchManagers": [
         "pub"
       ],
       "matchPackageNames": [
         "analyzer"
       ],
-      "rangeStrategy": "widen",
-      "separateMajorMinor": false,
-      "dependencyDashboardApproval": false,
-      "groupName": "all dependencies",
-      "groupSlug": "all",
-      "group": {
-        "branchTopic": "all"
-      }
+      "rangeStrategy": "widen"
     }
   ]
 }

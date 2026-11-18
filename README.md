@@ -64,9 +64,10 @@ These steps also migrate a repository that used the former `auto-update.yml` wor
    Dashboard issue. Input: `flutterSdkChannel` (default `stable`). Non-breaking updates
    are held back at the newest version that resolves together with all other
    dependencies; with the library preset also together with the dependencies the Flutter
-   SDK pins (see [Flutter compatibility](#flutter-compatibility)). Breaking updates are
-   never held back. The held back updates are listed at the bottom of the Dependency
-   Dashboard.
+   SDK pins (see [Flutter compatibility](#flutter-compatibility)). With the library
+   preset this applies to breaking updates as well; with the application preset they
+   are never held back. The held back updates are listed at the bottom of the
+   Dependency Dashboard.
 3. Add a `renovate.json` with one of the two presets:
 
    ```json
@@ -76,12 +77,12 @@ These steps also migrate a repository that used the former `auto-update.yml` wor
    }
    ```
 
-   - `library` — for packages without a committed `pubspec.lock`. Minor and patch
-     updates only, but lower bounds are raised. Majors (and minors of `0.x`
-     dependencies) wait for approval in the Dependency Dashboard and then get their
-     own pull request. `analyzer` is the exception: its constraint is widened instead
-     of bumped (`^13.3.0` becomes `>=13.3.0 <15.0.0`), so older analyzer versions
-     stay allowed, and its majors go into the grouped pull request without approval.
+   - `library` — for packages without a committed `pubspec.lock`. All updates in one
+     pull request, raising the lower bounds. Majors (and minors of `0.x` dependencies)
+     are only offered up to the newest version that resolves, so they need no approval
+     and go into the same pull request. `analyzer` is the exception: its constraint is
+     widened instead of bumped (`^13.3.0` becomes `>=13.3.0 <15.0.0`), so older
+     analyzer versions stay allowed.
    - `application` — for repositories with a committed `pubspec.lock`. All minor and
      patch updates in one pull request, plus a full `pub upgrade`. Majors (and minors of
      `0.x` dependencies) get one pull request per dependency, without approval.

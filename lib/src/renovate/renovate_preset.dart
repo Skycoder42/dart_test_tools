@@ -4,9 +4,12 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 
 @internal
-enum RenovatePreset({required final bool flutterCompat}) {
-  library(flutterCompat: true),
-  application(flutterCompat: false);
+enum RenovatePreset({
+  required final bool flutterCompat,
+  required final bool offerBreaking,
+}) {
+  library(flutterCompat: true, offerBreaking: false),
+  application(flutterCompat: false, offerBreaking: true);
 
   @visibleForTesting
   static const configFileNames = [

@@ -38,7 +38,10 @@ class const GlobalConfig({
     final caps = [
       for (final package in outdated.packages)
         if (!workspacePackages.contains(package.package))
-          ?ResolvableCap.fromPackage(package),
+          ?ResolvableCap.fromPackage(
+            package,
+            offerBreaking: preset.offerBreaking,
+          ),
     ];
     for (final cap in caps) {
       Github.logInfo(
@@ -47,7 +50,7 @@ class const GlobalConfig({
       );
     }
 
-    final footer = heldBackFooter(caps, flutterCompat: flutterCompat);
+    final footer = heldBackFooter(caps, preset: preset);
 
     return {
       'platform': 'github',
@@ -75,7 +78,7 @@ class const GlobalConfig({
   @visibleForTesting
   static String? heldBackFooter(
     List<ResolvableCap> caps, {
-    required bool flutterCompat,
+    required RenovatePreset preset,
   }) {
     if (caps.isEmpty) {
       return null;
@@ -89,13 +92,15 @@ class const GlobalConfig({
         'newest version that resolves together with all other dependencies',
       )
       ..writeln(
-        flutterCompat
+        preset.flutterCompat
             ? ' and the dependencies pinned by the Flutter SDK.'
             : '.',
       )
       ..writeln(
-        'Breaking updates are offered anyway, even if they do not resolve '
-        'yet.',
+        preset.offerBreaking
+            ? 'Breaking updates are offered anyway, even if they do not '
+                  'resolve yet.'
+            : 'Breaking updates are held back as well, until they resolve.',
       )
       ..writeln()
       ..writeln('| Package | Resolvable | Held back | Latest |')
@@ -115,8 +120,12 @@ class const ResolvableCap({
   required final String package,
   required final Version resolvable,
   required final Version latest,
+  required final bool offerBreaking,
 }) {
-  static ResolvableCap? fromPackage(PackageInfo package) {
+  static ResolvableCap? fromPackage(
+    PackageInfo package, {
+    required bool offerBreaking,
+  }) {
     if (package.kind case .root || .transitive) {
       return null;
     }
@@ -131,10 +140,15 @@ class const ResolvableCap({
       package: package.package,
       resolvable: resolvable,
       latest: latest,
+      offerBreaking: offerBreaking,
     );
   }
 
   Version? get breakingFrom {
+    if (!offerBreaking) {
+      return null;
+    }
+
     final nextBreaking = resolvable.nextBreaking;
     return latest >= nextBreaking ? nextBreaking : null;
   }

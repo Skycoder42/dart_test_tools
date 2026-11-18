@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- Library Renovate preset: majors (and 0.x minors) are only offered up to the newest resolvable version and go into the grouped pull request without dashboard approval (the application preset still offers them even if they do not resolve, in a separate pull request each)
+
 ## [8.2.3] - 2026-11-18
 ### Changed
 - Updated min sdk version to ^3.14.0
@@ -638,6 +642,7 @@ have been added:
 ### Added
 - Initial release
 
+[Unreleased]: https://github.com/Skycoder42/dart_test_tools/compare/v8.2.3...vHEAD
 [8.2.3]: https://github.com/Skycoder42/dart_test_tools/compare/v8.2.2...v8.2.3
 [8.2.2]: https://github.com/Skycoder42/dart_test_tools/compare/v8.2.1...v8.2.2
 [8.2.1]: https://github.com/Skycoder42/dart_test_tools/compare/v8.2.0...v8.2.1
