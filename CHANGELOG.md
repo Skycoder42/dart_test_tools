@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Library Renovate preset: majors (and 0.x minors) are only offered up to the newest resolvable version and go into the grouped pull request without dashboard approval (the application preset still offers them even if they do not resolve, in a separate pull request each)
+- renovate-post-upgrade (library mode): packages are only released (changelog entry and patch bump) if an SDK constraint was raised or the upper bound of a dependency changed; application mode still releases every update
 
 ## [8.2.3] - 2026-11-18
 ### Changed

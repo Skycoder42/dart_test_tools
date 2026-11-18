@@ -327,6 +327,13 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
       Github.logDebug('Skipping package without upgrades: ${info.name}');
       return;
     }
+    if (mode == .library && !requiresVersionBump(packageUpgrades)) {
+      Github.logInfo(
+        'Skipping release of ${info.name}: no SDK update and no dependency '
+        'with a new upper bound',
+      );
+      return;
+    }
 
     Github.logInfo('Creating update for ${info.name}');
     if (canLogChangelog) {

@@ -259,14 +259,105 @@ dependencies:
       await sut(testDir, const [
         RenovateUpgrade(
           manager: 'pub',
-          depName: 'build_runner',
+          depName: 'dart',
           packageFile: 'packages/a/pubspec.yaml',
+          currentValue: '^3.9.0',
+          newValue: '^3.13.0',
         ),
       ]);
 
       expect(packageVersion('packages/a'), '2.0.1');
       expect(testFile('packages/a/CHANGELOG.md').existsSync(), isFalse);
     }, timeout: const Timeout(Duration(minutes: 5)));
+
+    group('release decision', () {
+      Future<void> expectUnchanged(
+        PostUpgradeMode mode,
+        RenovateUpgrade upgrade,
+      ) async {
+        final pubspecBefore = testFile('packages/b/pubspec.yaml')
+            .readAsStringSync();
+        final changelogBefore = testFile('packages/b/CHANGELOG.md')
+            .readAsStringSync();
+
+        await PostUpgrade(mode: mode)(testDir, [upgrade]);
+
+        expect(
+          testFile('packages/b/pubspec.yaml').readAsStringSync(),
+          pubspecBefore,
+        );
+        expect(
+          testFile('packages/b/CHANGELOG.md').readAsStringSync(),
+          changelogBefore,
+        );
+      }
+
+      Future<void> expectReleased(
+        PostUpgradeMode mode,
+        RenovateUpgrade upgrade,
+      ) async {
+        await PostUpgrade(mode: mode)(testDir, [upgrade]);
+
+        expect(packageVersion('packages/b'), '1.0.1');
+        final lines = changelogLines('packages/b');
+        expect(lines, contains(startsWith('## 1.0.1 - ')));
+        expect(lines.where((l) => l == '- Updated dependencies'), hasLength(1));
+      }
+
+      const withinBound = RenovateUpgrade(
+        manager: 'pub',
+        depName: 'path',
+        packageFile: 'packages/b/pubspec.yaml',
+        depType: 'dependencies',
+        currentValue: '^1.8.0',
+        newValue: '^1.9.0',
+      );
+
+      test(
+        'library mode does not release upgrades within the upper bound',
+        () => expectUnchanged(PostUpgradeMode.library, withinBound),
+        timeout: const Timeout(Duration(minutes: 5)),
+      );
+
+      test(
+        'library mode does not release dev dependencies '
+        'with a new upper bound',
+        () => expectUnchanged(
+          PostUpgradeMode.library,
+          const RenovateUpgrade(
+            manager: 'pub',
+            depName: 'test',
+            packageFile: 'packages/b/pubspec.yaml',
+            depType: 'dev_dependencies',
+            currentValue: '^1.0.0',
+            newValue: '^2.0.0',
+          ),
+        ),
+        timeout: const Timeout(Duration(minutes: 5)),
+      );
+
+      test(
+        'library mode releases dependencies with a new upper bound',
+        () => expectReleased(
+          PostUpgradeMode.library,
+          const RenovateUpgrade(
+            manager: 'pub',
+            depName: 'path',
+            packageFile: 'packages/b/pubspec.yaml',
+            depType: 'dependencies',
+            currentValue: '^0.9.0',
+            newValue: '^1.9.0',
+          ),
+        ),
+        timeout: const Timeout(Duration(minutes: 5)),
+      );
+
+      test(
+        'application mode releases upgrades within the upper bound',
+        () => expectReleased(PostUpgradeMode.application, withinBound),
+        timeout: const Timeout(Duration(minutes: 5)),
+      );
+    });
 
     test('only non-pub upgrades run nothing and change nothing', () async {
       Map<String, DateTime> snapshot() => {

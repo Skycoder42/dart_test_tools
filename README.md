@@ -82,10 +82,13 @@ These steps also migrate a repository that used the former `auto-update.yml` wor
      are only offered up to the newest version that resolves, so they need no approval
      and go into the same pull request. `analyzer` is the exception: its constraint is
      widened instead of bumped (`^13.3.0` becomes `>=13.3.0 <15.0.0`), so older
-     analyzer versions stay allowed.
+     analyzer versions stay allowed. A package is only released (changelog entry and
+     patch bump) if an SDK constraint was raised or the upper bound of an entry under
+     `dependencies` changed; otherwise its version and changelog stay untouched.
    - `application` — for repositories with a committed `pubspec.lock`. All minor and
      patch updates in one pull request, plus a full `pub upgrade`. Majors (and minors of
-     `0.x` dependencies) get one pull request per dependency, without approval.
+     `0.x` dependencies) get one pull request per dependency, without approval. Every
+     update is released.
 
    Pub workspaces are supported; Renovate finds every member on its own.
 4. Add the finish job as the last job of your CI workflow, and make sure the workflow

@@ -6,7 +6,9 @@ kits:
   - sbx/claude:latest
   - docker.io/skycoder42/sbx-kit-flutter:3.50.0
 
-workspace: .
+workspace:
+  path: .
+  clone: true
 
 sandboxOptions:
   pullPolicy: always
