@@ -155,7 +155,7 @@ dev_dependencies:
         ),
       );
       expect(
-        config['dependencyDashboardFooter'],
+        (config['dependencyDashboard'] as Map)['footer'],
         contains('| `test` | $testVersion | `>$testVersion` |'),
       );
     }, timeout: const Timeout(Duration(minutes: 5)));

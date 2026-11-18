@@ -80,13 +80,13 @@
       "versioningTemplate": "semver"
     },
     {
-      "description": "sbx used to sign the sbx kits, from Docker's apt repository",
+      "description": "sbx used to sign the sbx kits, from Docker's apt repository (pinned outside the workflow, as the GITHUB_TOKEN Renovate runs with may not push workflow changes)",
       "customType": "regex",
       "managerFilePatterns": [
-        "/^\\.github/workflows/sbx-kits\\.yml$/"
+        "/^sbx/tool/install-sbx\\.sh$/"
       ],
       "matchStrings": [
-        "SBX_VERSION:\\s*(?<currentValue>\\S+)"
+        "SBX_VERSION=(?<currentValue>\\S+)"
       ],
       "depNameTemplate": "docker-sbx",
       "datasourceTemplate": "deb",
@@ -144,10 +144,9 @@
       "minimumReleaseAge": "3 days"
     },
     {
-      "description": "Everything of the sbx kits (kits, their tools and the kit workflow) in its own PR, so only it validates and publishes the kits",
+      "description": "Everything of the sbx kits (kits and their tools) in its own PR, so only it validates and publishes the kits",
       "matchFileNames": [
-        "sbx/**",
-        ".github/workflows/sbx-kits.yml"
+        "sbx/**"
       ],
       "groupName": "sbx kits",
       "groupSlug": "sbx",

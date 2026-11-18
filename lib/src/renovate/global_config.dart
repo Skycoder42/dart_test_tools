@@ -47,6 +47,8 @@ class const GlobalConfig({
       );
     }
 
+    final footer = heldBackFooter(caps, flutterCompat: flutterCompat);
+
     return {
       'platform': 'github',
       'onboarding': false,
@@ -57,10 +59,7 @@ class const GlobalConfig({
       'allowedCommands': [
         r'^renovate-post-upgrade --mode (application|library)$',
       ],
-      'dependencyDashboardFooter': ?heldBackFooter(
-        caps,
-        flutterCompat: flutterCompat,
-      ),
+      if (footer != null) 'dependencyDashboard': {'footer': footer},
       'packageRules': [
         {
           'description': 'Workspace packages are resolved locally',

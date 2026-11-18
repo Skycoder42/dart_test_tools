@@ -13,7 +13,6 @@ permissions: {}
 
 env:
   PLATFORMS: linux/amd64,linux/arm64
-  SBX_VERSION: 0.51.0
   SIGNER_WORKFLOW: Skycoder42/dart_test_tools/.github/workflows/sbx-kits.yml
   SIGNER_IDENTITY: https://github.com/Skycoder42/dart_test_tools/.github/workflows/sbx-kits.yml@refs/heads/main
   SIGNER_ISSUER: https://token.actions.githubusercontent.com
@@ -81,15 +80,7 @@ jobs:
       - name: Install kit-tck
         run: sbx/tool/install-kit-tck.sh
       - name: Install sbx
-        run: |
-          set -euo pipefail
-          sudo install -m 0644 sbx/tool/docker-apt.asc /etc/apt/keyrings/docker-sbx.asc
-          codename=$(. /etc/os-release && echo "$VERSION_CODENAME")
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker-sbx.asc] https://download.docker.com/linux/ubuntu $codename stable" \
-            | sudo tee /etc/apt/sources.list.d/docker-sbx.list > /dev/null
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends "docker-sbx=$SBX_VERSION-*"
-          sbx version
+        run: sbx/tool/install-sbx.sh
       - name: Setup QEMU
         uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
       - name: Setup docker buildx
