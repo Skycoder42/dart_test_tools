@@ -3,13 +3,13 @@
   "private": true,
   "description": "The Renovate version run by the reusable renovate workflow.",
   "engines": {
-    "node": "^24.22.2"
+    "node": "^24.22.3"
   },
   "scripts": {
     "lint-lockfile": "lockfile-lint"
   },
   "dependencies": {
-    "renovate": "^44.221.5"
+    "renovate": "^44.239.1"
   },
   "devDependencies": {
     "lockfile-lint": "^5.1.0"
