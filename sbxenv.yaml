@@ -4,9 +4,7 @@ name: dart-test-tools
 agent: claude
 kits:
   - sbx/claude:latest
-  - ./sbx/flutter
-  - ./sbx/flutter-linux
-  - ./sbx/flutter-web
+  - docker.io/skycoder42/sbx-kit-flutter:3.50.0
 
 workspace: .
 
