@@ -1,4 +1,4 @@
-# syntax=docker/sandbox-kit:3@sha256:adbc0d1ea63451871d5d78111120bb29f2fd2b265e63d39c664ae2c3d722c805
+# syntax=docker/sandbox-kit:3@sha256:922fd778877714b2353de978c4993b81fe2e1908793630205eedbd7229ca0a1f
 # yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
 schemaVersion: "3"
 kind: mixin

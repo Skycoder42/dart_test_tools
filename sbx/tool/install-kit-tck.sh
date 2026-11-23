@@ -7,8 +7,8 @@ set -euo pipefail
 # Both lines are updated together by Renovate (see renovate.json): the tag
 # must stay the exact release tag, and the checksum the one of the
 # linux_amd64 archive.
-KIT_TCK_TAG=v3.0.0-m.12
-KIT_TCK_SHA256=473b72d7bb48b11987250493e9b47fb2c616de601777e139191a86fc5e962f21
+KIT_TCK_TAG=v3.0.0-m.13
+KIT_TCK_SHA256=9aaf699a662e55c35a2930dd4778a7f4e2317b563d64cc9d21622e6bac6f744c
 
 version=${KIT_TCK_TAG#v}
 archive="$RUNNER_TEMP/kit-tck.tar.gz"
