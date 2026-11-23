@@ -1,4 +1,4 @@
-# syntax=docker/sandbox-kit:3@sha256:adbc0d1ea63451871d5d78111120bb29f2fd2b265e63d39c664ae2c3d722c805
+# syntax=docker/sandbox-kit:3@sha256:922fd778877714b2353de978c4993b81fe2e1908793630205eedbd7229ca0a1f
 # yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
 schemaVersion: "3"
 kind: mixin
@@ -23,7 +23,7 @@ version: "${{ kit.args.flutterVersion }}"
 
 args:
   flutterVersion:
-    default: "3.50.0"
+    default: "3.50.1"
     pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
     description: Flutter stable release to install
     buildArg: FLUTTER_VERSION
@@ -40,7 +40,7 @@ args:
     description: Commit of github.com/dart-lang/skills to bundle the dart-* skills from
     buildArg: DART_SKILLS_REF
   flutterSkillsRef:
-    default: 17fe9182f4c462d69d6a7963aef01b44b1f7f189
+    default: ff6d472ee66dbed566c4500edee460c94fde0a02
     pattern: "^[0-9a-f]{40}$"
     description: Commit of github.com/flutter/agent-plugins to bundle the flutter-* skills from
     buildArg: FLUTTER_SKILLS_REF
