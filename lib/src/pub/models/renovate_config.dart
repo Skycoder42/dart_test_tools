@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:yaml/yaml.dart';
 
 import '../../auto_export/yaml_serializable.dart';
+import '../../renovate/models/bump_rule.dart';
 
 part 'renovate_config.freezed.dart';
 part 'renovate_config.g.dart';
@@ -19,6 +20,7 @@ sealed class RenovateConfig with _$RenovateConfig {
   const factory({
     @Default(ListOrValue.list([])) ListOrValue<String> preBuildExtraManagers,
     String? preBuildCommand,
+    @Default(<BumpRule>[]) List<BumpRule> bumpRules,
   }) = _RenovateConfig;
 
   factory fromYaml(YamlMap yaml) => _$RenovateConfigFromJson(yaml);

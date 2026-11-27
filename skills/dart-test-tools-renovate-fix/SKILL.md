@@ -34,7 +34,9 @@ by `github-actions[bot]`. It contains Renovate's constraint changes plus everyth
 `renovate.pre_build_command` of the root pubspec (if set), analyzer plugin pins,
 build_runner, `dart format`, `dart fix`, changelog entries and a patch release.
 Updates of the managers listed in `renovate.pre_build_extra_managers` (e.g. `regex`)
-only get dependency resolution and the pre-build command.
+only get dependency resolution and the pre-build command. Updates matching a
+`renovate.bump_rules` entry get dependency resolution plus the changelog entry and
+version bump of the rule.
 Once the owner approved the CI runs, a finish job at the end of CI merges the pull
 request when CI is green, or comments with a mention when it is red.
 
@@ -89,6 +91,12 @@ and the `version:` of the changed pubspecs is set back to its base value. Then i
 `renovate-post-upgrade --mode <preset>` from the repository root, like Renovate does.
 Everything else the step does converges when it runs again.
 
+The rebuilt data file only contains pub updates. When the repository uses
+`renovate.bump_rules` and the pull request also updated other managers, the re-run
+loses the changelog entries and bumps of those rules (the script warns about it). Compare
+the `CHANGELOG.md` files and versions with the pull request's commit and restore the
+missing entries and the bigger bump by hand.
+
 It uses the globally activated `renovate-post-upgrade` if there is one (that is what CI
 runs). Otherwise it uses the `dart_test_tools` that a package of the repository depends
 on.
@@ -138,7 +146,7 @@ Always present:
 | --- | --- |
 | `ran` | the step ran; see the keys below |
 | `skipped-request` | `skip-post-upgrade` was passed |
-| `skipped-no-pub` | the pull request changed no pub constraint (an update of another manager only, e.g. npm) — the CLI would not do anything either |
+| `skipped-no-pub` | the pull request changed no pub constraint (an update of another manager only, e.g. npm). The CLI would not do anything either, unless `renovate.bump_rules` match these updates: then the commit's changelog entries and version bumps came from the rules and are left as they are |
 | `skipped-no-preset` | the Renovate config extends neither preset of dart_test_tools, so the mode is unknown |
 | `skipped-dirty` | the worktree had changes and `allow-dirty` was not passed |
 | `unavailable` | the CLI was found neither on `PATH` nor in a resolved `dart_test_tools` |

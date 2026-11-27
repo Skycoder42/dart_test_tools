@@ -12,7 +12,7 @@
     "fileFilters": [
       "**/*"
     ],
-    "dataFileTemplate": "[{{#each upgrades}}{\"manager\":\"{{{manager}}}\",\"depName\":\"{{{depName}}}\",\"packageFile\":\"{{{packageFile}}}\",\"depType\":\"{{{depType}}}\",\"currentValue\":\"{{{currentValue}}}\",\"newValue\":\"{{{newValue}}}\",\"updateType\":\"{{{updateType}}}\"}{{#unless @last}},{{/unless}}{{/each}}]"
+    "dataFileTemplate": "[{{#each upgrades}}{{{toJSON (toObject \"manager\" manager \"depName\" depName \"packageFile\" packageFile \"depType\" depType \"currentValue\" currentValue \"newValue\" newValue \"updateType\" updateType \"currentVersion\" currentVersion \"newVersion\" newVersion \"currentDigest\" currentDigest \"newDigest\" newDigest \"newDigestShort\" newDigestShort \"packageName\" packageName \"datasource\" datasource \"releaseTimestamp\" releaseTimestamp)}}}{{#unless @last}},{{/unless}}{{/each}}]"
   },
   "packageRules": [
     {

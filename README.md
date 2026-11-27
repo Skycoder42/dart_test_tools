@@ -155,8 +155,9 @@ ignore, pin or delay pub packages, or to move some of them into their own group.
 mind:
 
 - Other managers you enable (`enabledManagers`) put their updates into the same
-  `renovate/all` branch. The post-upgrade step ignores them, so a pull request with only
-  such updates gets no changelog entry and no version bump.
+  `renovate/all` branch. By default the post-upgrade step ignores them, so a pull request
+  with only such updates gets no changelog entry and no version bump. Use
+  [bump rules](#bump-rules) to release them.
 - Your own `postUpgradeTasks` are refused: the workflow only allows Renovate to run the
   post-upgrade step of dart_test_tools.
 - Do not set `automerge` (the finish job merges), `schedule` (the caller's cron decides —
@@ -201,6 +202,65 @@ of managers that are not listed are ignored.
 
 The command is a single string for all platforms, run with `/bin/sh -c` (or
 `cmd.exe /c` on Windows). Platform specific commands are not supported.
+
+#### Bump rules
+
+Bump rules create changelog entries and version bumps for updates the post-upgrade
+step would otherwise ignore, e.g. a native library tracked by a custom regex manager.
+Declare them in the `renovate` section of the `pubspec.yaml` of the repository root
+(the workspace root, for pub workspaces). Rules in the pubspecs of workspace members
+are ignored.
+
+```yaml
+renovate:
+  bump_rules:
+    - manager: regex
+      name: some-native-lib
+      update_types: [major, minor, patch]
+      bump: patch
+      message: "Updated embedded native binaries to {{newVersion}}"
+    - manager: regex
+      name: some-native-lib
+      update_types: digest
+      bump: build
+      message: "Rebuilt embedded native binaries ({{newDigestShort}})"
+```
+
+| Key | Required | Description |
+|---|---|---|
+| `manager` | yes | The manager name Renovate reports in the upgrade, i.e. `regex` or `jsonata` for custom managers, not `custom.regex`. A single value or a list. |
+| `name` | yes | The exact `depName` of the dependency. A single value or a list. |
+| `update_types` | no | Only match these Renovate update types (`major`, `minor`, `patch`, `pin`, `digest`, `pinDigest`, `lockFileMaintenance`, `rollback`, `bump`, `replacement`). A single value or a list. Matches all update types if omitted. |
+| `bump` | no | The version bump: `build`, `patch` (default), `minor`, `breaking` or `major`. |
+| `message` | yes | The changelog entry: a single line [Mustache](https://mustache.github.io/mustache.5.html) template. |
+
+Every update is matched against the rules in their order. The first matching rule wins
+and adds one changelog entry (`changed`) to the package the updated file belongs to:
+the nearest directory above the file with a `pubspec.yaml`. Identical entries are only added once. Then the package is released
+with the biggest bump of all matching rules and of the regular pub updates of the
+package, e.g. `minor` if a rule asks for `minor` and pub updates ask for `patch`. Rules
+also match pub updates (`manager: pub`), adding their entry and bump to the regular
+ones. Workspace roots and packages with neither `version` nor `CHANGELOG.md` are never
+released.
+
+The bumps follow `cider bump`. `build` adds or increments the build number
+(`1.2.3` → `1.2.3+1`). `breaking` is a `minor` bump for `0.x` versions and a `major`
+bump otherwise, while `major` always increments the major version (`0.4.1` → `1.0.0`).
+
+`message` is rendered with the raw values Renovate reports for the update, without HTML
+escaping, nothing is parsed or reformatted: `{{manager}}`, `{{depName}}`,
+`{{packageFile}}`, `{{depType}}`, `{{currentValue}}`, `{{newValue}}`, `{{updateType}}`,
+`{{currentVersion}}`, `{{newVersion}}`, `{{currentDigest}}`, `{{newDigest}}`,
+`{{newDigestShort}}`, `{{packageName}}`, `{{datasource}}` and `{{releaseTimestamp}}`.
+Other names are a config error. Quote messages that start with `{{` in YAML. If a
+matching update has no value for a name the message uses (e.g. `{{newDigestShort}}` of a
+version update), the post-upgrade step fails instead of releasing a broken changelog
+entry, also inside sections: split the rule by `update_types` as shown above.
+
+Rules do not change the pre-build command: it still only runs for pub updates and the
+managers in `pre_build_extra_managers`. An update matching a rule gets dependency
+resolution (`pub get`) and the release, but no `build_runner`, formatting or fixes.
+Non-pub updates that match no rule print a warning in the post-upgrade log.
 
 ## Git hooks
 

@@ -56,14 +56,6 @@ class PubWrapper(
     }
   }
 
-  /// Returns the `renovate` configuration of `pubspec.yaml`.
-  ///
-  /// Schema:
-  /// ```yaml
-  /// renovate?:
-  ///   pre_build_extra_managers?: <string> | <list<string>>
-  ///   pre_build_command?: <string>
-  /// ```
   Future<RenovateConfig> renovateConfig() async {
     final file = workingDirectory.subFile('pubspec.yaml');
     final yaml =

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:meta/meta.dart';
+import 'package:mustache_template/mustache_template.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
@@ -9,8 +10,9 @@ import 'package:yaml_edit/yaml_edit.dart';
 import '../pub/models/pub/workspace/workspace_info.dart';
 import '../pub/pub_wrapper.dart';
 import '../tools/github.dart';
+import 'models/bump_level.dart';
+import 'models/bump_rule.dart';
 import 'models/renovate_upgrade.dart';
-import 'pub_roots.dart';
 
 @internal
 enum PostUpgradeMode() {
@@ -35,42 +37,78 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
     final pubUpgrades = upgrades
         .where((u) => u.manager == _pubManager)
         .toList();
+    final hasPubManager = pubUpgrades.isNotEmpty;
 
     await _mergeWidenedConstraints(repoRoot, pubUpgrades);
 
-    final roots = await _resolveRoots(repoRoot, upgrades);
-    for (final (root, managers) in roots) {
-      await Github.logGroupAsync(
-        'Processing ${path.relative(root.path, from: repoRoot.path)}',
-        () => _processRoot(repoRoot, root, managers, pubUpgrades),
+    final pub = await PubWrapper.create(repoRoot);
+    final config = await pub.renovateConfig();
+    final ruleMatches = _matchBumpRules(upgrades, config.bumpRules);
+
+    final hasPubOrCustomManagers = upgrades.any(
+      (u) =>
+          u.manager == _pubManager ||
+          config.preBuildExtraManagers.contains(u.manager),
+    );
+    if (!hasPubOrCustomManagers && ruleMatches.isEmpty) {
+      return;
+    }
+
+    switch (mode) {
+      case .application when !hasPubManager:
+      case .library:
+        await pub.get();
+      case .application:
+        await pub.upgrade();
+    }
+
+    if (hasPubOrCustomManagers) {
+      await _runPreBuildCommand(pub, config.preBuildCommand);
+    }
+
+    if (hasPubManager) {
+      await _updateAnalyzerPlugins(pub);
+      await _autoFix(pub);
+    } else if (ruleMatches.isEmpty) {
+      return;
+    }
+
+    // pub reports the package paths with resolved symlinks, so the repository
+    // root must be resolved as well to compare them
+    final repoPath = await repoRoot.resolveSymbolicLinks();
+    final workspace = await pub.workspaceList();
+    final packagePaths = workspace.packages.map((p) => p.path).toList();
+
+    for (final info in workspace.packages) {
+      bool ownedByPackage(RenovateUpgrade upgrade) =>
+          path.equals(_owner(repoPath, upgrade, packagePaths), info.path);
+
+      await _release(
+        info,
+        await PubWrapper.create(Directory(info.path)),
+        pubUpgrades.where(ownedByPackage).toList(),
+        ruleMatches.where((m) => ownedByPackage(m.upgrade)).toList(),
       );
     }
   }
 
-  Future<List<(Directory, Set<String>)>> _resolveRoots(
-    Directory repoRoot,
-    Iterable<RenovateUpgrade> upgrades,
-  ) async {
-    final pubRoots = PubRoots(repoRoot);
-    final roots = <String, Set<String>>{};
-    for (final upgrade in upgrades) {
-      if (upgrade.manager == _pubManager) {
-        final root = await pubRoots.findRoot(upgrade.packageFile);
-        (roots[root] ??= {}).add(_pubManager);
-      } else {
-        // non pub upgrades can only ever be relevant for post commands, which
-        // always run in the repository root
-        (roots[PubRoots.root] ??= {}).add(upgrade.manager);
-      }
+  /// The absolute path of the workspace package [upgrade] belongs to.
+  ///
+  /// Pub upgrades belong to the package of their pubspec. All others belong to
+  /// the closest workspace package above the updated file, which is at least
+  /// the workspace root at [repoPath].
+  static String _owner(
+    String repoPath,
+    RenovateUpgrade upgrade,
+    List<String> packagePaths,
+  ) {
+    final dir = path.join(repoPath, path.dirname(upgrade.packageFile));
+    if (upgrade.manager == _pubManager) {
+      return dir;
     }
-    return roots.entries
-        .map(
-          (entry) => (
-            Directory(path.normalize(path.join(repoRoot.path, entry.key))),
-            entry.value,
-          ),
-        )
-        .toList();
+    return packagePaths
+        .where((p) => path.equals(p, dir) || path.isWithin(p, dir))
+        .fold(repoPath, (a, b) => path.isWithin(a, b) ? b : a);
   }
 
   Future<void> _mergeWidenedConstraints(
@@ -164,9 +202,18 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
     return currentBound != newBound;
   }
 
-  /// Checks whether the given [upgrades] of a package require a new release
-  /// of a library, which is the case for SDK upgrades and dependencies with
-  /// a changed upper bound.
+  @visibleForTesting
+  static BumpLevel? releaseLevel(
+    PostUpgradeMode mode,
+    Iterable<RenovateUpgrade> pubUpgrades,
+    Iterable<BumpLevel> ruleLevels,
+  ) => .maxOf([
+    if (pubUpgrades.isNotEmpty &&
+        (mode == .application || requiresVersionBump(pubUpgrades)))
+      .patch,
+    ...ruleLevels,
+  ]);
+
   @visibleForTesting
   static bool requiresVersionBump(Iterable<RenovateUpgrade> upgrades) =>
       upgrades.any(
@@ -194,53 +241,45 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
     }
   }
 
-  Future<void> _processRoot(
-    Directory repoRoot,
-    Directory root,
-    Set<String> managers,
-    List<RenovateUpgrade> pubUpgrades,
-  ) async {
-    final hasPubManager = managers.contains(_pubManager);
-    final pub = await PubWrapper.create(root);
-    if (!hasPubManager && !pub.isValid) {
-      return;
-    }
-    final config = await pub.renovateConfig();
-
-    final hasPubOrCustomManagers = {
-      _pubManager,
-      ...config.preBuildExtraManagers,
-    }.intersection(managers).isNotEmpty;
-    if (!hasPubOrCustomManagers) {
-      return;
+  List<_RuleMatch> _matchBumpRules(
+    List<RenovateUpgrade> upgrades,
+    List<BumpRule> rules,
+  ) {
+    if (rules.isEmpty) {
+      return const [];
     }
 
-    switch (mode) {
-      case .application when !hasPubManager:
-      case .library:
-        await pub.get();
-      case .application:
-        await pub.upgrade();
+    final matches = <_RuleMatch>[];
+    for (final upgrade in upgrades) {
+      final rule = rules.where((r) => r.matches(upgrade)).firstOrNull;
+      if (rule == null) {
+        if (upgrade.manager != _pubManager) {
+          Github.logWarning(
+            '${upgrade.manager} upgrade of ${upgrade.depName} in '
+            '${upgrade.packageFile} matched no bump rule',
+          );
+        }
+        continue;
+      }
+
+      final String message;
+      try {
+        message = rule.message.render(upgrade);
+      } on TemplateException catch (e) {
+        throw Exception(
+          'Bump rule ${rule.description} matched the ${upgrade.manager} '
+          'upgrade of ${upgrade.depName} in ${upgrade.packageFile}, but its '
+          'message "${rule.message}" cannot be rendered: ${e.message}',
+        );
+      }
+
+      Github.logInfo(
+        'Bump rule ${rule.description} matched ${upgrade.depName} in '
+        '${upgrade.packageFile}: ${rule.bump.name} bump with "$message"',
+      );
+      matches.add((upgrade: upgrade, level: rule.bump, message: message));
     }
-
-    await _runPreBuildCommand(pub, config.preBuildCommand);
-    if (!hasPubManager) {
-      return;
-    }
-
-    await _updateAnalyzerPlugins(pub);
-    await _autoFix(pub);
-
-    final workspace = await pub.workspaceList();
-    final packages = [
-      for (final info in workspace.packages)
-        (info, PubWrapper(Directory(info.path), isFlutter: pub.isFlutter)),
-    ];
-
-    final repoPath = await repoRoot.resolveSymbolicLinks();
-    for (final (info, package) in packages) {
-      await _release(repoPath, info, package, pubUpgrades);
-    }
+    return matches;
   }
 
   Future<void> _runPreBuildCommand(PubWrapper pub, String? command) async {
@@ -299,11 +338,16 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
   }
 
   Future<void> _release(
-    String repoPath,
     WorkspaceInfo info,
     PubWrapper pub,
-    List<RenovateUpgrade> pubUpgrades,
+    List<RenovateUpgrade> packageUpgrades,
+    List<_RuleMatch> matches,
   ) async {
+    if (packageUpgrades.isEmpty && matches.isEmpty) {
+      Github.logDebug('Skipping package without upgrades: ${info.name}');
+      return;
+    }
+
     final pubspec = await pub.pubspec();
     if (pubspec.workspace case List(isEmpty: false)) {
       Github.logDebug('Skipping workspace package: ${info.name}');
@@ -316,18 +360,12 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
       return;
     }
 
-    final packagePath = await pub.workingDirectory.resolveSymbolicLinks();
-    final packageDir = path.posix.joinAll(
-      path.split(path.relative(packagePath, from: repoPath)),
+    final level = releaseLevel(
+      mode,
+      packageUpgrades,
+      matches.map((m) => m.level),
     );
-    final packageUpgrades = pubUpgrades
-        .where((u) => _packageDir(u) == packageDir)
-        .toList();
-    if (packageUpgrades.isEmpty) {
-      Github.logDebug('Skipping package without upgrades: ${info.name}');
-      return;
-    }
-    if (mode == .library && !requiresVersionBump(packageUpgrades)) {
+    if (level == null) {
       Github.logInfo(
         'Skipping release of ${info.name}: no SDK update and no dependency '
         'with a new upper bound',
@@ -335,31 +373,35 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
       return;
     }
 
-    Github.logInfo('Creating update for ${info.name}');
+    Github.logInfo('Creating ${level.name} update for ${info.name}');
     if (canLogChangelog) {
-      final sdkEntries = {
+      final entries = <String>{
         for (final upgrade in packageUpgrades)
           if (upgrade case RenovateUpgrade(
             isSdkUpgrade: true,
             :final newValue?,
           ))
             'Updated min ${upgrade.sdkKey} version to $newValue',
+        for (final match in matches) match.message,
+        if (packageUpgrades.isNotEmpty) 'Updated dependencies',
       };
-      for (final entry in sdkEntries) {
+      for (final entry in entries) {
         await pub.cider(['log', 'changed', entry]);
       }
-      await pub.cider(const ['log', 'changed', 'Updated dependencies']);
     }
 
     if (canBumpVersion) {
-      await pub.cider(const ['bump', 'patch']);
+      await pub.cider(['bump', level.name]);
       await pub.cider(const ['version-sync']);
       if (canLogChangelog) {
         await pub.cider(const ['release']);
       }
     }
   }
-
-  static String _packageDir(RenovateUpgrade upgrade) =>
-      path.posix.normalize(path.posix.dirname(upgrade.packageFile));
 }
+
+typedef _RuleMatch = ({
+  RenovateUpgrade upgrade,
+  BumpLevel level,
+  String message,
+});

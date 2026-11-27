@@ -46,6 +46,7 @@ dependencies:
   markdown: ^7.3.1
   meta: ^1.19.0
   mocktail: ^1.0.5
+  mustache_template: ^2.0.6
   path: ^1.9.1
   pub_semver: ^2.2.1
   pubspec_parse: ^1.7.0

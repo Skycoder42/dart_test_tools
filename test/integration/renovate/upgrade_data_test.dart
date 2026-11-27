@@ -136,6 +136,66 @@ void main() {
       ]);
     });
 
+    test('load parses all bump rule fields', () async {
+      await writeData([
+        {
+          'manager': 'regex',
+          'depName': 'native-lib',
+          'packageFile': 'packages/b/version.txt',
+          'currentValue': '1.0.21+202610010000',
+          'newValue': '1.0.22+202611181006',
+          'updateType': 'patch',
+          'currentVersion': '1.0.21',
+          'newVersion': '1.0.22',
+          'currentDigest': 'sha256:aaa',
+          'newDigest': 'sha256:bbb',
+          'newDigestShort': 'bbb',
+          'packageName': 'https://example.com/"lib"',
+          'datasource': 'custom.native',
+          'releaseTimestamp': '2026-11-18T10:06:00.000Z',
+          'isLockfileUpdate': false,
+        },
+      ]);
+
+      final result = await UpgradeData.load(dataFile);
+
+      expect(result, [
+        const RenovateUpgrade(
+          manager: 'regex',
+          depName: 'native-lib',
+          packageFile: 'packages/b/version.txt',
+          currentValue: '1.0.21+202610010000',
+          newValue: '1.0.22+202611181006',
+          updateType: 'patch',
+          currentVersion: '1.0.21',
+          newVersion: '1.0.22',
+          currentDigest: 'sha256:aaa',
+          newDigest: 'sha256:bbb',
+          newDigestShort: 'bbb',
+          packageName: 'https://example.com/"lib"',
+          datasource: 'custom.native',
+          releaseTimestamp: '2026-11-18T10:06:00.000Z',
+        ),
+      ]);
+    });
+
+    test('load converts non-string values to strings', () async {
+      await writeData([
+        {
+          'manager': 'regex',
+          'depName': 'native-lib',
+          'packageFile': 'version.txt',
+          'newValue': 42,
+          'releaseTimestamp': '',
+        },
+      ]);
+
+      final result = await UpgradeData.load(dataFile);
+
+      expect(result.single.newValue, '42');
+      expect(result.single.releaseTimestamp, isNull);
+    });
+
     test('load accepts an empty list', () async {
       await writeData([]);
 

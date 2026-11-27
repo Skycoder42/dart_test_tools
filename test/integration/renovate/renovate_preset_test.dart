@@ -1,8 +1,11 @@
 @TestOn('dart-vm')
 library;
 
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:dart_test_tools/src/renovate/models/message_template.dart';
+import 'package:dart_test_tools/src/renovate/models/renovate_upgrade.dart';
 import 'package:dart_test_tools/src/renovate/renovate_preset.dart';
 import 'package:path/path.dart' show join;
 import 'package:test/test.dart';
@@ -107,6 +110,39 @@ void main() {
           () => RenovatePreset.detect(testDir),
           throwsA(isA<FormatException>()),
         );
+      });
+    });
+
+    group('presets', () {
+      Map<String, dynamic> readPreset(String name) =>
+          json.decode(File('renovate/$name.json').readAsStringSync())
+              as Map<String, dynamic>;
+
+      String dataFileTemplate(String name) =>
+          (readPreset(name)['postUpgradeTasks']
+                  as Map<String, dynamic>)['dataFileTemplate']
+              as String;
+
+      test('share the same data file template', () {
+        expect(dataFileTemplate('library'), dataFileTemplate('application'));
+      });
+
+      test('send all fields of $RenovateUpgrade as JSON', () {
+        final template = dataFileTemplate('library');
+        final fields = [
+          'manager',
+          'depName',
+          'packageFile',
+          ...MessageTemplate.placeholders.keys,
+        ];
+        expect(template, startsWith('[{{#each upgrades}}{{{toJSON (toObject'));
+        for (final field in fields.toSet()) {
+          expect(
+            template,
+            matches(RegExp('"$field" $field[ )]')),
+            reason: field,
+          );
+        }
       });
     });
   });

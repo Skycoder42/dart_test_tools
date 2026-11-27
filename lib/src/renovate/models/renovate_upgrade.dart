@@ -3,8 +3,11 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'renovate_upgrade.freezed.dart';
 part 'renovate_upgrade.g.dart';
 
-String? _emptyAsNull(String? value) =>
-    value == null || value.isEmpty ? null : value;
+String? _emptyAsNull(Object? value) => switch (value) {
+  null || '' => null,
+  final String value => value,
+  _ => value.toString(),
+};
 
 @freezed
 @internal
@@ -19,6 +22,14 @@ sealed class const RenovateUpgrade._() with _$RenovateUpgrade {
     @JsonKey(fromJson: _emptyAsNull) String? currentValue,
     @JsonKey(fromJson: _emptyAsNull) String? newValue,
     @JsonKey(fromJson: _emptyAsNull) String? updateType,
+    @JsonKey(fromJson: _emptyAsNull) String? currentVersion,
+    @JsonKey(fromJson: _emptyAsNull) String? newVersion,
+    @JsonKey(fromJson: _emptyAsNull) String? currentDigest,
+    @JsonKey(fromJson: _emptyAsNull) String? newDigest,
+    @JsonKey(fromJson: _emptyAsNull) String? newDigestShort,
+    @JsonKey(fromJson: _emptyAsNull) String? packageName,
+    @JsonKey(fromJson: _emptyAsNull) String? datasource,
+    @JsonKey(fromJson: _emptyAsNull) String? releaseTimestamp,
   }) = _RenovateUpgrade;
 
   factory fromJson(Map<String, dynamic> json) =>

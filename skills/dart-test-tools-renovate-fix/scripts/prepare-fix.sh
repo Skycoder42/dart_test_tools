@@ -465,6 +465,9 @@ run_post_upgrade() {
 	fi
 
 	reset_release
+	if git grep -q -E '^[[:space:]]+bump_rules:' -- 'pubspec.yaml' '**/pubspec.yaml'; then
+		warn "the repository uses renovate.bump_rules, but the rebuilt data file only contains pub updates — changelog entries and bumps of rules for other managers are missing after the re-run. Compare the CHANGELOG.md files and versions with the pull request's commit and restore them by hand"
+	fi
 
 	POST_UPGRADE_COMMAND="${POST_UPGRADE_CMD[*]} --mode $PRESET"
 	note "running: $POST_UPGRADE_COMMAND"
