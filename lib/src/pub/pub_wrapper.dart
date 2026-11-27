@@ -17,6 +17,17 @@ import 'models/pub/workspace/workspaces.dart';
 import 'models/renovate_config.dart';
 
 @internal
+class const PubWrapperFactory() {
+  Future<PubWrapper> create(
+    Directory workingDirectory, {
+    bool forceFlutter = false,
+  }) => PubWrapper.create(workingDirectory, forceFlutter: forceFlutter);
+
+  PubWrapper dart(Directory workingDirectory) =>
+      PubWrapper(workingDirectory, isFlutter: false);
+}
+
+@internal
 class PubWrapper(
   final Directory workingDirectory, {
   required final bool isFlutter,

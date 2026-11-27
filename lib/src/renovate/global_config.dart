@@ -12,6 +12,7 @@ import 'renovate_preset.dart';
 class const GlobalConfig({
   required final Directory repository,
   required final RenovatePreset preset,
+  final PubWrapperFactory pubFactory = const PubWrapperFactory(),
 }) {
   Future<Map<String, dynamic>> build() async {
     final flutterCompat = preset.flutterCompat;
@@ -20,7 +21,7 @@ class const GlobalConfig({
       '${flutterCompat ? 'enforced' : 'not enforced'}',
     );
 
-    final pub = await PubWrapper.create(
+    final pub = await pubFactory.create(
       repository,
       forceFlutter: flutterCompat,
     );

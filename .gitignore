@@ -25,6 +25,7 @@ doc/api/
 # Generated build files
 *.freezed.dart
 *.g.dart
+*.mocks.dart
 lib/gen
 
 *.log

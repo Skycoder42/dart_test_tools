@@ -31,6 +31,11 @@ and a finish job at its end merges it when CI is green.
 
 ### Setting up a repository
 
+The repository must have exactly one `pubspec.yaml` at its root: a single package, or a
+pub workspace. Everything the post-upgrade step does happens in this root. Packages that
+are not part of it (e.g. a standalone package in `tool/`) are ignored, and the step
+fails for repositories without a root pubspec.
+
 These steps also migrate a repository that used the former `auto-update.yml` workflow.
 
 1. In the repository settings, enable *Actions → General → Allow GitHub Actions to
@@ -172,15 +177,14 @@ mind:
 #### Pre-build command
 
 Some repositories may need to run custom code to cleanup the repository. Set a
-pre-build command in the `pubspec.yaml` of the repository root (the workspace
-root, for pub workspaces):
+pre-build command in the `pubspec.yaml` at the root of the repository:
 
 ```yaml
 renovate:
   pre_build_command: echo "my command"
 ```
 
-The post-upgrade step runs it in the directory of that pubspec, after dependency
+The post-upgrade step runs it in the repository root, after dependency
 resolution and before `build_runner`. A non-zero exit code fails the
 post-upgrade step.
 
@@ -196,9 +200,9 @@ renovate:
 ```
 
 For an update of only these managers, the post-upgrade step runs `pub get` and
-the command in the repository root, and nothing else: no `pub upgrade`, no
-`build_runner`, no formatting or fixes, no changelog entry or release. Updates
-of managers that are not listed are ignored.
+the command, and nothing else: no `pub upgrade`, no `build_runner`, no formatting
+or fixes, no changelog entry or release. Updates of managers that are not listed
+are ignored.
 
 The command is a single string for all platforms, run with `/bin/sh -c` (or
 `cmd.exe /c` on Windows). Platform specific commands are not supported.
@@ -207,8 +211,8 @@ The command is a single string for all platforms, run with `/bin/sh -c` (or
 
 Bump rules create changelog entries and version bumps for updates the post-upgrade
 step would otherwise ignore, e.g. a native library tracked by a custom regex manager.
-Declare them in the `renovate` section of the `pubspec.yaml` of the repository root
-(the workspace root, for pub workspaces). Rules in the pubspecs of workspace members
+Declare them in the `renovate` section of the `pubspec.yaml` at the root of the
+repository, next to the pre-build command. Rules in the pubspecs of workspace members
 are ignored.
 
 ```yaml
@@ -236,22 +240,25 @@ renovate:
 
 Every update is matched against the rules in their order. The first matching rule wins
 and adds one changelog entry (`changed`) to the package the updated file belongs to:
-the nearest directory above the file with a `pubspec.yaml`. Identical entries are only added once. Then the package is released
-with the biggest bump of all matching rules and of the regular pub updates of the
-package, e.g. `minor` if a rule asks for `minor` and pub updates ask for `patch`. Rules
-also match pub updates (`manager: pub`), adding their entry and bump to the regular
-ones. Workspace roots and packages with neither `version` nor `CHANGELOG.md` are never
-released.
+the nearest workspace package above the file, or the root package if there is none.
+Pubspecs that are not part of the workspace are skipped. Identical entries are only
+added once. Then the package is released with the biggest bump of all matching rules
+and of the regular pub updates of the package, e.g. `minor` if a rule asks for `minor`
+and pub updates ask for `patch`. Rules also match pub updates (`manager: pub`), adding
+their entry and bump to the regular ones. Packages without `CHANGELOG.md` drop the entry silently, and workspace roots and
+packages with neither `version` nor `CHANGELOG.md` are never released.
 
 The bumps follow `cider bump`. `build` adds or increments the build number
 (`1.2.3` → `1.2.3+1`). `breaking` is a `minor` bump for `0.x` versions and a `major`
 bump otherwise, while `major` always increments the major version (`0.4.1` → `1.0.0`).
 
-`message` is rendered with the raw values Renovate reports for the update, without HTML
-escaping, nothing is parsed or reformatted: `{{manager}}`, `{{depName}}`,
-`{{packageFile}}`, `{{depType}}`, `{{currentValue}}`, `{{newValue}}`, `{{updateType}}`,
-`{{currentVersion}}`, `{{newVersion}}`, `{{currentDigest}}`, `{{newDigest}}`,
-`{{newDigestShort}}`, `{{packageName}}`, `{{datasource}}` and `{{releaseTimestamp}}`.
+`message` is rendered with the values Renovate reports for the update, nothing is parsed
+or reformatted. Like in any Mustache template, `{{name}}` escapes the value as HTML, use
+`{{{name}}}` or `{{&name}}` to insert it unchanged (e.g. for URLs). The placeholders
+are: `{{manager}}`, `{{depName}}`, `{{packageFile}}`, `{{depType}}`, `{{currentValue}}`,
+`{{newValue}}`, `{{updateType}}`, `{{currentVersion}}`, `{{newVersion}}`,
+`{{currentDigest}}`, `{{newDigest}}`, `{{newDigestShort}}`, `{{packageName}}`,
+`{{datasource}}` and `{{releaseTimestamp}}`.
 Other names are a config error. Quote messages that start with `{{` in YAML. If a
 matching update has no value for a name the message uses (e.g. `{{newDigestShort}}` of a
 version update), the post-upgrade step fails instead of releasing a broken changelog

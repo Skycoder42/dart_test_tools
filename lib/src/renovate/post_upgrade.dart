@@ -21,7 +21,10 @@ enum PostUpgradeMode() {
 }
 
 @internal
-class const PostUpgrade({required final PostUpgradeMode mode}) {
+class const PostUpgrade({
+  required final PostUpgradeMode mode,
+  final PubWrapperFactory pubFactory = const PubWrapperFactory(),
+}) {
   static const _pubManager = 'pub';
   static const _dependencyKeys = [
     'dependencies',
@@ -41,7 +44,7 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
 
     await _mergeWidenedConstraints(repoRoot, pubUpgrades);
 
-    final pub = await PubWrapper.create(repoRoot);
+    final pub = await pubFactory.create(repoRoot);
     final config = await pub.renovateConfig();
     final ruleMatches = _matchBumpRules(upgrades, config.bumpRules);
 
@@ -85,7 +88,7 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
 
       await _release(
         info,
-        await PubWrapper.create(Directory(info.path)),
+        await pubFactory.create(Directory(info.path)),
         pubUpgrades.where(ownedByPackage).toList(),
         ruleMatches.where((m) => ownedByPackage(m.upgrade)).toList(),
       );
@@ -122,9 +125,8 @@ class const PostUpgrade({required final PostUpgradeMode mode}) {
       }
 
       final merged = mergeWidenedConstraint(widened).toString();
-      final pub = PubWrapper(
+      final pub = pubFactory.dart(
         Directory(path.join(repoRoot.path, path.dirname(upgrade.packageFile))),
-        isFlutter: false,
       );
       await pub.pubspecEdit((editor) {
         for (final key in _dependencyKeys) {

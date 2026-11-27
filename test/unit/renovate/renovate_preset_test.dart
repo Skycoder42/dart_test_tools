@@ -4,11 +4,13 @@ library;
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:checks/checks.dart';
 import 'package:dart_test_tools/src/renovate/models/message_template.dart';
 import 'package:dart_test_tools/src/renovate/models/renovate_upgrade.dart';
 import 'package:dart_test_tools/src/renovate/renovate_preset.dart';
+import 'package:dart_test_tools/src/test/test_data.dart';
 import 'package:path/path.dart' show join;
-import 'package:test/test.dart';
+import 'package:test/scaffolding.dart';
 
 void main() {
   group('$RenovatePreset', () {
@@ -29,19 +31,22 @@ void main() {
     });
 
     test('only the library preset is flutter compatible', () {
-      expect(RenovatePreset.library.flutterCompat, isTrue);
-      expect(RenovatePreset.application.flutterCompat, isFalse);
+      check(RenovatePreset.library.flutterCompat).isTrue;
+      check(RenovatePreset.application.flutterCompat).isFalse;
     });
 
     test('only the application preset offers unresolvable breaking '
         'updates', () {
-      expect(RenovatePreset.library.offerBreaking, isFalse);
-      expect(RenovatePreset.application.offerBreaking, isTrue);
+      check(RenovatePreset.library.offerBreaking).isFalse;
+      check(RenovatePreset.application.offerBreaking).isTrue;
     });
 
     group('detect', () {
-      for (final preset in RenovatePreset.values) {
-        test('detects the ${preset.name} preset', () async {
+      testData<RenovatePreset>(
+        'detects the preset',
+        RenovatePreset.values,
+        dataToString: (preset) => preset.name,
+        (preset) async {
           await writeFile('renovate.json', '''
 {
   "\$schema": "https://docs.renovatebot.com/renovate-schema.json",
@@ -49,9 +54,9 @@ void main() {
 }
 ''');
 
-          expect(await RenovatePreset.detect(testDir), preset);
-        });
-      }
+          check(await RenovatePreset.detect(testDir)).equals(preset);
+        },
+      );
 
       test('detects a pinned preset in a json5 file under .github', () async {
         await writeFile('.github/renovate.json5', '''
@@ -61,7 +66,8 @@ void main() {
 }
 ''');
 
-        expect(await RenovatePreset.detect(testDir), RenovatePreset.library);
+        check(await RenovatePreset.detect(testDir))
+            .equals(RenovatePreset.library);
       });
 
       test('uses the first config file in renovate search order', () async {
@@ -74,26 +80,18 @@ void main() {
           '{"extends": ["github>Skycoder42/dart_test_tools//renovate/library"]}',
         );
 
-        expect(
-          await RenovatePreset.detect(testDir),
-          RenovatePreset.application,
-        );
+        check(await RenovatePreset.detect(testDir))
+            .equals(RenovatePreset.application);
       });
 
-      test('throws without a config file', () {
-        expect(
-          () => RenovatePreset.detect(testDir),
-          throwsA(isA<FormatException>()),
-        );
+      test('throws without a config file', () async {
+        await check(RenovatePreset.detect(testDir)).throws<FormatException>();
       });
 
       test('throws if no preset is extended', () async {
         await writeFile('renovate.json', '{"extends": ["config:recommended"]}');
 
-        expect(
-          () => RenovatePreset.detect(testDir),
-          throwsA(isA<FormatException>()),
-        );
+        await check(RenovatePreset.detect(testDir)).throws<FormatException>();
       });
 
       test('throws if both presets are extended', () async {
@@ -106,10 +104,7 @@ void main() {
 }
 ''');
 
-        expect(
-          () => RenovatePreset.detect(testDir),
-          throwsA(isA<FormatException>()),
-        );
+        await check(RenovatePreset.detect(testDir)).throws<FormatException>();
       });
     });
 
@@ -124,7 +119,8 @@ void main() {
               as String;
 
       test('share the same data file template', () {
-        expect(dataFileTemplate('library'), dataFileTemplate('application'));
+        check(dataFileTemplate('library'))
+            .equals(dataFileTemplate('application'));
       });
 
       test('send all fields of $RenovateUpgrade as JSON', () {
@@ -135,13 +131,12 @@ void main() {
           'packageFile',
           ...MessageTemplate.placeholders.keys,
         ];
-        expect(template, startsWith('[{{#each upgrades}}{{{toJSON (toObject'));
+        check(template).startsWith('[{{#each upgrades}}{{{toJSON (toObject');
         for (final field in fields.toSet()) {
-          expect(
+          check(
             template,
-            matches(RegExp('"$field" $field[ )]')),
-            reason: field,
-          );
+            because: field,
+          ).matchesPattern(RegExp('"$field" $field[ )]'));
         }
       });
     });

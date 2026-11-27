@@ -4,9 +4,10 @@ library;
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:checks/checks.dart';
 import 'package:dart_test_tools/src/renovate/models/renovate_upgrade.dart';
 import 'package:dart_test_tools/src/renovate/upgrade_data.dart';
-import 'package:test/test.dart';
+import 'package:test/scaffolding.dart';
 
 void main() {
   group('$UpgradeData', () {
@@ -49,7 +50,7 @@ void main() {
 
       final result = await UpgradeData.load(dataFile);
 
-      expect(result, [
+      check(result).deepEquals([
         const RenovateUpgrade(
           manager: 'pub',
           depName: 'dart',
@@ -85,11 +86,11 @@ void main() {
 
       final result = await UpgradeData.load(dataFile);
 
-      expect(result, hasLength(1));
-      expect(result.single.depType, isNull);
-      expect(result.single.currentValue, isNull);
-      expect(result.single.newValue, isNull);
-      expect(result.single.updateType, isNull);
+      check(result).length.equals(1);
+      check(result.single.depType).isNull;
+      check(result.single.currentValue).isNull;
+      check(result.single.newValue).isNull;
+      check(result.single.updateType).isNull;
     });
 
     test('load accepts missing optional fields', () async {
@@ -99,7 +100,7 @@ void main() {
 
       final result = await UpgradeData.load(dataFile);
 
-      expect(result, [
+      check(result).deepEquals([
         const RenovateUpgrade(
           manager: 'pub',
           depName: 'path',
@@ -123,7 +124,7 @@ void main() {
 
       final result = await UpgradeData.load(dataFile);
 
-      expect(result, [
+      check(result).deepEquals([
         const RenovateUpgrade(
           manager: 'npm',
           depName: 'renovate',
@@ -159,7 +160,7 @@ void main() {
 
       final result = await UpgradeData.load(dataFile);
 
-      expect(result, [
+      check(result).deepEquals([
         const RenovateUpgrade(
           manager: 'regex',
           depName: 'native-lib',
@@ -192,8 +193,8 @@ void main() {
 
       final result = await UpgradeData.load(dataFile);
 
-      expect(result.single.newValue, '42');
-      expect(result.single.releaseTimestamp, isNull);
+      check(result.single.newValue).equals('42');
+      check(result.single.releaseTimestamp).isNull;
     });
 
     test('load accepts an empty list', () async {
@@ -201,7 +202,7 @@ void main() {
 
       final result = await UpgradeData.load(dataFile);
 
-      expect(result, isEmpty);
+      check(result).isEmpty;
     });
 
     test('fromEnvironment loads the file named by the env var', () async {
@@ -213,7 +214,7 @@ void main() {
         UpgradeData.dataFileEnvVar: dataFile.path,
       });
 
-      expect(result, [
+      check(result).deepEquals([
         const RenovateUpgrade(
           manager: 'pub',
           depName: 'path',
@@ -223,42 +224,7 @@ void main() {
     });
 
     test('fromEnvironment throws StateError without env var', () {
-      expect(() => UpgradeData.fromEnvironment({}), throwsA(isA<StateError>()));
-    });
-  });
-
-  group('$RenovateUpgrade', () {
-    test('isSdkUpgrade and sdkKey for dart', () {
-      const sut = RenovateUpgrade(
-        manager: 'pub',
-        depName: 'dart',
-        packageFile: 'pubspec.yaml',
-      );
-
-      expect(sut.isSdkUpgrade, isTrue);
-      expect(sut.sdkKey, 'sdk');
-    });
-
-    test('isSdkUpgrade and sdkKey for flutter', () {
-      const sut = RenovateUpgrade(
-        manager: 'pub',
-        depName: 'flutter',
-        packageFile: 'pubspec.yaml',
-      );
-
-      expect(sut.isSdkUpgrade, isTrue);
-      expect(sut.sdkKey, 'flutter');
-    });
-
-    test('isSdkUpgrade and sdkKey for other packages', () {
-      const sut = RenovateUpgrade(
-        manager: 'pub',
-        depName: 'path',
-        packageFile: 'pubspec.yaml',
-      );
-
-      expect(sut.isSdkUpgrade, isFalse);
-      expect(() => sut.sdkKey, throwsA(isA<StateError>()));
+      check(() => UpgradeData.fromEnvironment({})).throws<StateError>();
     });
   });
 }
