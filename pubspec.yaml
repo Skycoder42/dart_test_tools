@@ -7,6 +7,12 @@ homepage: https://github.com/Skycoder42/dart_test_tools
 environment:
   sdk: ^3.14.0
 
+# command line tools and test helpers that need dart:io
+platforms:
+  linux:
+  macos:
+  windows:
+
 executables:
   generate-build-number: generate_build_number
   generate-pkgbuild: generate_pkgbuild
