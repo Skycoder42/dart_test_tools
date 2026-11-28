@@ -1,3 +1,6 @@
+@TestOn('dart-vm')
+library;
+
 import 'dart:async';
 import 'dart:io';
 
@@ -134,6 +137,10 @@ void main() {
       repoDir = await Directory.systemTemp.createTemp();
       addTearDown(() => repoDir.delete(recursive: true));
       repoPath = await repoDir.resolveSymbolicLinks();
+      for (final package in ['a', 'b']) {
+        await Directory(path.join(repoPath, 'packages', package))
+            .create(recursive: true);
+      }
       events = [];
       editedPubspec = '';
       analysisOptions = '';
@@ -155,7 +162,7 @@ void main() {
       });
       when(mockPubFactory.dart(any)).thenAnswer((i) {
         final dir = i.positionalArguments.single as Directory;
-        events.add('dart ${dir.path}');
+        events.add('dart ${path.normalize(dir.path)}');
         return mockEditPub;
       });
 
@@ -862,6 +869,28 @@ dev_dependencies:
             nativeUpgrade,
             pathUpgrade,
           ], repoRoot: Directory(link.path));
+
+          checkReleased();
+        });
+
+        test('if pub reports other paths of the packages', () async {
+          // e.g. unresolved symlinks, or windows short names like RUNNER~1
+          final linkDir = await Directory.systemTemp.createTemp();
+          addTearDown(() => linkDir.delete(recursive: true));
+          final link = await Link(path.join(linkDir.path, 'repo'))
+              .create(repoDir.path);
+          final linkB = path.join(link.path, 'packages', 'b');
+          pubs[linkB] = mockBPub;
+          when(mockRootPub.workspaceList()).thenAnswer(
+            (_) async => Workspaces(
+              packages: [
+                WorkspaceInfo(name: 'workspace', path: repoPath),
+                WorkspaceInfo(name: 'b', path: linkB),
+              ],
+            ),
+          );
+
+          await run(.library, const [nativeUpgrade, pathUpgrade]);
 
           checkReleased();
         });

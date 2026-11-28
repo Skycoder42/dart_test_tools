@@ -1,3 +1,6 @@
+@TestOn('dart-vm')
+library;
+
 import 'dart:io';
 
 import 'package:checks/checks.dart';

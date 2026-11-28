@@ -76,15 +76,22 @@ class const PostUpgrade({
       return;
     }
 
-    // pub reports the package paths with resolved symlinks, so the repository
-    // root must be resolved as well to compare them
+    // How pub reports the package paths differs between platforms , so the
+    // paths of the repository and of all packages are resolved the same way to
+    // compare them
     final repoPath = await repoRoot.resolveSymbolicLinks();
     final workspace = await pub.workspaceList();
-    final packagePaths = workspace.packages.map((p) => p.path).toList();
+    final packagePaths = {
+      for (final info in workspace.packages)
+        info: await Directory(info.path).resolveSymbolicLinks(),
+    };
 
-    for (final info in workspace.packages) {
-      bool ownedByPackage(RenovateUpgrade upgrade) =>
-          path.equals(_owner(repoPath, upgrade, packagePaths), info.path);
+    for (final MapEntry(key: info, value: packagePath)
+        in packagePaths.entries) {
+      bool ownedByPackage(RenovateUpgrade upgrade) => path.equals(
+        _owner(repoPath, upgrade, packagePaths.values),
+        packagePath,
+      );
 
       await _release(
         info,
@@ -103,7 +110,7 @@ class const PostUpgrade({
   static String _owner(
     String repoPath,
     RenovateUpgrade upgrade,
-    List<String> packagePaths,
+    Iterable<String> packagePaths,
   ) {
     final dir = path.join(repoPath, path.dirname(upgrade.packageFile));
     if (upgrade.manager == _pubManager) {
