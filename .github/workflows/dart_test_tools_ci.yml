@@ -49,6 +49,7 @@ jobs:
     with:
       buildRunner: true
       unitTestPaths: test/unit
+      minCoverage: 0 # the tests are not meant to cover everything
       integrationTestPaths: test/integration
       integrationTestSetup: >-
         {
