@@ -52,9 +52,9 @@ jobs:
       integrationTestPaths: test/integration
       integrationTestSetup: >-
         {
-          "linux": "dart run tool/ci_install_flutter.dart",
-          "windows": "dart run tool/ci_install_flutter.dart",
-          "macos": "dart run tool/ci_install_flutter.dart"
+          "linux": "bash tool/setup_integration.sh",
+          "windows": "bash tool/setup_integration.sh",
+          "macos": "bash tool/setup_integration.sh"
         }
       panaScoreThreshold: 30 # should be 20
     secrets:

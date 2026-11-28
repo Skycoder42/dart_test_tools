@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:checks/checks.dart';
@@ -792,6 +793,45 @@ dev_dependencies:
           check(ciderEvents()).isEmpty;
         },
       );
+
+      group('warnings', () {
+        /// The warnings logged while running [upgrades] in library mode.
+        Future<List<String>> warnings(List<RenovateUpgrade> upgrades) async {
+          final lines = <String>[];
+          await runZoned(
+            () => run(.library, upgrades),
+            zoneSpecification: ZoneSpecification(
+              print: (_, _, _, line) => lines.add(line),
+            ),
+          );
+          return lines.where((l) => l.startsWith('::warning::')).toList();
+        }
+
+        test('are logged for non-pub upgrades matching no rule', () async {
+          stubRules([rule()]);
+
+          final logged = await warnings([
+            nativeUpgrade,
+            nativeUpgrade.copyWith(depName: 'typo'),
+          ]);
+
+          check(logged).single.equals(
+            '::warning::regex upgrade of typo in '
+            'packages/b/lib/native/version.txt matched no bump rule',
+          );
+        });
+
+        test('are not logged for pub upgrades matching no rule', () async {
+          stubRules([rule()]);
+
+          check(await warnings(const [pathUpgrade])).isEmpty;
+        });
+
+        test('are not logged without rules', () async {
+          check(await warnings([nativeUpgrade.copyWith(depName: 'typo')]))
+              .isEmpty;
+        });
+      });
 
       group('attribute non-pub upgrades', () {
         void checkReleased() => check(ciderEvents()).deepEquals(
